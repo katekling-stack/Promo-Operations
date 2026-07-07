@@ -25,8 +25,8 @@ class FreeWheelClient:
     def __init__(self):
         self.base_url = require_env("FREEWHEEL_BASE_URL").rstrip("/")
         self.network_id = require_env("FREEWHEEL_NETWORK_ID")
-        self._client_id = require_env("FREEWHEEL_CLIENT_ID")
-        self._client_secret = require_env("FREEWHEEL_CLIENT_SECRET")
+        self._username = require_env("FREEWHEEL_USERNAME")
+        self._password = require_env("FREEWHEEL_PASSWORD")
         self.advertiser_filter = env("FREEWHEEL_ADVERTISER_NAME_FILTER", "VCBS")
         self._session = requests.Session()
         self._token: Optional[str] = None
@@ -34,18 +34,21 @@ class FreeWheelClient:
     # --- auth ------------------------------------------------------------ #
 
     def authenticate(self) -> str:
-        """OAuth2 client-credentials grant. CONFIRM: token URL + grant per tenant."""
+        """Exchange username/password for a session token.
+
+        The API user is of the form ``AdOps.api@<network_id>``. CONFIRM the exact
+        token endpoint + response field against the FreeWheel reference
+        (https://shmcp.freewheel.com/reference) — it could not be reached from the
+        build environment (network policy), so this follows the standard shape.
+        """
         resp = self._session.post(
-            f"{self.base_url}/oauth/token",  # CONFIRM: exact token endpoint
-            data={
-                "grant_type": "client_credentials",
-                "client_id": self._client_id,
-                "client_secret": self._client_secret,
-            },
+            f"{self.base_url}/auth/token",  # CONFIRM: exact token endpoint
+            json={"username": self._username, "password": self._password},
             timeout=30,
         )
         resp.raise_for_status()
-        self._token = resp.json()["access_token"]
+        data = resp.json()
+        self._token = data.get("access_token") or data.get("token")  # CONFIRM field
         self._session.headers.update({"Authorization": f"Bearer {self._token}"})
         return self._token
 

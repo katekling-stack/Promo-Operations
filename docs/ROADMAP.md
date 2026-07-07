@@ -17,7 +17,7 @@ external-system integrations are scaffolded and need a live tenant to finalize.
 
 | Item | What's needed |
 |---|---|
-| **FreeWheel push** | Confirm OAuth token URL + Order/Placement/targeting endpoint paths and field names against the tenant (marked `# CONFIRM:` in `integrations/freewheel.py`). Then `promo-ops push --target freewheel --live`. |
+| **FreeWheel push** | Auth is username/password (API user `AdOps.api@<network_id>`; test net = 520310). Confirm token endpoint + Order/Placement/targeting paths against the reference (marked `# CONFIRM:` in `integrations/freewheel.py`). Then `promo-ops push --target freewheel --live`. **Blocker:** the Claude-on-web session's network policy denies outbound to `*.freewheel.tv` / `shmcp.freewheel.com`, so the API can't be reached or schema-confirmed from here. Unblock by either (a) allowlisting FreeWheel domains in the environment's network policy, (b) running the client from a network with FreeWheel access, or (c) exporting the reference docs so the schema can be finalized offline. |
 | **VCBS advertiser discovery** | Run `find_advertisers()` against the live API to confirm the advertisers-list endpoint and resolve real advertiser IDs. |
 | **Template cloning** | Confirm how FreeWheel exposes "clone from campaign/IO" so brand `template_campaign_id` becomes a real clone. |
 | **Salesforce Case → plan** | Map the real Case field API names in `integrations/salesforce.py` `CASE_FIELD_MAP`. Then `promo-ops from-case <CASE_ID>`. |
