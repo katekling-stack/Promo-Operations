@@ -46,6 +46,18 @@ promo-ops preview plans/frisco-king-usa.yaml     # human-readable tier breakdown
 This produces the full Order + Placement + per-tier targeting spec as JSON — no
 credentials required — so the mapping can be reviewed before anything is pushed.
 
+## Filling out a campaign (the sheet template)
+
+Until input is Salesforce-driven, campaigns are entered in a two-tab Google Sheet
+(`Plan` + `Targeting`). Importable starter files, pre-filled with Frisco King, are in
+[`templates/campaign-plan/`](templates/campaign-plan/); the field reference is in
+[`docs/PLAN_TEMPLATE.md`](docs/PLAN_TEMPLATE.md). A filled sheet builds the identical
+order to the YAML plan (proven by `tests/test_plan_template.py`):
+
+```bash
+promo-ops build-from-sheet <SHEET_ID> --out build/campaign.json
+```
+
 ## Layout
 
 ```

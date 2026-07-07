@@ -3,6 +3,7 @@
     promo-ops build   <plan.yaml> [--out FILE]     build Order+Placements -> JSON
     promo-ops preview <plan.yaml>                   human-readable tier breakdown
     promo-ops push    <plan.yaml> --target NAME     push (dry-run unless --live)
+    promo-ops build-from-sheet <SHEET_ID> [--out F] build from a campaign-plan sheet
     promo-ops from-case <CASE_ID> [--out FILE]      build from a Salesforce Case
     promo-ops sync-segments                         refresh audience-segment CSVs
 
@@ -107,6 +108,21 @@ def _cmd_from_case(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_build_from_sheet(args: argparse.Namespace) -> int:
+    from .integrations.gsheets import read_plan_template
+    plan_dict = read_plan_template(args.sheet_id)
+    plan = support_plan_from_dict(plan_dict)
+    order = OrderBuilder().build(plan)
+    out = _order_to_json(order)
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(out, encoding="utf-8")
+        print(f"Wrote {args.out}")
+    else:
+        print(out)
+    return 0
+
+
 def _cmd_sync_segments(args: argparse.Namespace) -> int:
     from .integrations.gsheets import sync_audience_segments
     written = sync_audience_segments(sheet_id=args.sheet_id)
@@ -140,6 +156,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_case.add_argument("case_id")
     p_case.add_argument("--out")
     p_case.set_defaults(func=_cmd_from_case)
+
+    p_sheet = sub.add_parser("build-from-sheet", help="Build from a campaign-plan Google Sheet")
+    p_sheet.add_argument("sheet_id")
+    p_sheet.add_argument("--out")
+    p_sheet.set_defaults(func=_cmd_build_from_sheet)
 
     p_sync = sub.add_parser("sync-segments", help="Refresh audience-segment CSVs from the sheet")
     p_sync.add_argument("--sheet-id")
