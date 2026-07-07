@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets & credentials — never commit
+.env
+*.pem
+*.json.key
+service-account*.json
+gam.yaml
+googleads.yaml
+
+# Local build output
+/build/
+/out/
+
+# Live syncs from the Google Sheet are regenerated; only seed_*.csv is committed.
+data/audience_segments/synced_*.csv

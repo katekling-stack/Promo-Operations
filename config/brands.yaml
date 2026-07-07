@@ -1,0 +1,44 @@
+# Brand → FreeWheel advertiser mapping.
+#
+# Orders are created under Advertisers whose name contains "VCBS" (per the kickoff:
+# "Advertisers that contain 'VCBS' in the name"). We don't hard-code advertiser IDs
+# here because they should be resolved live from FreeWheel by name filter — see
+# integrations/freewheel.py `find_advertisers()`. This file records the mapping and
+# the region-code template each brand's orders are cloned from.
+#
+# `advertiser_name_contains` narrows the VCBS advertiser list to the right one per
+# brand. `template_campaign_id` / `template_io_id` point at an existing campaign to
+# clone Order/Placement structure from (the "similar Region Code template per brand").
+
+network_id: 520311   # cbsi-mrm.freewheel.tv/app/520311 (from the reference campaign)
+
+brands:
+  paramount_network:
+    display_name: "Paramount Network"
+    advertiser_name_contains: ["VCBS", "Paramount Network"]
+    # Reference template used for the Frisco King - USA kickoff example:
+    # https://cbsi-mrm.freewheel.tv/app/520311/advertising/campaigns/86543608/?insertion_order_id=92725144
+    template_campaign_id: "86543608"
+    template_io_id: "92725144"
+    default_platforms: ["Paramount+", "Pluto TV", "CBS", "MTVE"]
+
+  paramount_plus:
+    display_name: "Paramount+"
+    advertiser_name_contains: ["VCBS", "Paramount+"]
+    template_campaign_id: null
+    template_io_id: null
+    default_platforms: ["Paramount+"]
+
+  pluto_tv:
+    display_name: "Pluto TV"
+    advertiser_name_contains: ["VCBS", "Pluto"]
+    template_campaign_id: null
+    template_io_id: null
+    default_platforms: ["Pluto TV"]
+
+  cbs:
+    display_name: "CBS"
+    advertiser_name_contains: ["VCBS", "CBS"]
+    template_campaign_id: null
+    template_io_id: null
+    default_platforms: ["CBS", "CBS News", "CBS Sports"]

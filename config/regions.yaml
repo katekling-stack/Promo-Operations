@@ -1,0 +1,29 @@
+# Region codes used in Order/Placement naming and geo targeting.
+# `tier1_eligible` mirrors the deck: "Tier 1 applies to USA, AU, CA, LATAM, BR
+# currently. Remainder of markets TBD."
+
+regions:
+  USA:
+    name: "United States"
+    tier1_eligible: true
+    geo_codes: ["US"]
+  CA:
+    name: "Canada"
+    tier1_eligible: true
+    geo_codes: ["CA"]
+  AU:
+    name: "Australia"
+    tier1_eligible: true
+    geo_codes: ["AU"]
+  LATAM:
+    name: "Latin America"
+    tier1_eligible: true
+    geo_codes: ["MX", "AR", "CL", "CO", "PE"]  # representative; refine per market
+  BR:
+    name: "Brazil"
+    tier1_eligible: true
+    geo_codes: ["BR"]
+  UK:
+    name: "United Kingdom"
+    tier1_eligible: false
+    geo_codes: ["GB"]

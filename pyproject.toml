@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "promo-ops"
+version = "0.1.0"
+description = "Turn campaign support plans into tiered FreeWheel / GAM orders for Paramount Digital Promo Ad Operations"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "PyYAML>=6.0",
+    "requests>=2.31",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+# Installed only when you actually wire up a given system.
+salesforce = ["simple-salesforce>=1.12"]
+gam = ["googleads>=42.0"]
+gsheets = ["google-api-python-client>=2.0", "google-auth>=2.0"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+promo-ops = "promo_ops.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

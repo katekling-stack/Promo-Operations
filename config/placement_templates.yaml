@@ -1,0 +1,49 @@
+# Placement templates per format.
+#
+# One Placement is built per (format × region). These templates carry the standard
+# defaults from the deck (frequency caps, creative durations, priority order,
+# endpoints). Per-campaign overrides live in the support plan.
+#
+# `naming` is a Python str.format template. Available fields:
+#   {promoted_title} {region} {format_code} {brand} {flight_code}
+
+defaults:
+  frequency_cap: "1 per 30 min / 20 per month"   # deck standard remnant cap
+  currency: "USD"
+
+formats:
+  remnant_video:
+    format_code: "RVID"
+    display_name: "Non-Guaranteed Video"
+    naming: "{promoted_title} - {region} - Remnant Video"
+    endpoints: ["Desktop", "Mobile", "CTV"]
+    # Deck priority: :30 > :45/:60 > :15 > :20/:10
+    creative_durations_priority: [30, 45, 60, 15, 20, 10]
+    platforms: ["Paramount+", "Pluto TV", "CBS", "MTVE", "BET", "Nick"]
+    salesforce_asset_field: "Video Assets"
+
+  pause_ads:
+    format_code: "PAUSE"
+    display_name: "Non-Guaranteed Pause Ads"
+    naming: "{promoted_title} - {region} - Pause Ads"
+    endpoints: ["Desktop", "CTV"]
+    spec: "1018x674 PNG"
+    platforms: ["Paramount+", "CBS", "BET (CTV)", "Pluto TV (VOD)"]
+    salesforce_asset_field: "Pause Ad Assets"
+
+  remnant_display:
+    format_code: "DISP"
+    display_name: "Non-Guaranteed Display"
+    naming: "{promoted_title} - {region} - Display"
+    endpoints: ["Desktop", "Mobile"]
+    standard_sizes: ["970x66","728x90","320x50","300x250","300x600","1024x90","970x250","300x50","768x90"]
+    platforms: ["CBS Sports", "CBS News", "CMV", "MTVE", "Nick", "BET"]
+    salesforce_asset_field: "Display Assets"
+
+  podcast:
+    format_code: "POD"
+    display_name: "Non-Guaranteed Podcast"
+    naming: "{promoted_title} - {region} - Podcast"
+    creative_durations_priority: [15, 30]
+    platforms: ["Megaphone"]
+    salesforce_asset_field: "Podcast"

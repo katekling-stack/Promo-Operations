@@ -1,0 +1,127 @@
+# Support plan for the Frisco King - USA promo campaign.
+#
+# This is the kickoff worked example. It is modeled on the FreeWheel campaign:
+#   https://cbsi-mrm.freewheel.tv/app/520311/advertising/campaigns/86543608/?insertion_order_id=92725144
+#
+# The `advertiser`/`campaign` fields identify where the Order goes in FreeWheel.
+# Anything left null is meant to be resolved live (from FreeWheel by VCBS name
+# filter, or from the Salesforce Case) — see docs/ROADMAP.md.
+
+promoted_title: "Frisco King"
+region: USA
+brand: paramount_network          # -> config/brands.yaml
+
+# Where this lands in FreeWheel. advertiser_name_contains narrows the VCBS list.
+advertiser:
+  name_contains: ["VCBS"]
+  resolved_id: null               # filled at push time via freewheel.find_advertisers()
+campaign:
+  name: "Frisco King - USA"
+  resolved_id: null
+  clone_from_template: true       # clone structure from brand template_campaign_id
+
+# Salesforce Case that originated this plan (source of truth going forward).
+salesforce_case: null
+
+flight:
+  start: null                     # e.g. 2026-07-14
+  end: null
+  code: "L1"                      # launch beat / flight code, used in naming
+
+# Formats to build. Each becomes one Placement per region.
+# `tiers` overrides config/tiers.yaml format_tier_defaults when present.
+formats:
+  - remnant_video                 # full tier stack (1-4)
+  - pause_ads                     # Tier 1 audience segments + Tiers 2 & 3
+
+# ---------------------------------------------------------------------------
+# Targeting inputs (from the support plan). The engine maps these onto tiers.
+# ---------------------------------------------------------------------------
+
+networks:
+  - "Paramount Network"
+
+genres:
+  - Drama
+  - Comedy
+  - Crime
+  - Western
+  - War
+  - Sports
+  - "Action/Adventure"
+  - News
+
+# Content-affinity showlist. Drives Tier 2 (showlist) and Tier 1 (each resolved to
+# a FreeWheel audience segment via the Audience Segments doc).
+showlist:
+  - "Tulsa King"
+  - "Landman"
+  - "Mayor of Kingstown"
+  - "Dutton Ranch"
+  - "Marshals"
+  - "Mobland"
+  - "The Madison"
+  - "Tracker"
+  - "NCIS: Tony & Ziva"
+  - "Sheriff Country"
+  - "Roofman"
+  - "Boston Blue"
+  - "Lioness"
+  - "Fire Country"
+  - "Dexter: Resurrection"
+  - "The Naked Gun"
+  - "NCIS: New York"
+  - "Novocaine"
+  - "NCIS"
+  - "The Contractor"
+  - "NCIS: Origins"
+  - "FBI"
+
+pluto:
+  categories:
+    - "True Crime"
+    - "Drama"
+    - "History & Science"
+    - "Movies - Action"
+    - "Entertainment - General"
+    - "Reality - Adventure"
+    - "Sports"
+  channels:
+    - "P+ Picks"
+    - "Paramount Movie Channel"
+    - "Westerns"
+    - "Rawhide"
+    - "PBR"
+    - "Gunsmoke"
+    - "Western TV"
+    - "Wanted: Dead or Alive"
+    - "Crime Drama"
+    - "Action Drama"
+    - "Criminal Minds"
+    - "Blue Bloods"
+    - "COPS"
+    - "Bar Rescue"
+    - "Top Gear"
+    - "ION"
+    - "Action"
+    - "Reaction"
+    - "Thrillers"
+    - "CSI"
+    - "CSI: NY"
+    - "CSI: Miami"
+    - "Law & Order"
+    - "SWAT"
+    - "Hometown Drama"
+    - "Universal Action"
+    - "Spike"
+    - "Dog The Bounty Hunter"
+    - "Ink Master"
+    - "Smokehouse"
+    - "Xtreme Outdoors"
+    - "50 Cent Action"
+    - "UFC"
+    - "CBS Sports HQ"
+
+# Optional Tier 1 / Tier 3 refinements. Sensible defaults are applied if omitted.
+pplus_user_states: ["New", "Light", "Medium", "Heavy"]
+demographics: null                # e.g. {age: "25-54", gender: "all"}

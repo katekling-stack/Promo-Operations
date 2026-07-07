@@ -1,0 +1,82 @@
+# Tiered Targeting Approach
+# Source: "Paramount Promo Ad Operations - Inventory & Targeting Strategy" deck, Slide 5
+# (+ the Targeting Capabilities slides for Video & Pause Ads).
+#
+# This file is the single source of truth for the tier structure. The targeting
+# engine (src/promo_ops/targeting.py) reads it and maps support-plan inputs onto
+# each tier's dimensions.
+#
+# Priority order: tier 1 is highest priority, tier 4 is filler.
+# `applies_to_regions: global` means all regions. A list restricts the tier.
+
+tiers:
+  - id: 1
+    name: "Highest Priority"
+    # Tier 1 is region-gated per the deck.
+    applies_to_regions: [USA, AU, CA, LATAM, BR]
+    dimensions:
+      # `source` tells the engine which support-plan input drives the dimension.
+      - key: audience_segments
+        label: "Audience targeting to capture viewership (DDA / Adobe Audience Manager)"
+        source: showlist          # resolved to FW audience segments via audience_segments.py
+      - key: prior_season_viewer
+        label: "Prior season viewer"
+        source: promoted_title
+      - key: home_carousel_recommendation
+        label: "P+ (Global) & Pluto TV (Domestic) home page carousel recommendation (Key Value)"
+        source: promoted_title
+      - key: pplus_user_state
+        label: "New / Light / Medium / Heavy users (P+ only)"
+        source: pplus_user_states # optional plan input; defaults applied if absent
+
+  - id: 2
+    name: "Medium Priority"
+    applies_to_regions: global
+    dimensions:
+      - key: content_affinity_showlist
+        label: "Content Affinity Showlist"
+        source: showlist
+      - key: pluto_channel_list
+        label: "Pluto TV Channel List"
+        source: pluto_channels
+      - key: ai_similar_title
+        label: "AI similar title recommendations via Periscope (AMLG-based)"
+        source: promoted_title
+
+  - id: 3
+    name: "Lower Priority"
+    applies_to_regions: global
+    dimensions:
+      - key: network
+        label: "Network / Brand"
+        source: networks
+      - key: genre
+        label: "Genre / Content"
+        source: genres
+      - key: pluto_category
+        label: "Pluto TV Category"
+        source: pluto_categories
+      - key: geo
+        label: "Geographic targeting"
+        source: region
+      - key: demographic
+        label: "Demographic (age / gender)"
+        source: demographics     # optional plan input
+
+  - id: 4
+    name: "Filler"
+    applies_to_regions: global
+    dimensions:
+      - key: run_of_network_except_promoted
+        label: "Everywhere except the Channel or Title being promoted"
+        source: promoted_title   # used as an exclusion
+
+# Which tiers each format uses. Per the kickoff:
+#   Remnant Video uses the full tier stack.
+#   Pause Ads mirror Tiers 1-3 (Tier 1 audience segments + Tiers 2 & 3 inputs).
+# Adjust per campaign in the support plan (`formats[].tiers` overrides this).
+format_tier_defaults:
+  remnant_video: [1, 2, 3, 4]
+  pause_ads: [1, 2, 3]
+  remnant_display: [3]     # display has no tier hierarchy; genre/geo/site only
+  podcast: []              # show/brand/episode specific, no tiers
