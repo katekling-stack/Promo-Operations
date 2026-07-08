@@ -94,12 +94,28 @@ def test_guaranteed_placement_named_by_content_id():
     assert prem2.name == "Frisco King [MovieID:12345]"
 
 
-def test_placements_carry_priority_and_freq_cap():
+def test_priority_by_tier_and_duration():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
+
+    def pr(fmt, tier, dur):
+        return next(p.priority_level for p in order.placements
+                    if p.format == fmt and p.tier == tier and p.duration == dur)
+
+    assert pr("remnant_video", 1, 30) == 1    # tier1 :30 -> base 1 + 0
+    assert pr("remnant_video", 1, 15) == 2    # tier1 :15 -> base 1 + 1
+    assert pr("remnant_video", 2, 15) == 5    # tier2 :15 -> base 4 + 1
+    assert pr("remnant_video", 3, 30) == 7    # tier3 :30 -> base 7 + 0
+    t4 = next(p for p in order.placements if p.format == "remnant_video" and p.tier == 4)
+    assert t4.priority_level == 10
+    assert t4.frequency_cap == "1 per hr"
+
     t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
-    assert t1.priority_level == 1
-    assert t1.frequency_cap == "1 per 30 min / 20 per month"
+    assert t1.frequency_cap == "1 per 30 min"
+
+    prem = next(p for p in order.placements if p.format == "premium_preroll")
+    assert prem.priority_level == "SPONSORSHIP"
+    assert prem.frequency_cap == "1 per day"
 
 
 def test_order_carries_template_ref():

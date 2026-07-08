@@ -1,33 +1,47 @@
 # Per-placement priority levels + frequency caps.
 #
-# Seeded from the Inventory & Targeting Strategy deck and the structure of the
-# "Global Digital O&O — Promo Settings Reference" sheet
-# (https://docs.google.com/spreadsheets/d/1KJx7jHIVia7Xs5-_Lkug5fx6DF6C8NDDpYC49gh1mDU).
+# CONFIRMED from the "Global Digital O&O — Promo Settings Reference" sheet,
+# tab "Tiered – Domestic" (US), for Paramount O&O + Pluto TV video and pause ads.
+# https://docs.google.com/spreadsheets/d/1KJx7jHIVia7Xs5-_Lkug5fx6DF6C8NDDpYC49gh1mDU
 #
-# CONFIRM the exact ad-server priority values per tier/platform against that sheet's
-# "Tiered – Domestic" / "Tiered – International" tabs and refine below.
+# Priority is a NUMBER derived from (tier, duration bucket):
+#   Tier 1 -> base 1, Tier 2 -> base 4, Tier 3 -> base 7  (+ duration offset)
+#   duration offset: :30-:90 = 0, :15 = 1, :20/:10 = 2
+#   Tier 4 -> 10 (all durations)
+# e.g. Tier 1 :30 = 1, Tier 1 :15 = 2, Tier 2 :15 = 5, Tier 3 :20 = 9, Tier 4 = 10.
 
-# Relative priority per tier (1 = highest). Mapped to the ad server's priority scheme
-# at push time. Tier 1 is highest priority (runs below paying ads).
-priority_by_tier:
+priority_base_by_tier:
   1: 1
-  2: 2
-  3: 3
-  4: 4
+  2: 4
+  3: 7
+tier4_priority: 10
 
-# Guaranteed formats get their own priority (above remnant tiers).
-priority_by_format:
-  premium_preroll: sponsorship
-  essential_bumper: sponsorship
+# Duration buckets -> offset added to the tier base.
+duration_offsets:
+  "30": 0
+  "45": 0
+  "60": 0
+  "90": 0
+  "15": 1
+  "20": 2
+  "10": 2
+default_duration_offset: 0
 
-# Frequency caps. Deck standard: 1 per 30 min / 20 per month.
+# Guaranteed formats (Premium Pre-Roll, Essential Bumper) run at sponsorship priority.
+guaranteed_priority: "SPONSORSHIP"
+
+# Frequency caps.
 frequency_caps:
-  default: "1 per 30 min / 20 per month"
-  by_format:
-    remnant_video: "1 per 30 min / 20 per month"
-    pause_ads: "1 per 30 min / 20 per month"
+  by_tier:
+    1: "1 per 30 min"
+    2: "1 per 30 min"
+    3: "1 per 30 min"
+    4: "1 per hr"
+  by_format:                       # guaranteed overrides (from the O&O video section)
+    premium_preroll: "1 per day"
+    essential_bumper: "1 per 2 hrs"
+  default: "1 per 30 min"
 
-# Creative duration handling for video.
-# Deck priority order: :30 > :45/:60 > :15 > :20/:10.
-duration_priority: [30, 45, 60, 15, 20, 10]
+# Creative duration priority order (deck): :30 > :45/:60 > :15 > :20/:10.
+duration_priority: [30, 45, 60, 90, 15, 20, 10]
 default_durations: [30, 15]

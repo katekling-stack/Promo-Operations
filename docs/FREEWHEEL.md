@@ -66,10 +66,42 @@ nested). See ROADMAP — the builder's placement granularity is the open design 
 primary_sales_person, primary_trafficker, stage (BOOKED), schedule{start_time,
 end_time, time_zone}, currency (USD), budget`.
 
-**Placement** (`show-a-placement` / create `POST /services/v3/placement/create`):
-`insertion_order_id, name, description, placement_type (PROMO), external_id,
-instruction`. Targeting is a separate resource (not inlined in placement show) —
-still to be captured before live create of targeted placements.
+**Placement** (`show-a-placement` returns only name/type/status; the full targeting
+lives in the **create body** `POST /services/v3/placement/create`). Confirmed body
+sections and how our tier dimensions map onto them:
+
+| Placement body field | Sub-shape | Fed by |
+|---|---|---|
+| `delivery.priority` | string/number | tier × duration priority (see scheme below) |
+| `delivery.frequency_cap` | `[{value, type, period}]` | per-tier cap (T1-3 1/30min, T4 1/hr) |
+| `schedule` | `{start_time, end_time, time_zone}` | flight |
+| `audience_targeting.include.audience_item` | `[int64]` | **Tier 1** audience segment IDs (from the Audience Segments doc) |
+| `custom_targeting.{set,match}` | key/value | Tier 1 recommended_show (Periscope key value) |
+| `content_targeting.{network_items, standard_attributes, ron, inventory_packages}` | | Tier 2 showlist / Pluto channels; Tier 3 network/genre/category; Tier 4 RON |
+| `geography_targeting.{include, exclude}` | | Tier 3 geo (region) |
+| `platform_targeting.{device, os, ...}` | | endpoints (Desktop/Mobile/CTV) |
+| exclusions | content/audience exclude | promoted show (label) — every placement |
+
+`content_targeting.standard_attributes` reference FreeWheel **Standard Attribute**
+IDs (genre / show / network / Pluto category). Those IDs come from the FreeWheel
+Standard Attributes sheet / Site API and are the remaining lookup to wire before a
+fully-targeted live create. Audience segment IDs, geo, priority, caps, schedule and
+exclusions are all mapped.
+
+## Priority + frequency-cap scheme (Tiered – Domestic, US)
+
+Confirmed from the Promo Settings Reference "Tiered – Domestic" tab. Priority is a
+number = tier base + duration offset:
+
+| Tier | :30–:90 | :15 | :20/:10 | Freq cap |
+|---|---|---|---|---|
+| 1 | 1 | 2 | 3 | 1 per 30 min |
+| 2 | 4 | 5 | 6 | 1 per 30 min |
+| 3 | 7 | 8 | 9 | 1 per 30 min |
+| 4 | 10 | 10 | 10 | 1 per hr |
+
+Guaranteed (Premium Pre-Roll / Essential Bumper) = **SPONSORSHIP** priority
+(Premium cap 1/day, Essential cap 1 per 2 hrs). Encoded in `config/priorities.yaml`.
 
 ## Verified endpoints / tool names
 

@@ -54,15 +54,30 @@ class OrderBuilder:
 
     # --- caps / priority ------------------------------------------------- #
 
-    def _freq_cap(self, fmt: str) -> str:
+    def _freq_cap(self, tier_id: Optional[int], fmt: str) -> str:
         caps = self._priorities.get("frequency_caps", {})
-        return caps.get("by_format", {}).get(fmt) or caps.get("default")
+        by_fmt = caps.get("by_format", {}).get(fmt)
+        if by_fmt:
+            return by_fmt
+        if tier_id is not None:
+            per_tier = caps.get("by_tier", {}).get(tier_id)
+            if per_tier:
+                return per_tier
+        return caps.get("default")
 
-    def _priority_for_tier(self, tier_id: int):
-        return self._priorities.get("priority_by_tier", {}).get(tier_id)
+    def _priority(self, tier_id: int, duration: Optional[int]):
+        """Priority number = tier base + duration offset (Tier 4 = flat)."""
+        if tier_id == 4:
+            return self._priorities.get("tier4_priority", 10)
+        base = self._priorities.get("priority_base_by_tier", {}).get(tier_id)
+        if base is None:
+            return None
+        offsets = self._priorities.get("duration_offsets", {})
+        offset = offsets.get(str(duration), self._priorities.get("default_duration_offset", 0))
+        return base + offset
 
-    def _priority_for_format(self, fmt: str):
-        return self._priorities.get("priority_by_format", {}).get(fmt)
+    def _guaranteed_priority(self):
+        return self._priorities.get("guaranteed_priority", "SPONSORSHIP")
 
     def _durations(self, plan: SupportPlan) -> list[int]:
         return plan.durations or list(self._priorities.get("default_durations", [30]))
@@ -92,8 +107,8 @@ class OrderBuilder:
                 TieredTargeting(format=fmt),
                 guaranteed=True,
                 arguments={"genre": list(plan.genres), "recommended_show": recommended},
-                priority_level=self._priority_for_format(fmt),
-                frequency_cap=self._freq_cap(fmt),
+                priority_level=self._guaranteed_priority(),
+                frequency_cap=self._freq_cap(None, fmt),
             )]
 
         targeting = self.engine.build(plan, fmt)
@@ -111,8 +126,8 @@ class OrderBuilder:
                     tier=tier.id,
                     duration=dur,
                     season_or_messaging=plan.season_or_messaging,
-                    priority_level=self._priority_for_tier(tier.id),
-                    frequency_cap=self._freq_cap(fmt),
+                    priority_level=self._priority(tier.id, dur),
+                    frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
                 ))
         return placements
