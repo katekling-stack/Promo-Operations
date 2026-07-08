@@ -1,0 +1,38 @@
+# Ad units + IO-level frequency caps.
+# Source: "Global Digital O&O — Promo Settings Reference" -> "Ad Units – Domestic" tab.
+#
+# KEY: Frequency caps are set at the INSERTION ORDER level (not per placement).
+# Ad units are named inventory assigned to placements (the ad_product on a placement).
+# The exact FreeWheel write structure for assigning ad units + IO caps is pending the
+# API docs — this file captures WHAT to apply; the how gets wired when docs arrive.
+
+# IO-level frequency caps
+io_frequency_caps:
+  adults: ["20 per 1 Month", "1 per 30 Minutes"]
+  kids: ["1 per 15 Minutes"]
+
+# Ad unit names by platform group (domestic).
+ad_units:
+  pplus_cbs_pluto_vcbs:        # P+ / LOCAL / VCBS / Pluto Live & VOD
+    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  mtve_bet_vh1:                # MTVE / BET / VH1 (domestic)
+    - "Viacom_Promo_Pre_Roll"
+    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  nick:                        # Nick / Nick Jr. (domestic, kids)
+    - "Viacom_NickJR_Promo_Pre_Roll"
+    - "ViacomCBS_Kids_Promo_Mid_Roll"
+    - "ViacomCBS_Kids_Promo_Pre_Roll"
+    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  pause_ads:
+    - "Pause_Ad"
+
+# Which ad-unit group each format uses (domestic remnant/promo).
+format_ad_unit_group:
+  remnant_video: pplus_cbs_pluto_vcbs
+  pause_ads: pause_ads
