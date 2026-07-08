@@ -25,7 +25,7 @@ formats:
   pause_ads:
     format_code: "PAUSE"
     display_name: "Non-Guaranteed Pause Ads"
-    naming: "{promoted_title} - {region} - Pause Ads"
+    name_token: "Pause Ad"          # appears in the placement name (no duration)
     endpoints: ["Desktop", "CTV"]
     spec: "1018x674 PNG"
     platforms: ["Paramount+", "CBS", "BET (CTV)", "Pluto TV (VOD)"]

@@ -42,9 +42,11 @@ class OrderBuilder:
     # --- naming ---------------------------------------------------------- #
 
     @staticmethod
-    def _tier_name(title, season, duration, tier, region) -> str:
-        # {title} - {season} - {duration} - Tier N - {region}, skipping blanks.
-        parts = [title, season, (str(duration) if duration else None), f"Tier {tier}", region]
+    def _tier_name(title, season, duration, tier, region, token=None) -> str:
+        # {title} - {season} - {duration|token} - Tier N - {region}, skipping blanks.
+        # Video uses the duration; formats without a duration (e.g. Pause Ad) use token.
+        slot = str(duration) if duration else token
+        parts = [title, season, slot, f"Tier {tier}", region]
         return " - ".join(p for p in parts if p)
 
     @staticmethod
@@ -114,12 +116,13 @@ class OrderBuilder:
         targeting = self.engine.build(plan, fmt)
         uses_durations = bool(tmpl.get("uses_durations"))
         durations = self._durations(plan) if uses_durations else [None]
+        name_token = tmpl.get("name_token")   # e.g. "Pause Ad" for non-duration formats
 
         placements: list[Placement] = []
         for tier in targeting.tiers:
             for dur in durations:
                 name = self._tier_name(plan.promoted_title, plan.season_or_messaging,
-                                       dur, tier.id, plan.region)
+                                       dur, tier.id, plan.region, token=name_token)
                 placements.append(base(
                     name,
                     TieredTargeting(format=fmt, tiers=[tier]),   # one tier per placement
