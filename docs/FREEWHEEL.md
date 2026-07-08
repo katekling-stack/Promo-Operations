@@ -4,6 +4,21 @@ Validated read-only against the **Streaming Hub** (`shmcp.freewheel.com`) on the
 **production** network (520311) using the `AdOps.api@520311` account. No writes were
 made.
 
+## Write validation (test network 520310)
+
+End-to-end write path validated read/create/delete, no residue:
+- create Insertion Order (`sh_1_1_create-an-insertion-order`, body = JSON object) →
+  created `NOT_BOOKED` (draft). ✓
+- create Placement (`sh_1_0_create-a-placement`, body = JSON object, `placement_type`
+  `PROMO`). ✓
+- delete Insertion Order (`sh_1_1_delete-an-insertion-order`) → **cascades** to its
+  placements (both 404 after). ✓ Use IO-delete for cleanup; the direct placement
+  DELETE errors "json is not supported" via the gateway.
+
+Test network has no VCBS/promo data (load-test env), so the real Frisco King create
+(with the actual advertiser 1000520 / campaign 86543608 / series / segments) is a
+production (520311) action, created as a draft for review.
+
 ## Access model
 
 `shmcp.freewheel.com` is FreeWheel's **Streaming Hub MCP server** (309 tools). It is

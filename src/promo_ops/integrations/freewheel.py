@@ -249,11 +249,23 @@ class FreeWheelClient:
 
     # --- writes ---------------------------------------------------------- #
 
+    def delete_insertion_order(self, io_id: str) -> dict[str, Any]:
+        """Delete an IO. NOTE: this CASCADES to its placements (validated on test).
+
+        Prefer this for cleanup — the direct placement DELETE currently errors
+        ("json is not supported") via the gateway, but removing the IO removes its
+        placements too.
+        """
+        return self._invoke("sh_1_1_delete-an-insertion-order", insertion_order_id=int(io_id))
+
     def create_order(self, order: Order, dry_run: bool = True) -> dict[str, Any]:
         """Create the Insertion Order + per-tier Placements under the parent campaign.
 
         dry_run=True (default) returns the exact calls it would make. dry_run=False
         resolves the campaign, creates the IO, then creates placements.
+
+        Validated on the test network (520310): create-IO and create-placement accept
+        JSON object bodies via the gateway; IO is created NOT_BOOKED (draft).
         """
         plan = self.to_freewheel_plan(order)
         if dry_run:
