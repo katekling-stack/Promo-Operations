@@ -56,6 +56,7 @@ class SupportPlan:
     advertiser: dict[str, Any] = field(default_factory=dict)
     campaign: dict[str, Any] = field(default_factory=dict)
     insertion_order_name: Optional[str] = None
+    brand_id: Optional[str] = None       # FreeWheel brand_id (from the reference IO)
     salesforce_case: Optional[str] = None
 
     def source_value(self, source: str) -> Any:

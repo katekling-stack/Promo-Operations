@@ -14,14 +14,15 @@ brand: paramount_network          # -> config/brands.yaml
 # Where this lands in FreeWheel: a new Insertion Order nested under an existing
 # Campaign, under a VCBS Advertiser.
 advertiser:
-  name: ""                        # exact VCBS advertiser name (fill from FreeWheel)
+  name: "VCBS English - USA - Adult (Promo)"   # verified live
   name_contains: ["VCBS"]
-  resolved_id: null               # filled at push time via freewheel.find_advertisers()
+  resolved_id: "1000520"          # verified live
 campaign:
   name: "Paramount + - USA"       # EXISTING parent campaign the IO nests under
-  resolved_id: null
-  clone_from_template: true       # clone structure from brand template_campaign_id
+  resolved_id: "86543608"         # verified live (matches kickoff reference URL)
+  clone_from_template: true       # model off IO 92725144 (Dutton Ranch - USA)
 insertion_order_name: "Frisco King - USA"   # the new IO for this show/flight
+brand_id: "346378"                # from reference IO 92725144
 
 # FreeWheel "Recommended Show" Key Value — feeds Tier 1 carousel targeting and the
 # Premium Pre-Roll / Essential recommended-show argument. Defaults to promoted_title.

@@ -107,6 +107,7 @@ class OrderBuilder:
                 "template_campaign_id": brand_cfg.get("template_campaign_id"),
                 "template_io_id": brand_cfg.get("template_io_id"),
                 "advertiser_name_contains": brand_cfg.get("advertiser_name_contains"),
+                "brand_id": plan.brand_id,
             },
         )
 

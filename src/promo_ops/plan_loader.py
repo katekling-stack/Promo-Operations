@@ -49,6 +49,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         advertiser=raw.get("advertiser") or {},
         campaign=raw.get("campaign") or {},
         insertion_order_name=raw.get("insertion_order_name"),
+        brand_id=raw.get("brand_id"),
         salesforce_case=raw.get("salesforce_case"),
     )
 

@@ -1,257 +1,237 @@
-"""FreeWheel client (Streaming Hub — shmcp.freewheel.com).
+"""FreeWheel Streaming Hub client — verified against the live API.
 
-Confirmed against the Streaming Hub MCP reference (shmcp.freewheel.com/reference):
+Transport and object model were confirmed read-only against shmcp.freewheel.com
+(production network 520311). See docs/FREEWHEEL.md for the full findings.
 
-FreeWheel object hierarchy:  Advertiser -> Campaign -> Insertion Order -> Placement
-Our model maps as:           advertiser -> campaign -> Order (= Insertion Order)
-                                                        -> Placement(s)
+  Auth:      OAuth 2.1 PKCE (register -> authorize+csrf -> login -> token) -> JWT
+  Transport: POST /mcp JSON-RPC; call `invoke_tool` with {tool_name, parameters}
+  Hierarchy: Advertiser -> Campaign -> Insertion Order -> Placement (per Tier)
 
-Confirmed V3 REST endpoints (base path /services/v3):
-  Advertisers   GET  /services/v3/advertisers                         (list; filter VCBS)
-                GET  /services/v3/advertisers/{id}
-  Campaigns     GET  /services/v3/campaigns
-                POST /services/v3/campaign
-                GET  /services/v3/campaign/{id}
-                GET  /services/v3/campaign/{id}/insertion_orders
-  Insertion     GET  /services/v3/insertion_orders
-  Orders        POST /services/v3/campaign/{campaign_id}/insertion_order
-                GET  /services/v3/insertion_order/{id}
-                GET  /services/v3/insertion_order/{id}/placements
-                PUT  /services/v3/insertion_order/{id}/book         (activate/book)
-  Placements    GET  /services/v3/placements
-                POST /services/v3/placement/create
-                GET  /services/v3/placement/{id}
-                PUT  /services/v3/placement/{id}/activate
-
-IMPORTANT: V3 endpoints take **XML** request bodies (V4 take JSON). See
-`# XML-SCHEMA:` markers — the exact XML element names for create Campaign / IO /
-Placement / targeting still need to be confirmed from the OpenAPI spec or a live
-call, since the reference lists paths/methods but not full V3 bodies.
-
-Auth: two options.
-  (A) Custom Connector (recommended) — connect shmcp.freewheel.com to Claude via
-      OAuth 2.1 PKCE; the 309 tools become directly available and creds never touch
-      code. Preferred for interactive building/validation.
-  (B) Programmatic — sealed-box login (streaming_hub_get_login_public_key +
-      streaming_hub_login_encrypted with {environment, username, password}) to get a
-      session_id, then invoke_tool. Preferred for headless automation. Implemented
-      below; requires pynacl for the sealed box.
-
-Environment values: "production" or "staging" (test network 520310 = staging).
+Reads (find_advertisers, resolve_campaign_id, get_insertion_order, list_placements)
+are verified working. Writes (create IO / placement) build the confirmed field sets;
+the placement *targeting* body is the one remaining item to capture before a live
+targeted create — marked `# TODO(targeting)`.
 """
 
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
+import re
+import secrets
 from typing import Any, Optional
+from urllib.parse import parse_qs, urljoin, urlparse
 
 import requests
 
 from ..config import env, require_env
 from ..models import Order
 
-STREAMING_HUB_URL = "https://shmcp.freewheel.com"
+HUB_URL = "https://shmcp.freewheel.com"
+REDIRECT_URI = "http://localhost/callback"
+
+
+def _b64url(raw: bytes) -> str:
+    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
 
 
 class FreeWheelClient:
     def __init__(self):
-        self.hub_url = env("FREEWHEEL_HUB_URL", STREAMING_HUB_URL).rstrip("/")
+        self.hub_url = env("FREEWHEEL_HUB_URL", HUB_URL).rstrip("/")
         self.network_id = require_env("FREEWHEEL_NETWORK_ID")
-        self.environment = env("FREEWHEEL_ENVIRONMENT", "staging")  # staging|production
+        self.environment = env("FREEWHEEL_ENVIRONMENT", "production")  # production|staging
         self._username = require_env("FREEWHEEL_USERNAME")
         self._password = require_env("FREEWHEEL_PASSWORD")
         self.advertiser_filter = env("FREEWHEEL_ADVERTISER_NAME_FILTER", "VCBS")
         self._session = requests.Session()
-        self._session_id: Optional[str] = None
+        self._session.headers["User-Agent"] = "promo-ops/0.1"
+        self._token: Optional[str] = None
+        self._tool_name_cache: dict[str, str] = {}
 
-    # --- auth (option B: sealed-box programmatic login) ------------------ #
-
-    def _call_tool(self, tool_name: str, parameters: dict[str, Any]) -> Any:
-        """Invoke a Streaming Hub MCP tool via the invoke_tool gateway."""
-        payload = {"tool_name": tool_name, "parameters": parameters}
-        if self._session_id:
-            payload["session_id"] = self._session_id
-        resp = self._session.post(
-            f"{self.hub_url}/invoke_tool",  # CONFIRM: MCP transport (JSON-RPC /mcp)
-            json=payload,
-            timeout=60,
-        )
-        resp.raise_for_status()
-        return resp.json()
+    # --- auth (OAuth 2.1 PKCE) ------------------------------------------ #
 
     def authenticate(self) -> str:
-        """Sealed-box login → session_id. Requires pynacl."""
-        try:
-            from nacl.public import PublicKey, SealedBox
-        except ImportError as exc:  # pragma: no cover
-            raise RuntimeError(
-                "pynacl not installed (needed for FreeWheel sealed-box login). "
-                "Run: pip install pynacl"
-            ) from exc
-        import base64
+        s = self._session
+        client_id = s.post(
+            f"{self.hub_url}/oauth/register",
+            json={"client_name": "promo-ops", "redirect_uris": [REDIRECT_URI],
+                  "grant_types": ["authorization_code", "refresh_token"],
+                  "response_types": ["code"], "token_endpoint_auth_method": "none"},
+            timeout=30,
+        ).json()["client_id"]
 
-        key_info = self._call_tool("streaming_hub_get_login_public_key", {})
-        public_key_b64 = key_info["public_key_b64"]
-        plaintext = json.dumps({
-            "environment": self.environment,
-            "username": self._username,
-            "password": self._password,
-        }).encode()
-        sealed = SealedBox(PublicKey(base64.b64decode(public_key_b64))).encrypt(plaintext)
-        ciphertext = base64.b64encode(sealed).decode()
+        verifier = _b64url(secrets.token_bytes(48))
+        challenge = _b64url(hashlib.sha256(verifier.encode()).digest())
+        state = _b64url(secrets.token_bytes(12))
 
-        result = self._call_tool("streaming_hub_login_encrypted", {"ciphertext": ciphertext})
-        self._session_id = result["session_id"]
-        return self._session_id
+        r = s.get(f"{self.hub_url}/oauth/authorize", params={
+            "response_type": "code", "client_id": client_id, "redirect_uri": REDIRECT_URI,
+            "code_challenge": challenge, "code_challenge_method": "S256", "state": state},
+            allow_redirects=True, timeout=30)
+        csrf = parse_qs(urlparse(r.url).query).get("csrf_token", [None])[0]
+
+        r = s.post(f"{self.hub_url}/oauth/login", data={
+            "username": self._username, "password": self._password,
+            "environment": self.environment, "csrf_token": csrf},
+            allow_redirects=False, timeout=30)
+        code, loc, hops = None, r.headers.get("Location"), 0
+        while loc and hops < 5:
+            if "code=" in loc:
+                code = parse_qs(urlparse(loc).query).get("code", [None])[0]
+                break
+            r = s.get(urljoin(self.hub_url, loc), allow_redirects=False, timeout=30)
+            loc, hops = r.headers.get("Location"), hops + 1
+        if not code:
+            raise RuntimeError("FreeWheel login failed (no auth code). Check credentials/environment.")
+
+        tok = s.post(f"{self.hub_url}/oauth/token", data={
+            "grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT_URI,
+            "client_id": client_id, "code_verifier": verifier}, timeout=30).json()
+        self._token = tok.get("access_token")
+        if not self._token:
+            raise RuntimeError(f"FreeWheel token exchange failed: {tok}")
+        self._mcp("initialize", {"protocolVersion": "2024-11-05", "capabilities": {},
+                                 "clientInfo": {"name": "promo-ops", "version": "0.1"}})
+        return self._token
 
     def _ensure_auth(self) -> None:
-        if not self._session_id:
+        if not self._token:
             self.authenticate()
 
-    def _api(self, tool_name: str, **parameters: Any) -> Any:
-        """Call a v3/v4 API tool by its Streaming Hub tool name."""
-        self._ensure_auth()
-        return self._call_tool(tool_name, parameters)
+    # --- MCP transport --------------------------------------------------- #
 
-    # --- reads ----------------------------------------------------------- #
+    def _mcp(self, method: str, params: dict, id_: int = 1) -> Any:
+        resp = self._session.post(
+            f"{self.hub_url}/mcp",
+            headers={"Authorization": f"Bearer {self._token}",
+                     "Content-Type": "application/json",
+                     "Accept": "application/json, text/event-stream"},
+            json={"jsonrpc": "2.0", "id": id_, "method": method, "params": params},
+            timeout=60)
+        text = resp.text
+        if text.startswith("event:") or "data:" in text[:24]:
+            m = re.search(r"data:\s*(\{.*\})", text)
+            return json.loads(m.group(1)) if m else text
+        return resp.json()
+
+    def _invoke(self, tool_name: str, **parameters: Any) -> Any:
+        """Call an API tool via invoke_tool; unwrap the {ok,data} payload."""
+        self._ensure_auth()
+        r = self._mcp("tools/call", {"name": "invoke_tool",
+                                     "arguments": {"tool_name": tool_name, "parameters": parameters}})
+        try:
+            return json.loads(r["result"]["content"][0]["text"])
+        except (KeyError, TypeError, json.JSONDecodeError):
+            return r
+
+    @staticmethod
+    def _rows(payload: dict, plural: str) -> list[dict]:
+        """Normalize a V3 list payload: data.<plural>.<singular> -> list."""
+        data = (payload or {}).get("data", {})
+        coll = data.get(plural, {}) if isinstance(data, dict) else {}
+        if isinstance(coll, dict):
+            for v in coll.values():
+                if isinstance(v, list):
+                    return v
+                if isinstance(v, dict) and "id" in v:
+                    return [v]
+        return []
+
+    # --- reads (verified) ------------------------------------------------ #
 
     def find_advertisers(self, name_contains: Optional[list[str]] = None) -> list[dict[str, Any]]:
-        """List advertisers matching all `name_contains` fragments (default VCBS)."""
         fragments = name_contains or [self.advertiser_filter]
-        result = self._api("sh_1_1_list-advertisers")
-        advertisers = _items(result)
-        return [
-            a for a in advertisers
-            if all(f.lower() in str(a.get("name", "")).lower() for f in fragments)
-        ]
+        payload = self._invoke("sh_1_1_list-advertisers", name=fragments[0], per_page=50)
+        return [a for a in self._rows(payload, "advertisers")
+                if all(f.lower() in str(a.get("name", "")).lower() for f in fragments)]
 
-    def list_active_campaigns(self) -> list[dict[str, Any]]:
-        """List campaigns (filter active client-side; see `status`)."""
-        return _items(self._api("sh_1_1_list-campaigns"))
-
-    def get_campaign(self, campaign_id: str) -> dict[str, Any]:
-        return self._api("sh_1_1_show-a-campaign", campaign_id=campaign_id)
-
-    def _resolve_campaign_id(self, order: Order) -> Optional[str]:
-        """Find the existing campaign id by name (the IO's parent campaign)."""
-        target = (order.campaign.get("name") or "").strip().lower()
-        if not target:
-            return None
-        for c in self.list_active_campaigns():
-            if str(c.get("name", "")).strip().lower() == target:
-                return _id_of(c) or c.get("id")
+    def resolve_campaign_id(self, name: str) -> Optional[str]:
+        """Find an existing campaign id by exact name (the IO's parent)."""
+        payload = self._invoke("sh_1_1_list-campaigns", name=name.split(" - ")[0], per_page=50)
+        for c in self._rows(payload, "campaigns"):
+            if str(c.get("name", "")).strip() == name.strip():
+                return str(c.get("id"))
         return None
 
+    def get_insertion_order(self, io_id: str) -> dict[str, Any]:
+        return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id))
+
+    def list_placements(self, io_id: str) -> list[dict[str, Any]]:
+        payload = self._invoke("sh_1_1_list-insertion-order-placements",
+                               insertion_order_id=int(io_id), per_page=50)
+        return self._rows(payload, "placements")
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
-        """Fetch a campaign (and optionally an IO) to use as a region-code template."""
-        campaign = self.get_campaign(campaign_id)
+        out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:
-            campaign["_insertion_order"] = self._api(
-                "sh_1_1_get-a-insertion-order", insertion_order_id=io_id
-            )
-        return campaign
+            out["insertion_order"] = self.get_insertion_order(io_id)
+            out["placements"] = self.list_placements(io_id)
+        return out
 
     # --- writes ---------------------------------------------------------- #
 
     def create_order(self, order: Order, dry_run: bool = True) -> dict[str, Any]:
-        """Create the campaign's Insertion Order + Placements in FreeWheel.
+        """Create the Insertion Order + per-tier Placements under the parent campaign.
 
-        dry_run=True (default) returns the calls it *would* make; dry_run=False
-        executes: create/reuse campaign -> create IO -> create each placement.
+        dry_run=True (default) returns the exact calls it would make. dry_run=False
+        resolves the campaign, creates the IO, then creates placements.
         """
         plan = self.to_freewheel_plan(order)
         if dry_run:
             return {"dry_run": True, "planned_calls": plan}
 
-        # The IO nests under an EXISTING named campaign (e.g. "Paramount + - USA").
-        # Resolve it by id, else by name under the advertiser; we do NOT create it.
-        campaign_id = order.campaign.get("resolved_id") or self._resolve_campaign_id(order)
+        campaign_id = order.campaign.get("resolved_id") or self.resolve_campaign_id(
+            order.campaign.get("name", ""))
         if not campaign_id:
             raise RuntimeError(
-                f"Campaign {order.campaign.get('name')!r} not found under advertiser "
-                f"{order.advertiser.get('name') or order.advertiser.get('name_contains')!r}. "
-                f"Confirm the exact Advertiser + Campaign names in the plan."
-            )
+                f"Parent campaign {order.campaign.get('name')!r} not found. "
+                f"Confirm the exact Advertiser + Campaign names.")
 
-        io = self._api(
-            "sh_1_1_create-an-insertion-order",
-            campaign_id=campaign_id,
-            body=plan["insertion_order_body"],
-        )
-        io_id = _id_of(io)
+        io = self._invoke("sh_1_1_create-an-insertion-order",
+                          campaign_id=int(campaign_id), body=plan["insertion_order_body"])
+        io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
 
         placements = []
-        for pl_body in plan["placement_bodies"]:
-            placements.append(self._api("sh_1_1_create-a-placement", body=pl_body))
-
+        for body in plan["placement_bodies"]:
+            body["insertion_order_id"] = io_id  # TODO(targeting): add targeting body
+            placements.append(self._invoke("sh_1_0_create-a-placement", body=body))
         return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
 
     @staticmethod
     def to_freewheel_plan(order: Order) -> dict[str, Any]:
-        """Translate our Order into the FreeWheel call plan.
-
-        V3 bodies are XML strings. `# XML-SCHEMA:` marks where exact element names
-        must be confirmed from the OpenAPI spec / a live sample before going live.
-        The structured dicts below are the source of truth; `_to_v3_xml` renders
-        them to XML once the schema is confirmed.
-        """
-        # The IO nests under an existing campaign; we do not create a campaign.
+        """Build the FreeWheel call plan from our Order (confirmed field sets)."""
         parent = {
-            "advertiser_name": order.advertiser.get("name"),
-            "advertiser_name_contains": order.advertiser.get("name_contains"),
+            "advertiser": order.advertiser.get("name") or order.advertiser.get("name_contains"),
+            "advertiser_id": order.advertiser.get("resolved_id"),
             "campaign_name": order.campaign.get("name"),
+            "campaign_id": order.campaign.get("resolved_id"),
         }
-        insertion_order_body = {  # XML-SCHEMA: confirm <insertion_order> elements
-            "name": order.name,   # e.g. "Frisco King - USA"
-            "start_date": order.flight.start,
-            "end_date": order.flight.end,
+        insertion_order_body = {   # confirmed IO fields (see docs/FREEWHEEL.md)
+            "name": order.name,                       # e.g. "Frisco King - USA"
+            "brand_id": order.template_ref.get("brand_id"),
+            "stage": "BOOKED",
+            "currency": "USD",
+            "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
-        # Remnant placements attach to the new IO; guaranteed ones (Premium Pre-Roll,
-        # Essential) attach to an existing guaranteed order.
-        placement_bodies, guaranteed_bodies = [], []
+        # One placement per TIER per format (matches live naming:
+        # "{title} - {beat} - {duration} (Tier N) - {region}").
+        placement_bodies = []
         for p in order.placements:
-            body = {  # XML-SCHEMA: confirm <placement> + targeting + exclusions
-                "name": p.name,
-                "type": p.format_code,
-                "endpoints": p.endpoints,
-                "frequency_cap": p.frequency_cap,
-                "exclusions": p.exclusions,          # promoted show excluded everywhere
-                "targeting": [
-                    {
-                        "tier": t.id,
-                        "dimensions": [
-                            {"key": d.key, "values": d.values, "resolved_segments": d.resolved}
-                            for d in t.dimensions
-                        ],
-                    }
-                    for t in p.targeting.tiers
-                ],
-            }
-            if p.guaranteed:
-                body["arguments"] = p.arguments   # {genre, recommended_show}
-                guaranteed_bodies.append(body)
-            else:
-                placement_bodies.append(body)
+            tiers = p.targeting.tiers or [None]
+            for t in tiers:
+                tier_label = f" (Tier {t.id})" if t else ""
+                placement_bodies.append({
+                    "name": f"{p.name}{tier_label}",
+                    "placement_type": "PROMO",
+                    "exclusions": p.exclusions,       # promoted show excluded everywhere
+                    # TODO(targeting): render tier `t` dimensions into the targeting body
+                    "_tier": (t.id if t else None),
+                    "_dimensions": ([{"key": d.key, "values": d.values, "resolved": d.resolved}
+                                     for d in t.dimensions] if t else []),
+                })
         return {
             "parent": parent,
             "insertion_order_body": insertion_order_body,
             "placement_bodies": placement_bodies,
-            "guaranteed_placement_bodies": guaranteed_bodies,  # -> existing guaranteed order
         }
-
-
-def _items(result: Any) -> list[dict[str, Any]]:
-    """Normalize a list response (shape varies; adjust once confirmed live)."""
-    if isinstance(result, list):
-        return result
-    if isinstance(result, dict):
-        for key in ("items", "data", "advertisers", "campaigns", "results"):
-            if isinstance(result.get(key), list):
-                return result[key]
-    return []
-
-
-def _id_of(result: Any) -> Optional[str]:
-    if isinstance(result, dict):
-        return result.get("id") or result.get("_id") or (result.get("data") or {}).get("id")
-    return None
