@@ -139,9 +139,10 @@ def test_manual_tier1_audience_segments_applied():
     targeting = TargetingEngine().build(plan, "remnant_video")
     tier1 = next(t for t in targeting.tiers if t.id == 1)
     seg_dim = next(d for d in tier1.dimensions if d.key == "audience_segments")
-    names = [s["segment_name"] for s in seg_dim.resolved]
-    assert "High Stakes Drama Fans" in names
-    assert "Procedural Drama Fans" in names
+    ids = [s.get("segment_id") for s in seg_dim.resolved]
+    # manual groupings resolve to their FW segment IDs (from the seed doc)
+    assert "25995747" in ids   # High Stakes Drama Fans
+    assert "25995761" in ids   # Procedural Drama Fans
 
 
 def test_genres_resolve_to_standard_attribute_ids():

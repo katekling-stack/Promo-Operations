@@ -72,15 +72,17 @@ class TargetingEngine:
 
         if dim_cfg["key"] == "audience_segments":
             resolved: list[dict] = []
-            # 1. Segments named directly in the plan/sheet (Tier 1 section).
+            # 1. Segments named directly in the plan/sheet (Tier 1 section). Resolve to
+            #    an ID via the segment doc where possible (e.g. P+ groupings).
             for seg in plan.audience_segments:
-                resolved.append({
-                    "segment_name": seg,
-                    "segment_id": None,
-                    "platform": None,
-                    "region": plan.region,
-                    "source": "manual (sheet/plan)",
-                })
+                m = self.resolver.resolve(seg, region=plan.region)
+                if m.matched:
+                    resolved.extend(m.to_dict()["segments"])
+                else:
+                    resolved.append({
+                        "segment_name": seg, "segment_id": None,
+                        "region": plan.region, "source": "manual (sheet/plan)",
+                    })
             # 2. Segments auto-resolved from the showlist via the Audience Segments doc.
             matches = self.resolver.resolve_all(plan.showlist, region=plan.region)
             unresolved = []

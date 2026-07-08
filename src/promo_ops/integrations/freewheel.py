@@ -304,27 +304,76 @@ class FreeWheelClient:
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
-        # Placements are already per-tier from the builder (live naming:
-        # "{title} - {season} - {duration} - Tier N - {region}").
-        placement_bodies = []
-        for p in order.placements:
-            tier = p.targeting.tiers[0] if p.targeting.tiers else None
-            placement_bodies.append({
-                "name": p.name,
-                "placement_type": "PROMO",
-                "priority": p.priority_level,
-                "frequency_cap": p.frequency_cap,
-                "duration": p.duration,
-                "exclusions": p.exclusions,        # promoted show excluded everywhere
-                "guaranteed": p.guaranteed,
-                "arguments": p.arguments or None,  # guaranteed: {genre, recommended_show}
-                # TODO(targeting): render tier dimensions into the FW targeting body
-                "_tier": p.tier,
-                "_dimensions": ([{"key": d.key, "values": d.values, "resolved": d.resolved}
-                                 for d in tier.dimensions] if tier else []),
-            })
+        placement_bodies = [FreeWheelClient._placement_body(p) for p in order.placements]
         return {
             "parent": parent,
             "insertion_order_body": insertion_order_body,
             "placement_bodies": placement_bodies,
         }
+
+    @staticmethod
+    def _parse_freq_cap(cap: Optional[str]) -> list[dict[str, Any]]:
+        """'1 per 30 min' -> [{value:1, period:'30 minutes'}] (period tokens CONFIRM)."""
+        if not cap:
+            return []
+        m = re.match(r"\s*(\d+)\s*per\s*(.+)", cap, re.I)
+        if not m:
+            return [{"value": 1, "period": cap}]
+        return [{"value": int(m.group(1)), "period": m.group(2).strip(), "type": "IMPRESSION"}]
+
+    @staticmethod
+    def _placement_body(p) -> dict[str, Any]:
+        """Assemble the FreeWheel create-placement body from a built Placement.
+
+        Maps resolved tier dimensions onto the confirmed create-placement targeting
+        sections. `insertion_order_id` is set at create time. See docs/FREEWHEEL.md.
+        """
+        body: dict[str, Any] = {
+            "name": p.name,
+            "placement_type": "PROMO",
+            "delivery": {
+                "priority": str(p.priority_level) if p.priority_level is not None else None,
+                "frequency_cap": FreeWheelClient._parse_freq_cap(p.frequency_cap),
+            },
+        }
+        if p.guaranteed:
+            body["_guaranteed_args"] = p.arguments  # genre + recommended_show
+            return body
+
+        tier = p.targeting.tiers[0] if p.targeting.tiers else None
+        audience_items: list = []          # Tier 1 DDA + manual segments (numeric ids)
+        pending_segments: list = []        # segments known by name only (need id via sync)
+        series_ids: list = []              # Tier 2 showlist -> series
+        standard_attr_ids: list = []       # genre / network -> standard attribute ids
+        geo: list = []
+        for d in (tier.dimensions if tier else []):
+            if d.key == "audience_segments":
+                for r in d.resolved:
+                    (audience_items if r.get("segment_id") else pending_segments).append(
+                        r.get("segment_id") or r.get("segment_name"))
+            elif d.key == "content_affinity_showlist":
+                series_ids += [r["id"] for r in d.resolved if r.get("id")]
+            elif d.key in ("genre", "network"):
+                standard_attr_ids += [r["id"] for r in d.resolved if r.get("id")]
+            elif d.key in ("pluto_channel_list", "pluto_category"):
+                pending_segments += [r.get("segment_name") for r in d.resolved]
+            elif d.key == "geo":
+                geo += list(d.values)
+
+        targeting: dict[str, Any] = {}
+        if audience_items:
+            targeting["audience_targeting"] = {"include": {"audience_item": audience_items}}
+        content: dict[str, Any] = {}
+        if series_ids:
+            content["network_items"] = {"include": {"sets": [{"series": series_ids}]}}
+        if standard_attr_ids:
+            content["standard_attributes"] = standard_attr_ids
+        if content:
+            targeting["content_targeting"] = content
+        if geo:
+            targeting["geography_targeting"] = {"include": {"region": geo}}
+        body["targeting"] = targeting
+        body["exclusions"] = p.exclusions        # promoted show excluded everywhere
+        if pending_segments:
+            body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items
+        return body
