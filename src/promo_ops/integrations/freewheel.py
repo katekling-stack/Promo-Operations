@@ -191,21 +191,32 @@ class FreeWheelClient:
         with path.open("w", encoding="utf-8", newline="") as fh:
             w = _csv.writer(fh)
             w.writerow(["show", "segment_name", "segment_id", "platform", "region", "source"])
-            page = 1
+            page, total_pages, empty_retries = 1, None, 0
             while page <= max_pages:
                 payload = self._invoke("sh_1_0_list-audience-items", page=page, per_page=50)
-                # shape: data.AudienceItemsResp.audience_items.audience_item[]
                 ai = (((payload or {}).get("data") or {}).get("AudienceItemsResp") or {}).get("audience_items") or {}
                 items = ai.get("items") or ai.get("audience_item") or []
                 if isinstance(items, dict):
                     items = [items]
+                if total_pages is None:
+                    try:
+                        total_pages = int(ai.get("@total_page")) if ai.get("@total_page") else None
+                    except (TypeError, ValueError):
+                        total_pages = None
                 if not items:
+                    # Retry a transient empty page a few times before giving up.
+                    if empty_retries < 3 and (total_pages is None or page <= total_pages):
+                        empty_retries += 1
+                        continue
                     break
+                empty_retries = 0
                 for it in items:
                     name = it.get("name", "")
                     # Show name inferred from GL-DDA-1P-SHOW_<Show> convention.
                     show = name.split("SHOW_", 1)[1].replace("_", " ") if "SHOW_" in name else ""
                     w.writerow([show, name, it.get("id"), "DDA", "", "audience_items"])
+                if total_pages and page >= total_pages:
+                    break
                 page += 1
         return str(path)
 
