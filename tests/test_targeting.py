@@ -157,6 +157,31 @@ def test_genres_resolve_to_standard_attribute_ids():
     assert len(genre.resolved) == len(plan.genres)
 
 
+def test_pluto_channel_and_category_sg_naming():
+    plan = load_plan(FRISCO)
+    eng = TargetingEngine()
+    # Tier 2: Pluto channels -> SG: PlutoTV Channels: US: <channel>
+    t2 = next(t for t in eng.build(plan, "remnant_video").tiers if t.id == 2)
+    ch = next(d for d in t2.dimensions if d.key == "pluto_channel_list")
+    names = [r["segment_name"] for r in ch.resolved]
+    assert "SG: PlutoTV Channels: US: Gunsmoke" in names
+    assert "SG: PlutoTV Channels: US: CSI: NY" in names
+    # Tier 3: Pluto categories -> SG: PlutoTV Promo Category: <cat>: US
+    t3 = next(t for t in eng.build(plan, "remnant_video").tiers if t.id == 3)
+    cat = next(d for d in t3.dimensions if d.key == "pluto_category")
+    cnames = [r["segment_name"] for r in cat.resolved]
+    assert "SG: PlutoTV Promo Category: True Crime: US" in cnames
+
+    # International uses "PlutoTV Category" (no "Promo") with the region code.
+    intl = support_plan_from_dict({
+        "promoted_title": "X", "region": "UK", "formats": ["remnant_video"],
+        "pluto": {"categories": ["Sci-Fi"]},
+    })
+    t3i = next(t for t in eng.build(intl, "remnant_video").tiers if t.id == 3)
+    cati = next(d for d in t3i.dimensions if d.key == "pluto_category")
+    assert "SG: PlutoTV Category: Sci-Fi: UK" in [r["segment_name"] for r in cati.resolved]
+
+
 def test_recommended_show_feeds_tier1_carousel():
     plan = load_plan(FRISCO)
     targeting = TargetingEngine().build(plan, "remnant_video")

@@ -2,28 +2,37 @@
 # `tier1_eligible` mirrors the deck: "Tier 1 applies to USA, AU, CA, LATAM, BR
 # currently. Remainder of markets TBD."
 
+# `code` is the Region Code used in Pluto segment naming
+# ("SG: PlutoTV Channels: {code}: {channel}"). geo_codes are for geo targeting.
 regions:
   USA:
     name: "United States"
+    code: "US"
+    domestic: true              # Pluto category uses "Promo Category" prefix
     tier1_eligible: true
     geo_codes: ["US"]
   CA:
     name: "Canada"
+    code: "CA"
     tier1_eligible: true
     geo_codes: ["CA"]
   AU:
     name: "Australia"
+    code: "AU"
     tier1_eligible: true
     geo_codes: ["AU"]
   LATAM:
     name: "Latin America"
+    code: "LATAM"
     tier1_eligible: true
     geo_codes: ["MX", "AR", "CL", "CO", "PE"]  # representative; refine per market
   BR:
     name: "Brazil"
+    code: "BR"
     tier1_eligible: true
     geo_codes: ["BR"]
   UK:
     name: "United Kingdom"
+    code: "UK"
     tier1_eligible: false
     geo_codes: ["GB"]

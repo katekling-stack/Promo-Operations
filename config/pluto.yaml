@@ -1,0 +1,13 @@
+# Pluto TV segment naming conventions (SG = FreeWheel segment).
+#
+# Pluto targeting is segment-based, not FW channel/standard-attribute based.
+# {region_code} comes from config/regions.yaml `code` (US for domestic). The format
+# differs by region/advertiser but always follows these patterns.
+naming:
+  # Tier 2 — Pluto TV Channel List (same pattern all regions; region_code varies)
+  channel: "SG: PlutoTV Channels: {region_code}: {name}"
+  # Tier 3 — Pluto Category (Tier 3 only). Prefix differs domestic vs international:
+  #   domestic (US):    "SG: PlutoTV Promo Category: {name}: {region_code}"
+  #   international:     "SG: PlutoTV Category: {name}: {region_code}"  e.g. ...: Sci-Fi: SE
+  category_domestic: "SG: PlutoTV Promo Category: {name}: {region_code}"
+  category_international: "SG: PlutoTV Category: {name}: {region_code}"

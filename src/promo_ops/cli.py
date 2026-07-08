@@ -90,6 +90,8 @@ def _print_preview(order: Order) -> None:
                     suffix = ""
                     if d.resolved and d.resolved[0].get("id") is not None:
                         suffix = f"  [{len(d.resolved)}/{len(d.values)} resolved to FW IDs]"
+                    elif d.resolved and d.resolved[0].get("segment_name"):
+                        suffix = f'  [e.g. "{d.resolved[0]["segment_name"]}"]'
                     print(f"      • {d.key}: {preview}{more}{suffix}")
                     if d.notes and d.key != "audience_segments":
                         print(f"          ! {d.notes}")

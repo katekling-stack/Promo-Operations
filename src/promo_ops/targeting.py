@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import Optional
 
 from .audience_segments import AudienceSegmentResolver
-from .config import regions_config, tiers_config
+from .config import pluto_config, regions_config, tiers_config
 from .models import SupportPlan, Tier, TargetingDimension, TieredTargeting
 from .standard_attributes import DIMENSION_ATTRIBUTE_TYPE, StandardAttributeResolver
 
@@ -28,8 +28,15 @@ class TargetingEngine:
                  attr_resolver: Optional[StandardAttributeResolver] = None):
         self._tiers_cfg = tiers_config()
         self._regions_cfg = regions_config()
+        self._pluto_cfg = pluto_config()
         self.resolver = (resolver or AudienceSegmentResolver()).load()
         self.attr_resolver = (attr_resolver or StandardAttributeResolver()).load()
+
+    def _region_code(self, region: str) -> str:
+        return self._regions_cfg.get("regions", {}).get(region, {}).get("code", region)
+
+    def _is_domestic(self, region: str) -> bool:
+        return bool(self._regions_cfg.get("regions", {}).get(region, {}).get("domestic", False))
 
     # --- tier selection -------------------------------------------------- #
 
@@ -100,8 +107,22 @@ class TargetingEngine:
         elif value is not None:
             dim.values = [value]
 
-        # Resolve content dimensions (genre / network / Pluto category+channel) to
-        # FreeWheel Standard Attribute IDs. Unmatched names are surfaced, not guessed.
+        # Pluto channels/categories -> SG segment names by convention (config/pluto.yaml).
+        # Tier 2 = channels, Tier 3 = promo categories. Region code from regions.yaml.
+        naming = self._pluto_cfg.get("naming", {})
+        if dim_cfg["key"] in ("pluto_channel_list", "pluto_channel") and dim.values:
+            code = self._region_code(plan.region)
+            dim.resolved = [{"segment_name": naming["channel"].format(region_code=code, name=v),
+                             "source": "pluto"} for v in dim.values]
+        elif dim_cfg["key"] == "pluto_category" and dim.values:
+            code = self._region_code(plan.region)
+            pat = naming["category_domestic"] if self._is_domestic(plan.region) \
+                else naming["category_international"]
+            dim.resolved = [{"segment_name": pat.format(region_code=code, name=v),
+                             "source": "pluto"} for v in dim.values]
+
+        # Resolve content dimensions (genre / network) to FreeWheel Standard Attribute
+        # IDs. Unmatched names are surfaced, not guessed.
         if dim_cfg["key"] in DIMENSION_ATTRIBUTE_TYPE and dim.values:
             matches = self.attr_resolver.resolve_dimension(dim_cfg["key"], dim.values)
             dim.resolved = [
