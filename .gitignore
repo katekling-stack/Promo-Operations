@@ -24,3 +24,5 @@ googleads.yaml
 # Live syncs are regenerated; only seed_*.csv is committed.
 data/audience_segments/synced_*.csv
 data/standard_attributes/synced_*.csv
+data/geo/synced_*.csv
+data/ad_units/synced_*.csv

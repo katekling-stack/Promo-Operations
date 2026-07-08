@@ -2,9 +2,11 @@
 # Source: "Global Digital O&O — Promo Settings Reference" -> "Ad Units – Domestic" tab.
 #
 # KEY: Frequency caps are set at the INSERTION ORDER level (not per placement).
-# Ad units are named inventory assigned to placements (the ad_product on a placement).
-# The exact FreeWheel write structure for assigning ad units + IO caps is pending the
-# API docs — this file captures WHAT to apply; the how gets wired when docs arrive.
+# Ad units are named inventory assigned to a placement's ad_product
+# (ad_product.ad_unit_node[].ad_unit_id). These are the NAMES the team uses; the
+# tool resolves each to its FW ad-unit ID via the ad-unit table (data/ad_units,
+# refreshed by FreeWheelClient.sync_ad_units — verified against the live API, e.g.
+# Paramount House Preroll=71999, Midroll=72000, Postroll=72001, Pause_Ad=63413).
 
 # IO-level frequency caps
 io_frequency_caps:
@@ -14,19 +16,19 @@ io_frequency_caps:
 # Ad unit names by platform group (domestic).
 ad_units:
   pplus_cbs_pluto_vcbs:        # P+ / LOCAL / VCBS / Pluto Live & VOD
-    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Preroll"
     - "Paramount House Midroll"
     - "Paramount House Postroll"
   mtve_bet_vh1:                # MTVE / BET / VH1 (domestic)
     - "Viacom_Promo_Pre_Roll"
-    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Preroll"
     - "Paramount House Midroll"
     - "Paramount House Postroll"
   nick:                        # Nick / Nick Jr. (domestic, kids)
     - "Viacom_NickJR_Promo_Pre_Roll"
     - "ViacomCBS_Kids_Promo_Mid_Roll"
     - "ViacomCBS_Kids_Promo_Pre_Roll"
-    - "Paramount House Preroll (Below :30)"
+    - "Paramount House Preroll"
     - "Paramount House Midroll"
     - "Paramount House Postroll"
   pause_ads:
@@ -36,3 +38,7 @@ ad_units:
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
+  # premium_preroll / essential_bumper are GUARANTEED (sponsored) formats that run
+  # on the guaranteed order with sponsored ad units (e.g. PPlus_Sponsored_Pre_Roll).
+  # Left unmapped until the exact sponsored units are confirmed — the tool leaves
+  # them empty rather than guess. Add a group here + above once confirmed.

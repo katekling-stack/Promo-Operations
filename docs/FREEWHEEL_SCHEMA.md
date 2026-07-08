@@ -45,10 +45,15 @@ sync-and-match (like audience items), sourced live or from the docs:
 
 | Need | Source | Note |
 |---|---|---|
-| Country ID (US) | geo/country list | not in `content_territories`; find the geo taxonomy |
-| Ad unit IDs | `GET /services/v4/ad_units` or `/services/v3/ad_unit_nodes` | no name filter → sync |
+| Country ID (US=165) | Standard Attributes `content_territories` | **SOLVED**: IDs match the UI Add-New-Country panel exactly. `sync_countries()` → `data/geo`. Team selects by name; tool resolves name→ID. See docs/REGIONS.md. |
+| Ad unit IDs | `list-standard-and-custom-ad-units` (Ad Unit API v4) / `list-ad-unit-nodes` (V3) | no name filter → sync-and-match like countries |
 | Series IDs | Video Series (UI) vs standard-attribute series | confirm which namespace `content_targeting.series` accepts via one verified create |
 | Audience item IDs | `sync-audience-items` | working (GL-DDA-1P-SHOW_) |
+
+**Note on geo lookups**: the Streaming Hub has no dedicated geography/country
+reference endpoint (checked all 49 tool categories) and placement reads don't
+return targeting, so the country table is sourced from the `content_territories`
+standard-attribute type — confirmed to be the same namespace the geo UI uses.
 
 Every other API's schema is downloadable the same way (advertiser, campaign, IO, geo,
 ad units) — so the write path is now fully specifiable, not guesswork.

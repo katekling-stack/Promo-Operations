@@ -1,39 +1,45 @@
 # Region codes used in Order/Placement naming and geo targeting.
 # `tier1_eligible` mirrors the deck: "Tier 1 applies to USA, AU, CA, LATAM, BR
 # currently. Remainder of markets TBD."
-
+#
 # `code` is the Region Code used in Pluto segment naming
-# ("SG: PlutoTV Channels: {code}: {channel}"). geo_codes are for geo targeting.
+# ("SG: PlutoTV Channels: {code}: {channel}").
+#
+# GEO TARGETING: the team searches geography by NAME in FreeWheel (Add New
+# Country -> "United States"). `countries` lists the exact country NAME(s) to
+# select per region; the tool resolves each name to its FW country ID via the
+# country table (data/geo/*.csv, from `sync_countries`). See docs/REGIONS.md for
+# the region -> country selection guide (with FW IDs).
 regions:
   USA:
     name: "United States"
     code: "US"
     domestic: true              # Pluto category uses "Promo Category" prefix
     tier1_eligible: true
-    geo_codes: ["US"]
-    fw_country_ids: []          # FreeWheel geo country id(s) for "United States" (to fill)
+    countries: ["United States"]        # FW id 165
   CA:
     name: "Canada"
     code: "CA"
     tier1_eligible: true
-    geo_codes: ["CA"]
+    countries: ["Canada"]               # FW id 27
   AU:
     name: "Australia"
     code: "AU"
     tier1_eligible: true
-    geo_codes: ["AU"]
+    countries: ["Australia"]            # FW id 10
   LATAM:
     name: "Latin America"
     code: "LATAM"
     tier1_eligible: true
-    geo_codes: ["MX", "AR", "CL", "CO", "PE"]  # representative; refine per market
+    # Representative LATAM markets; refine per campaign brief.
+    countries: ["Mexico", "Argentina", "Chile", "Colombia", "Peru", "Brazil"]
   BR:
     name: "Brazil"
     code: "BR"
     tier1_eligible: true
-    geo_codes: ["BR"]
+    countries: ["Brazil"]               # FW id 21
   UK:
     name: "United Kingdom"
     code: "UK"
     tier1_eligible: false
-    geo_codes: ["GB"]
+    countries: ["United Kingdom"]       # FW id 56

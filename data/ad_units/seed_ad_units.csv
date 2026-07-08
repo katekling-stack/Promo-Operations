@@ -1,0 +1,198 @@
+name,id,status,source
+150x30,65854,ACTIVE,ad_unit_api_v4
+160x600,61115,ACTIVE,ad_unit_api_v4
+234x60,63415,ACTIVE,ad_unit_api_v4
+300x250,61117,ACTIVE,ad_unit_api_v4
+320x50,68385,ACTIVE,ad_unit_api_v4
+728x90,61116,ACTIVE,ad_unit_api_v4
+970x66,68384,ACTIVE,ad_unit_api_v4
+Any_Mid_Roll_Position_2,61798,ACTIVE,ad_unit_api_v4
+BETPlus_Commercial Free_Promo,67755,ACTIVE,ad_unit_api_v4
+BETPlus_LinearSkippable_Promo_Pre_Roll,67754,ACTIVE,ad_unit_api_v4
+CBS_Brand Bumper_Mid_Roll_First,61119,ACTIVE,ad_unit_api_v4
+CBS_Brand Bumper_Mid_Roll_Last,61123,ACTIVE,ad_unit_api_v4
+CBS_Brand Bumper_Pre_Roll,61107,ACTIVE,ad_unit_api_v4
+CBS_Promo_Pre_Roll,66704,ACTIVE,ad_unit_api_v4
+CBSNews_Audio,62469,IN_ACTIVE,ad_unit_api_v4
+CTA_Midroll_Bumper_Back,61890,IN_ACTIVE,ad_unit_api_v4
+CTA_Midroll_Bumper_Front,61888,IN_ACTIVE,ad_unit_api_v4
+DNU_mid_roll,74703,IN_ACTIVE,ad_unit_api_v4
+DNU_post_roll,74704,IN_ACTIVE,ad_unit_api_v4
+DNU_pre_roll,74702,IN_ACTIVE,ad_unit_api_v4
+fixed_mid1_posA,73680,ACTIVE,ad_unit_api_v4
+fixed_mid1_posB,73681,ACTIVE,ad_unit_api_v4
+fixed_mid1_posC,73682,ACTIVE,ad_unit_api_v4
+fixed_mid1_posD,73683,ACTIVE,ad_unit_api_v4
+fixed_mid1_posE,73684,ACTIVE,ad_unit_api_v4
+fixed_mid1_posF,73685,ACTIVE,ad_unit_api_v4
+fixed_mid2_posA,73767,ACTIVE,ad_unit_api_v4
+fixed_mid2_posB,73768,ACTIVE,ad_unit_api_v4
+fixed_mid2_posC,73769,ACTIVE,ad_unit_api_v4
+fixed_mid2_posD,73770,ACTIVE,ad_unit_api_v4
+fixed_mid2_posE,73771,ACTIVE,ad_unit_api_v4
+fixed_mid2_posF,73772,ACTIVE,ad_unit_api_v4
+fixed_mid3_posA,73773,ACTIVE,ad_unit_api_v4
+fixed_mid3_posB,73774,ACTIVE,ad_unit_api_v4
+fixed_mid3_posC,73775,ACTIVE,ad_unit_api_v4
+fixed_mid3_posD,73776,ACTIVE,ad_unit_api_v4
+fixed_mid3_posE,73777,ACTIVE,ad_unit_api_v4
+fixed_mid3_posF,73778,ACTIVE,ad_unit_api_v4
+fixed_mid4_posA,73779,ACTIVE,ad_unit_api_v4
+fixed_mid4_posB,73780,ACTIVE,ad_unit_api_v4
+fixed_mid4_posC,73781,ACTIVE,ad_unit_api_v4
+fixed_mid4_posD,73782,ACTIVE,ad_unit_api_v4
+fixed_mid4_posE,73783,ACTIVE,ad_unit_api_v4
+fixed_mid4_posF,73784,ACTIVE,ad_unit_api_v4
+fixed_mid5_posA,73785,ACTIVE,ad_unit_api_v4
+fixed_mid5_posB,73786,ACTIVE,ad_unit_api_v4
+fixed_mid5_posC,73787,ACTIVE,ad_unit_api_v4
+fixed_mid5_posD,73788,ACTIVE,ad_unit_api_v4
+fixed_mid5_posE,73789,ACTIVE,ad_unit_api_v4
+fixed_mid5_posF,73790,ACTIVE,ad_unit_api_v4
+fixed_mid6_posA,76643,ACTIVE,ad_unit_api_v4
+fixed_mid6_posB,76644,ACTIVE,ad_unit_api_v4
+fixed_mid6_posC,76645,ACTIVE,ad_unit_api_v4
+fixed_mid7_posA,76660,ACTIVE,ad_unit_api_v4
+Halo_Mid_Roll_1,68252,ACTIVE,ad_unit_api_v4
+Halo_Mid_Roll_2,68253,ACTIVE,ad_unit_api_v4
+Halo_Mid_Roll_3,68254,ACTIVE,ad_unit_api_v4
+Halo_Mid_Roll_4,68255,ACTIVE,ad_unit_api_v4
+hyldadoublebox,74569,ACTIVE,ad_unit_api_v4
+hyldalbar,74570,ACTIVE,ad_unit_api_v4
+hyldamidroll,74527,ACTIVE,ad_unit_api_v4
+Live Feed Disclaimer,61748,ACTIVE,ad_unit_api_v4
+Local_mid_roll,74700,ACTIVE,ad_unit_api_v4
+Local_post_roll,74699,ACTIVE,ad_unit_api_v4
+Local_pre_roll,74701,ACTIVE,ad_unit_api_v4
+Mid_Roll,61101,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 10_First,61144,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 10_Last,61145,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 11_First,61146,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 11_Last,61147,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 12_First,61148,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 12_Last,61149,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 13_First,61150,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 13_Last,61151,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 14_First,61152,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 14_Last,61153,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 15_First,61154,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 15_Last,61155,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 1_First,61126,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 1_Last,61127,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 1_Second,62335,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 2_First,61128,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 2_Last,61129,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 3_First,61130,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 3_Last,61131,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 4_First,61132,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 4_Last,61133,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 5_First,61134,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 5_Last,61135,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 6_First,61136,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 6_Last,61137,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 7_First,61138,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 7_Last,61139,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 8_First,61140,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 8_Last,61141,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 9_First,61142,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break 9_Last,61143,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break _1_Any,72373,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break_Any_First,61609,ACTIVE,ad_unit_api_v4
+Mid_Roll_Break_Any_Last,61610,ACTIVE,ad_unit_api_v4
+Mid_Roll_Middle,63258,ACTIVE,ad_unit_api_v4
+My5_Channel_Bumper_Mid_Roll,74745,ACTIVE,ad_unit_api_v4
+My5_Channel_Bumper_Post_Roll,74746,ACTIVE,ad_unit_api_v4
+My5_Channel_Bumper_Pre_Roll,69988,ACTIVE,ad_unit_api_v4
+My5_Channel_Sponsor_Mid_Roll,69901,ACTIVE,ad_unit_api_v4
+My5_Channel_Sponsor_Post_Roll,74747,ACTIVE,ad_unit_api_v4
+My5_Channel_Sponsor_Pre_Roll,69900,ACTIVE,ad_unit_api_v4
+My5_Promo_Mid_Roll,69902,ACTIVE,ad_unit_api_v4
+My5_Promo_Post_Roll,69905,ACTIVE,ad_unit_api_v4
+My5_Promo_Pre_Roll,69899,ACTIVE,ad_unit_api_v4
+My5_Sponsor_Mid_Roll,69903,ACTIVE,ad_unit_api_v4
+My5_Sponsor_Mid_Roll_First,71402,ACTIVE,ad_unit_api_v4
+My5_Sponsor_Mid_Roll_Last,71403,ACTIVE,ad_unit_api_v4
+My5_Sponsor_Post_Roll,69904,ACTIVE,ad_unit_api_v4
+My5_Sponsor_Pre_Roll,69898,ACTIVE,ad_unit_api_v4
+Net10_Brand_Bumper_Mid_Roll,70049,ACTIVE,ad_unit_api_v4
+Net10_Live_ Pre_Roll,70313,ACTIVE,ad_unit_api_v4
+Net10_Sponsored_ Pre_Roll,70147,ACTIVE,ad_unit_api_v4
+Paramount House Midroll,72000,ACTIVE,ad_unit_api_v4
+Paramount House Postroll,72001,ACTIVE,ad_unit_api_v4
+Paramount House Preroll,71999,ACTIVE,ad_unit_api_v4
+Pause_Ad,63413,ACTIVE,ad_unit_api_v4
+PGATour Scene Setter,61737,ACTIVE,ad_unit_api_v4
+Pluto_House_Mid_Roll,61111,ACTIVE,ad_unit_api_v4
+Pluto_House_Mid_Roll_Clickable,65541,ACTIVE,ad_unit_api_v4
+Pluto_House_Post_Roll,61112,IN_ACTIVE,ad_unit_api_v4
+Pluto_House_Pre_Roll,61110,IN_ACTIVE,ad_unit_api_v4
+Pluto_intl_mid_roll,67393,ACTIVE,ad_unit_api_v4
+Pluto_Mid-Roll_Billboard_A,61796,ACTIVE,ad_unit_api_v4
+Pluto_Mid-Roll_Billboard_B,61797,ACTIVE,ad_unit_api_v4
+Pluto_Mid-Roll_Billboard_C,69318,ACTIVE,ad_unit_api_v4
+Pluto_Nordic_Midroll_First,74623,ACTIVE,ad_unit_api_v4
+Pluto_Pre-Roll_Billboard,67510,ACTIVE,ad_unit_api_v4
+Pluto_Pre_Roll,68691,ACTIVE,ad_unit_api_v4
+Pluto_Pre_Roll_Billboard_A,68696,ACTIVE,ad_unit_api_v4
+Pluto_Pre_Roll_Billboard_B,68697,ACTIVE,ad_unit_api_v4
+Post_Roll,61102,ACTIVE,ad_unit_api_v4
+PPlus_Commercial Free_Mid-Roll_Promo,64765,ACTIVE,ad_unit_api_v4
+PPlus_Commercial Free_Promo,61120,ACTIVE,ad_unit_api_v4
+PPlus_Commercial Free_Promo_TestAdUnit_No-UX_Cap,62753,ACTIVE,ad_unit_api_v4
+Pplus_INTL_Promo_Pre_Roll,69304,ACTIVE,ad_unit_api_v4
+PPlus_LinearSkippable,62391,ACTIVE,ad_unit_api_v4
+PPlus_LinearSkippable_Midroll,65907,ACTIVE,ad_unit_api_v4
+PPlus_LinearSkippable_Promo_Pre_Roll_1s,67610,ACTIVE,ad_unit_api_v4
+PPlus_Movie Promo_Pre_Roll,64766,ACTIVE,ad_unit_api_v4
+PPlus_Next On_Mid_Roll,64096,ACTIVE,ad_unit_api_v4
+PPlus_Next_on,61636,IN_ACTIVE,ad_unit_api_v4
+PPlus_PPlus on Amazon Bumper_Mid_Roll,61122,ACTIVE,ad_unit_api_v4
+PPlus_PPluss on Amazon Bumper_Pre_Roll,61108,ACTIVE,ad_unit_api_v4
+PPlus_PPluss_12-curtain-raiser,61613,ACTIVE,ad_unit_api_v4
+PPlus_Previously on_Pre_Roll,64231,ACTIVE,ad_unit_api_v4
+PPlus_Samsung_Pre_Roll_Test,64504,ACTIVE,ad_unit_api_v4
+PPlus_Show Brand Bumper_PreRoll,64877,ACTIVE,ad_unit_api_v4
+Pplus_Show_Disclaimer_Pre_Roll,65318,ACTIVE,ad_unit_api_v4
+Pplus_showtime_promos,63840,ACTIVE,ad_unit_api_v4
+PPlus_Sponsored_Mid_Roll,68257,ACTIVE,ad_unit_api_v4
+PPlus_Sponsored_Pre_Roll,65125,ACTIVE,ad_unit_api_v4
+Pplus_Sponsored_Pre_roll_Live,77209,ACTIVE,ad_unit_api_v4
+PPlus_Stay Tuned_Bumper_Pre_Roll,63623,ACTIVE,ad_unit_api_v4
+Pplus_TV_Rating,61889,ACTIVE,ad_unit_api_v4
+Pplus_Walmart Plus_Pre_Roll,65250,ACTIVE,ad_unit_api_v4
+PPlus_Walmart_Brand Bumper_PreRoll,67875,ACTIVE,ad_unit_api_v4
+Pre_Roll,61100,ACTIVE,ad_unit_api_v4
+Pre_Roll_Break_First,71718,ACTIVE,ad_unit_api_v4
+Pre_Roll_Break_Last,71719,ACTIVE,ad_unit_api_v4
+Promo_Mid_Roll,71728,IN_ACTIVE,ad_unit_api_v4
+Promo_Pre_Roll,71727,IN_ACTIVE,ad_unit_api_v4
+Promo_Skippable_Pre_Roll,65889,ACTIVE,ad_unit_api_v4
+Promo_Skippable_Pre_Roll_1skipoffset,67033,ACTIVE,ad_unit_api_v4
+SFU Placeholder,74571,ACTIVE,ad_unit_api_v4
+Standard Display,60651,ACTIVE,ad_unit_api_v4
+Standard Mids,60648,ACTIVE,ad_unit_api_v4
+Standard Overlay,60650,ACTIVE,ad_unit_api_v4
+Standard Pause,60652,ACTIVE,ad_unit_api_v4
+Standard Post,60649,ACTIVE,ad_unit_api_v4
+Standard Pre,60647,ACTIVE,ad_unit_api_v4
+Super Bowl 58,66688,ACTIVE,ad_unit_api_v4
+Super Bowl 58 Interactive Companion,67185,ACTIVE,ad_unit_api_v4
+Trial_Sub_Mid_Roll_1,68307,ACTIVE,ad_unit_api_v4
+Trial_Sub_Mid_Roll_3,68308,ACTIVE,ad_unit_api_v4
+TrueX_Mid_Roll,61106,ACTIVE,ad_unit_api_v4
+TrueX_Pre_Roll,61105,ACTIVE,ad_unit_api_v4
+UFC BrightLine Companion,75655,ACTIVE,ad_unit_api_v4
+UFC MIdroll,74112,IN_ACTIVE,ad_unit_api_v4
+US_Preroll_Live,73308,ACTIVE,ad_unit_api_v4
+Viacom_Content_Bumper,61104,ACTIVE,ad_unit_api_v4
+Viacom_LinearSkippable,63672,ACTIVE,ad_unit_api_v4
+Viacom_Movie Promo_Pre_Roll,72136,ACTIVE,ad_unit_api_v4
+Viacom_NickJR_Promo_Pre_Roll,61121,ACTIVE,ad_unit_api_v4
+Viacom_Promo_Mid_Roll,61118,ACTIVE,ad_unit_api_v4
+Viacom_Promo_Pre_Roll,61113,ACTIVE,ad_unit_api_v4
+ViacomCBS_BrandBumper_Pre_Roll,61646,IN_ACTIVE,ad_unit_api_v4
+ViacomCBS_Kids_Promo_Mid_Roll,61157,ACTIVE,ad_unit_api_v4
+ViacomCBS_Kids_Promo_Pre_Roll,61156,ACTIVE,ad_unit_api_v4
+ViacomCBS_Sponsor Billboard_Pre_Roll,61103,ACTIVE,ad_unit_api_v4
+ViacomCBS_Sponsored Billboard_Mid_Roll,61109,ACTIVE,ad_unit_api_v4
+Video Overlay,61114,ACTIVE,ad_unit_api_v4

@@ -1,0 +1,252 @@
+country_name,id,source
+Afghanistan,3,content_territories
+Aland Islands,182,content_territories
+Albania,5,content_territories
+Algeria,45,content_territories
+American Samoa,180,content_territories
+Andorra,1,content_territories
+Angola,7,content_territories
+Anguilla,176,content_territories
+Antarctica,179,content_territories
+Antigua and Barbuda,4,content_territories
+Argentina,8,content_territories
+Armenia,6,content_territories
+Aruba,181,content_territories
+Asia (unknown Country),178,content_territories
+Australia,10,content_territories
+Austria,9,content_territories
+Azerbaijan,11,content_territories
+Bahamas,22,content_territories
+Bahrain,17,content_territories
+Bangladesh,183,content_territories
+Barbados,13,content_territories
+Belarus,25,content_territories
+Belgium,14,content_territories
+Belize,26,content_territories
+Benin,184,content_territories
+Bermuda,19,content_territories
+Bhutan,23,content_territories
+Bolivia,20,content_territories
+Bonaire/Sint Eustatius/Saba,251,content_territories
+Bosnia and Herzegovina,12,content_territories
+Botswana,24,content_territories
+Bouvet Island,186,content_territories
+Brazil,21,content_territories
+British Indian Ocean Territory,206,content_territories
+British Virgin Islands,240,content_territories
+Brunei Darussalam,185,content_territories
+Bulgaria,16,content_territories
+Burkina Faso,15,content_territories
+Burundi,18,content_territories
+Cambodia,85,content_territories
+Cameroon,33,content_territories
+Canada,27,content_territories
+Cape Verde,38,content_territories
+Cayman Islands,210,content_territories
+Central African Republic,28,content_territories
+Chad,152,content_territories
+Chile,32,content_territories
+Christmas Island,190,content_territories
+Cocos (keeling) Islands,187,content_territories
+Colombia,35,content_territories
+Comoros,86,content_territories
+Congo,29,content_territories
+Cook Islands,189,content_territories
+Costa Rica,36,content_territories
+Cote D Ivoire,31,content_territories
+Croatia,69,content_territories
+Cuba,37,content_territories
+Curacao,252,content_territories
+Cyprus,39,content_territories
+Czech Republic,40,content_territories
+Democratic Republic Of the Congo,188,content_territories
+Denmark,42,content_territories
+Djibouti,191,content_territories
+Dominica,43,content_territories
+Dominican Republic,44,content_territories
+Ecuador,46,content_territories
+Egypt,48,content_territories
+El Salvador,149,content_territories
+Equatorial Guinea,63,content_territories
+Eritrea,193,content_territories
+Estonia,47,content_territories
+Ethiopia,50,content_territories
+Europe (unknown Country),194,content_territories
+Falkland Islands (malvinas),195,content_territories
+Faroe Islands,196,content_territories
+Federated States Of Micronesia,53,content_territories
+Fiji,52,content_territories
+Finland,51,content_territories
+France,54,content_territories
+French Guiana,197,content_territories
+French Polynesia,224,content_territories
+French Southern Territories,235,content_territories
+Gabon,55,content_territories
+Gambia,61,content_territories
+Georgia,58,content_territories
+Germany,41,content_territories
+Ghana,59,content_territories
+Gibraltar,199,content_territories
+Greece,64,content_territories
+Greenland,60,content_territories
+Grenada,57,content_territories
+Guadeloupe,200,content_territories
+Guam,202,content_territories
+Guatemala,65,content_territories
+Guernsey,198,content_territories
+Guinea,62,content_territories
+Guinea-Bissau,66,content_territories
+Guyana,67,content_territories
+Haiti,70,content_territories
+Heard and Mc Donald Islands,204,content_territories
+Holy See (vatican City State),239,content_territories
+Honduras,68,content_territories
+Hong Kong,203,content_territories
+Hungary,71,content_territories
+Iceland,78,content_territories
+India,75,content_territories
+Indonesia,72,content_territories
+Iran (islamic Republic Of),77,content_territories
+Iraq,76,content_territories
+Ireland,73,content_territories
+Isle Of Man,205,content_territories
+Israel,74,content_territories
+Italy,79,content_territories
+Jamaica,80,content_territories
+Japan,82,content_territories
+Jersey,207,content_territories
+Jordan,81,content_territories
+Kazakhstan,90,content_territories
+Kenya,83,content_territories
+Kiribati,208,content_territories
+Kuwait,89,content_territories
+Kyrgyzstan,84,content_territories
+Lao Peoples Democratic Republic,91,content_territories
+Latvia,99,content_territories
+Lebanon,92,content_territories
+Lesotho,96,content_territories
+Liberia,95,content_territories
+Libyan Arab Jamahiriya,100,content_territories
+Liechtenstein,94,content_territories
+Lithuania,97,content_territories
+Luxembourg,98,content_territories
+Macau,108,content_territories
+Macedonia,104,content_territories
+Madagascar,103,content_territories
+Malawi,113,content_territories
+Malaysia,115,content_territories
+Maldives,112,content_territories
+Mali,105,content_territories
+Malta,217,content_territories
+Marshall Islands,214,content_territories
+Martinique,216,content_territories
+Mauritania,109,content_territories
+Mauritius,111,content_territories
+Mayotte,244,content_territories
+Mexico,114,content_territories
+Moldova,102,content_territories
+Monaco,212,content_territories
+Mongolia,107,content_territories
+Montenegro,213,content_territories
+Montserrat,110,content_territories
+Morocco,101,content_territories
+Mozambique,116,content_territories
+Myanmar,106,content_territories
+Namibia,117,content_territories
+Nauru,221,content_territories
+Nepal,220,content_territories
+Netherlands,121,content_territories
+Netherlands Antilles,177,content_territories
+New Caledonia,218,content_territories
+New Zealand,223,content_territories
+Nicaragua,120,content_territories
+Niger,118,content_territories
+Nigeria,119,content_territories
+Niue,222,content_territories
+Norfolk Island,219,content_territories
+North Korea,209,content_territories
+Northern Mariana Islands,215,content_territories
+Norway,122,content_territories
+Oman,123,content_territories
+Pakistan,128,content_territories
+Palau,228,content_territories
+Palestinian Territories,227,content_territories
+Panama,124,content_territories
+Papua New Guinea,126,content_territories
+Paraguay,131,content_territories
+Peru,125,content_territories
+Philippines,127,content_territories
+Pitcairn,246,content_territories
+Poland,129,content_territories
+Portugal,130,content_territories
+Puerto Rico,226,content_territories
+Qatar,132,content_territories
+Reunion,229,content_territories
+Romania,133,content_territories
+Russian Federation,134,content_territories
+Rwanda,135,content_territories
+Saint Barthelemy,248,content_territories
+Saint Kitts and Nevis,87,content_territories
+Saint Lucia,93,content_territories
+Saint Martin,250,content_territories
+Saint Vincent and the Grenadines,168,content_territories
+Samoa,243,content_territories
+San Marino,144,content_territories
+Sao Tome and Principe,148,content_territories
+Saudi Arabia,136,content_territories
+Senegal,145,content_territories
+Serbia,230,content_territories
+Seychelles,138,content_territories
+Sierra Leone,143,content_territories
+Singapore,231,content_territories
+Sint Maarten,247,content_territories
+Slovakia (slovak Republic),142,content_territories
+Slovenia,141,content_territories
+Solomon Islands,137,content_territories
+Somalia,146,content_territories
+South Africa,173,content_territories
+South Georgia / South Sandwich Isl,201,content_territories
+South Korea,88,content_territories
+South Sudan,249,content_territories
+Spain,49,content_territories
+Sri Lanka,211,content_territories
+St. Helena,232,content_territories
+St. Pierre and Miquelon,225,content_territories
+Sudan,139,content_territories
+Suriname,147,content_territories
+Svalbard and Jan Mayen Islands,233,content_territories
+Swaziland,151,content_territories
+Sweden,140,content_territories
+Switzerland,30,content_territories
+Syrian Arab Republic,150,content_territories
+Taiwan Province Of China,161,content_territories
+Tajikistan,155,content_territories
+Tanzania,162,content_territories
+Thailand,154,content_territories
+Timor-Leste,245,content_territories
+Togo,153,content_territories
+Tokelau,236,content_territories
+Tonga,158,content_territories
+Trinidad and Tobago,160,content_territories
+Tunisia,157,content_territories
+Turkey,159,content_territories
+Turkmenistan,156,content_territories
+Turks and Caicos Islands,234,content_territories
+Tuvalu,237,content_territories
+Uganda,164,content_territories
+Ukraine,163,content_territories
+United Arab Emirates,2,content_territories
+United Kingdom,56,content_territories
+United States,165,content_territories
+Uruguay,166,content_territories
+Us Minor Outlying Islands,238,content_territories
+Us Virgin Islands,241,content_territories
+Uzbekistan,167,content_territories
+Vanuatu,171,content_territories
+Venezuela,169,content_territories
+Viet Nam,170,content_territories
+Wallis and Futuna Islands,242,content_territories
+Western Sahara,192,content_territories
+Yemen,172,content_territories
+Zambia,174,content_territories
+Zimbabwe,175,content_territories

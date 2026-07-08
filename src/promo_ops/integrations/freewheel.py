@@ -253,6 +253,74 @@ class FreeWheelClient:
             written.append(str(path))
         return written
 
+    def sync_countries(self, out_dir: Optional[str] = None) -> str:
+        """Export the FW country table (name -> id) for geo targeting.
+
+        Source: Standard Attributes taxonomy type `content_territories`, verified to
+        match the MRM "Add New Country" IDs exactly (United States=165, Canada=27,
+        Australia=10, Brazil=21). Feeds CountryResolver so a region's country NAMES
+        (config/regions.yaml) resolve to the int64 IDs the Placement API requires.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..geo import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        rows = []
+        coll = self.list_standard_attributes().get("content_territories", {})
+        if isinstance(coll, dict):
+            for v in coll.values():
+                if isinstance(v, list):
+                    rows = v
+                    break
+        rows = [r for r in rows if r.get("id") and r.get("country_name")]
+        rows.sort(key=lambda r: str(r["country_name"]).lower())
+        path = out / "synced_countries.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["country_name", "id", "source"])
+            for r in rows:
+                w.writerow([r["country_name"], r["id"], "content_territories"])
+        return str(path)
+
+    def sync_ad_units(self, out_dir: Optional[str] = None, max_pages: int = 60) -> str:
+        """Export standard + custom ad units (name -> id) for ad_product assignment.
+
+        Source: Ad Unit API v4 `list-standard-and-custom-ad-units` (~197 units). Feeds
+        AdUnitResolver so config ad-unit NAMES (config/ad_units.yaml) resolve to the
+        int64 IDs `ad_product.ad_unit_node[].ad_unit_id` requires.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..ad_units import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        rows, page = [], 1
+        while page <= max_pages:
+            res = self._invoke("sh_1_0_list-standard-and-custom-ad-units",
+                               show="all", per_page=50, page=page)
+            au = (res or {}).get("data", {}).get("ad_units", {})
+            items = au.get("ad_unit", [])
+            if isinstance(items, dict):
+                items = [items]
+            if not items:
+                break
+            rows += items
+            if page >= int(au.get("@total_pages", "1") or 1):
+                break
+            page += 1
+        rows = [r for r in rows if r.get("id") and r.get("name")]
+        rows.sort(key=lambda r: str(r["name"]).lower())
+        path = out / "synced_ad_units.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["name", "id", "status", "source"])
+            for r in rows:
+                w.writerow([r["name"], r["id"], r.get("status", ""), "ad_unit_api_v4"])
+        return str(path)
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:
@@ -395,12 +463,17 @@ class FreeWheelClient:
             content["standard_attributes"] = standard_attr_ids
         if content:
             body["content_targeting"] = content
-        # Geo targets COUNTRY IDs (int64), not names. country_id resolved from config.
+        # Geo: API writes COUNTRY IDs (int64). Names ("United States") are what the
+        # team searches in the UI and are resolved to IDs via the country table.
         if p.geo_country_ids:
             body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
+        if p.geo_country_names:
+            body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
         # Ad units: ad_product.ad_unit_node[].ad_unit_id (resolved from config).
         if p.ad_unit_ids:
             body["ad_product"] = {"ad_unit_node": [{"ad_unit_id": a} for a in p.ad_unit_ids]}
+        if p.ad_unit_names:
+            body["_ad_unit_names"] = list(p.ad_unit_names)          # UI reference
         body["exclusions"] = p.exclusions        # promoted show excluded everywhere
         if pending_segments:
             body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items

@@ -149,9 +149,15 @@ class Placement:
     # Label-based exclusions applied to this placement (always includes the
     # promoted show, so it never promos against itself).
     exclusions: list[str] = field(default_factory=list)
-    # FreeWheel geo country IDs (int64) + ad unit IDs — resolved from config; the
-    # exact IDs (e.g. United States, Paramount House Preroll) are filled once sourced.
+    # Geo targeting. `geo_country_names` are what the team searches/selects in the
+    # FreeWheel UI (e.g. "United States"); `geo_country_ids` are the resolved FW
+    # country IDs the Placement API writes (e.g. 165). Names come from the region
+    # config; IDs resolve via the country table (data/geo).
+    geo_country_names: list[str] = field(default_factory=list)
     geo_country_ids: list[str] = field(default_factory=list)
+    # Ad unit names/IDs — names mirror past setups + the priority doc; IDs resolve
+    # once the ad-unit table is synced.
+    ad_unit_names: list[str] = field(default_factory=list)
     ad_unit_ids: list[str] = field(default_factory=list)
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
