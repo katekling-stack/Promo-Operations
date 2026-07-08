@@ -40,6 +40,12 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         pluto_categories=categories,
         pluto_channels=channels,
         pplus_user_states=list(raw.get("pplus_user_states") or []),
+        recommended_show=raw.get("recommended_show"),
+        exclude_show=raw.get("exclude_show"),
+        season_or_messaging=raw.get("season_or_messaging"),
+        durations=[int(d) for d in (raw.get("durations") or [])],
+        content_type=raw.get("content_type") or "show",
+        content_id=raw.get("content_id"),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),

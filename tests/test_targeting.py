@@ -70,15 +70,36 @@ def test_pause_ads_excludes_tier4():
 
 # --- order builder ---------------------------------------------------------- #
 
-def test_order_builder_creates_placement_per_format():
+def test_order_builder_per_tier_and_duration_naming():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
     assert order.name == "Frisco King - USA"           # IO name
     assert order.campaign["name"] == "Paramount + - USA"  # existing parent campaign
-    assert len(order.placements) == len(plan.formats)
     names = [p.name for p in order.placements]
-    assert "Frisco King - USA - Remnant Video" in names
-    assert "Frisco King - USA - Pause Ads" in names
+    # remnant video: 4 tiers x 2 durations = 8; pause ads: 3 tiers; guaranteed: 2 -> 13
+    assert len(order.placements) == 13
+    assert "Frisco King - Season 1 - 30 - Tier 1 - USA" in names
+    assert "Frisco King - Season 1 - 15 - Tier 4 - USA" in names
+
+
+def test_guaranteed_placement_named_by_content_id():
+    plan = load_plan(FRISCO)
+    order = OrderBuilder().build(plan)
+    prem = next(p for p in order.placements if p.format == "premium_preroll")
+    assert prem.name == "Frisco King [ShowID:]"        # blank id -> fill-in marker
+
+    plan.content_type = "movie"; plan.content_id = "12345"
+    order2 = OrderBuilder().build(plan)
+    prem2 = next(p for p in order2.placements if p.format == "premium_preroll")
+    assert prem2.name == "Frisco King [MovieID:12345]"
+
+
+def test_placements_carry_priority_and_freq_cap():
+    plan = load_plan(FRISCO)
+    order = OrderBuilder().build(plan)
+    t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
+    assert t1.priority_level == 1
+    assert t1.frequency_cap == "1 per 30 min / 20 per month"
 
 
 def test_order_carries_template_ref():

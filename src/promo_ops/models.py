@@ -44,6 +44,15 @@ class SupportPlan:
     # Label to exclude from EVERY placement (label-based exclusion). Defaults to
     # promoted_title — the show being promoted is excluded everywhere.
     exclude_show: Optional[str] = None
+    # Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
+    season_or_messaging: Optional[str] = None
+    # Creative durations (seconds) that each video tier is split into (one placement
+    # per tier x duration). Defaults applied if empty.
+    durations: list[int] = field(default_factory=list)
+    # Guaranteed Premium/Essential placement id token. content_type selects the label:
+    # "show" -> "{title} [ShowID:{content_id}]", "movie" -> "{title} [MovieID:{content_id}]".
+    content_type: str = "show"          # "show" | "movie"
+    content_id: Optional[str] = None    # ShowID / MovieID (left blank -> "[ShowID:]")
     pluto_categories: list[str] = field(default_factory=list)
     pluto_channels: list[str] = field(default_factory=list)
     pplus_user_states: list[str] = field(default_factory=list)
@@ -127,6 +136,10 @@ class Placement:
     format_code: str
     region: str
     targeting: TieredTargeting
+    tier: Optional[int] = None          # this placement's single tier (per-tier model)
+    duration: Optional[int] = None      # creative duration in seconds (video)
+    season_or_messaging: Optional[str] = None
+    priority_level: Optional[Any] = None   # ad-server priority (from config, per tier)
     frequency_cap: Optional[str] = None
     endpoints: list[str] = field(default_factory=list)
     platforms: list[str] = field(default_factory=list)

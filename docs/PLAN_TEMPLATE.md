@@ -24,6 +24,10 @@ pre-filled with the Frisco King - USA example.
 | Advertiser Name Contains | `VCBS` | Narrows the VCBS advertiser list; semicolon-separate multiples. |
 | **Recommended Show** | `Frisco King` | FreeWheel "Recommended Show" Key Value. Feeds Tier 1 carousel targeting **and** the Premium Pre-Roll / Essential recommended-show argument. Defaults to Promoted Title. |
 | **Exclude Show** | `Frisco King` | Label excluded from **every** placement so the show never promos against itself. Defaults to Promoted Title. |
+| **Season or Messaging** | `Season 1` | Middle segment of placement names: `{Title} - {Season/Messaging} - {Duration} - Tier N - {Region}`. |
+| **Video Durations** | `30; 15` | Semicolon list of seconds. Each video tier becomes one placement **per duration**. |
+| **Content Type** | `show` | `show` or `movie` — selects the guaranteed-placement token (`[ShowID:]` vs `[MovieID:]`). |
+| **Content ID** | | The ShowID/MovieID for guaranteed placements. Blank → `[ShowID:]` left as a fill-in marker. |
 | Flight Start / End | `2026-07-14` | Dates. |
 | Flight Code | `L1` | Launch beat / flight code, used in placement names. |
 | Formats | `remnant_video; pause_ads; premium_preroll; essential_bumper` | Semicolon list; must match `config/placement_templates.yaml`. Guaranteed formats (`premium_preroll`, `essential_bumper`) are built from genre + recommended show and flagged as living in the existing guaranteed order. |

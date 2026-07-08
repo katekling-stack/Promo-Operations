@@ -15,7 +15,7 @@ formats:
   remnant_video:
     format_code: "RVID"
     display_name: "Non-Guaranteed Video"
-    naming: "{promoted_title} - {region} - Remnant Video"
+    uses_durations: true            # one placement per tier x duration
     endpoints: ["Desktop", "Mobile", "CTV"]
     # Deck priority: :30 > :45/:60 > :15 > :20/:10
     creative_durations_priority: [30, 45, 60, 15, 20, 10]

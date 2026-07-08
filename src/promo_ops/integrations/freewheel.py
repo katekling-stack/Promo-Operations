@@ -214,22 +214,25 @@ class FreeWheelClient:
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
-        # One placement per TIER per format (matches live naming:
-        # "{title} - {beat} - {duration} (Tier N) - {region}").
+        # Placements are already per-tier from the builder (live naming:
+        # "{title} - {season} - {duration} - Tier N - {region}").
         placement_bodies = []
         for p in order.placements:
-            tiers = p.targeting.tiers or [None]
-            for t in tiers:
-                tier_label = f" (Tier {t.id})" if t else ""
-                placement_bodies.append({
-                    "name": f"{p.name}{tier_label}",
-                    "placement_type": "PROMO",
-                    "exclusions": p.exclusions,       # promoted show excluded everywhere
-                    # TODO(targeting): render tier `t` dimensions into the targeting body
-                    "_tier": (t.id if t else None),
-                    "_dimensions": ([{"key": d.key, "values": d.values, "resolved": d.resolved}
-                                     for d in t.dimensions] if t else []),
-                })
+            tier = p.targeting.tiers[0] if p.targeting.tiers else None
+            placement_bodies.append({
+                "name": p.name,
+                "placement_type": "PROMO",
+                "priority": p.priority_level,
+                "frequency_cap": p.frequency_cap,
+                "duration": p.duration,
+                "exclusions": p.exclusions,        # promoted show excluded everywhere
+                "guaranteed": p.guaranteed,
+                "arguments": p.arguments or None,  # guaranteed: {genre, recommended_show}
+                # TODO(targeting): render tier dimensions into the FW targeting body
+                "_tier": p.tier,
+                "_dimensions": ([{"key": d.key, "values": d.values, "resolved": d.resolved}
+                                 for d in tier.dimensions] if tier else []),
+            })
         return {
             "parent": parent,
             "insertion_order_body": insertion_order_body,

@@ -1,0 +1,33 @@
+# Per-placement priority levels + frequency caps.
+#
+# Seeded from the Inventory & Targeting Strategy deck and the structure of the
+# "Global Digital O&O — Promo Settings Reference" sheet
+# (https://docs.google.com/spreadsheets/d/1KJx7jHIVia7Xs5-_Lkug5fx6DF6C8NDDpYC49gh1mDU).
+#
+# CONFIRM the exact ad-server priority values per tier/platform against that sheet's
+# "Tiered – Domestic" / "Tiered – International" tabs and refine below.
+
+# Relative priority per tier (1 = highest). Mapped to the ad server's priority scheme
+# at push time. Tier 1 is highest priority (runs below paying ads).
+priority_by_tier:
+  1: 1
+  2: 2
+  3: 3
+  4: 4
+
+# Guaranteed formats get their own priority (above remnant tiers).
+priority_by_format:
+  premium_preroll: sponsorship
+  essential_bumper: sponsorship
+
+# Frequency caps. Deck standard: 1 per 30 min / 20 per month.
+frequency_caps:
+  default: "1 per 30 min / 20 per month"
+  by_format:
+    remnant_video: "1 per 30 min / 20 per month"
+    pause_ads: "1 per 30 min / 20 per month"
+
+# Creative duration handling for video.
+# Deck priority order: :30 > :45/:60 > :15 > :20/:10.
+duration_priority: [30, 45, 60, 15, 20, 10]
+default_durations: [30, 15]

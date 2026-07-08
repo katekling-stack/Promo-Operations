@@ -61,6 +61,9 @@ def test_template_roundtrips_to_yaml_plan():
     assert sheet_plan.recommended_show == yaml_plan.recommended_show
     assert sheet_plan.exclude_show == yaml_plan.exclude_show
     assert sheet_plan.insertion_order_name == yaml_plan.insertion_order_name
+    assert sheet_plan.season_or_messaging == yaml_plan.season_or_messaging
+    assert sheet_plan.durations == yaml_plan.durations
+    assert sheet_plan.content_type == yaml_plan.content_type
 
 
 def test_template_builds_same_order():

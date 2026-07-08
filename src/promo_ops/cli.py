@@ -58,10 +58,17 @@ def _print_preview(order: Order) -> None:
     tmpl = order.template_ref
     if tmpl.get("template_campaign_id"):
         print(f"      Clone template: campaign {tmpl['template_campaign_id']} / IO {tmpl.get('template_io_id')}")
+    print(f"      Placements: {len(order.placements)}")
     for p in order.placements:
         tag = "  ⟨GUARANTEED → existing order⟩" if p.guaranteed else ""
+        meta = []
+        if p.priority_level is not None:
+            meta.append(f"priority={p.priority_level}")
+        if p.frequency_cap:
+            meta.append(f"cap={p.frequency_cap}")
         print(f"\n  PLACEMENT: {p.name}  [{p.format_code}]{tag}")
-        print(f"    Endpoints: {', '.join(p.endpoints) or '-'}   Freq cap: {p.frequency_cap}")
+        if meta:
+            print(f"    {'   '.join(meta)}")
         if p.exclusions:
             print(f"    Exclude (label): {', '.join(p.exclusions)}")
         if p.guaranteed:

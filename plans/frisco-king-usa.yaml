@@ -30,6 +30,13 @@ recommended_show: "Frisco King"
 # Excluded from EVERY placement so the show never promos against itself.
 exclude_show: "Frisco King"
 
+# Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
+season_or_messaging: "Season 1"
+durations: [30, 15]               # video: one placement per tier x duration
+# Guaranteed Premium/Essential placement id token. content_type: show | movie.
+content_type: "show"
+content_id: ""                    # ShowID (leave blank -> "[ShowID:]" to fill in)
+
 # Salesforce Case that originated this plan (source of truth going forward).
 salesforce_case: null
 

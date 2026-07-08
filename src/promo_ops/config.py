@@ -48,6 +48,10 @@ def placement_templates_config() -> dict[str, Any]:
     return load_yaml("placement_templates.yaml")
 
 
+def priorities_config() -> dict[str, Any]:
+    return load_yaml("priorities.yaml")
+
+
 def env(key: str, default: str | None = None) -> str | None:
     """Read a credential/setting from the environment."""
     return os.environ.get(key, default)

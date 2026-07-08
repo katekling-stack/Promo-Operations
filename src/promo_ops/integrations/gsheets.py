@@ -147,6 +147,10 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "insertion order name": {"path": ["insertion_order_name"]},
     "recommended show": {"path": ["recommended_show"]},
     "exclude show": {"path": ["exclude_show"]},
+    "season or messaging": {"path": ["season_or_messaging"]},
+    "video durations": {"path": ["durations"], "type": "list"},
+    "content type": {"path": ["content_type"]},          # show | movie
+    "content id": {"path": ["content_id"]},               # ShowID / MovieID
     "clone from template": {"path": ["campaign", "clone_from_template"], "type": "bool"},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},
     "flight start": {"path": ["flight", "start"]},

@@ -10,6 +10,10 @@ Clone From Template,Yes
 Advertiser Name Contains,VCBS
 Recommended Show,Frisco King
 Exclude Show,Frisco King
+Season or Messaging,Season 1
+Video Durations,30; 15
+Content Type,show
+Content ID,
 Flight Start,
 Flight End,
 Flight Code,L1
