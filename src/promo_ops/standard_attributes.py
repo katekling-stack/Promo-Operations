@@ -30,11 +30,13 @@ DATA_DIR = REPO_ROOT / "data" / "standard_attributes"
 # Which Standard Attribute `type` each tier dimension resolves against.
 DIMENSION_ATTRIBUTE_TYPE = {
     "genre": "genres",
-    "network": "brands",            # e.g. "Paramount Network"
-    "pluto_category": "channels",   # Pluto category/channel standard attributes
-    "pluto_channel_list": "channels",
+    "network": "brands",              # e.g. "Paramount Network" -> brand 680
+    "pluto_channel_list": "channels", # some Pluto channels are FW channel attributes
     "pluto_channel": "channels",
     "endpoints": "device_types",
+    # NOTE: pluto_category is intentionally omitted. US Pluto promo categories are
+    # targeted via "SG: PlutoTV Promo Category: <cat>: US" segments (see the Pluto
+    # Categories sheet), not FW `channels` standard attributes. Wired separately.
 }
 
 
