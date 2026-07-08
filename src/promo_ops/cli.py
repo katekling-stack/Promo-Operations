@@ -164,6 +164,13 @@ def _cmd_sync_attributes(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_sync_audience_items(args: argparse.Namespace) -> int:
+    from .integrations.freewheel import FreeWheelClient
+    path = FreeWheelClient().sync_audience_items()
+    print(f"Synced audience items -> {path}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -200,6 +207,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_attr = sub.add_parser("sync-attributes", help="Refresh Standard Attribute CSVs from FreeWheel")
     p_attr.set_defaults(func=_cmd_sync_attributes)
+
+    p_ai = sub.add_parser("sync-audience-items", help="Sync FreeWheel audience items (Tier 1 DDA)")
+    p_ai.set_defaults(func=_cmd_sync_audience_items)
 
     return parser
 

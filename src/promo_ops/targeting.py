@@ -20,17 +20,20 @@ from typing import Optional
 from .audience_segments import AudienceSegmentResolver
 from .config import pluto_config, regions_config, tiers_config
 from .models import SupportPlan, Tier, TargetingDimension, TieredTargeting
+from .series import SeriesResolver
 from .standard_attributes import DIMENSION_ATTRIBUTE_TYPE, StandardAttributeResolver
 
 
 class TargetingEngine:
     def __init__(self, resolver: Optional[AudienceSegmentResolver] = None,
-                 attr_resolver: Optional[StandardAttributeResolver] = None):
+                 attr_resolver: Optional[StandardAttributeResolver] = None,
+                 series_resolver: Optional[SeriesResolver] = None):
         self._tiers_cfg = tiers_config()
         self._regions_cfg = regions_config()
         self._pluto_cfg = pluto_config()
         self.resolver = (resolver or AudienceSegmentResolver()).load()
         self.attr_resolver = (attr_resolver or StandardAttributeResolver()).load()
+        self.series_resolver = (series_resolver or SeriesResolver()).load()
 
     def _region_code(self, region: str) -> str:
         return self._regions_cfg.get("regions", {}).get(region, {}).get("code", region)
@@ -90,10 +93,9 @@ class TargetingEngine:
             dim.values = [s["segment_name"] for s in resolved]
             if unresolved:
                 dim.notes = (
-                    f"{len(unresolved)} show(s) have no auto-matched FreeWheel audience "
-                    f"segment — add them to the Tier 1 Audience Segments section of the "
-                    f"sheet, or request/add them to the Audience Segments doc: "
-                    f"{', '.join(unresolved)}"
+                    f"{len(unresolved)} show(s) need their Tier 1 DDA audience item "
+                    f"(convention 'GL-DDA-1P-SHOW_<Show>'; search 'DDA + show' in FreeWheel "
+                    f"Audience Items or run sync-audience-items): {', '.join(unresolved)}"
                 )
             return dim
 
@@ -106,6 +108,21 @@ class TargetingEngine:
             dim.values = list(value)
         elif value is not None:
             dim.values = [value]
+
+        # Tier 2 content-affinity showlist -> FreeWheel Video Series IDs.
+        if dim_cfg["key"] == "content_affinity_showlist" and dim.values:
+            matches = self.series_resolver.resolve_all(dim.values)
+            dim.resolved = [
+                {"show": m.show, "id": m.id, "series_name": m.name}
+                for m in matches if m.matched
+            ]
+            unmatched = [m.show for m in matches if not m.matched]
+            if unmatched:
+                dim.notes = (
+                    f"{len(unmatched)} show(s) not resolved to a FreeWheel series — "
+                    f"pick the right '(ViacomCBS Production)' entry or fix the title: "
+                    f"{', '.join(unmatched)}"
+                )
 
         # Pluto channels/categories -> SG segment names by convention (config/pluto.yaml).
         # Tier 2 = channels, Tier 3 = promo categories. Region code from regions.yaml.

@@ -162,6 +162,55 @@ class FreeWheelClient:
                                insertion_order_id=int(io_id), per_page=50)
         return self._rows(payload, "placements")
 
+    def resolve_series(self, show: str, prefer_contains: str = "ViacomCBS") -> list[dict[str, Any]]:
+        """Search Video Series by name; exact matches first, ViacomCBS preferred.
+
+        Returns candidate {id, name} dicts (empty if none). Ambiguous shows (multiple
+        exact matches) are returned for a deliberate pick, not auto-resolved.
+        """
+        import re
+        payload = self._invoke("sh_1_0_liststandardseries", name=show, per_page=25)
+        results = (payload or {}).get("data", {}).get("series", [])
+
+        def base(n: str) -> str:
+            return re.sub(r"\s*\(.*?\)\s*$", "", str(n)).strip().lower()
+
+        exact = [r for r in results if base(r.get("name", "")) == show.strip().lower()]
+        preferred = [r for r in exact if prefer_contains.lower() in str(r.get("name", "")).lower()]
+        return preferred or exact or results
+
+    def sync_audience_items(self, out_dir: Optional[str] = None, max_pages: int = 200) -> str:
+        """Paginate all audience items into a synced CSV (name,id,external_id).
+
+        Feeds Tier 1 DDA resolution ("GL-DDA-1P-SHOW_<Show>"). The API has no name
+        filter, so we sync the full set (~6k) once and match locally.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..audience_segments import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        path = out / "synced_audience_items.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["show", "segment_name", "segment_id", "platform", "region", "source"])
+            page = 1
+            while page <= max_pages:
+                payload = self._invoke("sh_1_0_list-audience-items", page=page, per_page=50)
+                items = self._rows(
+                    (payload or {}).get("data", {}).get("AudienceItemsResp", {}), "audience_items"
+                ) or self._rows(payload, "audience_items")
+                if not items:
+                    break
+                for it in items:
+                    name = it.get("name", "")
+                    # Show name inferred from GL-DDA-1P-SHOW_<Show> convention.
+                    show = name.split("SHOW_", 1)[1].replace("_", " ") if "SHOW_" in name else ""
+                    w.writerow([show, name, it.get("id"), "DDA", "", "audience_items"])
+                page += 1
+        return str(path)
+
     def list_standard_attributes(self) -> dict[str, Any]:
         """Return the full Standard Attributes taxonomy (genres, brands, channels...)."""
         payload = self._invoke("sh_1_0_liststandardattributes")

@@ -82,11 +82,20 @@ sections and how our tier dimensions map onto them:
 | `platform_targeting.{device, os, ...}` | | endpoints (Desktop/Mobile/CTV) |
 | exclusions | content/audience exclude | promoted show (label) — every placement |
 
-`content_targeting.standard_attributes` reference FreeWheel **Standard Attribute**
-IDs (genre / show / network / Pluto category). Those IDs come from the FreeWheel
-Standard Attributes sheet / Site API and are the remaining lookup to wire before a
-fully-targeted live create. Audience segment IDs, geo, priority, caps, schedule and
-exclusions are all mapped.
+### Show / content resolution (confirmed live)
+
+| Input | Resolves via | Notes |
+|---|---|---|
+| Genre / Network | `GET /services/v4/standard_attributes` (types `genres`, `brands`) | name → id; genres 8/8, Paramount Network → brand 680 |
+| Tier 2 showlist | `GET /services/v4/standard_attributes/series?name=` | pick the `(ViacomCBS Production)` entry; exact-name match, else flag. 20/22 Frisco King shows auto-resolve; Marshals + NCIS: New York need a manual pick |
+| Tier 1 audience segments | Audience Items, convention `GL-DDA-1P-SHOW_<Show>` | `GET /services/v4/audience_items` has no name filter → `sync-audience-items` pulls all (~6k) and matches locally; Tulsa King = 1437993 |
+| Pluto channels / categories | naming convention (no lookup) | `SG: PlutoTV Channels/Promo Category: …` |
+| Geo | `geography_targeting` (region codes) | |
+
+`liststandardseries` name search works (unlike `list-series`, which has no filter and
+229k rows). Resolvers cache to `data/series/`, `data/standard_attributes/`,
+`data/audience_segments/`; refresh with `sync-attributes` / `sync-audience-items`.
+All resolvers surface unmatched/ambiguous inputs — never guess.
 
 ## Priority + frequency-cap scheme (Tiered – Domestic, US)
 

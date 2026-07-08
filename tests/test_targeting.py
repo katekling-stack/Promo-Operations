@@ -157,6 +157,27 @@ def test_genres_resolve_to_standard_attribute_ids():
     assert len(genre.resolved) == len(plan.genres)
 
 
+def test_showlist_resolves_to_series_ids():
+    plan = load_plan(FRISCO)
+    t2 = next(t for t in TargetingEngine().build(plan, "remnant_video").tiers if t.id == 2)
+    showdim = next(d for d in t2.dimensions if d.key == "content_affinity_showlist")
+    ids = {r["show"]: r["id"] for r in showdim.resolved}
+    assert ids.get("Tulsa King") == "3732"
+    assert ids.get("FBI") == "11811"          # exact match, not "Los archivos del FBI"
+    assert ids.get("The Naked Gun") == "15189"
+    # 20 of 22 seeded; Marshals + NCIS: New York intentionally left for manual pick
+    assert len(showdim.resolved) == 20
+    assert "NCIS: New York" in (showdim.notes or "")
+
+
+def test_tier1_dda_audience_item_resolves():
+    plan = load_plan(FRISCO)
+    t1 = next(t for t in TargetingEngine().build(plan, "remnant_video").tiers if t.id == 1)
+    seg = next(d for d in t1.dimensions if d.key == "audience_segments")
+    names = {s["segment_name"]: s.get("segment_id") for s in seg.resolved}
+    assert names.get("GL-DDA-1P-SHOW_Tulsa_King") == "1437993"
+
+
 def test_pluto_channel_and_category_sg_naming():
     plan = load_plan(FRISCO)
     eng = TargetingEngine()
