@@ -297,8 +297,12 @@ class FreeWheelClient:
 
         placements = []
         for body in plan["placement_bodies"]:
-            body["insertion_order_id"] = io_id  # TODO(targeting): add targeting body
-            placements.append(self._invoke("sh_1_0_create-a-placement", body=body))
+            b = {k: v for k, v in body.items() if not k.startswith("_")}  # drop reference-only keys
+            b["insertion_order_id"] = io_id
+            ai = b.get("targeting", {}).get("audience_targeting", {}).get("include", {})
+            if "audience_item" in ai:
+                ai["audience_item"] = sorted(set(ai["audience_item"]))  # dedupe
+            placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
         return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
 
     @staticmethod
@@ -312,8 +316,10 @@ class FreeWheelClient:
         }
         insertion_order_body = {   # confirmed IO fields (see docs/FREEWHEEL.md)
             "name": order.name,                       # e.g. "Frisco King - USA"
-            "brand_id": order.template_ref.get("brand_id"),
-            "stage": "BOOKED",
+            # Brand left BLANK by design: the assigned CM creates/maps the Brand under
+            # the advertiser and sets it before booking the IO. (brand_id available in
+            # order.template_ref for reference.)
+            # Left NOT_BOOKED (draft) on create — never auto-book/go-live.
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
@@ -341,13 +347,19 @@ class FreeWheelClient:
         Maps resolved tier dimensions onto the confirmed create-placement targeting
         sections. `insertion_order_id` is set at create time. See docs/FREEWHEEL.md.
         """
+        # FreeWheel delivery.priority is a TYPE: GUARANTEED (sponsorship) or
+        # PREEMPTIBLE (remnant). The numeric tier level (1-10) is carried in the
+        # placement NAME (Tier N) for the CM; frequency-cap format is set separately.
         body: dict[str, Any] = {
             "name": p.name,
             "placement_type": "PROMO",
+            # Validated on production: priority TYPE + pacing are required.
             "delivery": {
-                "priority": str(p.priority_level) if p.priority_level is not None else None,
-                "frequency_cap": FreeWheelClient._parse_freq_cap(p.frequency_cap),
+                "priority": "GUARANTEED" if p.guaranteed else "PREEMPTIBLE",
+                "pacing": "SMOOTH_AS" if p.guaranteed else "FAST_AS",
             },
+            "_tier_priority_rank": p.priority_level,   # reference (from priorities.yaml)
+            "_frequency_cap": p.frequency_cap,          # reference until FC schema wired
         }
         if p.guaranteed:
             body["_guaranteed_args"] = p.arguments  # genre + recommended_show
