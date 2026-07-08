@@ -149,6 +149,10 @@ class Placement:
     # Label-based exclusions applied to this placement (always includes the
     # promoted show, so it never promos against itself).
     exclusions: list[str] = field(default_factory=list)
+    # FreeWheel geo country IDs (int64) + ad unit IDs — resolved from config; the
+    # exact IDs (e.g. United States, Paramount House Preroll) are filled once sourced.
+    geo_country_ids: list[str] = field(default_factory=list)
+    ad_unit_ids: list[str] = field(default_factory=list)
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.

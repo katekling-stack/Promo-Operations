@@ -56,6 +56,10 @@ def pluto_config() -> dict[str, Any]:
     return load_yaml("pluto.yaml")
 
 
+def ad_units_config() -> dict[str, Any]:
+    return load_yaml("ad_units.yaml")
+
+
 def env(key: str, default: str | None = None) -> str | None:
     """Read a credential/setting from the environment."""
     return os.environ.get(key, default)

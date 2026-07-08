@@ -385,19 +385,22 @@ class FreeWheelClient:
             elif d.key == "geo":
                 geo += list(d.values)
 
-        targeting: dict[str, Any] = {}
+        # Exact structures confirmed from the Publisher API OAS (docs/FREEWHEEL_SCHEMA.md).
         if audience_items:
-            targeting["audience_targeting"] = {"include": {"audience_item": audience_items}}
+            body["audience_targeting"] = {"include": {"audience_item": audience_items}}
         content: dict[str, Any] = {}
         if series_ids:
             content["network_items"] = {"include": {"sets": [{"series": series_ids}]}}
         if standard_attr_ids:
             content["standard_attributes"] = standard_attr_ids
         if content:
-            targeting["content_targeting"] = content
-        if geo:
-            targeting["geography_targeting"] = {"include": {"region": geo}}
-        body["targeting"] = targeting
+            body["content_targeting"] = content
+        # Geo targets COUNTRY IDs (int64), not names. country_id resolved from config.
+        if p.geo_country_ids:
+            body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
+        # Ad units: ad_product.ad_unit_node[].ad_unit_id (resolved from config).
+        if p.ad_unit_ids:
+            body["ad_product"] = {"ad_unit_node": [{"ad_unit_id": a} for a in p.ad_unit_ids]}
         body["exclusions"] = p.exclusions        # promoted show excluded everywhere
         if pending_segments:
             body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items

@@ -11,6 +11,7 @@ regions:
     domestic: true              # Pluto category uses "Promo Category" prefix
     tier1_eligible: true
     geo_codes: ["US"]
+    fw_country_ids: []          # FreeWheel geo country id(s) for "United States" (to fill)
   CA:
     name: "Canada"
     code: "CA"

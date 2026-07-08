@@ -22,7 +22,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .config import brands_config, placement_templates_config, priorities_config
+from .config import (ad_units_config, brands_config, placement_templates_config,
+                     priorities_config, regions_config)
 from .models import Order, Placement, SupportPlan, TieredTargeting
 from .targeting import TargetingEngine
 
@@ -33,6 +34,16 @@ class OrderBuilder:
         self._brands = brands_config()
         self._templates = placement_templates_config()
         self._priorities = priorities_config()
+        self._regions = regions_config()
+        self._ad_units = ad_units_config()
+
+    def _geo_country_ids(self, region: str) -> list:
+        return list(self._regions.get("regions", {}).get(region, {}).get("fw_country_ids", []))
+
+    def _ad_unit_ids(self, fmt: str) -> list:
+        group = self._ad_units.get("format_ad_unit_group", {}).get(fmt)
+        # ad_units config holds names today; IDs get resolved once sourced.
+        return list(self._ad_units.get("ad_unit_ids", {}).get(group, [])) if group else []
 
     def _brand_cfg(self, brand: Optional[str]) -> dict:
         # `brand` is an optional legacy grouping; the exact Advertiser + Campaign in
@@ -95,11 +106,15 @@ class OrderBuilder:
         recommended = plan.recommended_show or plan.promoted_title
         extra = {k: tmpl[k] for k in ("spec", "standard_sizes", "salesforce_asset_field") if k in tmpl}
 
+        geo_ids = self._geo_country_ids(plan.region)
+        ad_units = self._ad_unit_ids(fmt)
+
         def base(name, targeting, **kw) -> Placement:
             return Placement(
                 name=name, format=fmt, format_code=tmpl["format_code"], region=plan.region,
                 targeting=targeting, endpoints=list(tmpl.get("endpoints", [])),
                 platforms=list(tmpl.get("platforms", [])), exclusions=[exclude],
+                geo_country_ids=geo_ids, ad_unit_ids=ad_units,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats: one placement, content-named, built from args.
