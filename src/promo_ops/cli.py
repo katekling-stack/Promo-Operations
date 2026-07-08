@@ -50,14 +50,16 @@ def _cmd_preview(args: argparse.Namespace) -> int:
 
 
 def _print_preview(order: Order) -> None:
-    adv = order.advertiser.get("name") or order.advertiser.get("name_contains") or "(resolve VCBS)"
-    print(f"ADVERTISER: {adv}")
-    print(f"  CAMPAIGN (existing parent): {order.campaign.get('name')}")
+    adv = order.advertiser.get("name") or order.advertiser.get("name_contains") or "(set Advertiser)"
+    adv_id = order.advertiser.get("resolved_id")
+    print(f"ADVERTISER: {adv}" + (f"  (id {adv_id})" if adv_id else ""))
+    print(f"  CAMPAIGN (existing parent): {order.campaign.get('name')}"
+          + (f"  (id {order.campaign.get('resolved_id')})" if order.campaign.get('resolved_id') else ""))
     print(f"    INSERTION ORDER (new): {order.name}")
-    print(f"      Brand: {order.brand}   Region: {order.region}   Network: {order.network_id}")
+    print(f"      Region: {order.region}   Network: {order.network_id}")
     tmpl = order.template_ref
-    if tmpl.get("template_campaign_id"):
-        print(f"      Clone template: campaign {tmpl['template_campaign_id']} / IO {tmpl.get('template_io_id')}")
+    if tmpl.get("template_io_id"):
+        print(f"      Model after IO: {tmpl.get('template_io_id')}")
     print(f"      Placements: {len(order.placements)}")
     for p in order.placements:
         tag = "  ⟨GUARANTEED → existing order⟩" if p.guaranteed else ""

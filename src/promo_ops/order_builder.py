@@ -34,11 +34,10 @@ class OrderBuilder:
         self._templates = placement_templates_config()
         self._priorities = priorities_config()
 
-    def _brand_cfg(self, brand: str) -> dict:
-        brands = self._brands.get("brands", {})
-        if brand not in brands:
-            raise KeyError(f"Unknown brand {brand!r}. Known brands: {', '.join(brands)}")
-        return brands[brand]
+    def _brand_cfg(self, brand: Optional[str]) -> dict:
+        # `brand` is an optional legacy grouping; the exact Advertiser + Campaign in
+        # the plan are authoritative. Return {} when absent/unknown (no error).
+        return self._brands.get("brands", {}).get(brand or "", {})
 
     # --- naming ---------------------------------------------------------- #
 
@@ -132,9 +131,10 @@ class OrderBuilder:
             campaign=dict(plan.campaign),
             flight=plan.flight,
             template_ref={
-                "template_campaign_id": brand_cfg.get("template_campaign_id"),
-                "template_io_id": brand_cfg.get("template_io_id"),
-                "advertiser_name_contains": brand_cfg.get("advertiser_name_contains"),
+                # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
+                "advertiser_id": plan.advertiser.get("resolved_id"),
+                "campaign_id": plan.campaign.get("resolved_id"),
+                "template_io_id": plan.template_io_id or brand_cfg.get("template_io_id"),
                 "brand_id": plan.brand_id,
             },
         )

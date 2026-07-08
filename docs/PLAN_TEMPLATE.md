@@ -15,13 +15,12 @@ pre-filled with the Frisco King - USA example.
 |---|---|---|
 | Promoted Title | `Frisco King` | The title being promoted. |
 | Region | `USA` | Must match a key in `config/regions.yaml` (USA, CA, AU, LATAM, BR, UK). |
-| Brand | `paramount_network` | Must match a key in `config/brands.yaml`. |
 | Salesforce Case | | Optional; the originating Case #. |
-| **Advertiser** | | The VCBS advertiser this nests under (exact name). |
+| **Advertiser** | `VCBS English - USA - Adult (Promo)` | The **exact** advertiser this nests under. |
+| **Advertiser ID** | `1000520` | The exact advertiser id (preferred — unambiguous). |
 | **Campaign Name** | `Paramount + - USA` | The **existing** FreeWheel campaign the new IO nests under. |
+| **Campaign ID** | `86543608` | The exact campaign id (preferred — there can be duplicate names). |
 | **Insertion Order Name** | `Frisco King - USA` | The new IO created for this show/flight. Defaults to `Promoted Title - Region`. |
-| Clone From Template | `Yes` | Clone structure from the brand's reference campaign. |
-| Advertiser Name Contains | `VCBS` | Narrows the VCBS advertiser list; semicolon-separate multiples. |
 | **Recommended Show** | `Frisco King` | FreeWheel "Recommended Show" Key Value. Feeds Tier 1 carousel targeting **and** the Premium Pre-Roll / Essential recommended-show argument. Defaults to Promoted Title. |
 | **Exclude Show** | `Frisco King` | Label excluded from **every** placement so the show never promos against itself. Defaults to Promoted Title. |
 | **Season or Messaging** | `Season 1` | Middle segment of placement names: `{Title} - {Season/Messaging} - {Duration} - Tier N - {Region}`. |

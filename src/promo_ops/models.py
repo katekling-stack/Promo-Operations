@@ -30,8 +30,9 @@ class SupportPlan:
 
     promoted_title: str
     region: str
-    brand: str
-    formats: list[str]
+    formats: list[str] = field(default_factory=list)
+    # Optional legacy grouping; the exact Advertiser + Campaign are the real inputs.
+    brand: Optional[str] = None
     networks: list[str] = field(default_factory=list)
     genres: list[str] = field(default_factory=list)
     showlist: list[str] = field(default_factory=list)
@@ -66,6 +67,7 @@ class SupportPlan:
     campaign: dict[str, Any] = field(default_factory=dict)
     insertion_order_name: Optional[str] = None
     brand_id: Optional[str] = None       # FreeWheel brand_id (from the reference IO)
+    template_io_id: Optional[str] = None # existing IO to model this one after
     salesforce_case: Optional[str] = None
 
     def source_value(self, source: str) -> Any:

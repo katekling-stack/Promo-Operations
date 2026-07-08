@@ -105,7 +105,9 @@ def test_placements_carry_priority_and_freq_cap():
 def test_order_carries_template_ref():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
-    assert order.template_ref["template_campaign_id"] == "86543608"
+    assert order.template_ref["campaign_id"] == "86543608"
+    assert order.template_ref["advertiser_id"] == "1000520"
+    assert order.template_ref["template_io_id"] == "92725144"
     assert order.network_id == "520311"
 
 

@@ -27,11 +27,12 @@ def test_plan_tab_parses_scalars_and_lists():
     assert plan["region"] == "USA"
     assert plan["formats"] == ["remnant_video", "pause_ads", "premium_preroll", "essential_bumper"]
     assert plan["campaign"]["name"] == "Paramount + - USA"
+    assert plan["campaign"]["resolved_id"] == "86543608"
     assert plan["insertion_order_name"] == "Frisco King - USA"
     assert plan["recommended_show"] == "Frisco King"
     assert plan["exclude_show"] == "Frisco King"
-    assert plan["campaign"]["clone_from_template"] is True
-    assert plan["advertiser"]["name_contains"] == ["VCBS"]
+    assert plan["advertiser"]["name"] == "VCBS English - USA - Adult (Promo)"
+    assert plan["advertiser"]["resolved_id"] == "1000520"
 
 
 def test_targeting_tab_parses_columns():

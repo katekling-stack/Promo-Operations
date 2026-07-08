@@ -31,7 +31,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
     return SupportPlan(
         promoted_title=raw["promoted_title"],
         region=raw["region"],
-        brand=raw["brand"],
+        brand=raw.get("brand"),
         formats=list(raw.get("formats") or []),
         networks=list(raw.get("networks") or []),
         genres=list(raw.get("genres") or []),
@@ -56,6 +56,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         campaign=raw.get("campaign") or {},
         insertion_order_name=raw.get("insertion_order_name"),
         brand_id=raw.get("brand_id"),
+        template_io_id=raw.get("template_io_id"),
         salesforce_case=raw.get("salesforce_case"),
     )
 

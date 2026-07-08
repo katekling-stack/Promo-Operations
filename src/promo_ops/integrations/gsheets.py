@@ -139,11 +139,13 @@ def _slug(text: str) -> str:
 PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "promoted title": {"path": ["promoted_title"]},
     "region": {"path": ["region"]},
-    "brand": {"path": ["brand"]},
     "salesforce case": {"path": ["salesforce_case"]},
     # FreeWheel nesting: IO under an existing Campaign under an Advertiser.
+    # Specify the EXACT Advertiser + Campaign (name and/or id).
     "advertiser": {"path": ["advertiser", "name"]},
+    "advertiser id": {"path": ["advertiser", "resolved_id"]},
     "campaign name": {"path": ["campaign", "name"]},
+    "campaign id": {"path": ["campaign", "resolved_id"]},
     "insertion order name": {"path": ["insertion_order_name"]},
     "recommended show": {"path": ["recommended_show"]},
     "exclude show": {"path": ["exclude_show"]},
@@ -151,7 +153,8 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "video durations": {"path": ["durations"], "type": "list"},
     "content type": {"path": ["content_type"]},          # show | movie
     "content id": {"path": ["content_id"]},               # ShowID / MovieID
-    "clone from template": {"path": ["campaign", "clone_from_template"], "type": "bool"},
+    # Optional / legacy — kept for back-compat, not in the standard template.
+    "brand": {"path": ["brand"]},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},
     "flight start": {"path": ["flight", "start"]},
     "flight end": {"path": ["flight", "end"]},

@@ -1,13 +1,12 @@
 Field,Value
 Promoted Title,Frisco King
 Region,USA
-Brand,paramount_network
 Salesforce Case,
-Advertiser,
+Advertiser,VCBS English - USA - Adult (Promo)
+Advertiser ID,1000520
 Campaign Name,Paramount + - USA
+Campaign ID,86543608
 Insertion Order Name,Frisco King - USA
-Clone From Template,Yes
-Advertiser Name Contains,VCBS
 Recommended Show,Frisco King
 Exclude Show,Frisco King
 Season or Messaging,Season 1
