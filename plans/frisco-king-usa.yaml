@@ -39,8 +39,8 @@ content_id: ""                    # ShowID (leave blank -> "[ShowID:]" to fill i
 salesforce_case: null
 
 flight:
-  start: null                     # e.g. 2026-07-14
-  end: null
+  start: "2026-10-01"             # placeholder (10/1/26) — update when confirmed
+  end: "2026-12-31"               # placeholder (12/31/26)
   code: "L1"                      # launch beat / flight code, used in naming
 
 # Formats to build. Each becomes one Placement per region.
