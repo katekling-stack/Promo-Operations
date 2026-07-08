@@ -35,13 +35,27 @@ class SupportPlan:
     networks: list[str] = field(default_factory=list)
     genres: list[str] = field(default_factory=list)
     showlist: list[str] = field(default_factory=list)
+    # Manually-specified Tier 1 audience segments (names or IDs). Added to Tier 1
+    # in addition to any segments auto-resolved from the showlist.
+    audience_segments: list[str] = field(default_factory=list)
+    # FreeWheel "Recommended Show" Key Value. Feeds Tier 1 carousel targeting and the
+    # Premium Pre-Roll / Essential recommended-show argument. Defaults to promoted_title.
+    recommended_show: Optional[str] = None
+    # Label to exclude from EVERY placement (label-based exclusion). Defaults to
+    # promoted_title — the show being promoted is excluded everywhere.
+    exclude_show: Optional[str] = None
     pluto_categories: list[str] = field(default_factory=list)
     pluto_channels: list[str] = field(default_factory=list)
     pplus_user_states: list[str] = field(default_factory=list)
     demographics: Optional[dict[str, Any]] = None
     flight: Flight = field(default_factory=Flight)
+    # FreeWheel nesting: IO (this campaign flight) under an existing Campaign under
+    # an Advertiser. advertiser={name, name_contains, resolved_id};
+    # campaign={name, resolved_id}. insertion_order_name defaults to
+    # "{promoted_title} - {region}".
     advertiser: dict[str, Any] = field(default_factory=dict)
     campaign: dict[str, Any] = field(default_factory=dict)
+    insertion_order_name: Optional[str] = None
     salesforce_case: Optional[str] = None
 
     def source_value(self, source: str) -> Any:
@@ -60,6 +74,7 @@ class SupportPlan:
             "region": self.region,
             "pplus_user_states": self.pplus_user_states,
             "demographics": self.demographics,
+            "recommended_show": self.recommended_show or self.promoted_title,
         }
         return mapping.get(source)
 
@@ -115,6 +130,15 @@ class Placement:
     endpoints: list[str] = field(default_factory=list)
     platforms: list[str] = field(default_factory=list)
     creative_durations_priority: list[int] = field(default_factory=list)
+    # Label-based exclusions applied to this placement (always includes the
+    # promoted show, so it never promos against itself).
+    exclusions: list[str] = field(default_factory=list)
+    # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
+    # small set of explicit arguments rather than the tier stack, and live in an
+    # existing guaranteed order rather than the new remnant IO.
+    guaranteed: bool = False
+    arguments: dict[str, Any] = field(default_factory=dict)
+    nests_in: str = "new_insertion_order"
     extra: dict[str, Any] = field(default_factory=dict)
 
 

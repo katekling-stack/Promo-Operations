@@ -36,6 +36,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         networks=list(raw.get("networks") or []),
         genres=list(raw.get("genres") or []),
         showlist=list(raw.get("showlist") or []),
+        audience_segments=list(raw.get("audience_segments") or []),
         pluto_categories=categories,
         pluto_channels=channels,
         pplus_user_states=list(raw.get("pplus_user_states") or []),
@@ -47,6 +48,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         ),
         advertiser=raw.get("advertiser") or {},
         campaign=raw.get("campaign") or {},
+        insertion_order_name=raw.get("insertion_order_name"),
         salesforce_case=raw.get("salesforce_case"),
     )
 

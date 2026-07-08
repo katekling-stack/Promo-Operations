@@ -73,7 +73,8 @@ def test_pause_ads_excludes_tier4():
 def test_order_builder_creates_placement_per_format():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
-    assert order.name == "Frisco King - USA"
+    assert order.name == "Frisco King - USA"           # IO name
+    assert order.campaign["name"] == "Paramount + - USA"  # existing parent campaign
     assert len(order.placements) == len(plan.formats)
     names = [p.name for p in order.placements]
     assert "Frisco King - USA - Remnant Video" in names
@@ -85,3 +86,38 @@ def test_order_carries_template_ref():
     order = OrderBuilder().build(plan)
     assert order.template_ref["template_campaign_id"] == "86543608"
     assert order.network_id == "520311"
+
+
+def test_promoted_show_excluded_from_every_placement():
+    plan = load_plan(FRISCO)
+    order = OrderBuilder().build(plan)
+    for p in order.placements:
+        assert "Frisco King" in p.exclusions
+
+
+def test_manual_tier1_audience_segments_applied():
+    plan = load_plan(FRISCO)
+    targeting = TargetingEngine().build(plan, "remnant_video")
+    tier1 = next(t for t in targeting.tiers if t.id == 1)
+    seg_dim = next(d for d in tier1.dimensions if d.key == "audience_segments")
+    names = [s["segment_name"] for s in seg_dim.resolved]
+    assert "High Stakes Drama Fans" in names
+    assert "Procedural Drama Fans" in names
+
+
+def test_recommended_show_feeds_tier1_carousel():
+    plan = load_plan(FRISCO)
+    targeting = TargetingEngine().build(plan, "remnant_video")
+    tier1 = next(t for t in targeting.tiers if t.id == 1)
+    carousel = next(d for d in tier1.dimensions if d.key == "home_carousel_recommendation")
+    assert carousel.values == ["Frisco King"]
+
+
+def test_guaranteed_placements_built_from_args():
+    plan = load_plan(FRISCO)
+    order = OrderBuilder().build(plan)
+    prem = next(p for p in order.placements if p.format == "premium_preroll")
+    assert prem.guaranteed
+    assert prem.nests_in == "existing_guaranteed_order"
+    assert prem.arguments["recommended_show"] == "Frisco King"
+    assert prem.arguments["genre"]  # genre-specific arg present

@@ -58,6 +58,16 @@ class OrderBuilder:
             if k in tmpl
         }
 
+        # The promoted show is excluded from every placement (label-based).
+        exclude = plan.exclude_show or plan.promoted_title
+        recommended = plan.recommended_show or plan.promoted_title
+
+        guaranteed = bool(tmpl.get("guaranteed"))
+        arguments: dict = {}
+        if guaranteed:
+            # Built from explicit args (genre + recommended show), not the tier stack.
+            arguments = {"genre": list(plan.genres), "recommended_show": recommended}
+
         return Placement(
             name=name,
             format=fmt,
@@ -68,6 +78,10 @@ class OrderBuilder:
             endpoints=list(tmpl.get("endpoints", [])),
             platforms=list(tmpl.get("platforms", [])),
             creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
+            exclusions=[exclude],
+            guaranteed=guaranteed,
+            arguments=arguments,
+            nests_in=tmpl.get("nests_in", "new_insertion_order"),
             extra=extra,
         )
 
@@ -75,10 +89,13 @@ class OrderBuilder:
         brand_cfg = self._brand_cfg(plan.brand)
 
         campaign = dict(plan.campaign)
-        campaign.setdefault("name", f"{plan.promoted_title} - {plan.region}")
+
+        # The Insertion Order name (e.g. "Frisco King - USA") nests under the
+        # existing parent Campaign (e.g. "Paramount + - USA").
+        io_name = plan.insertion_order_name or f"{plan.promoted_title} - {plan.region}"
 
         order = Order(
-            name=f"{plan.promoted_title} - {plan.region}",
+            name=io_name,
             promoted_title=plan.promoted_title,
             brand=plan.brand,
             region=plan.region,

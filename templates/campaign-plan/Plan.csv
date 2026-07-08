@@ -3,13 +3,17 @@ Promoted Title,Frisco King
 Region,USA
 Brand,paramount_network
 Salesforce Case,
-Campaign Name,Frisco King - USA
+Advertiser,
+Campaign Name,Paramount + - USA
+Insertion Order Name,Frisco King - USA
 Clone From Template,Yes
 Advertiser Name Contains,VCBS
+Recommended Show,Frisco King
+Exclude Show,Frisco King
 Flight Start,
 Flight End,
 Flight Code,L1
-Formats,remnant_video; pause_ads
+Formats,remnant_video; pause_ads; premium_preroll; essential_bumper
 P+ User States,New; Light; Medium; Heavy
 Demographics Age,
 Demographics Gender,

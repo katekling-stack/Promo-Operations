@@ -141,7 +141,12 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "region": {"path": ["region"]},
     "brand": {"path": ["brand"]},
     "salesforce case": {"path": ["salesforce_case"]},
+    # FreeWheel nesting: IO under an existing Campaign under an Advertiser.
+    "advertiser": {"path": ["advertiser", "name"]},
     "campaign name": {"path": ["campaign", "name"]},
+    "insertion order name": {"path": ["insertion_order_name"]},
+    "recommended show": {"path": ["recommended_show"]},
+    "exclude show": {"path": ["exclude_show"]},
     "clone from template": {"path": ["campaign", "clone_from_template"], "type": "bool"},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},
     "flight start": {"path": ["flight", "start"]},
@@ -154,7 +159,9 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
 }
 
 # Targeting tab: normalized column header -> where its column of values lands.
+# Matching is by prefix, so "Audience Segments (Tier 1)" matches "audience segments".
 TARGETING_TAB_COLUMNS: dict[str, list[str]] = {
+    "audience segments": ["audience_segments"],   # Tier 1
     "networks": ["networks"],
     "genres": ["genres"],
     "showlist": ["showlist"],
@@ -209,10 +216,18 @@ def parse_targeting_tab(rows: list[list[str]]) -> dict[str, Any]:
                 columns[i].append(cell)
     plan: dict[str, Any] = {}
     for i, col_label in enumerate(header):
-        path = TARGETING_TAB_COLUMNS.get(col_label)
+        path = _match_targeting_column(col_label)
         if path and columns[i]:
             _set_nested(plan, path, columns[i])
     return plan
+
+
+def _match_targeting_column(col_label: str) -> Optional[list[str]]:
+    """Match a header to a targeting column by prefix (tolerates '(Tier 1)' etc.)."""
+    for key, path in TARGETING_TAB_COLUMNS.items():
+        if col_label == key or col_label.startswith(key):
+            return path
+    return None
 
 
 def assemble_plan_template(plan_rows: list[list[str]],

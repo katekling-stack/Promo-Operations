@@ -58,9 +58,19 @@ class TargetingEngine:
         )
 
         if dim_cfg["key"] == "audience_segments":
-            # Resolve the showlist to FreeWheel audience segments.
+            resolved: list[dict] = []
+            # 1. Segments named directly in the plan/sheet (Tier 1 section).
+            for seg in plan.audience_segments:
+                resolved.append({
+                    "segment_name": seg,
+                    "segment_id": None,
+                    "platform": None,
+                    "region": plan.region,
+                    "source": "manual (sheet/plan)",
+                })
+            # 2. Segments auto-resolved from the showlist via the Audience Segments doc.
             matches = self.resolver.resolve_all(plan.showlist, region=plan.region)
-            resolved, unresolved = [], []
+            unresolved = []
             for m in matches:
                 if m.matched:
                     resolved.extend(m.to_dict()["segments"])
@@ -70,8 +80,9 @@ class TargetingEngine:
             dim.values = [s["segment_name"] for s in resolved]
             if unresolved:
                 dim.notes = (
-                    f"{len(unresolved)} show(s) have no FreeWheel audience segment yet "
-                    f"and must be requested/added to the Audience Segments doc: "
+                    f"{len(unresolved)} show(s) have no auto-matched FreeWheel audience "
+                    f"segment — add them to the Tier 1 Audience Segments section of the "
+                    f"sheet, or request/add them to the Audience Segments doc: "
                     f"{', '.join(unresolved)}"
                 )
             return dim

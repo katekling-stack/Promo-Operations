@@ -17,12 +17,16 @@ pre-filled with the Frisco King - USA example.
 | Region | `USA` | Must match a key in `config/regions.yaml` (USA, CA, AU, LATAM, BR, UK). |
 | Brand | `paramount_network` | Must match a key in `config/brands.yaml`. |
 | Salesforce Case | | Optional; the originating Case #. |
-| Campaign Name | `Frisco King - USA` | FreeWheel campaign name. |
+| **Advertiser** | | The VCBS advertiser this nests under (exact name). |
+| **Campaign Name** | `Paramount + - USA` | The **existing** FreeWheel campaign the new IO nests under. |
+| **Insertion Order Name** | `Frisco King - USA` | The new IO created for this show/flight. Defaults to `Promoted Title - Region`. |
 | Clone From Template | `Yes` | Clone structure from the brand's reference campaign. |
 | Advertiser Name Contains | `VCBS` | Narrows the VCBS advertiser list; semicolon-separate multiples. |
+| **Recommended Show** | `Frisco King` | FreeWheel "Recommended Show" Key Value. Feeds Tier 1 carousel targeting **and** the Premium Pre-Roll / Essential recommended-show argument. Defaults to Promoted Title. |
+| **Exclude Show** | `Frisco King` | Label excluded from **every** placement so the show never promos against itself. Defaults to Promoted Title. |
 | Flight Start / End | `2026-07-14` | Dates. |
 | Flight Code | `L1` | Launch beat / flight code, used in placement names. |
-| Formats | `remnant_video; pause_ads` | Semicolon list; must match `config/placement_templates.yaml`. |
+| Formats | `remnant_video; pause_ads; premium_preroll; essential_bumper` | Semicolon list; must match `config/placement_templates.yaml`. Guaranteed formats (`premium_preroll`, `essential_bumper`) are built from genre + recommended show and flagged as living in the existing guaranteed order. |
 | P+ User States | `New; Light; Medium; Heavy` | Tier-1 P+ user-state targeting. |
 | Demographics Age / Gender | | Optional Tier-3 refinement. |
 
@@ -36,11 +40,14 @@ end a list. Recognized headers:
 
 | Column | Feeds |
 |---|---|
+| Audience Segments (Tier 1) | Tier 1 audience segments, added directly (in addition to any auto-matched from the showlist) |
 | Networks | Tier 3 network/brand |
-| Genres | Tier 3 genre |
-| Showlist | Tier 2 content affinity **and** Tier 1 audience segments (resolved per show) |
+| Genres | Tier 3 genre (also the genre argument for guaranteed placements) |
+| Showlist | Tier 2 content affinity **and** Tier 1 audience segments (auto-resolved per show) |
 | Pluto Categories | Tier 3 Pluto category |
 | Pluto Channels | Tier 2 Pluto channel list |
+
+Column headers are matched by prefix, so `Audience Segments (Tier 1)` works.
 
 ## How to use it
 

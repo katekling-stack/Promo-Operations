@@ -47,3 +47,27 @@ formats:
     creative_durations_priority: [15, 30]
     platforms: ["Megaphone"]
     salesforce_asset_field: "Podcast"
+
+  # --- Guaranteed P+ formats (Retention/Lifecycle-managed) -------------------
+  # These live in an EXISTING guaranteed order, not the new remnant IO. Each is
+  # built from exactly two arguments: a genre-specific value and the recommended
+  # show value. No tier stack.
+  premium_preroll:
+    format_code: "PREM-PRE"
+    display_name: "P+ Premium Pre-Roll"
+    naming: "{promoted_title} - {region} - Premium Pre-Roll"
+    guaranteed: true
+    nests_in: "existing_guaranteed_order"
+    platforms: ["Paramount+ Premium"]
+    arguments: ["genre", "recommended_show"]
+    creative_durations_priority: [30]
+
+  essential_bumper:
+    format_code: "ESS-BMP"
+    display_name: "P+ Essential Bumper"
+    naming: "{promoted_title} - {region} - Essential Bumper"
+    guaranteed: true
+    nests_in: "existing_guaranteed_order"
+    platforms: ["Paramount+ Essential"]
+    arguments: ["genre", "recommended_show"]
+    creative_durations_priority: [30]

@@ -80,3 +80,5 @@ format_tier_defaults:
   pause_ads: [1, 2, 3]
   remnant_display: [3]     # display has no tier hierarchy; genre/geo/site only
   podcast: []              # show/brand/episode specific, no tiers
+  premium_preroll: []      # guaranteed: built from genre + recommended_show args
+  essential_bumper: []     # guaranteed: built from genre + recommended_show args

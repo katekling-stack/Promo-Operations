@@ -25,7 +25,11 @@ def test_plan_tab_parses_scalars_and_lists():
     plan = parse_plan_tab(_rows("Plan.csv"))
     assert plan["promoted_title"] == "Frisco King"
     assert plan["region"] == "USA"
-    assert plan["formats"] == ["remnant_video", "pause_ads"]
+    assert plan["formats"] == ["remnant_video", "pause_ads", "premium_preroll", "essential_bumper"]
+    assert plan["campaign"]["name"] == "Paramount + - USA"
+    assert plan["insertion_order_name"] == "Frisco King - USA"
+    assert plan["recommended_show"] == "Frisco King"
+    assert plan["exclude_show"] == "Frisco King"
     assert plan["campaign"]["clone_from_template"] is True
     assert plan["advertiser"]["name_contains"] == ["VCBS"]
 
@@ -34,6 +38,7 @@ def test_targeting_tab_parses_columns():
     plan = parse_targeting_tab(_rows("Targeting.csv"))
     assert plan["networks"] == ["Paramount Network"]
     assert len(plan["showlist"]) == 22
+    assert plan["audience_segments"] == ["High Stakes Drama Fans", "Procedural Drama Fans"]
     assert plan["pluto"]["categories"][0] == "True Crime"
     assert "CBS Sports HQ" in plan["pluto"]["channels"]
 
@@ -52,6 +57,10 @@ def test_template_roundtrips_to_yaml_plan():
     assert sheet_plan.networks == yaml_plan.networks
     assert sheet_plan.pluto_channels == yaml_plan.pluto_channels
     assert sheet_plan.pluto_categories == yaml_plan.pluto_categories
+    assert sheet_plan.audience_segments == yaml_plan.audience_segments
+    assert sheet_plan.recommended_show == yaml_plan.recommended_show
+    assert sheet_plan.exclude_show == yaml_plan.exclude_show
+    assert sheet_plan.insertion_order_name == yaml_plan.insertion_order_name
 
 
 def test_template_builds_same_order():

@@ -11,14 +11,23 @@ promoted_title: "Frisco King"
 region: USA
 brand: paramount_network          # -> config/brands.yaml
 
-# Where this lands in FreeWheel. advertiser_name_contains narrows the VCBS list.
+# Where this lands in FreeWheel: a new Insertion Order nested under an existing
+# Campaign, under a VCBS Advertiser.
 advertiser:
+  name: ""                        # exact VCBS advertiser name (fill from FreeWheel)
   name_contains: ["VCBS"]
   resolved_id: null               # filled at push time via freewheel.find_advertisers()
 campaign:
-  name: "Frisco King - USA"
+  name: "Paramount + - USA"       # EXISTING parent campaign the IO nests under
   resolved_id: null
   clone_from_template: true       # clone structure from brand template_campaign_id
+insertion_order_name: "Frisco King - USA"   # the new IO for this show/flight
+
+# FreeWheel "Recommended Show" Key Value — feeds Tier 1 carousel targeting and the
+# Premium Pre-Roll / Essential recommended-show argument. Defaults to promoted_title.
+recommended_show: "Frisco King"
+# Excluded from EVERY placement so the show never promos against itself.
+exclude_show: "Frisco King"
 
 # Salesforce Case that originated this plan (source of truth going forward).
 salesforce_case: null
@@ -33,10 +42,18 @@ flight:
 formats:
   - remnant_video                 # full tier stack (1-4)
   - pause_ads                     # Tier 1 audience segments + Tiers 2 & 3
+  - premium_preroll               # guaranteed P+ (existing order): genre + recommended show
+  - essential_bumper              # guaranteed P+ (existing order): genre + recommended show
 
 # ---------------------------------------------------------------------------
 # Targeting inputs (from the support plan). The engine maps these onto tiers.
 # ---------------------------------------------------------------------------
+
+# Tier 1 audience segments specified directly (in addition to any auto-matched from
+# the showlist via the Audience Segments doc).
+audience_segments:
+  - "High Stakes Drama Fans"
+  - "Procedural Drama Fans"
 
 networks:
   - "Paramount Network"

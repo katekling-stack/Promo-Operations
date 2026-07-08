@@ -50,15 +50,22 @@ def _cmd_preview(args: argparse.Namespace) -> int:
 
 
 def _print_preview(order: Order) -> None:
-    print(f"ORDER: {order.name}")
-    print(f"  Brand: {order.brand}   Region: {order.region}   Network: {order.network_id}")
+    adv = order.advertiser.get("name") or order.advertiser.get("name_contains") or "(resolve VCBS)"
+    print(f"ADVERTISER: {adv}")
+    print(f"  CAMPAIGN (existing parent): {order.campaign.get('name')}")
+    print(f"    INSERTION ORDER (new): {order.name}")
+    print(f"      Brand: {order.brand}   Region: {order.region}   Network: {order.network_id}")
     tmpl = order.template_ref
     if tmpl.get("template_campaign_id"):
-        print(f"  Clone template: campaign {tmpl['template_campaign_id']} / IO {tmpl.get('template_io_id')}")
-    print(f"  Advertiser filter: {tmpl.get('advertiser_name_contains')}")
+        print(f"      Clone template: campaign {tmpl['template_campaign_id']} / IO {tmpl.get('template_io_id')}")
     for p in order.placements:
-        print(f"\n  PLACEMENT: {p.name}  [{p.format_code}]")
+        tag = "  ⟨GUARANTEED → existing order⟩" if p.guaranteed else ""
+        print(f"\n  PLACEMENT: {p.name}  [{p.format_code}]{tag}")
         print(f"    Endpoints: {', '.join(p.endpoints) or '-'}   Freq cap: {p.frequency_cap}")
+        if p.exclusions:
+            print(f"    Exclude (label): {', '.join(p.exclusions)}")
+        if p.guaranteed:
+            print(f"    Arguments: genre={p.arguments.get('genre')} | recommended_show={p.arguments.get('recommended_show')!r}")
         for tier in p.targeting.tiers:
             print(f"    Tier {tier.id} — {tier.name}")
             for d in tier.dimensions:
