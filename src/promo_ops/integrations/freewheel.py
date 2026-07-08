@@ -162,6 +162,39 @@ class FreeWheelClient:
                                insertion_order_id=int(io_id), per_page=50)
         return self._rows(payload, "placements")
 
+    def list_standard_attributes(self) -> dict[str, Any]:
+        """Return the full Standard Attributes taxonomy (genres, brands, channels...)."""
+        payload = self._invoke("sh_1_0_liststandardattributes")
+        return (payload or {}).get("data", {}).get("standard_attributes", {})
+
+    def sync_standard_attributes(self, out_dir: Optional[str] = None) -> list[str]:
+        """Write synced_<type>.csv (columns type,name,id) for every attribute type."""
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..standard_attributes import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        written = []
+        for attr_type, coll in self.list_standard_attributes().items():
+            rows = []
+            if isinstance(coll, dict):
+                for v in coll.values():
+                    if isinstance(v, list):
+                        rows = v
+                        break
+            if not rows:
+                continue
+            path = out / f"synced_{attr_type}.csv"
+            with path.open("w", encoding="utf-8", newline="") as fh:
+                w = _csv.writer(fh)
+                w.writerow(["type", "name", "id"])
+                for item in rows:
+                    if isinstance(item, dict) and item.get("id") and item.get("name"):
+                        w.writerow([attr_type, item["name"], item["id"]])
+            written.append(str(path))
+        return written
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:

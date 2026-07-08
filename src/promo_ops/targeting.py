@@ -20,13 +20,16 @@ from typing import Optional
 from .audience_segments import AudienceSegmentResolver
 from .config import regions_config, tiers_config
 from .models import SupportPlan, Tier, TargetingDimension, TieredTargeting
+from .standard_attributes import DIMENSION_ATTRIBUTE_TYPE, StandardAttributeResolver
 
 
 class TargetingEngine:
-    def __init__(self, resolver: Optional[AudienceSegmentResolver] = None):
+    def __init__(self, resolver: Optional[AudienceSegmentResolver] = None,
+                 attr_resolver: Optional[StandardAttributeResolver] = None):
         self._tiers_cfg = tiers_config()
         self._regions_cfg = regions_config()
         self.resolver = (resolver or AudienceSegmentResolver()).load()
+        self.attr_resolver = (attr_resolver or StandardAttributeResolver()).load()
 
     # --- tier selection -------------------------------------------------- #
 
@@ -96,6 +99,21 @@ class TargetingEngine:
             dim.values = list(value)
         elif value is not None:
             dim.values = [value]
+
+        # Resolve content dimensions (genre / network / Pluto category+channel) to
+        # FreeWheel Standard Attribute IDs. Unmatched names are surfaced, not guessed.
+        if dim_cfg["key"] in DIMENSION_ATTRIBUTE_TYPE and dim.values:
+            matches = self.attr_resolver.resolve_dimension(dim_cfg["key"], dim.values)
+            dim.resolved = [
+                {"name": m.name, "id": m.id, "type": m.type, "matched": m.matched}
+                for m in matches if m.matched
+            ]
+            unmatched = [m.name for m in matches if not m.matched]
+            if unmatched:
+                dim.notes = (
+                    f"{len(unmatched)} value(s) have no FreeWheel Standard Attribute "
+                    f"match (check spelling vs FreeWheel, or sync): {', '.join(unmatched)}"
+                )
 
         # Sensible defaults for optional inputs.
         if dim_cfg["key"] == "pplus_user_state" and not dim.values:

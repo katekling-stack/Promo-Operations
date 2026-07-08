@@ -71,7 +71,7 @@ genres:
   - Western
   - War
   - Sports
-  - "Action/Adventure"
+  - "Action & Adventure"     # FreeWheel genre name (was "Action/Adventure")
   - News
 
 # Content-affinity showlist. Drives Tier 2 (showlist) and Tier 1 (each resolved to

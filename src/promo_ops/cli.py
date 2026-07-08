@@ -87,7 +87,12 @@ def _print_preview(order: Order) -> None:
                 else:
                     preview = ", ".join(str(v) for v in d.values[:6])
                     more = f" (+{len(d.values) - 6} more)" if len(d.values) > 6 else ""
-                    print(f"      • {d.key}: {preview}{more}")
+                    suffix = ""
+                    if d.resolved and d.resolved[0].get("id") is not None:
+                        suffix = f"  [{len(d.resolved)}/{len(d.values)} resolved to FW IDs]"
+                    print(f"      • {d.key}: {preview}{more}{suffix}")
+                    if d.notes and d.key != "audience_segments":
+                        print(f"          ! {d.notes}")
 
 
 def _push_target(order: Order, target: str, live: bool) -> dict[str, Any]:
@@ -148,6 +153,15 @@ def _cmd_sync_segments(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_sync_attributes(args: argparse.Namespace) -> int:
+    from .integrations.freewheel import FreeWheelClient
+    written = FreeWheelClient().sync_standard_attributes()
+    print(f"Synced {len(written)} standard-attribute type(s):")
+    for p in written:
+        print(f"  {p}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -181,6 +195,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_sync = sub.add_parser("sync-segments", help="Refresh audience-segment CSVs from the sheet")
     p_sync.add_argument("--sheet-id")
     p_sync.set_defaults(func=_cmd_sync_segments)
+
+    p_attr = sub.add_parser("sync-attributes", help="Refresh Standard Attribute CSVs from FreeWheel")
+    p_attr.set_defaults(func=_cmd_sync_attributes)
 
     return parser
 

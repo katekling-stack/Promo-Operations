@@ -144,6 +144,19 @@ def test_manual_tier1_audience_segments_applied():
     assert "Procedural Drama Fans" in names
 
 
+def test_genres_resolve_to_standard_attribute_ids():
+    plan = load_plan(FRISCO)
+    targeting = TargetingEngine().build(plan, "remnant_video")
+    tier3 = next(t for t in targeting.tiers if t.id == 3)
+    genre = next(d for d in tier3.dimensions if d.key == "genre")
+    ids = {r["name"]: r["id"] for r in genre.resolved}
+    assert ids.get("Drama") == "28"
+    assert ids.get("Western") == "49"
+    assert ids.get("Action & Adventure") == "35"
+    # all 8 Frisco King genres resolve
+    assert len(genre.resolved) == len(plan.genres)
+
+
 def test_recommended_show_feeds_tier1_carousel():
     plan = load_plan(FRISCO)
     targeting = TargetingEngine().build(plan, "remnant_video")
