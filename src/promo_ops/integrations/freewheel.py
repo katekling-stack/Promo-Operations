@@ -162,22 +162,18 @@ class FreeWheelClient:
                                insertion_order_id=int(io_id), per_page=50)
         return self._rows(payload, "placements")
 
-    def resolve_series(self, show: str, prefer_contains: str = "ViacomCBS") -> list[dict[str, Any]]:
-        """Search Video Series by name; exact matches first, ViacomCBS preferred.
+    def search_series(self, show: str, per_page: int = 50) -> list[dict[str, Any]]:
+        """Keyword-search series by name; return ALL matches ({id, name}).
 
-        Returns candidate {id, name} dicts (empty if none). Ambiguous shows (multiple
-        exact matches) are returned for a deliberate pick, not auto-resolved.
+        Per ops workflow: select every match for the keyword and let delivery run
+        against whichever are correct — no exact match needed.
         """
-        import re
-        payload = self._invoke("sh_1_0_liststandardseries", name=show, per_page=25)
-        results = (payload or {}).get("data", {}).get("series", [])
+        payload = self._invoke("sh_1_0_liststandardseries", name=show, per_page=per_page)
+        return (payload or {}).get("data", {}).get("series", [])
 
-        def base(n: str) -> str:
-            return re.sub(r"\s*\(.*?\)\s*$", "", str(n)).strip().lower()
-
-        exact = [r for r in results if base(r.get("name", "")) == show.strip().lower()]
-        preferred = [r for r in exact if prefer_contains.lower() in str(r.get("name", "")).lower()]
-        return preferred or exact or results
+    def resolve_showlist(self, shows: list[str]) -> dict[str, list[dict[str, Any]]]:
+        """Keyword-resolve a whole showlist to all matching series (select-all)."""
+        return {show: self.search_series(show) for show in shows}
 
     def sync_audience_items(self, out_dir: Optional[str] = None, max_pages: int = 200) -> str:
         """Paginate all audience items into a synced CSV (name,id,external_id).
