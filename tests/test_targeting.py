@@ -165,8 +165,8 @@ def test_showlist_resolves_to_series_ids():
     assert ids.get("Tulsa King") == "3732"
     assert ids.get("FBI") == "11811"          # exact match, not "Los archivos del FBI"
     assert ids.get("The Naked Gun") == "15189"
-    # 20 of 22 seeded; Marshals + NCIS: New York intentionally left for manual pick
-    assert len(showdim.resolved) == 20
+    # 21 of 22 seeded; NCIS: New York not premiered yet -> still flagged
+    assert len(showdim.resolved) == 21
     assert "NCIS: New York" in (showdim.notes or "")
 
 
