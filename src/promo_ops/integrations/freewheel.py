@@ -196,7 +196,7 @@ class FreeWheelClient:
                 payload = self._invoke("sh_1_0_list-audience-items", page=page, per_page=50)
                 # shape: data.AudienceItemsResp.audience_items.audience_item[]
                 ai = (((payload or {}).get("data") or {}).get("AudienceItemsResp") or {}).get("audience_items") or {}
-                items = ai.get("audience_item") or []
+                items = ai.get("items") or ai.get("audience_item") or []
                 if isinstance(items, dict):
                     items = [items]
                 if not items:
