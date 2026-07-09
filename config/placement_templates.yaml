@@ -75,3 +75,59 @@ formats:
     platforms: ["Paramount+ Essential"]
     arguments: ["genre", "recommended_show"]
     creative_durations_priority: [30]
+
+  # --- CBS Sports PSA -------------------------------------------------------
+  # Flat per-duration filler line at Tier-4 priority (main SGs only).
+  #   name: "{title} - PSA - {duration} - {region}"
+  psa:
+    format_code: "PSA"
+    display_name: "PSA"
+    flat_line: true               # one placement per duration, not per tier
+    line_label: "PSA"
+    uses_durations: true
+    priority_tier: 4              # Tier-4 priority + main-SG targeting
+    endpoints: ["Desktop", "Mobile", "CTV"]
+
+  # --- CBS Network guaranteed sponsorship lines -----------------------------
+  # Simple GUARANTEED lines: ad unit + geo only, precedence HIGHEST, no targeting
+  # sets.  name: "{title} - {guaranteed_label} - {region}"
+  cbs_preroll:
+    format_code: "CBS-PRE"
+    display_name: "CBS Pre-Roll"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "CBS Pre-Roll"
+    precedence_level: "HIGHEST"
+    frequency_cap: "2 per day"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"
+
+  cbs_after_midroll_bumper:
+    format_code: "CBS-BMP"
+    display_name: "CBS After Mid-Roll Bumper"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "CBS After Mid-Roll Bumper"
+    precedence_level: "HIGHEST"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"
+
+  cbs_1z_lockdown:
+    format_code: "CBS-1Z"
+    display_name: "CBS 1Z Lockdown"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "1Z Lockdown"
+    precedence_level: "HIGHEST"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"
+
+  cbs_2z_lockdown:
+    format_code: "CBS-2Z"
+    display_name: "CBS 2Z Lockdown"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "2Z Lockdown"
+    precedence_level: "HIGHEST"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"

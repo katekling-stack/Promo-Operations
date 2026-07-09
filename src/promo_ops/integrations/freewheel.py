@@ -556,6 +556,12 @@ class FreeWheelClient:
         return str(qty * FreeWheelClient._FC_UNIT_MIN[m.group(2).lower()])
 
     @staticmethod
+    def _fc_value(cap: Optional[str]) -> str:
+        # The impression count before "per" ("2 per day" -> "2"; default "1").
+        m = re.match(r"\s*(\d+)\s*per", cap or "", re.I)
+        return m.group(1) if m else "1"
+
+    @staticmethod
     def _placement_body(p) -> dict[str, Any]:
         """Assemble the FreeWheel create-placement body, mirroring the Dutton Ranch IO.
 
@@ -569,7 +575,8 @@ class FreeWheelClient:
                      Genre / Pluto Categories) — NOT top-level content/audience targeting.
         """
         fc_min = FreeWheelClient._fc_period_minutes(p.frequency_cap)
-        frequency_cap = ({"value": "1", "type": "IMPRESSION", "period": fc_min}
+        frequency_cap = ({"value": FreeWheelClient._fc_value(p.frequency_cap),
+                          "type": "IMPRESSION", "period": fc_min}
                          if fc_min else None)
         body: dict[str, Any] = {
             "name": p.name,
@@ -583,7 +590,7 @@ class FreeWheelClient:
         }
         if p.guaranteed:
             body["budget"] = {"budget_model": "ALL_IMPRESSION"}
-            body["override"] = {"precedence_level": "HIGH"}
+            body["override"] = {"precedence_level": getattr(p, "precedence_level", None) or "HIGH"}
         else:
             body["budget"] = {"budget_model": "IMPRESSION_TARGET", "impression": 1000000000}
             # Priority level -> override.value (negative), mode BELOW_PAYING_ADS.
@@ -700,6 +707,9 @@ class FreeWheelClient:
                 sets.append({"set_name": "Affinity Shows", **custom_excl,
                              **FreeWheelClient._content(plat_subsets, ex)})
             return sets
+
+        if getattr(p, "no_targeting", False):
+            return []   # bare sponsorship line (ad unit + geo only)
 
         if p.guaranteed:
             # P+ sponsored (Plan placements): exactly one Genre argument (genre Video

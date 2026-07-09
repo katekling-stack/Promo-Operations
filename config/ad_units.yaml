@@ -51,6 +51,10 @@ ad_units:
     - "CBS_Promo_Pre_Roll"
   cbs_after_midroll_bumper:    # CBS Network guaranteed After Mid-Roll Bumper
     - "CBS_Brand Bumper_Mid_Roll_Last"
+  cbs_1z_lockdown:             # CBS Network 1Z Lockdown
+    - "Mid_Roll_Break 1_Last"
+  cbs_2z_lockdown:             # CBS Network 2Z Lockdown
+    - "Mid_Roll_Break 2_Last"
 
 # Default (fallback) ad-unit group each format uses. Per-brand overrides live in
 # config/brands.yaml (`ad_unit_groups`), which win when the plan names a brand.
@@ -62,3 +66,5 @@ format_ad_unit_group:
   psa: pplus_cbs_pluto_vcbs
   cbs_preroll: cbs_preroll
   cbs_after_midroll_bumper: cbs_after_midroll_bumper
+  cbs_1z_lockdown: cbs_1z_lockdown
+  cbs_2z_lockdown: cbs_2z_lockdown

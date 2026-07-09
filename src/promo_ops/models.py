@@ -177,6 +177,11 @@ class Placement:
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.
     guaranteed: bool = False
+    # Guaranteed override precedence ("HIGH" for P+ Plan lines, "HIGHEST" for CBS
+    # sponsorship lines). no_targeting => a bare sponsorship line (ad unit + geo only,
+    # no relationship sets).
+    precedence_level: Optional[str] = None
+    no_targeting: bool = False
     arguments: dict[str, Any] = field(default_factory=dict)
     nests_in: str = "new_insertion_order"
     extra: dict[str, Any] = field(default_factory=dict)

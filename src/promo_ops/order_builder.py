@@ -110,8 +110,12 @@ class OrderBuilder:
         return " - ".join(p for p in parts if p)
 
     def _guaranteed_name(self, plan: SupportPlan, tmpl: dict) -> str:
-        # "Paramount + - {unit_label} - {plan_label} - {title} - {region} - [ShowID:{id}]"
-        # (mirrors the Dutton Ranch guaranteed placements).
+        # Simple style (CBS sponsorship lines): "{title} - {label} - {region}".
+        if tmpl.get("name_style") == "simple":
+            parts = [plan.promoted_title, tmpl.get("guaranteed_label", ""), plan.region]
+            return " - ".join(p for p in parts if p)
+        # P+ Plan style (mirrors Dutton):
+        #   "Paramount + - {unit_label} - {plan_label} - {title} - {region} - [ShowID:{id}]"
         label = "MovieID" if (plan.content_type or "show").lower() == "movie" else "ShowID"
         unit = tmpl.get("unit_label", "")
         plan_label = tmpl.get("plan_label", "")
@@ -177,9 +181,22 @@ class OrderBuilder:
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
-        # Guaranteed (Plan) formats: one placement, content-named. Exactly one Genre
-        # argument (genre Video Groups) + one Recommended Show argument — no showlist.
+        # Guaranteed formats.
         if tmpl.get("guaranteed"):
+            precedence = tmpl.get("precedence_level", "HIGH")
+            # Simple sponsorship lines (CBS Pre-Roll / Bumper / Lockdown): ad unit +
+            # geo only, no targeting sets, HIGHEST precedence. Only capped if the
+            # template names a cap (Bumper/Lockdown have none).
+            if tmpl.get("no_targeting"):
+                return [base(
+                    self._guaranteed_name(plan, tmpl),
+                    TieredTargeting(format=fmt),
+                    guaranteed=True, no_targeting=True, precedence_level=precedence,
+                    priority_level=self._guaranteed_priority(),
+                    frequency_cap=tmpl.get("frequency_cap"),
+                )]
+            fc = tmpl.get("frequency_cap") or self._freq_cap(None, fmt)
+            # P+ Plan lines: one Genre argument (genre VGs) + one Recommended Show.
             g_ids: dict[str, list] = {}
             g_vgs = self.genre_resolver.ids_for(list(plan.genres))
             if g_vgs:
@@ -187,13 +204,29 @@ class OrderBuilder:
             return [base(
                 self._guaranteed_name(plan, tmpl),
                 TieredTargeting(format=fmt),
-                guaranteed=True,
+                guaranteed=True, precedence_level=precedence,
                 arguments={"genre": list(plan.genres), "recommended_show": recommended},
                 targeting_ids=g_ids,
                 recommended_show_value=plan.recommended_show_id or plan.content_id,
-                priority_level=self._guaranteed_priority(),
-                frequency_cap=self._freq_cap(None, fmt),
+                priority_level=self._guaranteed_priority(), frequency_cap=fc,
             )]
+
+        # Flat filler lines (PSA): one placement per duration at a fixed tier's
+        # priority + targeting, named "{title} - {label} - {duration} - {region}".
+        if tmpl.get("flat_line"):
+            ptier = tmpl.get("priority_tier", 4)
+            label = tmpl.get("line_label", "")
+            out: list[Placement] = []
+            for dur in self._durations(plan):
+                parts = [plan.promoted_title, label, str(dur), plan.region]
+                out.append(base(
+                    " - ".join(p for p in parts if p),
+                    TieredTargeting(format=fmt),
+                    tier=ptier, duration=dur,
+                    priority_level=self._priority(ptier, dur),
+                    frequency_cap=self._freq_cap(ptier, fmt),
+                ))
+            return out
 
         targeting = self.engine.build(plan, fmt)
         uses_durations = bool(tmpl.get("uses_durations"))

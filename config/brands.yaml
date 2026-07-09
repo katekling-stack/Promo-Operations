@@ -71,6 +71,10 @@ brands:
     template_io_id: "93984940"
     ad_unit_groups:
       remnant_video: cbs_house_all
+      pause_ads: pause_ads
       cbs_preroll: cbs_preroll
       cbs_after_midroll_bumper: cbs_after_midroll_bumper
-    formats: ["remnant_video", "cbs_preroll", "cbs_after_midroll_bumper"]
+      cbs_1z_lockdown: cbs_1z_lockdown
+      cbs_2z_lockdown: cbs_2z_lockdown
+    formats: ["remnant_video", "pause_ads", "cbs_preroll",
+              "cbs_after_midroll_bumper", "cbs_1z_lockdown", "cbs_2z_lockdown"]
