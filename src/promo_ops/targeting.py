@@ -114,19 +114,18 @@ class TargetingEngine:
         elif value is not None:
             dim.values = [value]
 
-        # Tier 2 content-affinity showlist -> FreeWheel Video Series IDs.
+        # Tier 2 content-affinity showlist -> FreeWheel Video Series IDs (select-all).
         if dim_cfg["key"] == "content_affinity_showlist" and dim.values:
             matches = self.series_resolver.resolve_all(dim.values)
             dim.resolved = [
-                {"show": m.show, "id": m.id, "series_name": m.name}
-                for m in matches if m.matched
+                {"show": m.show, "id": s["id"], "series_name": s["name"]}
+                for m in matches for s in m.series
             ]
             unmatched = [m.show for m in matches if not m.matched]
             if unmatched:
                 dim.notes = (
-                    f"{len(unmatched)} show(s) not resolved to a FreeWheel series — "
-                    f"pick the right '(ViacomCBS Production)' entry or fix the title: "
-                    f"{', '.join(unmatched)}"
+                    f"{len(unmatched)} show(s) matched no FreeWheel Video Series "
+                    f"(check the title or sync series): {', '.join(unmatched)}"
                 )
 
         # Pluto channels/categories -> FreeWheel Site Groups (config/pluto.yaml naming).

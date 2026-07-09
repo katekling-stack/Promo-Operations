@@ -163,16 +163,19 @@ def test_genres_resolve_to_standard_attribute_ids():
     assert len(genre.resolved) == len(plan.genres)
 
 
-def test_showlist_resolves_to_series_ids():
+def test_showlist_resolves_to_video_series_ids():
+    # Select-all against the Video Series (asset-group) namespace: a show resolves to
+    # every matching series (large IDs), mirroring the team's UI workflow.
     plan = load_plan(FRISCO)
     t2 = next(t for t in TargetingEngine().build(plan, "remnant_video").tiers if t.id == 2)
     showdim = next(d for d in t2.dimensions if d.key == "content_affinity_showlist")
-    ids = {r["show"]: r["id"] for r in showdim.resolved}
-    assert ids.get("Tulsa King") == "3732"
-    assert ids.get("FBI") == "11811"          # exact match, not "Los archivos del FBI"
-    assert ids.get("The Naked Gun") == "15189"
-    # 21 of 22 seeded; NCIS: New York not premiered yet -> still flagged
-    assert len(showdim.resolved) == 21
+    by_show: dict[str, list] = {}
+    for r in showdim.resolved:
+        by_show.setdefault(r["show"], []).append(r["id"])
+    assert by_show.get("Landman")                     # resolves to >=1 series
+    assert "1147080004" in by_show["Landman"]         # the FW Video Series id (matches Dutton)
+    assert all(i.isdigit() and len(i) > 6 for i in by_show["Landman"])   # asset-group namespace
+    # NCIS: New York not premiered yet -> no series -> flagged
     assert "NCIS: New York" in (showdim.notes or "")
 
 

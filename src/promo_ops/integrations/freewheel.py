@@ -367,6 +367,52 @@ class FreeWheelClient:
                             it.get("external_id"), "site_group_api_v4"])
         return str(path)
 
+    def sync_series(self, out_dir: Optional[str] = None, per_page: int = 500,
+                    max_pages: int = 600) -> str:
+        """Export the Video Series index (id -> name) for Tier 2 series targeting.
+
+        Source: Video API v4 `list-series` (~229k, the Asset Group namespace the
+        placement `series` field requires). No name filter, so we sync the full index
+        once and keyword select-all locally (SeriesResolver). Re-auths on transient
+        errors. Writes data/series/synced_series.csv (git-ignored; large).
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..series import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        path = out / "synced_series.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["id", "name", "status"])
+            page, total_pages, n = 1, None, 0
+            while page <= max_pages:
+                try:
+                    r = self._invoke("sh_1_0_list-series", per_page=per_page, page=page)
+                except Exception:
+                    self.authenticate()
+                    continue
+                d = (r or {}).get("data", {}).get("serieses", {})
+                ser = d.get("series", [])
+                if isinstance(ser, dict):
+                    ser = [ser]
+                if total_pages is None:
+                    try:
+                        total_pages = int(d.get("@total_page"))
+                    except (TypeError, ValueError):
+                        total_pages = None
+                if not ser:
+                    break
+                for s in ser:
+                    if s.get("id") and s.get("name"):
+                        w.writerow([s["id"], s["name"], s.get("status", "")])
+                        n += 1
+                if total_pages and page >= total_pages:
+                    break
+                page += 1
+        return str(path)
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:
@@ -531,10 +577,12 @@ class FreeWheelClient:
         tier = p.targeting.tiers[0] if p.targeting.tiers else None
         if not tier:
             return []
-        dda, channels, categories = [], [], []
+        dda, series, channels, categories = [], [], [], []
         for d in tier.dimensions:
             if d.key == "audience_segments":
                 dda += [r["segment_id"] for r in d.resolved if r.get("segment_id")]
+            elif d.key == "content_affinity_showlist":
+                series += [r["id"] for r in d.resolved if r.get("id")]
             elif d.key == "pluto_channel_list":
                 channels += [r["id"] for r in d.resolved if r.get("id")]
             elif d.key == "pluto_category":
@@ -548,6 +596,12 @@ class FreeWheelClient:
         if dda:
             sets.append({"set_name": "Affinity Shows",
                          "audience_targeting": {"include": {"audience_item": sorted(set(dda))}}})
+        if series:
+            # Video Series (Asset Group namespace) — mirrors Dutton's "Affinity Shows".
+            # `series` must sit DIRECTLY under include (verified: the nested `sets`
+            # form silently drops).
+            sets.append({"set_name": "Affinity Shows", "content_targeting": {"network_items": {
+                "include": {"series": sorted(set(series))}}}})
         if channels:
             sets.append({"set_name": "Channels", **content_sites(channels)})
         if categories:
@@ -564,9 +618,7 @@ class FreeWheelClient:
         tier = p.targeting.tiers[0] if p.targeting.tiers else None
         out: dict[str, list] = {}
         for d in (tier.dimensions if tier else []):
-            if d.key == "content_affinity_showlist":
-                out["series"] = [r.get("series_name") or r.get("show") for r in d.resolved]
-            elif d.key in ("genre", "network"):
+            if d.key in ("genre", "network"):
                 out.setdefault("standard_attributes", []).extend(
                     r.get("name") for r in d.resolved)
         return {k: v for k, v in out.items() if v}

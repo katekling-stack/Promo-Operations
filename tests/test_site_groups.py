@@ -42,9 +42,9 @@ def test_frisco_king_pluto_fully_resolves_into_placement_body():
     order = OrderBuilder().build(plan)
     t2 = next(p for p in order.placements if p.name.endswith("Tier 2 - USA") and p.duration == 30)
     body = FreeWheelClient._placement_body(t2)
-    # Tier 2: Pluto channels persist as a "Channels" site-group set (verified via
-    # read-back). Series is surfaced for the CM (Video Series namespace not API-writable).
+    # Tier 2 mirrors Dutton: "Affinity Shows" (Video Series) + "Channels" (Pluto SGs).
     sets = {s["set_name"]: s for s in body["relationship_targeting"]["set"]}
     channels = sets["Channels"]["content_targeting"]["network_items"]["include"]["site_group"]
     assert len(channels) > 50
-    assert body["_cm_adds_in_ui"]["series"]
+    series = sets["Affinity Shows"]["content_targeting"]["network_items"]["include"]["series"]
+    assert series and all(s.isdigit() for s in series)

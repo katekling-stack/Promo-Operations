@@ -1,21 +1,23 @@
-"""Show -> FreeWheel Video Series ID resolver (Tier 2 content-affinity showlist).
+"""Show -> FreeWheel Video Series resolver (Tier 2 "Affinity Shows").
 
-FreeWheel's series API is searchable by name (standard_attributes/series), but the
-right entry is usually the "(ViacomCBS Production)" variant. This resolver reads
-synced/seed CSVs (columns: show,id,name) so the offline build/preview can resolve
-shows to series IDs without live calls; refresh with the FreeWheel client's
-`resolve_series` / a sync step.
+Placement content targeting writes `series` as **Video Series** IDs (the FreeWheel
+"Asset Group" namespace — large IDs like 1362684028). This is NOT the
+standard-attribute series namespace returned by `liststandardseries` (small IDs
+like 3732), which the placement API rejects ("Asset Group item doesn't exist").
 
-Unmatched or ambiguous shows are surfaced, never guessed (e.g. "Marshals" ->
-U.S. Marshals vs Marshals: A Yellowstone Story must be picked deliberately).
+The Video Series list (`list-series`, ~229k) has no name filter, so — exactly like
+Site Groups — we sync the full index once (FreeWheelClient.sync_series ->
+data/series/synced_series.csv) and keyword select-all locally: search the show
+name and select every matching series, letting delivery run against whichever are
+correct (the team's UI workflow). A committed seed (seed_video_series.csv) covers
+the offline/test path.
 """
 
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 from .audience_segments import normalize_title
 from .config import REPO_ROOT
@@ -26,37 +28,47 @@ DATA_DIR = REPO_ROOT / "data" / "series"
 @dataclass
 class SeriesMatch:
     show: str
-    id: Optional[str]
-    name: Optional[str]
-    matched: bool
+    series: list[dict] = field(default_factory=list)   # [{id, name}]
+
+    @property
+    def matched(self) -> bool:
+        return bool(self.series)
 
 
 class SeriesResolver:
     def __init__(self, data_dir: Path = DATA_DIR):
         self.data_dir = Path(data_dir)
-        self._by_show: dict[str, tuple[str, str]] = {}
+        self._rows: list[dict] = []      # [{id, name, norm}]
         self._loaded = False
 
     def load(self) -> "SeriesResolver":
-        self._by_show.clear()
+        self._rows = []
+        seen: set[str] = set()
         if self.data_dir.exists():
-            for path in sorted(self.data_dir.glob("*.csv")):
-                with path.open(encoding="utf-8", newline="") as fh:
-                    for row in csv.DictReader(fh):
-                        show = (row.get("show") or "").strip()
-                        _id = (row.get("id") or "").strip()
-                        if show and _id:
-                            self._by_show[normalize_title(show)] = (_id, (row.get("name") or "").strip())
+            for path in sorted(self.data_dir.glob("*.csv")):   # synced_ overrides seed_
+                self._load_csv(path, seen)
         self._loaded = True
         return self
 
-    def resolve(self, show: str) -> SeriesMatch:
+    def _load_csv(self, path: Path, seen: set[str]) -> None:
+        with path.open(encoding="utf-8", newline="") as fh:
+            for row in csv.DictReader(fh):
+                _id = (row.get("id") or "").strip()
+                name = (row.get("name") or "").strip()
+                if not (_id and name) or _id in seen:
+                    continue
+                seen.add(_id)
+                self._rows.append({"id": _id, "name": name, "norm": normalize_title(name)})
+
+    def resolve(self, show: str, limit: int = 200) -> SeriesMatch:
+        """Keyword select-all: every Video Series whose name contains the show."""
         if not self._loaded:
             self.load()
-        hit = self._by_show.get(normalize_title(show))
-        if hit:
-            return SeriesMatch(show=show, id=hit[0], name=hit[1], matched=True)
-        return SeriesMatch(show=show, id=None, name=None, matched=False)
+        kw = normalize_title(show)
+        if not kw:
+            return SeriesMatch(show=show)
+        hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if kw in r["norm"]]
+        return SeriesMatch(show=show, series=hits[:limit])
 
     def resolve_all(self, shows: list[str]) -> list[SeriesMatch]:
         return [self.resolve(s) for s in shows]
