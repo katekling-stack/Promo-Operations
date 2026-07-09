@@ -595,8 +595,9 @@ class FreeWheelClient:
         sets = FreeWheelClient._relationship_sets(p)
         if sets:
             body["relationship_targeting"] = {"set": sets}
-        if p.recommended_show_value in (None, ""):
-            body["_cm_adds_in_ui"] = {"recommended_show": "set key-value in UI"}
+        if p.recommended_show_value in (None, "") and sets:
+            body["_cm_adds_in_ui"] = {
+                "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
         return body
 
     # --- relationship targeting (mirrors Dutton Ranch) ------------------- #
@@ -638,6 +639,7 @@ class FreeWheelClient:
         excl_sg = cfg.get("exclude_site_groups", [])
         excl_clips = cfg.get("exclude_video_groups", [])
         rec_key = cfg.get("recommended_show_key", "recommended_show")
+        rec_placeholder = cfg.get("recommended_show_placeholder", "TBD")
 
         t = p.targeting_ids or {}
         dda = sorted(set(t.get("dda", [])))
@@ -653,11 +655,11 @@ class FreeWheelClient:
             return e or None
 
         def rec_show_set(platform_sg):
-            if p.recommended_show_value in (None, ""):
-                return None
+            # Always pre-built; blank value -> placeholder for the CM to replace
+            # (FreeWheel rejects an empty key-value).
+            value = p.recommended_show_value or rec_placeholder
             s = {"set_name": "Recommended Show",
-                 "custom_targeting": {"include": {
-                     "key_value": f"{rec_key}={p.recommended_show_value}"}}}
+                 "custom_targeting": {"include": {"key_value": f"{rec_key}={value}"}}}
             c = FreeWheelClient._content([{"site_group": platform_sg}], base_exclude())
             if c:
                 s.update(c)
@@ -693,20 +695,13 @@ class FreeWheelClient:
             return sets
 
         if p.guaranteed:
-            # P+ sponsored: genre Video Groups + showlist Series, on Paramount+, plus
-            # the Recommended Show key-value.
-            content_sub = {}
+            # P+ sponsored (Plan placements): exactly one Genre argument (genre Video
+            # Groups on Paramount+) + one Recommended Show argument. No showlist.
             if genre_vgs:
-                content_sub["video_group"] = genre_vgs
-            if series:
-                content_sub["series"] = series
-            if content_sub:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                    [{"site_group": pplus}, content_sub],
+                    [{"site_group": pplus}, {"video_group": genre_vgs}],
                     base_exclude(video_group=excl_clips))})
-            rs = rec_show_set(pplus)
-            if rs:
-                sets.append(rs)
+            sets.append(rec_show_set(pplus))
             return sets
 
         # Remnant video, per tier.

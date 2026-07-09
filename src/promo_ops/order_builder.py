@@ -168,15 +168,10 @@ class OrderBuilder:
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
-        # Guaranteed formats: one placement, content-named, built from args. They get
-        # the showlist Video Series + genre Video Groups + Recommended Show (mirrors
-        # Dutton's guaranteed placements).
+        # Guaranteed (Plan) formats: one placement, content-named. Exactly one Genre
+        # argument (genre Video Groups) + one Recommended Show argument — no showlist.
         if tmpl.get("guaranteed"):
             g_ids: dict[str, list] = {}
-            g_series = [s["id"] for m in self.engine.series_resolver.resolve_all(plan.showlist)
-                        for s in m.series]
-            if g_series:
-                g_ids["series"] = g_series
             g_vgs = self.genre_resolver.ids_for(list(plan.genres))
             if g_vgs:
                 g_ids["genre_vgs"] = g_vgs

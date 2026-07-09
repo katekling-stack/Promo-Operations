@@ -77,7 +77,7 @@ tiers:
 # Adjust per campaign in the support plan (`formats[].tiers` overrides this).
 format_tier_defaults:
   remnant_video: [1, 2, 3, 4]
-  pause_ads: [1, 2, 3]
+  pause_ads: [1, 2, 3, 4]
   remnant_display: [3]     # display has no tier hierarchy; genre/geo/site only
   podcast: []              # show/brand/episode specific, no tiers
   premium_preroll: []      # guaranteed: built from genre + recommended_show args

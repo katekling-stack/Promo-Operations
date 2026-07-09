@@ -74,13 +74,23 @@ def test_pause_ads_have_no_pluto_and_platform_sgs():
     assert ["929447", "929449"] in sgs                            # CTV + Desktop platforms
 
 
-def test_guaranteed_has_genre_and_recommended_show():
+def test_guaranteed_has_only_genre_and_recommended_show():
+    # Plan placements = exactly 1 Genre argument + 1 Recommended Show — no showlist.
     order = _order(content_id="956609957")
     prem = next(p for p in order.placements if p.format == "premium_preroll")
     s = _sets(prem)
-    assert "Genre" in s and "Recommended Show" in s
+    assert set(s) == {"Genre", "Recommended Show"}
     inc = s["Genre"]["content_targeting"]["network_items"]["include"]
     assert any("video_group" in sub for sub in inc["set"])         # genre VGs
+    assert not any("series" in sub for sub in inc["set"])          # NO showlist series
+
+
+def test_recommended_show_prebuilt_with_placeholder_when_blank():
+    # Blank Content ID / Recommended Show ID -> scaffolded with the placeholder.
+    order = _order()   # Frisco plan: no content_id
+    t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
+    kv = _sets(t1)["Recommended Show"]["custom_targeting"]["include"]["key_value"]
+    assert kv == "recommended_show=TBD"
 
 
 def test_test_channels_excluded_from_pluto():

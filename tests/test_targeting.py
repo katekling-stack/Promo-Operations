@@ -63,11 +63,12 @@ def test_audience_segments_dimension_always_present_in_tier1():
     assert "audience_segments" in keys
 
 
-def test_pause_ads_excludes_tier4():
+def test_pause_ads_include_all_four_tiers():
+    # Pause Ads run Tiers 1-4 (mirrors Dutton Ranch).
     engine = TargetingEngine()
     plan = load_plan(FRISCO)
     targeting = engine.build(plan, "pause_ads")
-    assert 4 not in [t.id for t in targeting.tiers]
+    assert [t.id for t in targeting.tiers] == [1, 2, 3, 4]
 
 
 # --- order builder ---------------------------------------------------------- #
@@ -78,9 +79,10 @@ def test_order_builder_per_tier_and_duration_naming():
     assert order.name == "Frisco King - USA"           # IO name
     assert order.campaign["name"] == "Paramount + - USA"  # existing parent campaign
     names = [p.name for p in order.placements]
-    # remnant video: 4 tiers x 2 durations = 8; pause ads: 3 tiers; guaranteed: 2 -> 13
-    assert len(order.placements) == 13
+    # remnant video: 4 tiers x 2 durations = 8; pause ads: 4 tiers; guaranteed: 2 -> 14
+    assert len(order.placements) == 14
     assert "Frisco King - Season 1 - 30 - Tier 1 - USA" in names
+    assert "Frisco King - Season 1 - Pause Ad - Tier 4 - USA" in names
     assert "Frisco King - Season 1 - 15 - Tier 4 - USA" in names
 
 
