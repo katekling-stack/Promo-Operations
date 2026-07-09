@@ -121,6 +121,30 @@ def test_pluto_xco_excludes_plutotv_and_samsung():
     assert {"929392", "931759"} <= set(ni["exclude"]["site_group"])         # PlutoTV + Samsung
 
 
+def test_brand_derives_from_campaign_when_unset():
+    from promo_ops.config import brand_for_campaign
+    assert brand_for_campaign({"resolved_id": "86543608"}) == "paramount_plus_domestic"
+    assert brand_for_campaign({"name": "CBS News - USA"}) == "cbs_news"
+    # a plan with only the campaign builds with that brand's nuances
+    plan = support_plan_from_dict({
+        "promoted_title": "X", "region": "USA", "formats": ["remnant_video"],
+        "durations": [30], "campaign": {"name": "CBS News - USA"},
+    })
+    t1 = next(p for p in OrderBuilder().build(plan).placements if p.tier == 1)
+    assert t1.ad_unit_ids == ["72000", "72001"]      # CBS News Mid+Post
+
+
+def test_validate_plan_flags_and_passes():
+    from promo_ops.plan_loader import validate_plan
+    ok = support_plan_from_dict({"promoted_title": "X", "region": "USA",
+                                 "brand": "mtve", "formats": ["remnant_video"],
+                                 "campaign": {"resolved_id": "1"}})
+    assert validate_plan(ok) == []
+    bad = support_plan_from_dict({"promoted_title": "", "region": "ZZ",
+                                  "brand": "nope", "formats": ["weird"], "campaign": {}})
+    assert len(validate_plan(bad)) >= 4
+
+
 def test_default_brand_falls_back_to_paramount_house_units():
     # No brand -> global default ad-unit group (Paramount house Pre/Mid/Post).
     plan = support_plan_from_dict({

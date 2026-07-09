@@ -64,6 +64,26 @@ def relationship_targeting_config() -> dict[str, Any]:
     return load_yaml("relationship_targeting.yaml")
 
 
+def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
+    """Derive the brand key from a plan's campaign (id or name).
+
+    Each brand owns one campaign per region ("Paramount + - USA", "CBS News - USA",
+    …), so the CM only needs to pick the campaign — the brand follows. Matches the
+    campaign's resolved_id against each brand's template_campaign_id, else its name
+    (case-insensitive) against campaign_name.
+    """
+    if not campaign:
+        return None
+    cid = str(campaign.get("resolved_id") or "").strip()
+    cname = str(campaign.get("name") or "").strip().lower()
+    for key, cfg in (brands_config().get("brands", {}) or {}).items():
+        if cid and str(cfg.get("template_campaign_id") or "") == cid:
+            return key
+        if cname and str(cfg.get("campaign_name") or "").strip().lower() == cname:
+            return key
+    return None
+
+
 def env(key: str, default: str | None = None) -> str | None:
     """Read a credential/setting from the environment."""
     return os.environ.get(key, default)

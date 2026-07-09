@@ -26,6 +26,7 @@ brands:
     advertiser_name_contains: ["VCBS", "Paramount"]
     template_campaign_id: "86543608"   # Dutton Ranch (IO 92725144)
     template_io_id: "92725144"
+    campaign_name: "Paramount + - USA"
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
       pause_ads: pause_ads
@@ -39,6 +40,7 @@ brands:
     advertiser_name_contains: ["VCBS", "CBS"]
     template_campaign_id: "54413703"   # PGA Tour - USA (IO 91459093)
     template_io_id: "91459093"
+    campaign_name: "CBS Sports - USA"
     ad_unit_groups:
       remnant_video: cbs_house_all
       psa: cbs_house_all
@@ -51,6 +53,7 @@ brands:
     advertiser_name_contains: ["VCBS", "CBS"]
     template_campaign_id: "54413662"   # Money Moves - USA (IO 94971594)
     template_io_id: "94971594"
+    campaign_name: "CBS News - USA"
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
     # Pluto News Promo Category SGs — never promo CBS News against competing news.
@@ -69,6 +72,7 @@ brands:
     advertiser_name_contains: ["VCBS", "CBS"]
     template_campaign_id: "54407793"   # Eternally Yours - USA (IO 93984940)
     template_io_id: "93984940"
+    campaign_name: "CBS Network - USA"
     ad_unit_groups:
       remnant_video: cbs_house_all
       pause_ads: pause_ads
@@ -86,6 +90,7 @@ brands:
     advertiser_name_contains: ["VCBS", "MTV"]
     template_campaign_id: "54413666"   # Jersey Shore Family Vacation (IO 59975938)
     template_io_id: "59975938"
+    campaign_name: "MTVE - USA"
     main_site_groups: ["929392", "932592", "932591"]   # PlutoTV, VCBS, CBS Local
     include_video_groups: ["73408899"]                 # VG: Cable Adults: MTV
     extra_exclude_video_groups: ["73408858", "73408859"]  # CBS Entertainment VGs
@@ -101,6 +106,7 @@ brands:
     advertiser_name_contains: ["VCBS", "BET"]
     template_campaign_id: "68562294"   # OG Stories (IO 94999325)
     template_io_id: "94999325"
+    campaign_name: "BET Media Group - USA"
     main_site_groups: ["1072587"]      # BET Plus streaming endpoint
     include_video_groups: ["73408894"] # VG: Cable Adults: BET
     extra_exclude_video_groups:        # other cable brands
@@ -124,6 +130,7 @@ brands:
     advertiser_name_contains: ["VCBS", "Pluto"]
     template_campaign_id: "54413718"   # Chip & Jo (IO 90867946)
     template_io_id: "90867946"
+    campaign_name: "Pluto TV - USA"
     main_site_groups: ["929392"]       # PlutoTV
     extra_exclude_site_groups:
       - "932411"   # SG: PlutoTV: Partner: Samsung TV Plus
@@ -140,6 +147,7 @@ brands:
     advertiser_name_contains: ["VCBS"]
     template_campaign_id: "54413625"   # The Expendables (IO 95107045)
     template_io_id: "95107045"
+    campaign_name: "Pluto TV (Cross-Company) - USA"
     main_site_groups: ["932592", "932591"]   # VCBS, CBS Local
     extra_exclude_site_groups:
       - "929392"   # SG: Platform: PlutoTV

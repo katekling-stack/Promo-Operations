@@ -9,6 +9,7 @@
 
 promoted_title: "Frisco King"
 region: USA
+brand: paramount_plus_domestic     # drives ad units / main SGs / excludes (also derivable from campaign)
 
 # Where this lands in FreeWheel: a new Insertion Order nested under an existing
 # Campaign, under a specific Advertiser. Specify the exact Advertiser + Campaign.

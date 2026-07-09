@@ -94,6 +94,13 @@ class OrderBuilder:
         # Resolve the format's ad-unit NAMES -> FW ad-unit IDs (data/ad_units table).
         return self.ad_unit_resolver.ids_for(self._ad_unit_names(brand_cfg, fmt))
 
+    def _resolve_brand(self, plan: SupportPlan) -> Optional[str]:
+        # Explicit brand wins; otherwise derive it from the campaign (1:1 per region).
+        if plan.brand:
+            return plan.brand
+        from .config import brand_for_campaign
+        return brand_for_campaign(plan.campaign)
+
     def _brand_cfg(self, brand: Optional[str]) -> dict:
         # `brand` selects the per-brand nuance block (ad units, extra excludes). The
         # exact Advertiser + Campaign in the plan remain authoritative. {} when absent.
@@ -163,7 +170,7 @@ class OrderBuilder:
         recommended = plan.recommended_show or plan.promoted_title
         extra = {k: tmpl[k] for k in ("spec", "standard_sizes", "salesforce_asset_field") if k in tmpl}
 
-        brand_cfg = self._brand_cfg(plan.brand)
+        brand_cfg = self._brand_cfg(self._resolve_brand(plan))
         geo_names = self._geo_country_names(plan.region)
         geo_ids = self._geo_country_ids(geo_names)
         ad_unit_names = self._ad_unit_names(brand_cfg, fmt)

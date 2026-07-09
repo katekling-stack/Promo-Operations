@@ -70,3 +70,43 @@ def load_plan(path: str | Path) -> SupportPlan:
     if not raw:
         raise ValueError(f"Empty or invalid plan file: {path}")
     return support_plan_from_dict(raw)
+
+
+def validate_plan(plan: SupportPlan) -> list[str]:
+    """Intake gate: return human-readable problems with a plan (empty == OK).
+
+    Runs before build/create so a bad hand-off is caught up front rather than
+    producing a wrong draft. Checks required fields, and that brand / region /
+    formats are known to the config.
+    """
+    from .config import (brands_config, regions_config, placement_templates_config,
+                         brand_for_campaign)
+    problems: list[str] = []
+    brand = plan.brand or brand_for_campaign(plan.campaign)
+
+    if not plan.promoted_title:
+        problems.append("Promoted Title is required.")
+    if not plan.formats:
+        problems.append("At least one Format is required.")
+
+    regions = regions_config().get("regions", {})
+    if not plan.region:
+        problems.append("Region is required.")
+    elif plan.region not in regions:
+        problems.append(f"Unknown Region {plan.region!r}. Known: {', '.join(regions)}.")
+
+    brands = brands_config().get("brands", {})
+    if not brand:
+        problems.append("Brand is required (or a recognized Campaign it can be derived "
+                        "from) — it drives ad units, main SGs, excludes.")
+    elif brand not in brands:
+        problems.append(f"Unknown Brand {brand!r}. Known: {', '.join(brands)}.")
+
+    known_formats = placement_templates_config().get("formats", {})
+    for fmt in plan.formats:
+        if fmt not in known_formats:
+            problems.append(f"Unknown Format {fmt!r}. Known: {', '.join(known_formats)}.")
+
+    if not (plan.campaign.get("resolved_id") or plan.campaign.get("name")):
+        problems.append("Parent Campaign (name or ID) is required.")
+    return problems
