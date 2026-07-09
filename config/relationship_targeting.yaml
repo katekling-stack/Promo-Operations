@@ -1,0 +1,28 @@
+# Relationship-targeting constants — mirror the Dutton Ranch IO exactly.
+#
+# Targeting is layered into named relationship sets. The "main SGs" (platform /
+# business-division Site Groups) are AND-ed into the Showlist / Genre / Audience
+# targeting in every tier so everything runs on our O&O inventory. Pause Ads have
+# their own platform footprint and never use Pluto channels/categories.
+#
+# IDs verified live (show-a-site-group / show-a-video-group).
+
+domestic_usa:
+  # Platform / biz-div Site Groups AND-ed into Tier 1 (audience), Tier 2 (showlist),
+  # Tier 3 (genre) and Tier 4 for remnant video.
+  main_site_groups:                       # 929392 PlutoTV, 932583 P+, 932591 CBS Local, 932592 VCBS
+    - "929392"
+    - "932583"
+    - "932591"
+    - "932592"
+  pplus_site_group: ["932583"]            # Paramount+ only (guaranteed + Recommended Show)
+  exclude_site_groups: ["951172"]         # SG: Pluto TV: FREQUENT DNR (excluded everywhere)
+  exclude_video_groups: ["73410101"]      # VG: Content Format: Clips (excluded on genre sets)
+  recommended_show_key: "recommended_show"
+
+  # Pause Ads: platform biz-div (no CBS Local) AND device platforms; NO Pluto.
+  pause:
+    main_site_groups: ["929392", "932583", "932592"]   # PlutoTV, P+, VCBS
+    platform_site_groups: ["929447", "929449"]         # SG: Platform: CTV, Desktop
+    exclude_key_values: ["sb=14", "tsb=14", "tve=14", "tve=17"]
+    exclude_video_groups: ["98314060", "98405426", "311826361"]

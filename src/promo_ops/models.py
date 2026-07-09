@@ -159,6 +159,13 @@ class Placement:
     # once the ad-unit table is synced.
     ad_unit_names: list[str] = field(default_factory=list)
     ad_unit_ids: list[str] = field(default_factory=list)
+    # Resolved relationship-targeting IDs for this placement (FW namespaces), keyed
+    # by kind: dda, series, channels (Pluto channel SGs), categories (Pluto category
+    # SGs), genre_vgs (genre Video Groups). Combined with the config "main SGs" in
+    # freewheel._relationship_sets to mirror Dutton.
+    targeting_ids: dict[str, list] = field(default_factory=dict)
+    # Recommended Show custom key-value value (a ShowID). Blank -> CM adds in the UI.
+    recommended_show_value: Optional[str] = None
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.

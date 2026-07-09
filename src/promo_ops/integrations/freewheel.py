@@ -413,6 +413,49 @@ class FreeWheelClient:
                 page += 1
         return str(path)
 
+    def sync_genre_video_groups(self, out_dir: Optional[str] = None, per_page: int = 500,
+                                max_pages: int = 30, stop_after_empty: int = 3) -> str:
+        """Export the genre Video Groups ("VG: Genre: ...") for Tier 3 / guaranteed.
+
+        Source: Video API v4 `list-video-groups` sorted OLDEST-first — the curated
+        "VG: Genre:" set (domestic + regional) was created early, so it lands in the
+        first pages. Sorting oldest-first also avoids the pagination-drift that a full
+        newest-first scan suffers while new video groups are being created. Stops after
+        `stop_after_empty` consecutive pages with no genre VGs. Feeds
+        GenreVideoGroupResolver. Writes data/video_groups/synced_genre_video_groups.csv.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..video_groups import DATA_DIR, PREFIX
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        path = out / "synced_genre_video_groups.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["id", "name", "status"])
+            page, empty_streak = 1, 0
+            while page <= max_pages and empty_streak < stop_after_empty:
+                try:
+                    r = self._invoke("sh_1_0_list-video-groups", per_page=per_page,
+                                     page=page, sort="created_at")
+                except Exception:
+                    self.authenticate()
+                    continue
+                vg = (r or {}).get("data", {}).get("video_groups", {}).get("video_group", [])
+                if isinstance(vg, dict):
+                    vg = [vg]
+                if not vg:
+                    break
+                found = 0
+                for g in vg:
+                    if str(g.get("name", "")).startswith(PREFIX) and g.get("id"):
+                        w.writerow([g["id"], g["name"], g.get("status", "")])
+                        found += 1
+                empty_streak = empty_streak + 1 if found == 0 else 0
+                page += 1
+        return str(path)
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:
@@ -552,76 +595,151 @@ class FreeWheelClient:
         sets = FreeWheelClient._relationship_sets(p)
         if sets:
             body["relationship_targeting"] = {"set": sets}
-        unsupported = FreeWheelClient._unsupported_targeting(p)
-        if unsupported:
-            body["_cm_adds_in_ui"] = unsupported   # series / std-attrs (namespace limits)
+        if p.recommended_show_value in (None, ""):
+            body["_cm_adds_in_ui"] = {"recommended_show": "set key-value in UI"}
         return body
+
+    # --- relationship targeting (mirrors Dutton Ranch) ------------------- #
+
+    @staticmethod
+    def _content(subsets: list[dict], exclude: Optional[dict] = None) -> Optional[dict]:
+        """content_targeting.network_items node: AND the subsets (each OR internally).
+
+        One subset -> `include` holds it directly (verified to persist); two or more
+        -> {relation_between_sets: AND, set: [{..., relation_in_set: OR}, ...]}.
+        """
+        subs = [s for s in subsets if s and any(v for v in s.values())]
+        if not subs:
+            return None
+        # relation_between_sets is an ARRAY with (N-1) relations for N sets
+        # ("the number of sets should be one greater than the number of relations").
+        include = (dict(subs[0]) if len(subs) == 1
+                   else {"relation_between_sets": ["AND"] * (len(subs) - 1),
+                         "set": [{**s, "relation_in_set": "OR"} for s in subs]})
+        node: dict[str, Any] = {"include": include}
+        if exclude:
+            node["exclude"] = exclude
+        return {"content_targeting": {"network_items": node}}
 
     @staticmethod
     def _relationship_sets(p) -> list[dict[str, Any]]:
-        """Build relationship_targeting.set[] from the placement's resolved tier.
+        """Build relationship_targeting.set[] mirroring the Dutton Ranch IO.
 
-        Mirrors Dutton's named sets, substituting this campaign's resolved IDs. Only
-        the sections VERIFIED to persist on create (read back with expand flags) are
-        emitted, so nothing is silently dropped:
-          Tier 1 -> "Affinity Shows" : audience_item (DDA)
-          Tier 2 -> "Channels"       : Pluto channel site groups
-          Tier 3 -> "Pluto Categories": Pluto category site groups
-          Tier 4 -> RON (no include; broadest remnant)
-
-        NOT emitted (see _unsupported_targeting): Tier 2 Video Series and Tier 3
-        genre/network Standard Attributes — the `series` field needs the Video Series
-        asset-group namespace (229k, no name search via API) and standard_attributes
-        do not persist through the gateway. Those are handled by the CM in the UI.
+        The platform/biz-div "main SGs" are AND-ed into the audience/showlist/genre
+        targeting in every tier; Pause Ads use their own platform footprint (no Pluto);
+        genre is targeted via "VG: Genre:" Video Groups; the Recommended Show set is a
+        custom key-value. Uses placement.targeting_ids (resolved IDs) + config
+        constants (config/relationship_targeting.yaml).
         """
-        tier = p.targeting.tiers[0] if p.targeting.tiers else None
-        if not tier:
-            return []
-        dda, series, channels, categories = [], [], [], []
-        for d in tier.dimensions:
-            if d.key == "audience_segments":
-                dda += [r["segment_id"] for r in d.resolved if r.get("segment_id")]
-            elif d.key == "content_affinity_showlist":
-                series += [r["id"] for r in d.resolved if r.get("id")]
-            elif d.key == "pluto_channel_list":
-                channels += [r["id"] for r in d.resolved if r.get("id")]
-            elif d.key == "pluto_category":
-                categories += [r["id"] for r in d.resolved if r.get("id")]
+        from ..config import relationship_targeting_config
+        cfg = relationship_targeting_config().get("domestic_usa", {})
+        main = cfg.get("main_site_groups", [])
+        pplus = cfg.get("pplus_site_group", [])
+        excl_sg = cfg.get("exclude_site_groups", [])
+        excl_clips = cfg.get("exclude_video_groups", [])
+        rec_key = cfg.get("recommended_show_key", "recommended_show")
 
-        def content_sites(site_ids):
-            return {"content_targeting": {"network_items": {"include": {
-                "site_group": sorted(set(site_ids))}}}}
+        t = p.targeting_ids or {}
+        dda = sorted(set(t.get("dda", [])))
+        series = sorted(set(t.get("series", [])))
+        channels = sorted(set(t.get("channels", [])))
+        categories = sorted(set(t.get("categories", [])))
+        genre_vgs = sorted(set(t.get("genre_vgs", [])))
+
+        def base_exclude(**extra):
+            e = dict(extra)
+            if excl_sg:
+                e["site_group"] = excl_sg
+            return e or None
+
+        def rec_show_set(platform_sg):
+            if p.recommended_show_value in (None, ""):
+                return None
+            s = {"set_name": "Recommended Show",
+                 "custom_targeting": {"include": {
+                     "key_value": f"{rec_key}={p.recommended_show_value}"}}}
+            c = FreeWheelClient._content([{"site_group": platform_sg}], base_exclude())
+            if c:
+                s.update(c)
+            return s
 
         sets: list[dict[str, Any]] = []
-        if dda:
-            sets.append({"set_name": "Affinity Shows",
-                         "audience_targeting": {"include": {"audience_item": sorted(set(dda))}}})
-        if series:
-            # Video Series (Asset Group namespace) — mirrors Dutton's "Affinity Shows".
-            # `series` must sit DIRECTLY under include (verified: the nested `sets`
-            # form silently drops).
-            sets.append({"set_name": "Affinity Shows", "content_targeting": {"network_items": {
-                "include": {"series": sorted(set(series))}}}})
-        if channels:
-            sets.append({"set_name": "Channels", **content_sites(channels)})
-        if categories:
-            sets.append({"set_name": "Pluto Categories", **content_sites(categories)})
+
+        if p.format == "pause_ads":
+            pause = cfg.get("pause", {})
+            pmain = pause.get("main_site_groups", [])
+            pplat = pause.get("platform_site_groups", [])
+            plat_subsets = [{"site_group": pmain}, {"site_group": pplat}]
+            ex = base_exclude(video_group=pause.get("exclude_video_groups", []))
+            kv = pause.get("exclude_key_values", [])
+            custom_excl = ({"custom_targeting": {"exclude": {"key_value": kv}}} if kv else {})
+            if p.tier == 1:
+                s = {"set_name": "Affinity Shows", **custom_excl}
+                if dda:
+                    s["audience_targeting"] = {"include": {"audience_item": dda}}
+                s.update(FreeWheelClient._content(plat_subsets, ex))
+                sets.append(s)
+            elif p.tier == 2:
+                s = {"set_name": "Affinity Shows", **custom_excl,
+                     **FreeWheelClient._content([{"series": series}] + plat_subsets, ex)}
+                sets.append(s)
+            elif p.tier == 3:
+                s = {"set_name": "Genre", **custom_excl,
+                     **FreeWheelClient._content([{"video_group": genre_vgs}] + plat_subsets, ex)}
+                sets.append(s)
+            else:  # tier 4
+                sets.append({"set_name": "Affinity Shows", **custom_excl,
+                             **FreeWheelClient._content(plat_subsets, ex)})
+            return sets
+
+        if p.guaranteed:
+            # P+ sponsored: genre Video Groups + showlist Series, on Paramount+, plus
+            # the Recommended Show key-value.
+            content_sub = {}
+            if genre_vgs:
+                content_sub["video_group"] = genre_vgs
+            if series:
+                content_sub["series"] = series
+            if content_sub:
+                sets.append({"set_name": "Genre", **FreeWheelClient._content(
+                    [{"site_group": pplus}, content_sub],
+                    base_exclude(video_group=excl_clips))})
+            rs = rec_show_set(pplus)
+            if rs:
+                sets.append(rs)
+            return sets
+
+        # Remnant video, per tier.
+        if p.tier == 1:
+            s = {"set_name": "Affinity Shows"}
+            if dda:
+                s["audience_targeting"] = {"include": {"audience_item": dda}}
+            c = FreeWheelClient._content([{"site_group": main}], base_exclude())
+            if c:
+                s.update(c)
+            sets.append(s)
+            rs = rec_show_set(pplus)
+            if rs:
+                sets.append(rs)
+        elif p.tier == 2:
+            if series:
+                sets.append({"set_name": "Affinity Shows", **FreeWheelClient._content(
+                    [{"series": series}, {"site_group": main}], base_exclude())})
+            if channels:
+                sets.append({"set_name": "Channels", **FreeWheelClient._content(
+                    [{"site_group": channels}], base_exclude())})
+        elif p.tier == 3:
+            if genre_vgs:
+                sets.append({"set_name": "Genre", **FreeWheelClient._content(
+                    [{"site_group": main}, {"video_group": genre_vgs}],
+                    base_exclude(video_group=excl_clips))})
+            if categories:
+                sets.append({"set_name": "Pluto Categories", **FreeWheelClient._content(
+                    [{"site_group": categories}], base_exclude())})
+        else:  # tier 4 — platform-constrained RON
+            sets.append({"set_name": "Genre", **FreeWheelClient._content(
+                [{"site_group": main}], base_exclude())})
         return sets
-
-    @staticmethod
-    def _unsupported_targeting(p) -> dict[str, list]:
-        """Resolved targeting the CM must add in the UI (namespaces the API can't write).
-
-        Video Series (Tier 2 "Affinity Shows") and genre/network Standard Attributes
-        (Tier 3) — surfaced as names so they're visible, never silently lost.
-        """
-        tier = p.targeting.tiers[0] if p.targeting.tiers else None
-        out: dict[str, list] = {}
-        for d in (tier.dimensions if tier else []):
-            if d.key in ("genre", "network"):
-                out.setdefault("standard_attributes", []).extend(
-                    r.get("name") for r in d.resolved)
-        return {k: v for k, v in out.items() if v}
 
     @staticmethod
     def _apply_geo_and_ad_units(body: dict[str, Any], p) -> None:

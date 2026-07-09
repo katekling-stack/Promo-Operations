@@ -27,21 +27,51 @@ from .config import (ad_units_config, brands_config, placement_templates_config,
 from .ad_units import AdUnitResolver
 from .geo import CountryResolver
 from .models import Order, Placement, SupportPlan, TieredTargeting
+from .series import SeriesResolver
 from .targeting import TargetingEngine
+from .video_groups import GenreVideoGroupResolver
 
 
 class OrderBuilder:
     def __init__(self, engine: Optional[TargetingEngine] = None,
                  countries: Optional[CountryResolver] = None,
-                 ad_unit_resolver: Optional[AdUnitResolver] = None):
+                 ad_unit_resolver: Optional[AdUnitResolver] = None,
+                 genre_resolver: Optional[GenreVideoGroupResolver] = None):
         self.engine = engine or TargetingEngine()
         self.countries = (countries or CountryResolver()).load()
         self.ad_unit_resolver = (ad_unit_resolver or AdUnitResolver()).load()
+        self.genre_resolver = (genre_resolver or GenreVideoGroupResolver()).load()
         self._brands = brands_config()
         self._templates = placement_templates_config()
         self._priorities = priorities_config()
         self._regions = regions_config()
         self._ad_units = ad_units_config()
+
+    @staticmethod
+    def _ids_from_tier(tier) -> dict:
+        """Extract resolved FW IDs from a tier's dimensions, by kind."""
+        out: dict[str, list] = {}
+        for d in tier.dimensions:
+            if d.key == "audience_segments":
+                out.setdefault("dda", []).extend(
+                    r["segment_id"] for r in d.resolved if r.get("segment_id"))
+            elif d.key == "content_affinity_showlist":
+                out.setdefault("series", []).extend(r["id"] for r in d.resolved if r.get("id"))
+            elif d.key == "pluto_channel_list":
+                out.setdefault("channels", []).extend(r["id"] for r in d.resolved if r.get("id"))
+            elif d.key == "pluto_category":
+                out.setdefault("categories", []).extend(r["id"] for r in d.resolved if r.get("id"))
+        return out
+
+    def _targeting_ids(self, plan: SupportPlan, tier) -> dict:
+        ids = self._ids_from_tier(tier)
+        # Genre (Tier 3) -> genre Video Groups. Resolve from the plan genres when the
+        # tier carries a genre dimension.
+        if any(d.key == "genre" for d in tier.dimensions) and plan.genres:
+            vgs = self.genre_resolver.ids_for(list(plan.genres))
+            if vgs:
+                ids["genre_vgs"] = vgs
+        return ids
 
     def _geo_country_names(self, region: str) -> list:
         """Country NAMES the team selects in FreeWheel for this region."""
@@ -138,13 +168,25 @@ class OrderBuilder:
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
-        # Guaranteed formats: one placement, content-named, built from args.
+        # Guaranteed formats: one placement, content-named, built from args. They get
+        # the showlist Video Series + genre Video Groups + Recommended Show (mirrors
+        # Dutton's guaranteed placements).
         if tmpl.get("guaranteed"):
+            g_ids: dict[str, list] = {}
+            g_series = [s["id"] for m in self.engine.series_resolver.resolve_all(plan.showlist)
+                        for s in m.series]
+            if g_series:
+                g_ids["series"] = g_series
+            g_vgs = self.genre_resolver.ids_for(list(plan.genres))
+            if g_vgs:
+                g_ids["genre_vgs"] = g_vgs
             return [base(
                 self._guaranteed_name(plan, tmpl),
                 TieredTargeting(format=fmt),
                 guaranteed=True,
                 arguments={"genre": list(plan.genres), "recommended_show": recommended},
+                targeting_ids=g_ids,
+                recommended_show_value=plan.content_id,
                 priority_level=self._guaranteed_priority(),
                 frequency_cap=self._freq_cap(None, fmt),
             )]
@@ -165,6 +207,9 @@ class OrderBuilder:
                     tier=tier.id,
                     duration=dur,
                     season_or_messaging=plan.season_or_messaging,
+                    targeting_ids=self._targeting_ids(plan, tier),
+                    # Recommended Show rides on Tier 1 (mirrors Dutton).
+                    recommended_show_value=plan.content_id if tier.id == 1 else None,
                     priority_level=self._priority(tier.id, dur),
                     frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),

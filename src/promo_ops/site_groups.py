@@ -82,8 +82,9 @@ class SiteGroupResolver:
                 _id = (row.get("id") or "").strip()
                 if not (name and _id) or _id in seen:
                     continue
-                if "do not use" in name.lower():
-                    continue
+                low = name.lower()
+                if "do not use" in low or re.search(r"\btest\b", low):
+                    continue   # skip DNU + Test site groups (never target Test channels)
                 seen.add(_id)
                 self._rows.append({"name": name, "id": _id, "norm": _norm(name)})
 

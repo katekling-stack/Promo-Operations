@@ -42,9 +42,15 @@ def test_frisco_king_pluto_fully_resolves_into_placement_body():
     order = OrderBuilder().build(plan)
     t2 = next(p for p in order.placements if p.name.endswith("Tier 2 - USA") and p.duration == 30)
     body = FreeWheelClient._placement_body(t2)
-    # Tier 2 mirrors Dutton: "Affinity Shows" (Video Series) + "Channels" (Pluto SGs).
+    # Tier 2 mirrors Dutton: "Affinity Shows" (Video Series AND main platform SGs) +
+    # "Channels" (Pluto channel SGs).
     sets = {s["set_name"]: s for s in body["relationship_targeting"]["set"]}
     channels = sets["Channels"]["content_targeting"]["network_items"]["include"]["site_group"]
     assert len(channels) > 50
-    series = sets["Affinity Shows"]["content_targeting"]["network_items"]["include"]["series"]
+    # Affinity Shows = AND of {series} and {main SGs}
+    affinity_inc = sets["Affinity Shows"]["content_targeting"]["network_items"]["include"]
+    assert affinity_inc["relation_between_sets"] == ["AND"]   # N-1 relations for N sets
+    subs = {tuple(sorted(k for k in s if k != "relation_in_set")): s for s in affinity_inc["set"]}
+    series = subs[("series",)]["series"]
     assert series and all(s.isdigit() for s in series)
+    assert subs[("site_group",)]["site_group"]   # main platform SGs AND-ed in

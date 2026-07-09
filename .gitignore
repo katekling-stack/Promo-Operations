@@ -28,3 +28,4 @@ data/geo/synced_*.csv
 data/ad_units/synced_*.csv
 data/site_groups/synced_*.csv
 data/series/synced_*.csv
+data/video_groups/synced_*.csv
