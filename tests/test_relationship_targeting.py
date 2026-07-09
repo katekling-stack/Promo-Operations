@@ -54,6 +54,16 @@ def test_recommended_show_key_value_when_content_id_present():
     assert rec["custom_targeting"]["include"]["key_value"] == "recommended_show=956609957"
 
 
+def test_recommended_show_id_field_drives_key_value():
+    # Dedicated "Recommended Show ID" plan field feeds the key-value (over Content ID).
+    plan = load_plan(FRISCO)
+    plan.recommended_show_id = "12345"
+    order = OrderBuilder().build(plan)
+    t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
+    rec = _sets(t1)["Recommended Show"]
+    assert rec["custom_targeting"]["include"]["key_value"] == "recommended_show=12345"
+
+
 def test_pause_ads_have_no_pluto_and_platform_sgs():
     order = _order()
     pause2 = next(p for p in order.placements if p.format == "pause_ads" and p.tier == 2)

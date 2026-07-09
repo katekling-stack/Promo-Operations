@@ -186,7 +186,7 @@ class OrderBuilder:
                 guaranteed=True,
                 arguments={"genre": list(plan.genres), "recommended_show": recommended},
                 targeting_ids=g_ids,
-                recommended_show_value=plan.content_id,
+                recommended_show_value=plan.recommended_show_id or plan.content_id,
                 priority_level=self._guaranteed_priority(),
                 frequency_cap=self._freq_cap(None, fmt),
             )]
@@ -209,7 +209,8 @@ class OrderBuilder:
                     season_or_messaging=plan.season_or_messaging,
                     targeting_ids=self._targeting_ids(plan, tier),
                     # Recommended Show rides on Tier 1 (mirrors Dutton).
-                    recommended_show_value=plan.content_id if tier.id == 1 else None,
+                    recommended_show_value=(plan.recommended_show_id or plan.content_id)
+                                           if tier.id == 1 else None,
                     priority_level=self._priority(tier.id, dur),
                     frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),

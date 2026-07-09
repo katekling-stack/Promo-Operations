@@ -153,6 +153,9 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "video durations": {"path": ["durations"], "type": "list"},
     "content type": {"path": ["content_type"]},          # show | movie
     "content id": {"path": ["content_id"]},               # ShowID / MovieID
+    # Recommended Show key-value (Tier 1 + guaranteed). Defaults to Content ID when
+    # blank; the assigned CM fills this with the recommended-show value.
+    "recommended show id": {"path": ["recommended_show_id"]},
     # Optional / legacy — kept for back-compat, not in the standard template.
     "brand": {"path": ["brand"]},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},

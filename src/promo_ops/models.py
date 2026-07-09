@@ -54,6 +54,9 @@ class SupportPlan:
     # "show" -> "{title} [ShowID:{content_id}]", "movie" -> "{title} [MovieID:{content_id}]".
     content_type: str = "show"          # "show" | "movie"
     content_id: Optional[str] = None    # ShowID / MovieID (left blank -> "[ShowID:]")
+    # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
+    # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
+    recommended_show_id: Optional[str] = None
     pluto_categories: list[str] = field(default_factory=list)
     pluto_channels: list[str] = field(default_factory=list)
     pplus_user_states: list[str] = field(default_factory=list)

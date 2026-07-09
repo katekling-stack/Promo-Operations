@@ -27,6 +27,7 @@ pre-filled with the Frisco King - USA example.
 | **Video Durations** | `30; 15` | Semicolon list of seconds. Each video tier becomes one placement **per duration**. |
 | **Content Type** | `show` | `show` or `movie` — selects the guaranteed-placement token (`[ShowID:]` vs `[MovieID:]`). |
 | **Content ID** | | The ShowID/MovieID for guaranteed placements. Blank → `[ShowID:]` left as a fill-in marker. |
+| **Recommended Show ID** | | Value for the `recommended_show=<id>` key-value on Tier 1 + the guaranteed Plan placements. Defaults to Content ID; blank → the assigned CM adds it in the UI. |
 | Flight Start / End | `2026-07-14` | Dates. |
 | Flight Code | `L1` | Launch beat / flight code, used in placement names. |
 | Formats | `remnant_video; pause_ads; premium_preroll; essential_bumper` | Semicolon list; must match `config/placement_templates.yaml`. Guaranteed formats (`premium_preroll`, `essential_bumper`) are built from genre + recommended show and flagged as living in the existing guaranteed order. |

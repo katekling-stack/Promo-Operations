@@ -46,6 +46,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),
+        recommended_show_id=raw.get("recommended_show_id"),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
