@@ -169,6 +169,10 @@ class Placement:
     targeting_ids: dict[str, list] = field(default_factory=dict)
     # Recommended Show custom key-value value (a ShowID). Blank -> CM adds in the UI.
     recommended_show_value: Optional[str] = None
+    # Brand-specific always-exclude IDs, layered onto the shared DNR exclude in every
+    # relationship set (e.g. CBS News excludes the Pluto News category site groups).
+    extra_exclude_site_groups: list[str] = field(default_factory=list)
+    extra_exclude_video_groups: list[str] = field(default_factory=list)
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.

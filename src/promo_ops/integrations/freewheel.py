@@ -648,10 +648,17 @@ class FreeWheelClient:
         categories = sorted(set(t.get("categories", [])))
         genre_vgs = sorted(set(t.get("genre_vgs", [])))
 
+        # Shared DNR + this brand's always-exclude site/video groups (e.g. CBS News
+        # excludes the Pluto News category SGs).
+        excl_sg_all = list(excl_sg) + list(getattr(p, "extra_exclude_site_groups", []))
+        excl_vg_brand = list(getattr(p, "extra_exclude_video_groups", []))
+
         def base_exclude(**extra):
             e = dict(extra)
-            if excl_sg:
-                e["site_group"] = excl_sg
+            if excl_vg_brand:
+                e["video_group"] = sorted(set(e.get("video_group", []) + excl_vg_brand))
+            if excl_sg_all:
+                e["site_group"] = sorted(set(excl_sg_all))
             return e or None
 
         def rec_show_set(platform_sg):

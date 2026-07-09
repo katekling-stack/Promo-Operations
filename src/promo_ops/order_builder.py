@@ -81,17 +81,22 @@ class OrderBuilder:
         """Resolve country names -> FW country IDs (via data/geo table)."""
         return self.countries.ids_for(names)
 
-    def _ad_unit_names(self, fmt: str) -> list:
-        group = self._ad_units.get("format_ad_unit_group", {}).get(fmt)
+    def _ad_unit_group(self, brand_cfg: dict, fmt: str) -> Optional[str]:
+        # Per-brand ad-unit group override wins over the global default.
+        override = (brand_cfg.get("ad_unit_groups") or {}).get(fmt)
+        return override or self._ad_units.get("format_ad_unit_group", {}).get(fmt)
+
+    def _ad_unit_names(self, brand_cfg: dict, fmt: str) -> list:
+        group = self._ad_unit_group(brand_cfg, fmt)
         return list(self._ad_units.get("ad_units", {}).get(group, [])) if group else []
 
-    def _ad_unit_ids(self, fmt: str) -> list:
+    def _ad_unit_ids(self, brand_cfg: dict, fmt: str) -> list:
         # Resolve the format's ad-unit NAMES -> FW ad-unit IDs (data/ad_units table).
-        return self.ad_unit_resolver.ids_for(self._ad_unit_names(fmt))
+        return self.ad_unit_resolver.ids_for(self._ad_unit_names(brand_cfg, fmt))
 
     def _brand_cfg(self, brand: Optional[str]) -> dict:
-        # `brand` is an optional legacy grouping; the exact Advertiser + Campaign in
-        # the plan are authoritative. Return {} when absent/unknown (no error).
+        # `brand` selects the per-brand nuance block (ad units, extra excludes). The
+        # exact Advertiser + Campaign in the plan remain authoritative. {} when absent.
         return self._brands.get("brands", {}).get(brand or "", {})
 
     # --- naming ---------------------------------------------------------- #
@@ -154,10 +159,13 @@ class OrderBuilder:
         recommended = plan.recommended_show or plan.promoted_title
         extra = {k: tmpl[k] for k in ("spec", "standard_sizes", "salesforce_asset_field") if k in tmpl}
 
+        brand_cfg = self._brand_cfg(plan.brand)
         geo_names = self._geo_country_names(plan.region)
         geo_ids = self._geo_country_ids(geo_names)
-        ad_unit_names = self._ad_unit_names(fmt)
-        ad_unit_ids = self._ad_unit_ids(fmt)
+        ad_unit_names = self._ad_unit_names(brand_cfg, fmt)
+        ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
+        excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
+        excl_vgs = list(brand_cfg.get("extra_exclude_video_groups", []))
 
         def base(name, targeting, **kw) -> Placement:
             return Placement(
@@ -166,6 +174,7 @@ class OrderBuilder:
                 platforms=list(tmpl.get("platforms", [])), exclusions=[exclude],
                 geo_country_names=geo_names, geo_country_ids=geo_ids,
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
+                extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed (Plan) formats: one placement, content-named. Exactly one Genre

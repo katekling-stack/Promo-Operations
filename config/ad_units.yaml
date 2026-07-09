@@ -39,10 +39,26 @@ ad_units:
     - "PPlus_LinearSkippable_Promo_Pre_Roll_1s"
   essential_bumper:
     - "CBS_Brand Bumper_Mid_Roll_Last"
+  # CBS house units (confirmed from CBS Sports / News / Network IOs).
+  cbs_house_all:               # CBS Sports + CBS Network remnant video
+    - "Paramount House Preroll"
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  cbs_house_mid_post:          # CBS News — Mid + Post roll only (no Pre-Roll)
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  cbs_preroll:                 # CBS Network guaranteed Pre-Roll
+    - "CBS_Promo_Pre_Roll"
+  cbs_after_midroll_bumper:    # CBS Network guaranteed After Mid-Roll Bumper
+    - "CBS_Brand Bumper_Mid_Roll_Last"
 
-# Which ad-unit group each format uses (domestic remnant/promo).
+# Default (fallback) ad-unit group each format uses. Per-brand overrides live in
+# config/brands.yaml (`ad_unit_groups`), which win when the plan names a brand.
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
   premium_preroll: premium_preroll
   essential_bumper: essential_bumper
+  psa: pplus_cbs_pluto_vcbs
+  cbs_preroll: cbs_preroll
+  cbs_after_midroll_bumper: cbs_after_midroll_bumper

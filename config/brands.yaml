@@ -12,33 +12,65 @@
 
 network_id: 520311   # cbsi-mrm.freewheel.tv/app/520311 (from the reference campaign)
 
+# Per-brand nuances (verified against each brand's reference IO). Keys the order
+# builder uses:
+#   ad_unit_groups        — {format: ad-unit group in config/ad_units.yaml} override
+#   extra_exclude_site_groups / extra_exclude_video_groups — always-exclude, layered
+#                           onto the shared DNR exclude in every relationship set
+#   formats               — the format set this brand runs
+#   template_campaign_id / template_io_id — the reference IO reverse-engineered from
 brands:
-  paramount_network:
-    display_name: "Paramount Network"
-    advertiser_name_contains: ["VCBS", "Paramount Network"]
-    # Reference template used for the Frisco King - USA kickoff example:
-    # https://cbsi-mrm.freewheel.tv/app/520311/advertising/campaigns/86543608/?insertion_order_id=92725144
-    template_campaign_id: "86543608"
+  # Paramount+ Domestic — the Frisco King / Dutton Ranch model.
+  paramount_plus_domestic:
+    display_name: "Paramount+ Domestic"
+    advertiser_name_contains: ["VCBS", "Paramount"]
+    template_campaign_id: "86543608"   # Dutton Ranch (IO 92725144)
     template_io_id: "92725144"
-    default_platforms: ["Paramount+", "Pluto TV", "CBS", "MTVE"]
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    formats: ["remnant_video", "pause_ads", "premium_preroll", "essential_bumper"]
 
-  paramount_plus:
-    display_name: "Paramount+"
-    advertiser_name_contains: ["VCBS", "Paramount+"]
-    template_campaign_id: null
-    template_io_id: null
-    default_platforms: ["Paramount+"]
-
-  pluto_tv:
-    display_name: "Pluto TV"
-    advertiser_name_contains: ["VCBS", "Pluto"]
-    template_campaign_id: null
-    template_io_id: null
-    default_platforms: ["Pluto TV"]
-
-  cbs:
-    display_name: "CBS"
+  # CBS Sports — Tiers 1-4 + PSA lines. House Pre/Mid/Post units.
+  cbs_sports:
+    display_name: "CBS Sports"
     advertiser_name_contains: ["VCBS", "CBS"]
-    template_campaign_id: null
-    template_io_id: null
-    default_platforms: ["CBS", "CBS News", "CBS Sports"]
+    template_campaign_id: "54413703"   # PGA Tour - USA (IO 91459093)
+    template_io_id: "91459093"
+    ad_unit_groups:
+      remnant_video: cbs_house_all
+      psa: cbs_house_all
+    extra_exclude_video_groups: ["73409791"]   # content-format exclude on the ref IO
+    formats: ["remnant_video", "psa"]
+
+  # CBS News — Tiers 1-4. Mid+Post units (no Pre-Roll). Always excludes Pluto News SGs.
+  cbs_news:
+    display_name: "CBS News"
+    advertiser_name_contains: ["VCBS", "CBS"]
+    template_campaign_id: "54413662"   # Money Moves - USA (IO 94971594)
+    template_io_id: "94971594"
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    # Pluto News Promo Category SGs — never promo CBS News against competing news.
+    extra_exclude_site_groups:
+      - "1037683"   # SG: PlutoTV Promo Category: Local News: US
+      - "1038397"   # SG: PlutoTV Promo Category: News - Large News Channels: US
+      - "1038398"   # SG: PlutoTV Promo Category: News - Finance/Business: US
+      - "1038399"   # SG: PlutoTV Promo Category: News - Politics: US
+      - "1038400"   # SG: PlutoTV Promo Category: News - Other: US
+    formats: ["remnant_video"]
+
+  # CBS Network — Tiers 1-4 video + guaranteed CBS Pre-Roll + After Mid-Roll Bumper
+  # (both precedence HIGHEST). Addressable / 1z-2z lockdown lines ignored for now.
+  cbs_network:
+    display_name: "CBS Network"
+    advertiser_name_contains: ["VCBS", "CBS"]
+    template_campaign_id: "54407793"   # Eternally Yours - USA (IO 93984940)
+    template_io_id: "93984940"
+    ad_unit_groups:
+      remnant_video: cbs_house_all
+      cbs_preroll: cbs_preroll
+      cbs_after_midroll_bumper: cbs_after_midroll_bumper
+    formats: ["remnant_video", "cbs_preroll", "cbs_after_midroll_bumper"]
