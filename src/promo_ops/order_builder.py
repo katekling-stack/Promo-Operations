@@ -170,6 +170,8 @@ class OrderBuilder:
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
         excl_vgs = list(brand_cfg.get("extra_exclude_video_groups", []))
+        main_sgs = list(brand_cfg.get("main_site_groups", []))
+        include_vgs = list(brand_cfg.get("include_video_groups", []))
 
         def base(name, targeting, **kw) -> Placement:
             return Placement(
@@ -179,6 +181,7 @@ class OrderBuilder:
                 geo_country_names=geo_names, geo_country_ids=geo_ids,
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
+                main_site_groups=main_sgs, include_video_groups=include_vgs,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

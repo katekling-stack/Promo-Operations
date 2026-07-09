@@ -55,6 +55,13 @@ ad_units:
     - "Mid_Roll_Break 1_Last"
   cbs_2z_lockdown:             # CBS Network 2Z Lockdown
     - "Mid_Roll_Break 2_Last"
+  viacom_promo:                # MTVE / BET remnant video (Viacom pre-roll + house)
+    - "Viacom_Promo_Pre_Roll"
+    - "Paramount House Midroll"
+    - "Paramount House Postroll"
+  pluto_video_domination:      # Pluto TV guaranteed Video Domination
+    - "Paramount House Preroll"
+    - "Paramount House Midroll"
 
 # Default (fallback) ad-unit group each format uses. Per-brand overrides live in
 # config/brands.yaml (`ad_unit_groups`), which win when the plan names a brand.
@@ -68,3 +75,4 @@ format_ad_unit_group:
   cbs_after_midroll_bumper: cbs_after_midroll_bumper
   cbs_1z_lockdown: cbs_1z_lockdown
   cbs_2z_lockdown: cbs_2z_lockdown
+  pluto_video_domination: pluto_video_domination

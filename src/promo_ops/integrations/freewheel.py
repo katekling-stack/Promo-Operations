@@ -653,7 +653,10 @@ class FreeWheelClient:
         series = sorted(set(t.get("series", [])))
         channels = sorted(set(t.get("channels", [])))
         categories = sorted(set(t.get("categories", [])))
-        genre_vgs = sorted(set(t.get("genre_vgs", [])))
+        # Genre = genre VGs + this brand's content VG (e.g. the MTV / BET brand VG).
+        genre_vgs = sorted(set(t.get("genre_vgs", [])) | set(getattr(p, "include_video_groups", [])))
+        # Per-brand platform "main SGs" override (falls back to the shared default).
+        main = list(getattr(p, "main_site_groups", []) or main)
 
         # Shared DNR + this brand's always-exclude site/video groups (e.g. CBS News
         # excludes the Pluto News category SGs).

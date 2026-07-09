@@ -78,3 +78,72 @@ brands:
       cbs_2z_lockdown: cbs_2z_lockdown
     formats: ["remnant_video", "pause_ads", "cbs_preroll",
               "cbs_after_midroll_bumper", "cbs_1z_lockdown", "cbs_2z_lockdown"]
+
+  # MTVE — Viacom pre-roll + house. Runs on PlutoTV/VCBS/CBS Local (no P+). Includes
+  # the MTV brand video group in the genre set; excludes CBS Entertainment content.
+  mtve:
+    display_name: "MTVE"
+    advertiser_name_contains: ["VCBS", "MTV"]
+    template_campaign_id: "54413666"   # Jersey Shore Family Vacation (IO 59975938)
+    template_io_id: "59975938"
+    main_site_groups: ["929392", "932592", "932591"]   # PlutoTV, VCBS, CBS Local
+    include_video_groups: ["73408899"]                 # VG: Cable Adults: MTV
+    extra_exclude_video_groups: ["73408858", "73408859"]  # CBS Entertainment VGs
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      cbs_after_midroll_bumper: cbs_after_midroll_bumper
+    formats: ["remnant_video"]   # After Mid-Roll Bumper staged (needs brand label)
+
+  # BET — Viacom pre-roll + house. Runs on BET Plus. Includes the BET brand video
+  # group; excludes all other cable-brand content.
+  bet:
+    display_name: "BET"
+    advertiser_name_contains: ["VCBS", "BET"]
+    template_campaign_id: "68562294"   # OG Stories (IO 94999325)
+    template_io_id: "94999325"
+    main_site_groups: ["1072587"]      # BET Plus streaming endpoint
+    include_video_groups: ["73408894"] # VG: Cable Adults: BET
+    extra_exclude_video_groups:        # other cable brands
+      - "73408899"   # MTV
+      - "73408859"   # CBS Entertainment: CBS
+      - "73408891"   # Paramount Network
+      - "73408896"   # TVLand
+      - "73408858"   # CBS Entertainment
+      - "73408890"   # Comedy Central
+      - "73408897"   # CMT
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      cbs_after_midroll_bumper: cbs_after_midroll_bumper
+    formats: ["remnant_video"]   # After Mid-Roll Bumper staged (needs brand label)
+
+  # Pluto TV — house Mid+Post (no Pre-Roll). Runs on the PlutoTV platform. Always
+  # excludes the Samsung TV Plus partner SGs (and the promoted show's own channel SG,
+  # added by the CM). Recommended Show(s) key-value on Tier 1.
+  pluto_tv:
+    display_name: "Pluto TV"
+    advertiser_name_contains: ["VCBS", "Pluto"]
+    template_campaign_id: "54413718"   # Chip & Jo (IO 90867946)
+    template_io_id: "90867946"
+    main_site_groups: ["929392"]       # PlutoTV
+    extra_exclude_site_groups:
+      - "932411"   # SG: PlutoTV: Partner: Samsung TV Plus
+      - "932412"   # SG: PlutoTV: Partner: Samsung TV Plus Mobile
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+      pluto_video_domination: pluto_video_domination
+    formats: ["remnant_video"]   # Video Domination staged (guaranteed + Operative/GAM)
+
+  # Pluto TV XCO — house Pre/Mid/Post. Runs on VCBS/CBS Local. Excludes the PlutoTV
+  # platform SG and the VCBS Samsung TV Plus partner SG on every placement.
+  pluto_tv_xco:
+    display_name: "Pluto TV XCO"
+    advertiser_name_contains: ["VCBS"]
+    template_campaign_id: "54413625"   # The Expendables (IO 95107045)
+    template_io_id: "95107045"
+    main_site_groups: ["932592", "932591"]   # VCBS, CBS Local
+    extra_exclude_site_groups:
+      - "929392"   # SG: Platform: PlutoTV
+      - "931759"   # SG: VCBS: Partner: Samsung TV Plus
+    ad_unit_groups:
+      remnant_video: cbs_house_all
+    formats: ["remnant_video"]

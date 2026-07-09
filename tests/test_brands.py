@@ -75,6 +75,52 @@ def test_cbs_sports_psa_flat_lines():
     assert inc["site_group"] == ["929392", "932583", "932591", "932592"]    # main SGs only
 
 
+def _remnant(brand):
+    plan = support_plan_from_dict({
+        "promoted_title": "X", "region": "USA", "brand": brand, "formats": ["remnant_video"],
+        "durations": [30], "genres": ["Comedy", "Reality"], "showlist": ["FBI"],
+        "pluto": {"channels": ["Westerns"], "categories": ["Comedy"]},
+        "campaign": {"resolved_id": "1"},
+    })
+    order = OrderBuilder().build(plan)
+    t1 = next(p for p in order.placements if p.tier == 1)
+    t3 = next(p for p in order.placements if p.tier == 3)
+    return FreeWheelClient._placement_body(t1), FreeWheelClient._placement_body(t3)
+
+
+def test_mtve_main_sgs_ad_units_brand_vg_and_excludes():
+    t1, t3 = _remnant("mtve")
+    ni = t1["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]
+    assert ni["include"]["site_group"] == ["929392", "932592", "932591"]   # no P+
+    assert "73408858" in ni["exclude"]["video_group"]                       # CBS Ent excluded
+    genre = next(s for s in t3["relationship_targeting"]["set"] if s["set_name"] == "Genre")
+    vgs = next(sub["video_group"] for sub in
+               genre["content_targeting"]["network_items"]["include"]["set"] if "video_group" in sub)
+    assert "73408899" in vgs        # MTV brand video group included in the genre set
+
+
+def test_bet_single_main_sg_and_competitor_excludes():
+    t1, _ = _remnant("bet")
+    ni = t1["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]
+    assert ni["include"]["site_group"] == ["1072587"]                       # BET Plus only
+    assert "73408891" in ni["exclude"]["video_group"]                       # Paramount Network excluded
+
+
+def test_pluto_excludes_samsung_and_has_no_preroll():
+    t1, _ = _remnant("pluto_tv")
+    plan_units = t1["ad_product"]["ad_unit_node"]
+    assert [n["ad_unit_id"] for n in plan_units] == ["72000", "72001"]      # Mid+Post, no Pre
+    exc = t1["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]["exclude"]
+    assert {"932411", "932412"} <= set(exc["site_group"])                   # Samsung TV Plus
+
+
+def test_pluto_xco_excludes_plutotv_and_samsung():
+    t1, _ = _remnant("pluto_tv_xco")
+    ni = t1["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]
+    assert ni["include"]["site_group"] == ["932592", "932591"]              # VCBS, CBS Local
+    assert {"929392", "931759"} <= set(ni["exclude"]["site_group"])         # PlutoTV + Samsung
+
+
 def test_default_brand_falls_back_to_paramount_house_units():
     # No brand -> global default ad-unit group (Paramount house Pre/Mid/Post).
     plan = support_plan_from_dict({

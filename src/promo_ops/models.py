@@ -173,6 +173,11 @@ class Placement:
     # relationship set (e.g. CBS News excludes the Pluto News category site groups).
     extra_exclude_site_groups: list[str] = field(default_factory=list)
     extra_exclude_video_groups: list[str] = field(default_factory=list)
+    # Per-brand platform "main SGs" override (e.g. MTVE = PlutoTV/VCBS/CBS Local, no
+    # P+). Empty -> the shared default from config. `include_video_groups` are brand
+    # content VGs AND-ed into the genre targeting (e.g. the MTV / BET brand VG).
+    main_site_groups: list[str] = field(default_factory=list)
+    include_video_groups: list[str] = field(default_factory=list)
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.
