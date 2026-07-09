@@ -21,19 +21,22 @@ from .audience_segments import AudienceSegmentResolver
 from .config import pluto_config, regions_config, tiers_config
 from .models import SupportPlan, Tier, TargetingDimension, TieredTargeting
 from .series import SeriesResolver
+from .site_groups import SiteGroupResolver
 from .standard_attributes import DIMENSION_ATTRIBUTE_TYPE, StandardAttributeResolver
 
 
 class TargetingEngine:
     def __init__(self, resolver: Optional[AudienceSegmentResolver] = None,
                  attr_resolver: Optional[StandardAttributeResolver] = None,
-                 series_resolver: Optional[SeriesResolver] = None):
+                 series_resolver: Optional[SeriesResolver] = None,
+                 site_group_resolver: Optional[SiteGroupResolver] = None):
         self._tiers_cfg = tiers_config()
         self._regions_cfg = regions_config()
         self._pluto_cfg = pluto_config()
         self.resolver = (resolver or AudienceSegmentResolver()).load()
         self.attr_resolver = (attr_resolver or StandardAttributeResolver()).load()
         self.series_resolver = (series_resolver or SeriesResolver()).load()
+        self.site_group_resolver = (site_group_resolver or SiteGroupResolver()).load()
 
     def _region_code(self, region: str) -> str:
         return self._regions_cfg.get("regions", {}).get(region, {}).get("code", region)
@@ -126,19 +129,40 @@ class TargetingEngine:
                     f"{', '.join(unmatched)}"
                 )
 
-        # Pluto channels/categories -> SG segment names by convention (config/pluto.yaml).
-        # Tier 2 = channels, Tier 3 = promo categories. Region code from regions.yaml.
+        # Pluto channels/categories -> FreeWheel Site Groups (config/pluto.yaml naming).
+        # Tier 2 = channels, Tier 3 = promo categories. Each keyword is a select-all
+        # within its Pluto section (prefix..suffix) — the team's search-and-select-all
+        # workflow. Unmatched keywords are surfaced, not guessed.
         naming = self._pluto_cfg.get("naming", {})
-        if dim_cfg["key"] in ("pluto_channel_list", "pluto_channel") and dim.values:
-            code = self._region_code(plan.region)
-            dim.resolved = [{"segment_name": naming["channel"].format(region_code=code, name=v),
-                             "source": "pluto"} for v in dim.values]
-        elif dim_cfg["key"] == "pluto_category" and dim.values:
-            code = self._region_code(plan.region)
-            pat = naming["category_domestic"] if self._is_domestic(plan.region) \
+        pattern = None
+        if dim_cfg["key"] in ("pluto_channel_list", "pluto_channel"):
+            pattern = naming["channel"]
+        elif dim_cfg["key"] == "pluto_category":
+            pattern = naming["category_domestic"] if self._is_domestic(plan.region) \
                 else naming["category_international"]
-            dim.resolved = [{"segment_name": pat.format(region_code=code, name=v),
-                             "source": "pluto"} for v in dim.values]
+        if pattern and dim.values:
+            code = self._region_code(plan.region)
+            resolved: list[dict] = []
+            unmatched: list[str] = []
+            for v in dim.values:
+                full = pattern.format(region_code=code, name=v)     # canonical SG name
+                prefix, _, suffix = pattern.format(region_code=code, name="\x00").partition("\x00")
+                m = self.site_group_resolver.select_all(v, prefix=prefix, suffix=suffix)
+                if m.matched:
+                    for sg in m.site_groups:
+                        resolved.append({"segment_name": sg["name"], "id": sg["id"],
+                                         "keyword": v, "source": "pluto_site_group"})
+                else:
+                    resolved.append({"segment_name": full, "id": None,
+                                     "keyword": v, "source": "pluto_site_group"})
+                    unmatched.append(v)
+            dim.resolved = resolved
+            if unmatched:
+                dim.notes = (
+                    f"{len(unmatched)} Pluto keyword(s) matched no Site Group under "
+                    f"'{pattern.format(region_code=code, name='…')}' "
+                    f"(check the name or sync site groups): {', '.join(unmatched)}"
+                )
 
         # Resolve content dimensions (genre / network) to FreeWheel Standard Attribute
         # IDs. Unmatched names are surfaced, not guessed.

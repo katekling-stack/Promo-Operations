@@ -179,29 +179,30 @@ def test_tier1_dda_audience_item_resolves():
     assert names.get("GL-DDA-1P-SHOW_Tulsa_King") == "1437993"
 
 
-def test_pluto_channel_and_category_sg_naming():
+def test_pluto_channel_and_category_resolve_to_site_groups():
     plan = load_plan(FRISCO)
     eng = TargetingEngine()
-    # Tier 2: Pluto channels -> SG: PlutoTV Channels: US: <channel>
+    # Tier 2: Pluto channel keywords -> US Channels site groups (keyword select-all),
+    # each resolved record carries a real FW site_group id.
     t2 = next(t for t in eng.build(plan, "remnant_video").tiers if t.id == 2)
     ch = next(d for d in t2.dimensions if d.key == "pluto_channel_list")
-    names = [r["segment_name"] for r in ch.resolved]
-    assert "SG: PlutoTV Channels: US: Gunsmoke" in names
-    assert "SG: PlutoTV Channels: US: CSI: NY" in names
-    # Tier 3: Pluto categories -> SG: PlutoTV Promo Category: <cat>: US
+    gunsmoke = [r for r in ch.resolved if r.get("keyword") == "Gunsmoke" and r.get("id")]
+    assert gunsmoke
+    assert all(r["segment_name"].startswith("SG: PlutoTV Channels: US:") for r in gunsmoke)
+    # Tier 3: domestic promo categories -> ": US" suffixed site groups with ids.
     t3 = next(t for t in eng.build(plan, "remnant_video").tiers if t.id == 3)
     cat = next(d for d in t3.dimensions if d.key == "pluto_category")
-    cnames = [r["segment_name"] for r in cat.resolved]
-    assert "SG: PlutoTV Promo Category: True Crime: US" in cnames
+    tc = [r for r in cat.resolved if r.get("keyword") == "True Crime" and r.get("id")]
+    assert tc and tc[0]["segment_name"] == "SG: PlutoTV Promo Category: True Crime: US"
 
-    # International uses "PlutoTV Category" (no "Promo") with the region code.
+    # International uses "PlutoTV Category" (no "Promo") with the region code suffix.
     intl = support_plan_from_dict({
         "promoted_title": "X", "region": "UK", "formats": ["remnant_video"],
         "pluto": {"categories": ["Sci-Fi"]},
     })
     t3i = next(t for t in eng.build(intl, "remnant_video").tiers if t.id == 3)
     cati = next(d for d in t3i.dimensions if d.key == "pluto_category")
-    assert "SG: PlutoTV Category: Sci-Fi: UK" in [r["segment_name"] for r in cati.resolved]
+    assert "SG: PlutoTV Category: Sci-Fi: UK" in [r["segment_name"] for r in cati.resolved if r.get("id")]
 
 
 def test_recommended_show_feeds_tier1_carousel():

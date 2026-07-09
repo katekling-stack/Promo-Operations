@@ -47,6 +47,7 @@ sync-and-match (like audience items), sourced live or from the docs:
 |---|---|---|
 | Country ID (US=165) | Standard Attributes `content_territories` | **SOLVED**: IDs match the UI Add-New-Country panel exactly. `sync_countries()` → `data/geo`. Team selects by name; tool resolves name→ID. See docs/REGIONS.md. |
 | Ad unit IDs | `list-standard-and-custom-ad-units` (Ad Unit API v4) / `list-ad-unit-nodes` (V3) | no name filter → sync-and-match like countries |
+| Pluto channels/categories | Site API v4 `list-site-groups` | **SOLVED**: Pluto = Site Groups named `SG: PlutoTV Channels/Promo Category: …`. Write to `sets[].site_group`. `sync_site_groups()` → `data/site_groups`. Keyword select-all. |
 | Series IDs | Video Series (UI) vs standard-attribute series | confirm which namespace `content_targeting.series` accepts via one verified create |
 | Audience item IDs | `sync-audience-items` | working (GL-DDA-1P-SHOW_) |
 

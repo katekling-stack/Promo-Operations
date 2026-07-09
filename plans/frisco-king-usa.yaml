@@ -110,7 +110,7 @@ pluto:
     - "Reality - Adventure"
     - "Sports"
   channels:
-    - "P+ Picks"
+    - "Paramount+ Picks"   # FW site group name (was "P+ Picks")
     - "Paramount Movie Channel"
     - "Westerns"
     - "Rawhide"
@@ -140,7 +140,7 @@ pluto:
     - "Dog The Bounty Hunter"
     - "Ink Master"
     - "Smokehouse"
-    - "Xtreme Outdoors"
+    - "Xtreme Outdoor"    # FW site group name (was "Xtreme Outdoors")
     - "50 Cent Action"
     - "UFC"
     - "CBS Sports HQ"

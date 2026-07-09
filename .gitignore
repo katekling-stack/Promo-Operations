@@ -26,3 +26,4 @@ data/audience_segments/synced_*.csv
 data/standard_attributes/synced_*.csv
 data/geo/synced_*.csv
 data/ad_units/synced_*.csv
+data/site_groups/synced_*.csv

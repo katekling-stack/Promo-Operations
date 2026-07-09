@@ -321,6 +321,52 @@ class FreeWheelClient:
                 w.writerow([r["name"], r["id"], r.get("status", ""), "ad_unit_api_v4"])
         return str(path)
 
+    def sync_site_groups(self, out_dir: Optional[str] = None, name_prefix: str = "SG: PlutoTV",
+                         per_page: int = 500, max_pages: int = 80) -> str:
+        """Export the Pluto Site Groups (name -> id) for Tier 2/3 targeting.
+
+        Source: Site API v4 `list-site-groups` (~33k total; filtered to `name_prefix`,
+        ~14k SG: PlutoTV). Feeds SiteGroupResolver so Pluto channel/category keywords
+        resolve (select-all) to the site_group IDs written to
+        content_targeting.network_items.include.sets[].site_group.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..site_groups import DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        kept, page, total_pages = [], 1, None
+        while page <= max_pages:
+            r = self._invoke("sh_1_0_list-site-groups", per_page=per_page, page=page)
+            sg = (r or {}).get("data", {}).get("site_groups", {})
+            items = sg.get("site_group", [])
+            if isinstance(items, dict):
+                items = [items]
+            if total_pages is None:
+                try:
+                    total_pages = int(sg.get("@total_page"))
+                except (TypeError, ValueError):
+                    total_pages = None
+            if not items:
+                break
+            for it in items:
+                nm = str(it.get("name", ""))
+                if nm.startswith(name_prefix):
+                    kept.append(it)
+            if total_pages and page >= total_pages:
+                break
+            page += 1
+        kept.sort(key=lambda it: str(it.get("name", "")).lower())
+        path = out / "synced_site_groups.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["name", "id", "status", "external_id", "source"])
+            for it in kept:
+                w.writerow([it.get("name"), it.get("id"), it.get("status"),
+                            it.get("external_id"), "site_group_api_v4"])
+        return str(path)
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:
@@ -437,6 +483,7 @@ class FreeWheelClient:
         audience_items: list = []          # Tier 1 DDA + manual segments (numeric ids)
         pending_segments: list = []        # segments known by name only (need id via sync)
         series_ids: list = []              # Tier 2 showlist -> series
+        site_group_ids: list = []          # Tier 2/3 Pluto channels & categories
         standard_attr_ids: list = []       # genre / network -> standard attribute ids
         geo: list = []
         for d in (tier.dimensions if tier else []):
@@ -449,7 +496,10 @@ class FreeWheelClient:
             elif d.key in ("genre", "network"):
                 standard_attr_ids += [r["id"] for r in d.resolved if r.get("id")]
             elif d.key in ("pluto_channel_list", "pluto_category"):
-                pending_segments += [r.get("segment_name") for r in d.resolved]
+                # Pluto -> Site Group IDs (select-all); unmatched keywords surfaced.
+                for r in d.resolved:
+                    (site_group_ids if r.get("id") else pending_segments).append(
+                        r.get("id") or r.get("segment_name"))
             elif d.key == "geo":
                 geo += list(d.values)
 
@@ -457,8 +507,14 @@ class FreeWheelClient:
         if audience_items:
             body["audience_targeting"] = {"include": {"audience_item": audience_items}}
         content: dict[str, Any] = {}
+        # Series + Pluto site groups share the network_items include set.
+        set_node: dict[str, Any] = {}
         if series_ids:
-            content["network_items"] = {"include": {"sets": [{"series": series_ids}]}}
+            set_node["series"] = series_ids
+        if site_group_ids:
+            set_node["site_group"] = sorted(set(site_group_ids))
+        if set_node:
+            content["network_items"] = {"include": {"sets": [set_node]}}
         if standard_attr_ids:
             content["standard_attributes"] = standard_attr_ids
         if content:
