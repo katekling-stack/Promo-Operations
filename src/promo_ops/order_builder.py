@@ -74,10 +74,14 @@ class OrderBuilder:
         parts = [title, season, slot, f"Tier {tier}", region]
         return " - ".join(p for p in parts if p)
 
-    @staticmethod
-    def _guaranteed_name(plan: SupportPlan) -> str:
+    def _guaranteed_name(self, plan: SupportPlan, tmpl: dict) -> str:
+        # "Paramount + - {unit_label} - {plan_label} - {title} - {region} - [ShowID:{id}]"
+        # (mirrors the Dutton Ranch guaranteed placements).
         label = "MovieID" if (plan.content_type or "show").lower() == "movie" else "ShowID"
-        return f"{plan.promoted_title} [{label}:{plan.content_id or ''}]"
+        unit = tmpl.get("unit_label", "")
+        plan_label = tmpl.get("plan_label", "")
+        parts = ["Paramount +", unit, plan_label, plan.promoted_title, plan.region]
+        return " - ".join(p for p in parts if p) + f" - [{label}:{plan.content_id or ''}]"
 
     # --- caps / priority ------------------------------------------------- #
 
@@ -137,7 +141,7 @@ class OrderBuilder:
         # Guaranteed formats: one placement, content-named, built from args.
         if tmpl.get("guaranteed"):
             return [base(
-                self._guaranteed_name(plan),
+                self._guaranteed_name(plan, tmpl),
                 TieredTargeting(format=fmt),
                 guaranteed=True,
                 arguments={"genre": list(plan.genres), "recommended_show": recommended},

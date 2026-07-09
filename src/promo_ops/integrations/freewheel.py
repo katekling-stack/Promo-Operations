@@ -409,48 +409,12 @@ class FreeWheelClient:
                           campaign_id=int(campaign_id), body=plan["insertion_order_body"])
         io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
 
-        valid_audience = self._valid_audience_item_ids()
         placements = []
         for body in plan["placement_bodies"]:
             b = {k: v for k, v in body.items() if not k.startswith("_")}  # drop reference-only keys
             b["insertion_order_id"] = io_id
-            # Send only IDs that are real audience_items — an invalid one fails the
-            # whole placement. Dropped IDs (e.g. AAM/P+ groupings that aren't audience
-            # items) are surfaced for the CM to add manually.
-            inc = b.get("audience_targeting", {}).get("include", {})
-            if "audience_item" in inc:
-                ids = sorted(set(str(x) for x in inc["audience_item"]))
-                keep = [i for i in ids if not valid_audience or i in valid_audience]
-                dropped = [i for i in ids if i not in keep]
-                if keep:
-                    inc["audience_item"] = keep
-                else:
-                    b.pop("audience_targeting", None)
-                if dropped:
-                    b["_dropped_audience_items_add_manually"] = dropped
             placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
         return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
-
-    def _valid_audience_item_ids(self) -> set:
-        """Set of real audience_item IDs (from the synced/seed audience-items table).
-
-        Used to filter targeting before a create — FreeWheel rejects a placement whose
-        audience_item set contains any non-existent ID. Empty set => skip filtering.
-        """
-        import csv as _csv
-        from ..audience_segments import DATA_DIR
-        ids: set = set()
-        for path in sorted(DATA_DIR.glob("*.csv")):
-            try:
-                with path.open(encoding="utf-8", newline="") as fh:
-                    for row in _csv.DictReader(fh):
-                        sid = (row.get("segment_id") or "").strip()
-                        if sid and (row.get("source") == "audience_items"
-                                    or "dda" in (row.get("source") or "").lower()):
-                            ids.add(sid)
-            except FileNotFoundError:
-                continue
-        return ids
 
     @staticmethod
     def to_freewheel_plan(order: Order) -> dict[str, Any]:
@@ -487,78 +451,125 @@ class FreeWheelClient:
             return [{"value": 1, "period": cap}]
         return [{"value": int(m.group(1)), "period": m.group(2).strip(), "type": "IMPRESSION"}]
 
+    # Minutes for a frequency-cap window ("1 per 30 min" -> 30). Mirrors the FW
+    # delivery.frequency_cap.period (an integer number of minutes, as a string).
+    _FC_UNIT_MIN = {"min": 1, "minute": 1, "hr": 60, "hour": 60, "day": 1440, "week": 10080}
+
+    @staticmethod
+    def _fc_period_minutes(cap: Optional[str]) -> Optional[str]:
+        # Handles "1 per 30 min", "1 per hr" (implicit 1), "1 per 21 days", "1 per 4 hrs".
+        if not cap:
+            return None
+        m = re.search(r"per\s*(\d+)?\s*(minute|min|hour|hr|day|week)s?", cap, re.I)
+        if not m:
+            return None
+        qty = int(m.group(1)) if m.group(1) else 1
+        return str(qty * FreeWheelClient._FC_UNIT_MIN[m.group(2).lower()])
+
     @staticmethod
     def _placement_body(p) -> dict[str, Any]:
-        """Assemble the FreeWheel create-placement body from a built Placement.
+        """Assemble the FreeWheel create-placement body, mirroring the Dutton Ranch IO.
 
-        Maps resolved tier dimensions onto the confirmed create-placement targeting
-        sections. `insertion_order_id` is set at create time. See docs/FREEWHEEL.md.
+        Structure (verified by reading Dutton placements back with expand flags):
+          budget   : IMPRESSION_TARGET / 1e9 (remnant)  |  ALL_IMPRESSION (guaranteed)
+          delivery : priority TYPE + pacing + frequency_cap {value,type,period(min)}
+          override : {mode:BELOW_PAYING_ADS, value:-N} (remnant) | {precedence_level:HIGH}
+          price    : {price_model: ACTUAL_ECPM}
+          ad_product: NOT_LINKED, ad_unit_node[] {ad_unit_id,status:ACTIVE,price,budget_exempt}
+          targeting: relationship_targeting.set[] named sets (Affinity Shows / Channels /
+                     Genre / Pluto Categories) — NOT top-level content/audience targeting.
         """
-        # FreeWheel delivery.priority is a TYPE: GUARANTEED (sponsorship) or
-        # PREEMPTIBLE (remnant). The numeric tier level (1-10) is carried in the
-        # placement NAME (Tier N) for the CM; frequency-cap format is set separately.
+        fc_min = FreeWheelClient._fc_period_minutes(p.frequency_cap)
+        frequency_cap = ({"value": "1", "type": "IMPRESSION", "period": fc_min}
+                         if fc_min else None)
         body: dict[str, Any] = {
             "name": p.name,
             "placement_type": "PROMO",
-            # Validated on production: priority TYPE + pacing are required.
+            "price": {"price_model": "ACTUAL_ECPM"},
             "delivery": {
                 "priority": "GUARANTEED" if p.guaranteed else "PREEMPTIBLE",
-                "pacing": "SMOOTH_AS" if p.guaranteed else "FAST_AS",
+                "pacing": "FAST_AS",
+                **({"frequency_cap": frequency_cap} if frequency_cap else {}),
             },
-            "_tier_priority_rank": p.priority_level,   # reference (from priorities.yaml)
-            "_frequency_cap": p.frequency_cap,          # reference until FC schema wired
         }
-        # Geo + ad units apply to EVERY placement, guaranteed or remnant.
+        if p.guaranteed:
+            body["budget"] = {"budget_model": "ALL_IMPRESSION"}
+            body["override"] = {"precedence_level": "HIGH"}
+        else:
+            body["budget"] = {"budget_model": "IMPRESSION_TARGET", "impression": 1000000000}
+            # Priority level -> override.value (negative), mode BELOW_PAYING_ADS.
+            if isinstance(p.priority_level, int):
+                body["override"] = {"mode": "BELOW_PAYING_ADS", "value": -p.priority_level}
+
         FreeWheelClient._apply_geo_and_ad_units(body, p)
 
-        if p.guaranteed:
-            body["_guaranteed_args"] = p.arguments  # genre + recommended_show
-            return body
-
-        tier = p.targeting.tiers[0] if p.targeting.tiers else None
-        audience_items: list = []          # Tier 1 DDA + manual segments (numeric ids)
-        pending_segments: list = []        # segments known by name only (need id via sync)
-        series_ids: list = []              # Tier 2 showlist -> series
-        site_group_ids: list = []          # Tier 2/3 Pluto channels & categories
-        standard_attr_ids: list = []       # genre / network -> standard attribute ids
-        geo: list = []
-        for d in (tier.dimensions if tier else []):
-            if d.key == "audience_segments":
-                for r in d.resolved:
-                    (audience_items if r.get("segment_id") else pending_segments).append(
-                        r.get("segment_id") or r.get("segment_name"))
-            elif d.key == "content_affinity_showlist":
-                series_ids += [r["id"] for r in d.resolved if r.get("id")]
-            elif d.key in ("genre", "network"):
-                standard_attr_ids += [r["id"] for r in d.resolved if r.get("id")]
-            elif d.key in ("pluto_channel_list", "pluto_category"):
-                # Pluto -> Site Group IDs (select-all); unmatched keywords surfaced.
-                for r in d.resolved:
-                    (site_group_ids if r.get("id") else pending_segments).append(
-                        r.get("id") or r.get("segment_name"))
-            elif d.key == "geo":
-                geo += list(d.values)
-
-        # Exact structures confirmed from the Publisher API OAS (docs/FREEWHEEL_SCHEMA.md).
-        if audience_items:
-            body["audience_targeting"] = {"include": {"audience_item": audience_items}}
-        content: dict[str, Any] = {}
-        # Series + Pluto site groups share the network_items include set.
-        set_node: dict[str, Any] = {}
-        if series_ids:
-            set_node["series"] = series_ids
-        if site_group_ids:
-            set_node["site_group"] = sorted(set(site_group_ids))
-        if set_node:
-            content["network_items"] = {"include": {"sets": [set_node]}}
-        if standard_attr_ids:
-            content["standard_attributes"] = standard_attr_ids
-        if content:
-            body["content_targeting"] = content
-        body["exclusions"] = p.exclusions        # promoted show excluded everywhere
-        if pending_segments:
-            body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items
+        sets = FreeWheelClient._relationship_sets(p)
+        if sets:
+            body["relationship_targeting"] = {"set": sets}
+        unsupported = FreeWheelClient._unsupported_targeting(p)
+        if unsupported:
+            body["_cm_adds_in_ui"] = unsupported   # series / std-attrs (namespace limits)
         return body
+
+    @staticmethod
+    def _relationship_sets(p) -> list[dict[str, Any]]:
+        """Build relationship_targeting.set[] from the placement's resolved tier.
+
+        Mirrors Dutton's named sets, substituting this campaign's resolved IDs. Only
+        the sections VERIFIED to persist on create (read back with expand flags) are
+        emitted, so nothing is silently dropped:
+          Tier 1 -> "Affinity Shows" : audience_item (DDA)
+          Tier 2 -> "Channels"       : Pluto channel site groups
+          Tier 3 -> "Pluto Categories": Pluto category site groups
+          Tier 4 -> RON (no include; broadest remnant)
+
+        NOT emitted (see _unsupported_targeting): Tier 2 Video Series and Tier 3
+        genre/network Standard Attributes — the `series` field needs the Video Series
+        asset-group namespace (229k, no name search via API) and standard_attributes
+        do not persist through the gateway. Those are handled by the CM in the UI.
+        """
+        tier = p.targeting.tiers[0] if p.targeting.tiers else None
+        if not tier:
+            return []
+        dda, channels, categories = [], [], []
+        for d in tier.dimensions:
+            if d.key == "audience_segments":
+                dda += [r["segment_id"] for r in d.resolved if r.get("segment_id")]
+            elif d.key == "pluto_channel_list":
+                channels += [r["id"] for r in d.resolved if r.get("id")]
+            elif d.key == "pluto_category":
+                categories += [r["id"] for r in d.resolved if r.get("id")]
+
+        def content_sites(site_ids):
+            return {"content_targeting": {"network_items": {"include": {
+                "site_group": sorted(set(site_ids))}}}}
+
+        sets: list[dict[str, Any]] = []
+        if dda:
+            sets.append({"set_name": "Affinity Shows",
+                         "audience_targeting": {"include": {"audience_item": sorted(set(dda))}}})
+        if channels:
+            sets.append({"set_name": "Channels", **content_sites(channels)})
+        if categories:
+            sets.append({"set_name": "Pluto Categories", **content_sites(categories)})
+        return sets
+
+    @staticmethod
+    def _unsupported_targeting(p) -> dict[str, list]:
+        """Resolved targeting the CM must add in the UI (namespaces the API can't write).
+
+        Video Series (Tier 2 "Affinity Shows") and genre/network Standard Attributes
+        (Tier 3) — surfaced as names so they're visible, never silently lost.
+        """
+        tier = p.targeting.tiers[0] if p.targeting.tiers else None
+        out: dict[str, list] = {}
+        for d in (tier.dimensions if tier else []):
+            if d.key == "content_affinity_showlist":
+                out["series"] = [r.get("series_name") or r.get("show") for r in d.resolved]
+            elif d.key in ("genre", "network"):
+                out.setdefault("standard_attributes", []).extend(
+                    r.get("name") for r in d.resolved)
+        return {k: v for k, v in out.items() if v}
 
     @staticmethod
     def _apply_geo_and_ad_units(body: dict[str, Any], p) -> None:
@@ -569,15 +580,14 @@ class FreeWheelClient:
             body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
-        # Ad units: ad_product.ad_unit_node[] — each node needs ad_unit_id + status
-        # ("ACTIVE"); ad_product needs link_method (validated live).
+        # Ad units: link_method NOT_LINKED (mirrors Dutton — creatives linked later by
+        # the CM). Each node: ad_unit_id + status ACTIVE + price + budget_exempt.
         if p.ad_unit_ids:
-            # LINK_WHERE_POSSIBLE needs >1 active ad unit; single-unit placements
-            # (e.g. Pause Ad) must use NOT_LINKED (validated live).
-            link = "LINK_WHERE_POSSIBLE" if len(p.ad_unit_ids) > 1 else "NOT_LINKED"
             body["ad_product"] = {
-                "link_method": link,
-                "ad_unit_node": [{"ad_unit_id": a, "status": "ACTIVE"} for a in p.ad_unit_ids],
+                "link_method": "NOT_LINKED",
+                "ad_unit_node": [{"ad_unit_id": a, "status": "ACTIVE",
+                                  "price": "0.01", "budget_exempt": "false"}
+                                 for a in p.ad_unit_ids],
             }
         if p.ad_unit_names:
             body["_ad_unit_names"] = list(p.ad_unit_names)          # UI reference

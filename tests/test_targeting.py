@@ -88,12 +88,12 @@ def test_guaranteed_placement_named_by_content_id():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
     prem = next(p for p in order.placements if p.format == "premium_preroll")
-    assert prem.name == "Frisco King [ShowID:]"        # blank id -> fill-in marker
+    assert prem.name == "Paramount + - Pre-Roll - Premium Plan - Frisco King - USA - [ShowID:]"
 
     plan.content_type = "movie"; plan.content_id = "12345"
     order2 = OrderBuilder().build(plan)
-    prem2 = next(p for p in order2.placements if p.format == "premium_preroll")
-    assert prem2.name == "Frisco King [MovieID:12345]"
+    ess2 = next(p for p in order2.placements if p.format == "essential_bumper")
+    assert ess2.name == "Paramount + - Bumper - Essential Plan - Frisco King - USA - [MovieID:12345]"
 
 
 def test_priority_by_tier_and_duration():
@@ -117,7 +117,7 @@ def test_priority_by_tier_and_duration():
 
     prem = next(p for p in order.placements if p.format == "premium_preroll")
     assert prem.priority_level == "SPONSORSHIP"
-    assert prem.frequency_cap == "1 per day"
+    assert prem.frequency_cap == "1 per 21 days"   # mirrors Dutton (period 30240 min)
 
 
 def test_order_carries_template_ref():

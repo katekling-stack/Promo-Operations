@@ -52,10 +52,13 @@ formats:
   # These live in an EXISTING guaranteed order, not the new remnant IO. Each is
   # built from exactly two arguments: a genre-specific value and the recommended
   # show value. No tier stack.
+  # Guaranteed name convention (from the Dutton Ranch IO):
+  #   "Paramount + - {unit_label} - {plan_label} - {title} - {region} - [ShowID:{id}]"
   premium_preroll:
     format_code: "PREM-PRE"
     display_name: "P+ Premium Pre-Roll"
-    naming: "{promoted_title} - {region} - Premium Pre-Roll"
+    unit_label: "Pre-Roll"
+    plan_label: "Premium Plan"
     guaranteed: true
     nests_in: "existing_guaranteed_order"
     platforms: ["Paramount+ Premium"]
@@ -65,7 +68,8 @@ formats:
   essential_bumper:
     format_code: "ESS-BMP"
     display_name: "P+ Essential Bumper"
-    naming: "{promoted_title} - {region} - Essential Bumper"
+    unit_label: "Bumper"
+    plan_label: "Essential Plan"
     guaranteed: true
     nests_in: "existing_guaranteed_order"
     platforms: ["Paramount+ Essential"]

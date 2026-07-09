@@ -42,6 +42,9 @@ def test_frisco_king_pluto_fully_resolves_into_placement_body():
     order = OrderBuilder().build(plan)
     t2 = next(p for p in order.placements if p.name.endswith("Tier 2 - USA") and p.duration == 30)
     body = FreeWheelClient._placement_body(t2)
-    sets = body["content_targeting"]["network_items"]["include"]["sets"][0]
-    assert sets["site_group"] and sets["series"]
-    assert "_pending_segments_need_ids" not in body
+    # Tier 2: Pluto channels persist as a "Channels" site-group set (verified via
+    # read-back). Series is surfaced for the CM (Video Series namespace not API-writable).
+    sets = {s["set_name"]: s for s in body["relationship_targeting"]["set"]}
+    channels = sets["Channels"]["content_targeting"]["network_items"]["include"]["site_group"]
+    assert len(channels) > 50
+    assert body["_cm_adds_in_ui"]["series"]
