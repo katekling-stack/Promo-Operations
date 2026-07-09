@@ -1,0 +1,65 @@
+# Operative-booked Takeovers (Operative -> GAM): HPTO, First Impression (FITO),
+# Arena Takeover, 3-Peat, and Internal Marketing standard lines.
+#
+# Booking flow (see docs/OPERATIVE_TAKEOVERS.md for the full runbook): copy a similar
+# existing Operative Sales order, rename + set dates, set the product lines below,
+# submit for internal approval (twice) + manually approve, then in Ad Operations set
+# push quantities and Push All to GAM under advertiser "CBS Interactive".
+
+gam_push_advertiser: "CBS Interactive"
+io_package_name: "Internal Takeover"     # custom field set on new (non-copied) products
+
+# Order naming. Paramount+ prefixes "P+ " (for VideoAmp reporting).
+naming:
+  default: "{show} - {type} {dates}"
+  paramount_plus: "P+ {type_abbr} - {show} - P+ {type} {dates}"
+
+# Push/booking rules by line kind.
+booking_rules:
+  sponsorship:            # HPTO / FITO / Arena / First Impression
+    quantity: 1
+    unit_cost: 0
+    unit_price_before_discounts: 0
+    push_quantity: 100
+  standard:               # 3-Peat + Internal Marketing standard lines (MLS/NBA/MLB…)
+    push_quantity_increase_pct: 3
+    same_advertiser_exception: true
+
+# Takeover types -> exact Operative product strings.
+types:
+  hpto:
+    label: "Home Page Takeover"
+    line_kind: sponsorship
+    products:
+      - "US|PMNT|Sports Network|INTERNAL PROMO ONLY Home Page Takeover||Sponsorship|1|Day||"
+      - "US|PMNT|Inside Edition|Home Page||Sponsorship|1|Day||"
+      - "US|PMNT|Rachael Ray|Home Page|Skybox|Sponsorship|1|Day||"
+      - "US|PMNT|ET Online|Home Page Takeover||Sponsorship|1|Day||"
+      - "US|PMNT|CBS News|Front Door|Skybox|Sponsorship|1|Day||"
+
+  first_impression:
+    label: "First Impression Takeover (FITO)"
+    line_kind: sponsorship
+    products:
+      - "US|PMNT|Sports Network|First Impression||Sponsorship|1|Day||"
+
+  arena_takeover:
+    label: "Arena Takeover"
+    line_kind: sponsorship
+    products:
+      - "US|PMNT|CBS Sports|Soccer|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|Olympic|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|NHL|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|NFL|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|NBA|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|MLB|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|Golf|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|College Football|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|College Basketball|Arena Home Page Takeover|Sponsorship|1|Day||"
+      - "US|PMNT|CBS Sports|Tennis|Arena Home Page Takeover|Sponsorship|1|Day||"
+
+  three_peat:
+    label: "3-Peat Takeover"
+    line_kind: standard
+    products:
+      - "US|PMNT|CBS Sports|3 Peat|Arena Sync|Standard||||"
