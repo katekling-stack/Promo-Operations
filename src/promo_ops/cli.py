@@ -4,7 +4,8 @@
     promo-ops preview <plan.yaml>                   human-readable tier breakdown
     promo-ops push    <plan.yaml> --target NAME     push (dry-run unless --live)
     promo-ops build-from-sheet <SHEET_ID> [--out F] build from a campaign-plan sheet
-    promo-ops from-case <CASE_ID> [--out FILE]      build from a Salesforce Case
+    promo-ops from-case <CASE_ID> [--live]          validate+build+create from a Case
+    promo-ops poll-cases [--live]                   process all "Ready for Ad Ops" Cases
     promo-ops sync-segments                         refresh audience-segment CSVs
 
 Build/preview require no credentials. push/from-case/sync-segments talk to external
@@ -118,16 +119,27 @@ def _cmd_push(args: argparse.Namespace) -> int:
 
 
 def _cmd_from_case(args: argparse.Namespace) -> int:
+    """Process one Case: validate -> build -> create draft (--live) -> comment back."""
+    from .casework import process_case
     from .integrations.salesforce import SalesforceClient
-    plan_dict = SalesforceClient().case_to_plan_dict(args.case_id)
-    plan = support_plan_from_dict(plan_dict)
-    order = OrderBuilder().build(plan)
-    out = _order_to_json(order)
-    if args.out:
-        Path(args.out).write_text(out, encoding="utf-8")
-        print(f"Wrote {args.out}")
-    else:
-        print(out)
+    from .integrations.freewheel import FreeWheelClient
+    result = process_case(args.case_id, sf=SalesforceClient(), fw=FreeWheelClient(),
+                          create=args.live)
+    print(result.comment_body())
+    return 0 if result.ok else 1
+
+
+def _cmd_poll_cases(args: argparse.Namespace) -> int:
+    """Process every Case flagged Ready for Ad Ops (the hand-off poll)."""
+    from .casework import process_ready_cases
+    from .integrations.salesforce import SalesforceClient
+    from .integrations.freewheel import FreeWheelClient
+    results = process_ready_cases(sf=SalesforceClient(), fw=FreeWheelClient(),
+                                  create=args.live)
+    for r in results:
+        print(f"[{'OK' if r.ok else 'SKIP'}] {r.case_id}: "
+              f"{r.io_link or (r.validation or r.error)}")
+    print(f"Processed {len(results)} case(s).")
     return 0
 
 
@@ -191,10 +203,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_push.add_argument("--live", action="store_true", help="Actually create (default dry-run)")
     p_push.set_defaults(func=_cmd_push)
 
-    p_case = sub.add_parser("from-case", help="Build from a Salesforce Case")
+    p_case = sub.add_parser("from-case", help="Validate+build+create from a Salesforce Case")
     p_case.add_argument("case_id")
-    p_case.add_argument("--out")
+    p_case.add_argument("--live", action="store_true", help="Create the draft (default dry-run)")
     p_case.set_defaults(func=_cmd_from_case)
+
+    p_poll = sub.add_parser("poll-cases", help="Process all Cases flagged Ready for Ad Ops")
+    p_poll.add_argument("--live", action="store_true", help="Create drafts (default dry-run)")
+    p_poll.set_defaults(func=_cmd_poll_cases)
 
     p_sheet = sub.add_parser("build-from-sheet", help="Build from a campaign-plan Google Sheet")
     p_sheet.add_argument("sheet_id")

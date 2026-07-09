@@ -113,12 +113,31 @@ def _connect():
 class SalesforceClient:
     # MAP: the attached Targeting file is matched by this name fragment (Title).
     TARGETING_FILE_HINT = "Targeting"
+    # MAP: Case Status values that drive the hand-off. A Case flips to READY_STATUS
+    # when the planner is done; we move it to BUILT_STATUS after creating the draft.
+    READY_STATUS = "Ready for Ad Ops"
+    BUILT_STATUS = "Submitted to FreeWheel"
+    NEEDS_INFO_STATUS = "Needs Info"          # set when validation fails
+    STATUS_FIELD = "Status"
 
     def __init__(self):
         self._sf = _connect()
 
     def get_case(self, case_id: str) -> dict[str, Any]:
         return self._sf.Case.get(case_id)
+
+    def list_ready_cases(self) -> list[str]:
+        """Case IDs flagged ready for Ad Ops build. CONFIRM the Status value/field."""
+        q = self._sf.query(
+            f"SELECT Id FROM Case WHERE {self.STATUS_FIELD} = '{self.READY_STATUS}'")
+        return [r["Id"] for r in q.get("records", [])]
+
+    def post_case_comment(self, case_id: str, body: str) -> dict[str, Any]:
+        """Post a comment back on the Case (IO link + to-dos). CONFIRM comment object."""
+        return self._sf.CaseComment.create({"ParentId": case_id, "CommentBody": body})
+
+    def update_case_status(self, case_id: str, status: str) -> dict[str, Any]:
+        return self._sf.Case.update(case_id, {self.STATUS_FIELD: status})
 
     def _targeting_rows(self, case_id: str) -> Optional[list[list[str]]]:
         """Download the Case's attached Targeting sheet as CSV rows.
