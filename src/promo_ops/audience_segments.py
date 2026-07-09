@@ -70,17 +70,35 @@ class SegmentMatch:
         }
 
 
+def _dda_tokens(text: str) -> str:
+    """Normalize a DDA segment name / show to space-separated alphanumeric tokens.
+
+    Collapses ALL separators (- _ : etc.) so the inconsistent DDA conventions all
+    reduce to the same tokens: 'GL-DDA-1P-SHOW_Tulsa_King', 'GL-DDA-1P-SHOW-FBI'
+    and 'GL-DDA-1P_FBI_-_International' -> '... show tulsa king' / '... fbi ...'.
+    Drops the connector word 'and' so '& ' and 'and' match ("Tony & Ziva" ==
+    "Tony and Ziva").
+    """
+    toks = re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).split()
+    return " ".join(t for t in toks if t != "and")
+
+
 class AudienceSegmentResolver:
-    """Loads synced segment CSVs and resolves show titles to segments."""
+    """Loads synced DDA segment CSVs and resolves show titles to segments.
+
+    Matching mirrors the team's workflow — "search DDA + the show name and select
+    everything" — via a normalized substring match, so it is robust to the
+    inconsistent DDA naming (SHOW_ vs SHOW- vs no SHOW).
+    """
 
     def __init__(self, data_dir: Path = DATA_DIR):
         self.data_dir = Path(data_dir)
-        self._by_title: dict[str, list[SegmentRecord]] = {}
+        self._records: list[SegmentRecord] = []   # all GL-DDA-1P records
+        self._norm: list[str] = []                # parallel normalized names
         self._loaded = False
 
     def load(self) -> "AudienceSegmentResolver":
-        """Load all *.csv snapshots in the data dir into the title index."""
-        self._by_title.clear()
+        self._records, self._norm = [], []
         if self.data_dir.exists():
             for csv_path in sorted(self.data_dir.glob("*.csv")):
                 self._load_csv(csv_path)
@@ -89,33 +107,31 @@ class AudienceSegmentResolver:
 
     def _load_csv(self, path: Path) -> None:
         with path.open("r", encoding="utf-8", newline="") as fh:
-            reader = csv.DictReader(fh)
-            for row in reader:
-                show = (row.get("show") or "").strip()
+            for row in csv.DictReader(fh):
                 seg_name = (row.get("segment_name") or "").strip()
-                if not show or not seg_name or show.upper() == "N/A":
+                # DDA ONLY. AAM segments are sunset and must never be targeted.
+                if not seg_name or not seg_name.upper().startswith("GL-DDA-1P"):
                     continue
-                # DDA ONLY. AAM segments are sunset and must never be targeted; the
-                # only valid Tier-1 audience items follow the "GL-DDA-1P-" convention.
-                if not seg_name.upper().startswith("GL-DDA-1P"):
-                    continue
-                rec = SegmentRecord(
-                    show=show,
+                self._records.append(SegmentRecord(
+                    show=(row.get("show") or "").strip(),
                     segment_name=seg_name,
                     segment_id=(row.get("segment_id") or "").strip() or None,
                     platform=(row.get("platform") or "").strip() or None,
                     region=(row.get("region") or "").strip() or None,
                     source=(row.get("source") or path.stem).strip() or None,
-                )
-                self._by_title.setdefault(normalize_title(show), []).append(rec)
+                ))
+                self._norm.append(_dda_tokens(seg_name))
 
     def resolve(self, show: str, region: Optional[str] = None) -> SegmentMatch:
+        """Select-all: every GL-DDA-1P segment whose name contains the show tokens."""
         if not self._loaded:
             self.load()
-        recs = self._by_title.get(normalize_title(show), [])
-        if region:
-            region_recs = [r for r in recs if not r.region or r.region == region]
-            recs = region_recs or recs   # fall back to region-agnostic matches
+        kw = _dda_tokens(show)
+        if not kw:
+            return SegmentMatch(show=show, matched=False)
+        # word-boundary token match so "FBI" doesn't hit inside another word
+        pat = re.compile(rf"(?:^| ){re.escape(kw)}(?: |$)")
+        recs = [r for r, n in zip(self._records, self._norm) if pat.search(n)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
