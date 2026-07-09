@@ -55,11 +55,9 @@ formats:
 # Targeting inputs (from the support plan). The engine maps these onto tiers.
 # ---------------------------------------------------------------------------
 
-# Tier 1 audience segments specified directly (in addition to any auto-matched from
-# the showlist via the Audience Segments doc).
-audience_segments:
-  - "High Stakes Drama Fans"
-  - "Procedural Drama Fans"
+# Tier 1 audience = DDA only (GL-DDA-1P-), auto-resolved from the showlist.
+# AAM segments (e.g. the old P+ "…Drama Fans" groupings) are SUNSET — never target them.
+audience_segments: []
 
 networks:
   - "Paramount Network"

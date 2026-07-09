@@ -33,12 +33,16 @@ ad_units:
     - "Paramount House Postroll"
   pause_ads:
     - "Pause_Ad"
+  # GUARANTEED (sponsored) formats — units confirmed from the Dutton Ranch IO.
+  premium_preroll:
+    - "PPlus_Commercial Free_Promo"
+    - "PPlus_LinearSkippable_Promo_Pre_Roll_1s"
+  essential_bumper:
+    - "CBS_Brand Bumper_Mid_Roll_Last"
 
 # Which ad-unit group each format uses (domestic remnant/promo).
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
-  # premium_preroll / essential_bumper are GUARANTEED (sponsored) formats that run
-  # on the guaranteed order with sponsored ad units (e.g. PPlus_Sponsored_Pre_Roll).
-  # Left unmapped until the exact sponsored units are confirmed — the tool leaves
-  # them empty rather than guess. Add a group here + above once confirmed.
+  premium_preroll: premium_preroll
+  essential_bumper: essential_bumper

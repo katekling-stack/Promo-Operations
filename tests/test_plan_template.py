@@ -39,7 +39,7 @@ def test_targeting_tab_parses_columns():
     plan = parse_targeting_tab(_rows("Targeting.csv"))
     assert plan["networks"] == ["Paramount Network"]
     assert len(plan["showlist"]) == 22
-    assert plan["audience_segments"] == ["High Stakes Drama Fans", "Procedural Drama Fans"]
+    assert plan.get("audience_segments", []) == []   # Tier 1 = DDA auto-resolved; AAM sunset
     assert plan["pluto"]["categories"][0] == "True Crime"
     assert "CBS Sports HQ" in plan["pluto"]["channels"]
 

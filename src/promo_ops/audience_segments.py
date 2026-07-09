@@ -95,6 +95,10 @@ class AudienceSegmentResolver:
                 seg_name = (row.get("segment_name") or "").strip()
                 if not show or not seg_name or show.upper() == "N/A":
                     continue
+                # DDA ONLY. AAM segments are sunset and must never be targeted; the
+                # only valid Tier-1 audience items follow the "GL-DDA-1P-" convention.
+                if not seg_name.upper().startswith("GL-DDA-1P"):
+                    continue
                 rec = SegmentRecord(
                     show=show,
                     segment_name=seg_name,

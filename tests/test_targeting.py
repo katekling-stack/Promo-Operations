@@ -18,10 +18,12 @@ def test_normalize_title_strips_punctuation():
 
 
 def test_resolver_matches_seed_show():
+    # DDA-only: Tulsa King resolves to its GL-DDA-1P- audience item.
     resolver = AudienceSegmentResolver().load()
-    match = resolver.resolve("Top Gear", region="USA")
+    match = resolver.resolve("Tulsa King", region="USA")
     assert match.matched
-    assert match.records[0].segment_id == "25455246"
+    assert match.records[0].segment_id == "1437993"
+    assert match.records[0].segment_name.upper().startswith("GL-DDA-1P")
 
 
 def test_resolver_reports_unmatched():
@@ -134,15 +136,18 @@ def test_promoted_show_excluded_from_every_placement():
         assert "Frisco King" in p.exclusions
 
 
-def test_manual_tier1_audience_segments_applied():
+def test_tier1_audience_is_dda_only_no_aam():
+    # AAM segments are sunset: Tier 1 must resolve ONLY DDA (GL-DDA-1P-) items.
     plan = load_plan(FRISCO)
     targeting = TargetingEngine().build(plan, "remnant_video")
     tier1 = next(t for t in targeting.tiers if t.id == 1)
     seg_dim = next(d for d in tier1.dimensions if d.key == "audience_segments")
+    names = [s["segment_name"] for s in seg_dim.resolved]
+    assert names, "expected DDA segments resolved from the showlist"
+    assert all(n.upper().startswith("GL-DDA-1P") for n in names)
+    # the sunset AAM grouping IDs must never appear
     ids = [s.get("segment_id") for s in seg_dim.resolved]
-    # manual groupings resolve to their FW segment IDs (from the seed doc)
-    assert "25995747" in ids   # High Stakes Drama Fans
-    assert "25995761" in ids   # Procedural Drama Fans
+    assert "25995747" not in ids and "25995761" not in ids
 
 
 def test_genres_resolve_to_standard_attribute_ids():

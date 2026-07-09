@@ -508,6 +508,9 @@ class FreeWheelClient:
             "_tier_priority_rank": p.priority_level,   # reference (from priorities.yaml)
             "_frequency_cap": p.frequency_cap,          # reference until FC schema wired
         }
+        # Geo + ad units apply to EVERY placement, guaranteed or remnant.
+        FreeWheelClient._apply_geo_and_ad_units(body, p)
+
         if p.guaranteed:
             body["_guaranteed_args"] = p.arguments  # genre + recommended_show
             return body
@@ -552,6 +555,14 @@ class FreeWheelClient:
             content["standard_attributes"] = standard_attr_ids
         if content:
             body["content_targeting"] = content
+        body["exclusions"] = p.exclusions        # promoted show excluded everywhere
+        if pending_segments:
+            body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items
+        return body
+
+    @staticmethod
+    def _apply_geo_and_ad_units(body: dict[str, Any], p) -> None:
+        """Geo + ad units — shared by remnant and guaranteed placements."""
         # Geo: API writes COUNTRY IDs (int64). Names ("United States") are what the
         # team searches in the UI and are resolved to IDs via the country table.
         if p.geo_country_ids:
@@ -559,8 +570,7 @@ class FreeWheelClient:
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
         # Ad units: ad_product.ad_unit_node[] — each node needs ad_unit_id + status
-        # ("ACTIVE"); ad_product needs link_method (validated live). Creatives are
-        # linked later by the CM, so LINK_WHERE_POSSIBLE is the safe default.
+        # ("ACTIVE"); ad_product needs link_method (validated live).
         if p.ad_unit_ids:
             # LINK_WHERE_POSSIBLE needs >1 active ad unit; single-unit placements
             # (e.g. Pause Ad) must use NOT_LINKED (validated live).
@@ -571,7 +581,3 @@ class FreeWheelClient:
             }
         if p.ad_unit_names:
             body["_ad_unit_names"] = list(p.ad_unit_names)          # UI reference
-        body["exclusions"] = p.exclusions        # promoted show excluded everywhere
-        if pending_segments:
-            body["_pending_segments_need_ids"] = pending_segments  # run sync-audience-items
-        return body
