@@ -409,15 +409,48 @@ class FreeWheelClient:
                           campaign_id=int(campaign_id), body=plan["insertion_order_body"])
         io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
 
+        valid_audience = self._valid_audience_item_ids()
         placements = []
         for body in plan["placement_bodies"]:
             b = {k: v for k, v in body.items() if not k.startswith("_")}  # drop reference-only keys
             b["insertion_order_id"] = io_id
-            ai = b.get("targeting", {}).get("audience_targeting", {}).get("include", {})
-            if "audience_item" in ai:
-                ai["audience_item"] = sorted(set(ai["audience_item"]))  # dedupe
+            # Send only IDs that are real audience_items — an invalid one fails the
+            # whole placement. Dropped IDs (e.g. AAM/P+ groupings that aren't audience
+            # items) are surfaced for the CM to add manually.
+            inc = b.get("audience_targeting", {}).get("include", {})
+            if "audience_item" in inc:
+                ids = sorted(set(str(x) for x in inc["audience_item"]))
+                keep = [i for i in ids if not valid_audience or i in valid_audience]
+                dropped = [i for i in ids if i not in keep]
+                if keep:
+                    inc["audience_item"] = keep
+                else:
+                    b.pop("audience_targeting", None)
+                if dropped:
+                    b["_dropped_audience_items_add_manually"] = dropped
             placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
         return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
+
+    def _valid_audience_item_ids(self) -> set:
+        """Set of real audience_item IDs (from the synced/seed audience-items table).
+
+        Used to filter targeting before a create — FreeWheel rejects a placement whose
+        audience_item set contains any non-existent ID. Empty set => skip filtering.
+        """
+        import csv as _csv
+        from ..audience_segments import DATA_DIR
+        ids: set = set()
+        for path in sorted(DATA_DIR.glob("*.csv")):
+            try:
+                with path.open(encoding="utf-8", newline="") as fh:
+                    for row in _csv.DictReader(fh):
+                        sid = (row.get("segment_id") or "").strip()
+                        if sid and (row.get("source") == "audience_items"
+                                    or "dda" in (row.get("source") or "").lower()):
+                            ids.add(sid)
+            except FileNotFoundError:
+                continue
+        return ids
 
     @staticmethod
     def to_freewheel_plan(order: Order) -> dict[str, Any]:
@@ -525,9 +558,17 @@ class FreeWheelClient:
             body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
-        # Ad units: ad_product.ad_unit_node[].ad_unit_id (resolved from config).
+        # Ad units: ad_product.ad_unit_node[] — each node needs ad_unit_id + status
+        # ("ACTIVE"); ad_product needs link_method (validated live). Creatives are
+        # linked later by the CM, so LINK_WHERE_POSSIBLE is the safe default.
         if p.ad_unit_ids:
-            body["ad_product"] = {"ad_unit_node": [{"ad_unit_id": a} for a in p.ad_unit_ids]}
+            # LINK_WHERE_POSSIBLE needs >1 active ad unit; single-unit placements
+            # (e.g. Pause Ad) must use NOT_LINKED (validated live).
+            link = "LINK_WHERE_POSSIBLE" if len(p.ad_unit_ids) > 1 else "NOT_LINKED"
+            body["ad_product"] = {
+                "link_method": link,
+                "ad_unit_node": [{"ad_unit_id": a, "status": "ACTIVE"} for a in p.ad_unit_ids],
+            }
         if p.ad_unit_names:
             body["_ad_unit_names"] = list(p.ad_unit_names)          # UI reference
         body["exclusions"] = p.exclusions        # promoted show excluded everywhere
