@@ -113,12 +113,15 @@ def _connect():
 class SalesforceClient:
     # MAP: the attached Targeting file is matched by this name fragment (Title).
     TARGETING_FILE_HINT = "Targeting"
-    # MAP: Case Status values that drive the hand-off. A Case flips to READY_STATUS
-    # when the planner is done; we move it to BUILT_STATUS after creating the draft.
-    READY_STATUS = "Ready for Ad Ops"
-    BUILT_STATUS = "Submitted to FreeWheel"
-    NEEDS_INFO_STATUS = "Needs Info"          # set when validation fails
+    # MAP: the hand-off uses two Case fields:
+    #   Status  — trigger: planner sets READY_STATUS when done; we set NEEDS_INFO_STATUS
+    #             (+ a comment) if we can't build it.
+    #   Reason  — outcome: we set SUBMITTED_REASON after creating the draft.
     STATUS_FIELD = "Status"
+    REASON_FIELD = "Reason"
+    READY_STATUS = "Ready for Automation"
+    NEEDS_INFO_STATUS = "Needs Info"
+    SUBMITTED_REASON = "Submitted to FreeWheel"
 
     def __init__(self):
         self._sf = _connect()
@@ -138,6 +141,9 @@ class SalesforceClient:
 
     def update_case_status(self, case_id: str, status: str) -> dict[str, Any]:
         return self._sf.Case.update(case_id, {self.STATUS_FIELD: status})
+
+    def update_case_reason(self, case_id: str, reason: str) -> dict[str, Any]:
+        return self._sf.Case.update(case_id, {self.REASON_FIELD: reason})
 
     def _targeting_rows(self, case_id: str) -> Optional[list[list[str]]]:
         """Download the Case's attached Targeting sheet as CSV rows.

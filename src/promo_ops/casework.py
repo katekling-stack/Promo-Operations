@@ -96,7 +96,7 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
     if problems:
         result = CaseResult(case_id, ok=False, validation=problems)
         sf.post_case_comment(case_id, result.comment_body())
-        sf.update_case_status(case_id, sf.NEEDS_INFO_STATUS)
+        sf.update_case_status(case_id, sf.NEEDS_INFO_STATUS)   # Status -> Needs Info
         return result
 
     order = (builder or OrderBuilder()).build(plan)
@@ -107,6 +107,7 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
         result = CaseResult(case_id, ok=False, placements=len(order.placements),
                             todos=todos, error=str(exc))
         sf.post_case_comment(case_id, result.comment_body())
+        sf.update_case_status(case_id, sf.NEEDS_INFO_STATUS)   # Status -> Needs Info
         return result
 
     io_id = _io_from_result(res)
@@ -115,7 +116,7 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
     result = CaseResult(case_id, ok=True, io_id=io_id, io_link=link,
                         placements=len(order.placements), todos=todos)
     sf.post_case_comment(case_id, result.comment_body())
-    sf.update_case_status(case_id, sf.BUILT_STATUS)
+    sf.update_case_reason(case_id, sf.SUBMITTED_REASON)        # Reason -> Submitted to FreeWheel
     return result
 
 

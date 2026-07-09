@@ -22,15 +22,16 @@ GOOD_PLAN = {
 
 
 class FakeSF:
-    READY_STATUS = "Ready for Ad Ops"
-    BUILT_STATUS = "Submitted to FreeWheel"
+    READY_STATUS = "Ready for Automation"
     NEEDS_INFO_STATUS = "Needs Info"
+    SUBMITTED_REASON = "Submitted to FreeWheel"
 
     def __init__(self, plan_dict, ready=("500ABC",)):
         self._plan = plan_dict
         self._ready = list(ready)
         self.comments = []
         self.status = {}
+        self.reason = {}
 
     def case_to_plan_dict(self, cid):
         return dict(self._plan, salesforce_case=cid)
@@ -43,6 +44,9 @@ class FakeSF:
 
     def update_case_status(self, cid, status):
         self.status[cid] = status
+
+    def update_case_reason(self, cid, reason):
+        self.reason[cid] = reason
 
 
 class FakeFW:
@@ -62,7 +66,8 @@ def test_valid_case_builds_creates_and_comments():
     assert result.ok and result.io_id == "95999001"
     assert "insertion_order_id=95999001" in result.io_link
     assert fw.created and fw.created[0][1] is False          # created live (not dry-run)
-    assert sf.status["500ABC"] == FakeSF.BUILT_STATUS
+    assert sf.reason["500ABC"] == FakeSF.SUBMITTED_REASON    # Reason -> Submitted
+    assert "500ABC" not in sf.status                         # Status untouched on success
     body = sf.comments[0][1]
     assert "FreeWheel draft created" in body and "Map/create the Brand" in body
 
