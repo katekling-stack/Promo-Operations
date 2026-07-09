@@ -54,6 +54,11 @@ class SupportPlan:
     # "show" -> "{title} [ShowID:{content_id}]", "movie" -> "{title} [MovieID:{content_id}]".
     content_type: str = "show"          # "show" | "movie"
     content_id: Optional[str] = None    # ShowID / MovieID (left blank -> "[ShowID:]")
+    # Video Domination selector (config/video_dominations.yaml option key: pluto |
+    # standard | aus_10_streaming | uk_my5). `video_domination_targeting` holds the
+    # Pluto category names for a Pluto VD.
+    video_domination: Optional[str] = None
+    video_domination_targeting: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None

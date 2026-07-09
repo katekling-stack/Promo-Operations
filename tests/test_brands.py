@@ -145,6 +145,23 @@ def test_validate_plan_flags_and_passes():
     assert len(validate_plan(bad)) >= 4
 
 
+def test_video_domination_validation():
+    from promo_ops.plan_loader import validate_plan
+    base = {"promoted_title": "X", "region": "USA", "brand": "pluto_tv",
+            "formats": ["remnant_video"], "campaign": {"resolved_id": "54413718"}}
+    # Pluto VD needs targeting
+    assert validate_plan(support_plan_from_dict({**base, "video_domination": "pluto"}))
+    assert validate_plan(support_plan_from_dict(
+        {**base, "video_domination": "pluto",
+         "video_domination_targeting": ["Reality"]})) == []
+    # unknown option flagged
+    assert validate_plan(support_plan_from_dict({**base, "video_domination": "bogus"}))
+    # Operative option (Standard) needs no Pluto targeting
+    assert validate_plan(support_plan_from_dict(
+        {**base, "brand": "cbs_sports", "campaign": {"resolved_id": "54413703"},
+         "video_domination": "standard"})) == []
+
+
 def test_default_brand_falls_back_to_paramount_house_units():
     # No brand -> global default ad-unit group (Paramount house Pre/Mid/Post).
     plan = support_plan_from_dict({

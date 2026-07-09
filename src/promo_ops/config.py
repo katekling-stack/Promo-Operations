@@ -64,6 +64,10 @@ def relationship_targeting_config() -> dict[str, Any]:
     return load_yaml("relationship_targeting.yaml")
 
 
+def video_dominations_config() -> dict[str, Any]:
+    return load_yaml("video_dominations.yaml")
+
+
 def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
     """Derive the brand key from a plan's campaign (id or name).
 

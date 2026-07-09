@@ -47,6 +47,8 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),
         recommended_show_id=raw.get("recommended_show_id"),
+        video_domination=raw.get("video_domination") or None,
+        video_domination_targeting=list(raw.get("video_domination_targeting") or []),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
@@ -109,4 +111,14 @@ def validate_plan(plan: SupportPlan) -> list[str]:
 
     if not (plan.campaign.get("resolved_id") or plan.campaign.get("name")):
         problems.append("Parent Campaign (name or ID) is required.")
+
+    if plan.video_domination:
+        from .config import video_dominations_config
+        vds = video_dominations_config().get("options", {})
+        if plan.video_domination not in vds:
+            problems.append(f"Unknown Video Domination {plan.video_domination!r}. "
+                            f"Known: {', '.join(vds)}.")
+        elif plan.video_domination == "pluto" and not plan.video_domination_targeting:
+            problems.append("Pluto Video Domination selected but no Video Domination "
+                            "Targeting (Pluto categories) provided.")
     return problems

@@ -1,0 +1,46 @@
+# Video Domination options — selected per campaign via the plan's "Video Domination"
+# field. Four flavors: one built directly in FreeWheel (Pluto), three booked/pushed
+# from an existing Operative order (Standard / AU 10 Streaming / UK My5).
+#
+# All share the same frequency caps; targeting differs (for Pluto it's the Pluto
+# category site groups noted in the plan's "Video Domination Targeting" field).
+
+# Shared caps (verified on the Pluto VD placement): 1/day + 1/stream + 1/asset.
+frequency_caps:
+  - {value: 1, type: IMPRESSION, period: "1440"}    # 1 per day
+  - {value: 1, type: IMPRESSION, period: "STREAM"}  # 1 per stream
+  - {value: 1, type: IMPRESSION, period: "ASSET"}   # 1 per asset
+
+options:
+  pluto:
+    label: "Pluto Video Domination"
+    engine: freewheel                 # built directly in FreeWheel
+    brand: pluto_tv                   # Pluto TV - USA cases
+    format: pluto_video_domination    # placement template (guaranteed, HIGHEST)
+    ad_units: ["Paramount House Preroll", "Paramount House Midroll"]
+    # Targeting varies per campaign — the CM notes the Pluto categories in the plan
+    # "Video Domination Targeting" field; they become the "Categories" site-group set.
+    targeting_from_plan: true
+
+  standard:
+    label: "Standard (all markets except 10 Streaming & My5)"
+    engine: operative                 # booked + pushed from an Operative order
+    operative_order_id: "66933"
+    operative_order_name: "Global | DIO | PARA Series Promo | Video | Standard | Country Change Me"
+    note: "Use for all Video Dominations outside Pluto TV, 10 Streaming, and My5. Change the Country."
+
+  aus_10_streaming:
+    label: "Australia — 10 Streaming"
+    engine: operative
+    operative_order_id: "71779"
+    operative_order_name: "AUS | DIO | Promo | 10Play | Video Domination"
+    region: AU
+    note: "Use only for 10 Streaming placements in Australia."
+
+  uk_my5:
+    label: "UK — My5 / Channel 5"
+    engine: operative
+    operative_order_id: "71842"
+    operative_order_name: "INTL | UK | DIO | Promo | My5 | Video Domination"
+    region: UK
+    note: "Use only for My5 / Channel 5 placements in the UK."
