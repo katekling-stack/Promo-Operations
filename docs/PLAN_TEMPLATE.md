@@ -40,8 +40,6 @@ blank.
 | Video Domination | | Optional: `pluto` \| `standard` \| `aus_10_streaming` \| `uk_my5`. |
 | Video Domination Targeting | | Pluto categories (semicolon list) — **Pluto VD only**. |
 | Takeover | | Optional Operative→GAM takeover: `hpto` \| `first_impression` \| `arena_takeover` \| `three_peat`. |
-| P+ User States | `New; Light; Medium; Heavy` | Tier-1 P+ user-state targeting. |
-| Demographics Age / Gender | | Optional Tier-3 refinement. |
 
 **Overrides — usually blank, auto-derived** (`— OVERRIDES —` section)
 

@@ -19,10 +19,6 @@ Formats,,"(optional — defaults from Brand) remnant_video | pause_ads | premium
 Video Domination,,(optional) — pluto | standard | aus_10_streaming | uk_my5
 Video Domination Targeting,,(Pluto VD only) — Pluto categories; semicolon-separated
 Takeover,,(optional) — hpto | first_impression | arena_takeover | three_peat
-— OPTIONAL TARGETING —,,
-P+ User States,New; Light; Medium; Heavy,(optional)
-Demographics Age,,(optional)
-Demographics Gender,,(optional)
 — OVERRIDES (usually leave blank; auto-derived) —,,
 Brand,,(auto from Campaign) — override only if needed
 Advertiser,,(auto from Brand)
