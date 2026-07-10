@@ -159,6 +159,7 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     # Video Domination selector + (for Pluto) its Pluto-category targeting.
     "video domination": {"path": ["video_domination"]},
     "video domination targeting": {"path": ["video_domination_targeting"], "type": "list"},
+    "takeover": {"path": ["takeover"]},
     # Optional / legacy — kept for back-compat, not in the standard template.
     "brand": {"path": ["brand"]},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},

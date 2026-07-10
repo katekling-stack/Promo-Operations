@@ -1,26 +1,33 @@
-Field,Value
-Promoted Title,Frisco King
-Region,USA
-Brand,paramount_plus_domestic
-Salesforce Case,
-Advertiser,VCBS English - USA - Adult (Promo)
-Advertiser ID,1000520
-Campaign Name,Paramount + - USA
-Campaign ID,86543608
-Insertion Order Name,Frisco King - USA
-Recommended Show,Frisco King
-Exclude Show,Frisco King
-Season or Messaging,Season 1
-Video Durations,30; 15
-Content Type,show
-Content ID,
-Recommended Show ID,
-Flight Start,
-Flight End,
-Flight Code,L1
-Formats,remnant_video; pause_ads; premium_preroll; essential_bumper
-Video Domination,
-Video Domination Targeting,
-P+ User States,New; Light; Medium; Heavy
-Demographics Age,
-Demographics Gender,
+Field,Value,Notes / Allowed values
+— CAMPAIGN —,,"Pick the Campaign; Brand, Advertiser and default Formats derive from it."
+Promoted Title,Frisco King,(required)
+Region,USA,(required) — USA | CA | AU | LATAM | BR | UK
+Campaign Name,Paramount + - USA,"(required) — Paramount + - USA | CBS Sports - USA | CBS News - USA | CBS Network - USA | MTVE - USA | BET Media Group - USA | Pluto TV - USA | Pluto TV (Cross-Company) - USA"
+Salesforce Case,,(auto — from the Case)
+— CREATIVE / NAMING —,,
+Season or Messaging,Season 1,(optional) — middle of the placement name
+Video Durations,30; 15,(required for video) — seconds; semicolon-separated
+Content Type,show,show | movie
+Content ID,,(CM) — ShowID/MovieID; fills [ShowID:] + Recommended Show
+Recommended Show ID,,(CM) — defaults to Content ID
+— FLIGHTING —,,
+Flight Start,,(required) — YYYY-MM-DD
+Flight End,,(required) — YYYY-MM-DD
+Flight Code,L1,(optional)
+— FORMATS & PRODUCTS —,,
+Formats,,"(optional — defaults from Brand) remnant_video | pause_ads | premium_preroll | essential_bumper | cbs_preroll | cbs_after_midroll_bumper | cbs_1z_lockdown | cbs_2z_lockdown | mtve_after_midroll_bumper | bet_after_midroll_bumper"
+Video Domination,,(optional) — pluto | standard | aus_10_streaming | uk_my5
+Video Domination Targeting,,(Pluto VD only) — Pluto categories; semicolon-separated
+Takeover,,(optional) — hpto | first_impression | arena_takeover | three_peat
+— OPTIONAL TARGETING —,,
+P+ User States,New; Light; Medium; Heavy,(optional)
+Demographics Age,,(optional)
+Demographics Gender,,(optional)
+— OVERRIDES (usually leave blank; auto-derived) —,,
+Brand,,(auto from Campaign) — override only if needed
+Advertiser,,(auto from Brand)
+Advertiser ID,,(auto)
+Campaign ID,,(auto from Campaign Name)
+Insertion Order Name,,(auto) — defaults to "{Title} - {Region}"
+Recommended Show,,(auto) — defaults to Title
+Exclude Show,,(auto) — defaults to Title

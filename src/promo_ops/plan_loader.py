@@ -28,7 +28,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
     """Build a SupportPlan from a plain dict (YAML/JSON/sheet row/SF record)."""
     categories, channels = _flatten_pluto(raw)
     flight_raw = raw.get("flight") or {}
-    return SupportPlan(
+    plan = SupportPlan(
         promoted_title=raw["promoted_title"],
         region=raw["region"],
         brand=raw.get("brand"),
@@ -49,6 +49,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         recommended_show_id=raw.get("recommended_show_id"),
         video_domination=raw.get("video_domination") or None,
         video_domination_targeting=list(raw.get("video_domination_targeting") or []),
+        takeover=raw.get("takeover") or None,
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
@@ -62,6 +63,22 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         template_io_id=raw.get("template_io_id"),
         salesforce_case=raw.get("salesforce_case"),
     )
+    _apply_defaults(plan)
+    return plan
+
+
+def _apply_defaults(plan: SupportPlan) -> None:
+    """Fill fields that derive from the Campaign/Brand so a lean sheet == a full plan.
+
+    Brand derives from the Campaign; Formats default to the brand's format set. Leaves
+    everything else to the builder's own defaults (IO name, recommended/exclude show).
+    """
+    from .config import brand_for_campaign, brands_config
+    if not plan.brand:
+        plan.brand = brand_for_campaign(plan.campaign)
+    if not plan.formats and plan.brand:
+        cfg = brands_config().get("brands", {}).get(plan.brand, {})
+        plan.formats = list(cfg.get("formats") or [])
 
 
 def load_plan(path: str | Path) -> SupportPlan:
@@ -121,4 +138,10 @@ def validate_plan(plan: SupportPlan) -> list[str]:
         elif plan.video_domination == "pluto" and not plan.video_domination_targeting:
             problems.append("Pluto Video Domination selected but no Video Domination "
                             "Targeting (Pluto categories) provided.")
+
+    if plan.takeover:
+        from .config import operative_takeovers_config
+        types = operative_takeovers_config().get("types", {})
+        if plan.takeover not in types:
+            problems.append(f"Unknown Takeover {plan.takeover!r}. Known: {', '.join(types)}.")
     return problems

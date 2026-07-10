@@ -48,6 +48,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Formats__c": "formats",                     # list
     "Video_Domination__c": "video_domination",   # option key (pluto / standard / ...)
     "Video_Domination_Targeting__c": "video_domination_targeting",  # list (Pluto cats)
+    "Takeover__c": "takeover",                    # hpto / first_impression / ...
 }
 
 # Core fields that are semicolon/newline lists.

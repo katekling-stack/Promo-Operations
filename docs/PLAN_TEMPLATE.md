@@ -11,31 +11,53 @@ pre-filled with the Frisco King - USA example.
 
 ### Tab `Plan` (scalar fields, one per row)
 
+The Plan tab is a three-column, grouped key/value layout: **Field | Value | Notes /
+Allowed values**. The Notes column lists the allowed values inline so a planner
+rarely has to leave the sheet. Section-header rows (`— CAMPAIGN —`, `— CREATIVE /
+NAMING —`, etc.) are ignored by the parser; they only organize the sheet.
+
+The design is **lean**: a planner fills the campaign, creative, flighting and any
+optional targeting, and everything else is **auto-derived**. In particular, picking
+the **Campaign** is enough to derive the **Brand**, **Advertiser**, and default
+**Formats** — so those live in a trailing *Overrides* section and are normally left
+blank.
+
+**Filled by the planner**
+
 | Field | Example | Notes |
 |---|---|---|
-| Promoted Title | `Frisco King` | The title being promoted. |
-| Region | `USA` | Must match a key in `config/regions.yaml` (USA, CA, AU, LATAM, BR, UK). |
-| Salesforce Case | | Optional; the originating Case #. |
-| **Advertiser** | `VCBS English - USA - Adult (Promo)` | The **exact** advertiser this nests under. |
-| **Advertiser ID** | `1000520` | The exact advertiser id (preferred — unambiguous). |
-| **Campaign Name** | `Paramount + - USA` | The **existing** FreeWheel campaign the new IO nests under. |
-| **Campaign ID** | `86543608` | The exact campaign id (preferred — there can be duplicate names). |
-| **Insertion Order Name** | `Frisco King - USA` | The new IO created for this show/flight. Defaults to `Promoted Title - Region`. |
-| **Recommended Show** | `Frisco King` | FreeWheel "Recommended Show" Key Value. Feeds Tier 1 carousel targeting **and** the Premium Pre-Roll / Essential recommended-show argument. Defaults to Promoted Title. |
-| **Exclude Show** | `Frisco King` | Label excluded from **every** placement so the show never promos against itself. Defaults to Promoted Title. |
-| **Season or Messaging** | `Season 1` | Middle segment of placement names: `{Title} - {Season/Messaging} - {Duration} - Tier N - {Region}`. |
-| **Video Durations** | `30; 15` | Semicolon list of seconds. Each video tier becomes one placement **per duration**. |
-| **Content Type** | `show` | `show` or `movie` — selects the guaranteed-placement token (`[ShowID:]` vs `[MovieID:]`). |
-| **Content ID** | | The ShowID/MovieID for guaranteed placements. Blank → `[ShowID:]` left as a fill-in marker. |
-| **Recommended Show ID** | | Value for the `recommended_show=<id>` key-value on Tier 1 + the guaranteed Plan placements. Defaults to Content ID; blank → the assigned CM adds it in the UI. |
-| Flight Start / End | `2026-07-14` | Dates. |
+| Promoted Title | `Frisco King` | The title being promoted. (required) |
+| Region | `USA` | Must match a key in `config/regions.yaml` (USA, CA, AU, LATAM, BR, UK). (required) |
+| Campaign Name | `Paramount + - USA` | The **existing** FreeWheel campaign the new IO nests under. Drives Brand / Advertiser / default Formats. (required) |
+| Salesforce Case | | The originating Case # (auto-filled on the Salesforce path). |
+| Season or Messaging | `Season 1` | Middle segment of placement names: `{Title} - {Season/Messaging} - {Duration} - Tier N - {Region}`. |
+| Video Durations | `30; 15` | Semicolon list of seconds. Each video tier becomes one placement **per duration**. (required for video) |
+| Content Type | `show` | `show` or `movie` — selects the guaranteed token (`[ShowID:]` vs `[MovieID:]`). |
+| Content ID | | ShowID/MovieID for guaranteed placements; also fills Recommended Show ID. (CM) |
+| Recommended Show ID | | Value for the `recommended_show=<id>` key-value on Tier 1 + guaranteed Plan placements. Defaults to Content ID; blank → CM adds it in the UI. (CM) |
+| Flight Start / End | `2026-07-14` | Dates (YYYY-MM-DD). (required) |
 | Flight Code | `L1` | Launch beat / flight code, used in placement names. |
-| Formats | `remnant_video; pause_ads; premium_preroll; essential_bumper` | Semicolon list; must match `config/placement_templates.yaml`. Guaranteed formats (`premium_preroll`, `essential_bumper`) are built from genre + recommended show and flagged as living in the existing guaranteed order. |
+| Video Domination | | Optional: `pluto` \| `standard` \| `aus_10_streaming` \| `uk_my5`. |
+| Video Domination Targeting | | Pluto categories (semicolon list) — **Pluto VD only**. |
+| Takeover | | Optional Operative→GAM takeover: `hpto` \| `first_impression` \| `arena_takeover` \| `three_peat`. |
 | P+ User States | `New; Light; Medium; Heavy` | Tier-1 P+ user-state targeting. |
 | Demographics Age / Gender | | Optional Tier-3 refinement. |
 
-Rows whose label isn't recognized are ignored, so you can add comment/instruction
-rows freely. List values are **semicolon-separated**.
+**Overrides — usually blank, auto-derived** (`— OVERRIDES —` section)
+
+| Field | Auto-derived from | Override when |
+|---|---|---|
+| Brand | Campaign Name | The campaign→brand mapping doesn't cover this campaign. |
+| Advertiser / Advertiser ID | Brand | Nesting under a non-default advertiser. |
+| Campaign ID | Campaign Name | The name is ambiguous (duplicate campaigns). |
+| Insertion Order Name | `{Title} - {Region}` | A non-standard IO name is needed. |
+| Recommended Show | Promoted Title | The carousel/recommended-show label differs from the title. |
+| Exclude Show | Promoted Title | The show excludes under a different label. |
+| Formats | Brand's format set | This campaign runs a non-default format mix. |
+
+Rows whose label isn't recognized (including the `— SECTION —` headers) are ignored,
+so you can add comment/instruction rows freely. List values are
+**semicolon-separated**.
 
 ### Tab `Targeting` (lists, one per column)
 
@@ -72,6 +94,11 @@ Column headers are matched by prefix, so `Audience Segments (Tier 1)` works.
 - Field/column → plan-key mappings live in `PLAN_TAB_FIELDS` and
   `TARGETING_TAB_COLUMNS` in `integrations/gsheets.py`. Add a field by adding one
   entry there.
+- Auto-derivation happens in `plan_loader._apply_defaults()` (Brand from the
+  Campaign via `config.brand_for_campaign()`, Formats from the brand's format set);
+  the remaining defaults (IO name, recommended/exclude show) are filled by
+  `OrderBuilder`. This is why the lean sheet round-trips to the same order as the
+  fully-specified YAML.
 - The parsers (`parse_plan_tab`, `parse_targeting_tab`, `assemble_plan_template`) are
   pure functions over rows, so they're unit-tested without needing the live Sheets
   API (`tests/test_plan_template.py`).
