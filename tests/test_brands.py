@@ -60,19 +60,6 @@ def test_cbs_network_guaranteed_lines_are_bare_highest_sponsorship():
     assert {"Marshals - 1Z Lockdown - USA", "Marshals - 2Z Lockdown - USA"} <= set(by_name)
 
 
-def test_cbs_sports_psa_flat_lines():
-    plan = support_plan_from_dict({
-        "promoted_title": "PGA Tour", "region": "USA", "brand": "cbs_sports",
-        "formats": ["psa"], "durations": [30, 10],
-        "campaign": {"resolved_id": "54413703"},
-    })
-    order = OrderBuilder().build(plan)
-    names = [p.name for p in order.placements]
-    assert names == ["PGA Tour - PSA - 30 - USA", "PGA Tour - PSA - 10 - USA"]
-    body = FreeWheelClient._placement_body(order.placements[0])
-    assert body["override"] == {"mode": "BELOW_PAYING_ADS", "value": -10}   # Tier-4
-    inc = body["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]["include"]
-    assert inc["site_group"] == ["929392", "932583", "932591", "932592"]    # main SGs only
 
 
 def _remnant(brand):

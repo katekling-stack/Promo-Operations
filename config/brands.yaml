@@ -43,9 +43,8 @@ brands:
     campaign_name: "CBS Sports - USA"
     ad_unit_groups:
       remnant_video: cbs_house_all
-      psa: cbs_house_all
     extra_exclude_video_groups: ["73409791"]   # content-format exclude on the ref IO
-    formats: ["remnant_video", "psa"]
+    formats: ["remnant_video"]
 
   # CBS News — Tiers 1-4. Mid+Post units (no Pre-Roll). Always excludes Pluto News SGs.
   cbs_news:

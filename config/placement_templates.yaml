@@ -76,18 +76,6 @@ formats:
     arguments: ["genre", "recommended_show"]
     creative_durations_priority: [30]
 
-  # --- CBS Sports PSA -------------------------------------------------------
-  # Flat per-duration filler line at Tier-4 priority (main SGs only).
-  #   name: "{title} - PSA - {duration} - {region}"
-  psa:
-    format_code: "PSA"
-    display_name: "PSA"
-    flat_line: true               # one placement per duration, not per tier
-    line_label: "PSA"
-    uses_durations: true
-    priority_tier: 4              # Tier-4 priority + main-SG targeting
-    endpoints: ["Desktop", "Mobile", "CTV"]
-
   # --- CBS Network guaranteed sponsorship lines -----------------------------
   # Simple GUARANTEED lines: ad unit + geo only, precedence HIGHEST, no targeting
   # sets.  name: "{title} - {guaranteed_label} - {region}"

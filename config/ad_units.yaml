@@ -70,7 +70,6 @@ format_ad_unit_group:
   pause_ads: pause_ads
   premium_preroll: premium_preroll
   essential_bumper: essential_bumper
-  psa: pplus_cbs_pluto_vcbs
   cbs_preroll: cbs_preroll
   cbs_after_midroll_bumper: cbs_after_midroll_bumper
   cbs_1z_lockdown: cbs_1z_lockdown
