@@ -112,6 +112,28 @@ formats:
     no_targeting: true
     nests_in: "existing_guaranteed_order"
 
+  # Same structure as the CBS bumper (unit CBS_Brand Bumper, HIGHEST, no targeting);
+  # only the placement-name label differs per brand.
+  mtve_after_midroll_bumper:
+    format_code: "MTVE-BMP"
+    display_name: "MTVE After Mid-Roll Bumper"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "MTVE After Mid-Roll Bumper"
+    precedence_level: "HIGHEST"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"
+
+  bet_after_midroll_bumper:
+    format_code: "BET-BMP"
+    display_name: "BET After Mid-Roll Bumper"
+    guaranteed: true
+    name_style: "simple"
+    guaranteed_label: "After Mid-Roll Bumper"     # BET has no brand prefix
+    precedence_level: "HIGHEST"
+    no_targeting: true
+    nests_in: "existing_guaranteed_order"
+
   cbs_1z_lockdown:
     format_code: "CBS-1Z"
     display_name: "CBS 1Z Lockdown"

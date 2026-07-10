@@ -75,4 +75,6 @@ format_ad_unit_group:
   cbs_after_midroll_bumper: cbs_after_midroll_bumper
   cbs_1z_lockdown: cbs_1z_lockdown
   cbs_2z_lockdown: cbs_2z_lockdown
+  mtve_after_midroll_bumper: cbs_after_midroll_bumper   # same unit (CBS_Brand Bumper)
+  bet_after_midroll_bumper: cbs_after_midroll_bumper
   pluto_video_domination: pluto_video_domination

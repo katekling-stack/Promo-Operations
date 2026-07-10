@@ -96,8 +96,8 @@ brands:
     extra_exclude_video_groups: ["73408858", "73408859"]  # CBS Entertainment VGs
     ad_unit_groups:
       remnant_video: viacom_promo
-      cbs_after_midroll_bumper: cbs_after_midroll_bumper
-    formats: ["remnant_video"]   # After Mid-Roll Bumper staged (needs brand label)
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats: ["remnant_video", "mtve_after_midroll_bumper"]
 
   # BET — Viacom pre-roll + house. Runs on BET Plus. Includes the BET brand video
   # group; excludes all other cable-brand content.
@@ -119,8 +119,8 @@ brands:
       - "73408897"   # CMT
     ad_unit_groups:
       remnant_video: viacom_promo
-      cbs_after_midroll_bumper: cbs_after_midroll_bumper
-    formats: ["remnant_video"]   # After Mid-Roll Bumper staged (needs brand label)
+      bet_after_midroll_bumper: cbs_after_midroll_bumper
+    formats: ["remnant_video", "bet_after_midroll_bumper"]
 
   # Pluto TV — house Mid+Post (no Pre-Roll). Runs on the PlutoTV platform. Always
   # excludes the Samsung TV Plus partner SGs (and the promoted show's own channel SG,

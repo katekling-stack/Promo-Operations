@@ -145,6 +145,27 @@ def test_validate_plan_flags_and_passes():
     assert len(validate_plan(bad)) >= 4
 
 
+def test_mtve_and_bet_after_midroll_bumpers():
+    # Same structure as CBS Network's bumper; only the name label differs per brand.
+    cases = [("mtve", "mtve_after_midroll_bumper", "54413666",
+              "Jersey Shore Family Vacation",
+              "Jersey Shore Family Vacation - MTVE After Mid-Roll Bumper - USA"),
+             ("bet", "bet_after_midroll_bumper", "68562294", "OG Stories",
+              "OG Stories - After Mid-Roll Bumper - USA")]
+    for brand, fmt, camp, title, expected_name in cases:
+        plan = support_plan_from_dict({
+            "promoted_title": title, "region": "USA", "brand": brand, "formats": [fmt],
+            "genres": ["Reality"], "campaign": {"resolved_id": camp}})
+        p = OrderBuilder().build(plan).placements[0]
+        assert p.name == expected_name
+        body = FreeWheelClient._placement_body(p)
+        assert body["budget"]["budget_model"] == "ALL_IMPRESSION"
+        assert body["override"] == {"precedence_level": "HIGHEST"}
+        assert [n["ad_unit_id"] for n in body["ad_product"]["ad_unit_node"]] == ["61123"]
+        assert "frequency_cap" not in body["delivery"]
+        assert "relationship_targeting" not in body
+
+
 def test_video_domination_validation():
     from promo_ops.plan_loader import validate_plan
     base = {"promoted_title": "X", "region": "USA", "brand": "pluto_tv",
