@@ -1,0 +1,26 @@
+Object,Section,Field Label,API Name,Data Type,Length / Picklist Values,Required (planner),Help Text
+Case,Required,Promoted Title,Promoted_Title__c,Text,120,Yes,The title being promoted.
+Case,Required,Region,Region__c,Picklist,USA; CA; AU; LATAM; BR; UK,Yes,Campaign region.
+Case,Required,Campaign Name,Campaign_Name__c,Picklist,Paramount + - USA; CBS Sports - USA; CBS News - USA; CBS Network - USA; MTVE - USA; BET Media Group - USA; Pluto TV - USA; Pluto TV (Cross-Company) - USA,Yes,Existing FreeWheel campaign the new IO nests under. Drives Brand / Advertiser / default Formats.
+Case,Required,Flight Start,Flight_Start__c,Date,,Yes,Campaign flight start.
+Case,Required,Flight End,Flight_End__c,Date,,Yes,Campaign flight end.
+Case,Required,Video Durations,Video_Durations__c,Text,50,Yes,Seconds; semicolon-separated (e.g. 30;15). One placement per tier per duration.
+Case,Optional,Season or Messaging,Season_or_Messaging__c,Text,80,No,Middle segment of placement names.
+Case,Optional,Content Type,Content_Type__c,Picklist,show; movie,No,Selects guaranteed token [ShowID:] vs [MovieID:].
+Case,Optional,Content ID,Content_ID__c,Text,40,No,ShowID / MovieID for guaranteed placements.
+Case,Optional,Recommended Show ID,Recommended_Show_ID__c,Text,40,No,recommended_show key-value; defaults to Content ID.
+Case,Optional,Flight Code,Flight_Code__c,Text,20,No,Launch beat / flight code; used in placement names.
+Case,Optional,Video Domination,Video_Domination__c,Picklist,pluto; standard; aus_10_streaming; uk_my5,No,Video Domination product selector.
+Case,Optional,Video Domination Targeting,Video_Domination_Targeting__c,Long Text Area,255,No,Pluto categories; semicolon-separated (Pluto VD only).
+Case,Optional,Takeover,Takeover__c,Picklist,hpto; first_impression; arena_takeover; three_peat,No,Operative to GAM takeover type.
+Case,Override,Brand,Brand__c,Picklist,paramount_plus_domestic; cbs_sports; cbs_news; cbs_network; mtve; bet; pluto_tv; pluto_tv_xco,No,Auto-derived from Campaign; override only if needed.
+Case,Override,Advertiser,Advertiser__c,Text,120,No,Auto-derived from Brand; exact advertiser name.
+Case,Override,Advertiser ID,Advertiser_ID__c,Text,40,No,Auto-derived from Brand; FreeWheel advertiser id.
+Case,Override,Campaign ID,Campaign_ID__c,Text,40,No,Auto-derived from Campaign Name; use when name is ambiguous.
+Case,Override,Insertion Order Name,Insertion_Order_Name__c,Text,160,No,Auto-derived; defaults to {Title} - {Region}.
+Case,Override,Recommended Show,Recommended_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title.
+Case,Override,Exclude Show,Exclude_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title.
+Case,Override,Formats,Formats__c,Multi-Select Picklist,remnant_video; pause_ads; premium_preroll; essential_bumper; cbs_preroll; cbs_after_midroll_bumper; cbs_1z_lockdown; cbs_2z_lockdown; mtve_after_midroll_bumper; bet_after_midroll_bumper; remnant_display; podcast,No,Auto-derived from Brand's format set.
+Case,Status/Reason,Status (add value),Status,Picklist value,Ready for Automation,,Planner sets this to trigger the automation.
+Case,Status/Reason,Status (add value),Status,Picklist value,Needs Info,,Automation sets this (+ comment) when a Case can't be built.
+Case,Status/Reason,Reason (add value),Reason,Picklist value,Submitted to FreeWheel,,Automation sets this after the draft IO is created.

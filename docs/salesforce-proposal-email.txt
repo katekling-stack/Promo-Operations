@@ -1,0 +1,53 @@
+Subject: Proposal — Salesforce → FreeWheel promo automation (fields + access needed)
+
+Hi [name],
+
+Ahead of building the Salesforce → FreeWheel automation for promo campaigns, here's
+the proposal and everything we'd need from the Salesforce side to move forward. The
+full write-up (with a worked example) is attached as a PDF; a field-build sheet is
+attached as a CSV.
+
+THE SHORT VERSION
+A planner requests a promo campaign from a Salesforce Case. When they set the Case
+Status to "Ready for Automation," the automation reads the Case, builds the FreeWheel
+Insertion Order + Placements as a DRAFT, and posts the draft link back on the Case
+(setting Reason = "Submitted to FreeWheel"). If anything's missing, it sets Status =
+"Needs Info" with a comment explaining what's needed. Nothing goes live automatically —
+a person still reviews and activates the draft in FreeWheel.
+
+INPUT MODEL (hybrid)
+  • Core fields → native custom fields on the Case (a short, fixed set — picklists and
+    text boxes). Picking the Campaign auto-derives the Brand, Advertiser and default
+    Formats, so the planner fills very little.
+  • Detailed targeting (showlist, genres, Pluto channels/categories) → one "Targeting"
+    sheet attached to the Case.
+
+WHAT WE NEED FROM SALESFORCE
+  1. Create the custom fields on the Case object (see attached CSV — labels, API names,
+     types, and picklist values). Happy to rename API names to your conventions.
+  2. Add these picklist values:
+       - Status: "Ready for Automation" and "Needs Info"
+       - Reason: "Submitted to FreeWheel"
+     (If Ad Ops already has an equivalent "ready" Status, we can use that instead —
+     just let us know the exact label.)
+  3. API access — a Connected App (OAuth) or an integration user + security token, with:
+       - Read on Case + the new custom fields
+       - Read on Files / ContentDocument (to fetch the attached Targeting sheet)
+       - Create on CaseComment; Edit on Case Status/Reason (to write results back)
+  4. A Sandbox to build and test against before production.
+  5. Confirmation of the Case record type / page layout planners will use.
+
+We don't need any of the above to keep building — the logic that turns a Case into a
+FreeWheel order is already written and tested against sample Case data. Items 1–5 are
+what turn it from "runs in tests" to "runs against our org."
+
+SUGGESTED NEXT STEPS
+  1. You review the proposal + field list; we align on names.
+  2. Sandbox: you create the fields/picklists + a test Connected App; we connect and run
+     one sample Case end-to-end (creating a FreeWheel draft).
+  3. Pilot one brand (Paramount+ Domestic) with a few real Cases, human-reviewed.
+  4. Roll out remaining brands.
+
+Happy to walk through any of it live. Thanks!
+
+[your name]
