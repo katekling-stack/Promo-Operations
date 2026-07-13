@@ -20,9 +20,10 @@ from __future__ import annotations
 
 import csv
 import io
+from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from ..config import require_env
+from ..config import env, require_env
 from .gsheets import parse_targeting_tab
 
 # MAP: Salesforce Case field API name -> support-plan key (nested via tuple).
@@ -104,13 +105,91 @@ def _connect():
         raise RuntimeError(
             "simple-salesforce not installed. Run: pip install -e '.[salesforce]'"
         ) from exc
-    return Salesforce(
-        instance_url=require_env("SALESFORCE_INSTANCE_URL"),
-        consumer_key=require_env("SALESFORCE_CLIENT_ID"),
-        consumer_secret=require_env("SALESFORCE_CLIENT_SECRET"),
-        username=require_env("SALESFORCE_USERNAME"),
-        password=require_env("SALESFORCE_PASSWORD"),
-        security_token=require_env("SALESFORCE_SECURITY_TOKEN"),
+    # Sandbox vs production is a login-domain switch: sandbox logs in at
+    # test.salesforce.com (domain="test"). Set SALESFORCE_DOMAIN=test for the sandbox.
+    kwargs: dict[str, Any] = {
+        "username": require_env("SALESFORCE_USERNAME"),
+        "password": require_env("SALESFORCE_PASSWORD"),
+        "domain": env("SALESFORCE_DOMAIN", "login"),
+    }
+    # Security token is optional (orgs with IP relaxation don't need it).
+    token = env("SALESFORCE_SECURITY_TOKEN")
+    if token:
+        kwargs["security_token"] = token
+    # A Connected App (consumer key/secret) is optional; include it when provided.
+    if env("SALESFORCE_CLIENT_ID"):
+        kwargs["consumer_key"] = env("SALESFORCE_CLIENT_ID")
+    if env("SALESFORCE_CLIENT_SECRET"):
+        kwargs["consumer_secret"] = env("SALESFORCE_CLIENT_SECRET")
+    if env("SALESFORCE_INSTANCE_URL"):
+        kwargs["instance_url"] = env("SALESFORCE_INSTANCE_URL")
+    return Salesforce(**kwargs)
+
+
+# The Case fields the automation reads (API names) = the keys of CASE_FIELD_MAP.
+EXPECTED_CASE_FIELDS: list[str] = list(CASE_FIELD_MAP.keys())
+
+
+@dataclass
+class SchemaReport:
+    """Result of checking a Case describe payload against what the automation needs."""
+    present_fields: list[str] = field(default_factory=list)
+    missing_fields: list[str] = field(default_factory=list)
+    status_values_missing: list[str] = field(default_factory=list)
+    reason_values_missing: list[str] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        return not (self.missing_fields or self.status_values_missing
+                    or self.reason_values_missing)
+
+    def render(self) -> str:
+        lines = []
+        lines.append(f"Case fields: {len(self.present_fields)}/"
+                     f"{len(self.present_fields) + len(self.missing_fields)} present.")
+        if self.missing_fields:
+            lines.append("  MISSING fields (create these on the Case object):")
+            lines += [f"    - {f}" for f in self.missing_fields]
+        if self.status_values_missing:
+            lines.append("  MISSING Status picklist values: "
+                         + ", ".join(self.status_values_missing))
+        if self.reason_values_missing:
+            lines.append("  MISSING Reason picklist values: "
+                         + ", ".join(self.reason_values_missing))
+        lines.append("✅ Schema OK — the org is ready." if self.ok
+                     else "⚠️  Schema incomplete — see above (share docs/salesforce-case-fields.csv).")
+        return "\n".join(lines)
+
+
+def _picklist_values(describe: dict[str, Any], field_name: str) -> set[str]:
+    for f in describe.get("fields", []):
+        if f.get("name") == field_name:
+            return {p.get("value") for p in (f.get("picklistValues") or [])}
+    return set()
+
+
+def check_case_schema(describe: dict[str, Any],
+                      status_field: str = "Status", reason_field: str = "Reason",
+                      required_status: Optional[list[str]] = None,
+                      required_reason: Optional[list[str]] = None) -> SchemaReport:
+    """Pure check: does a Case `describe()` payload have the fields + picklist values?
+
+    No Salesforce dependency, so it's unit-tested against a fake describe payload.
+    """
+    field_names = {f.get("name") for f in describe.get("fields", [])}
+    present = [f for f in EXPECTED_CASE_FIELDS if f in field_names]
+    missing = [f for f in EXPECTED_CASE_FIELDS if f not in field_names]
+
+    status_vals = _picklist_values(describe, status_field)
+    reason_vals = _picklist_values(describe, reason_field)
+    req_status = required_status or [SalesforceClient.READY_STATUS,
+                                     SalesforceClient.NEEDS_INFO_STATUS]
+    req_reason = required_reason or [SalesforceClient.SUBMITTED_REASON]
+    return SchemaReport(
+        present_fields=present,
+        missing_fields=missing,
+        status_values_missing=[v for v in req_status if v not in status_vals],
+        reason_values_missing=[v for v in req_reason if v not in reason_vals],
     )
 
 
@@ -129,6 +208,16 @@ class SalesforceClient:
 
     def __init__(self):
         self._sf = _connect()
+
+    def preflight(self) -> SchemaReport:
+        """Connect and verify the Case has the fields + Status/Reason values we need.
+
+        Run this once the sandbox creds land: `promo-ops salesforce-check`. It logs in
+        (proving credentials/access) and describes the Case object (proving the admin
+        created the fields and picklist values from docs/salesforce-case-fields.csv).
+        """
+        describe = self._sf.Case.describe()
+        return check_case_schema(describe, self.STATUS_FIELD, self.REASON_FIELD)
 
     def get_case(self, case_id: str) -> dict[str, Any]:
         return self._sf.Case.get(case_id)

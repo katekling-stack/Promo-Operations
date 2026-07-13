@@ -4,6 +4,7 @@
     promo-ops preview <plan.yaml>                   human-readable tier breakdown
     promo-ops push    <plan.yaml> --target NAME     push (dry-run unless --live)
     promo-ops build-from-sheet <SHEET_ID> [--out F] build from a campaign-plan sheet
+    promo-ops salesforce-check                       preflight SF login + Case schema
     promo-ops from-case <CASE_ID> [--live]          validate+build+create from a Case
     promo-ops poll-cases [--live]                   process all "Ready for Ad Ops" Cases
     promo-ops sync-segments                         refresh audience-segment CSVs
@@ -118,6 +119,20 @@ def _cmd_push(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_salesforce_check(args: argparse.Namespace) -> int:
+    """Preflight the Salesforce connection + Case schema (run once creds land)."""
+    from .integrations.salesforce import SalesforceClient
+    try:
+        report = SalesforceClient().preflight()
+    except Exception as exc:
+        print(f"⚠️  Could not connect to Salesforce: {exc}", file=sys.stderr)
+        print("Check .env (SALESFORCE_* vars); set SALESFORCE_DOMAIN=test for a sandbox.",
+              file=sys.stderr)
+        return 2
+    print(report.render())
+    return 0 if report.ok else 1
+
+
 def _cmd_from_case(args: argparse.Namespace) -> int:
     """Process one Case: validate -> build -> create draft (--live) -> comment back."""
     from .casework import process_case
@@ -202,6 +217,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_push.add_argument("--target", required=True, choices=["freewheel", "gam"])
     p_push.add_argument("--live", action="store_true", help="Actually create (default dry-run)")
     p_push.set_defaults(func=_cmd_push)
+
+    p_sfck = sub.add_parser("salesforce-check",
+                            help="Preflight: verify SF login + Case fields/picklists")
+    p_sfck.set_defaults(func=_cmd_salesforce_check)
 
     p_case = sub.add_parser("from-case", help="Validate+build+create from a Salesforce Case")
     p_case.add_argument("case_id")
