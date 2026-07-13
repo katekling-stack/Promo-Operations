@@ -73,10 +73,51 @@ def ios_of_campaign(fw: FreeWheelClient, campaign_id: str) -> list[str]:
     return [str(io.get("id")) for io in fw._rows(payload, "insertion_orders")]
 
 
-def campaigns_of_advertiser(fw: FreeWheelClient, advertiser_id: str) -> list[str]:
-    payload = fw._invoke("sh_1_1_list-campaigns", advertiser_id=int(advertiser_id),
-                         per_page=100)
-    return [str(c.get("id")) for c in fw._rows(payload, "campaigns")]
+def campaign_has_active_placements(fw: FreeWheelClient, campaign_id: str) -> bool:
+    """True if any IO under the campaign has at least one ACTIVE placement."""
+    for io_id in ios_of_campaign(fw, campaign_id):
+        pls = fw.list_placements(io_id)
+        if any(str(p.get("status")).upper() == "ACTIVE" for p in pls):
+            return True
+    return False
+
+
+EXCLUDE_NAME = ("bumper", "test")
+
+
+def campaigns_of_advertiser(fw: FreeWheelClient, advertiser_id: str,
+                            name: str = "", require_active: bool = True) -> list[str]:
+    """Campaigns under an advertiser (ACTIVE, non Bumper/test, with active IOs).
+
+    list-campaigns has no advertiser filter and its rows omit advertiser_id, so we
+    name-search (optional prefix), then confirm each candidate's advertiser via
+    show-a-campaign. Pass a `name` prefix to bound the scan to a brand family.
+    """
+    aid = str(advertiser_id)
+    kept: list[str] = []
+    page = 1
+    while page <= 40:
+        payload = fw._invoke("sh_1_1_list-campaigns", name=name, per_page=50,
+                             page=page, sort="-created_at")
+        rows = fw._rows(payload, "campaigns")
+        if not rows:
+            break
+        for row in rows:
+            nm = str(row.get("name", ""))
+            if any(x in nm.lower() for x in EXCLUDE_NAME):
+                continue
+            if str(row.get("status", "")).upper() != "ACTIVE":
+                continue
+            cid = str(row.get("id"))
+            det = (fw._invoke("sh_1_1_show-a-campaign", campaign_id=int(cid))
+                   .get("data", {}).get("campaign", {}))
+            if str(det.get("advertiser_id")) != aid:
+                continue
+            if require_active and not campaign_has_active_placements(fw, cid):
+                continue
+            kept.append(cid)
+        page += 1
+    return kept
 
 
 def _print_io(prof: dict) -> None:
@@ -97,6 +138,7 @@ def main() -> int:
     ap.add_argument("--io", nargs="*", default=[])
     ap.add_argument("--campaign", nargs="*", default=[])
     ap.add_argument("--advertiser", nargs="*", default=[])
+    ap.add_argument("--name", default="", help="campaign name prefix to scope --advertiser")
     ap.add_argument("--json", help="directory to also dump raw per-IO JSON")
     args = ap.parse_args()
 
@@ -109,7 +151,7 @@ def main() -> int:
         print(f"Campaign {cid}: {len(found)} IO(s) -> {found}")
         io_ids += found
     for aid in args.advertiser:
-        for cid in campaigns_of_advertiser(fw, aid):
+        for cid in campaigns_of_advertiser(fw, aid, name=args.name):
             found = ios_of_campaign(fw, cid)
             print(f"Advertiser {aid} / campaign {cid}: {len(found)} IO(s)")
             io_ids += found

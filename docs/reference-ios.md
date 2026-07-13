@@ -20,13 +20,40 @@ group IDs still need name resolution (sync tables) before finalizing.
 - `1109067`, `1120870` — Pluto Kids SGs (UK)
 - `1107704,1107749,1107757,1107762,1107822,1107829,1107859,1107865,1200881,1204409,1214150,1224837,1235383` — UK Pluto channel list (Tier 2)
 
-**Kids Video Groups — the Older/Younger split**
-- Domestic P+ Kids: `[73408862, 73408864, 86471529]`
-- UK P+ Kids:      `[73408862, 86471529]`
-- → `73408864` is the differentiator. The global **Older vs Younger Kids** option most
-  likely toggles this VG. **CONFIRM:** which VG(s) = Older vs Younger.
+**Kids Video Groups — the Older/Younger split (CONFIRMED)**
+- `86471529` — base, always included.
+- `73408862` — **Older Kids**.
+- `73408864` — **Younger Kids**.
+- Default Kids campaigns target Older `[73408862, 86471529]`; add `73408864` for Younger
+  (a campaign covering both uses all three). The global **Older/Younger Kids** plan
+  option selects which age VG(s) are layered in.
 
 **Regions**: USA = country `165`; UK = country `56`.
+
+## Promo advertisers (from the Custom Adv Global Mapping) — region + audience
+
+The promo advertiser = `VCBS - {Region} - {Adult|Kids} (Promo)`. Campaigns nested under
+each are the brands. (`1219585` "…Adult (Promo) - Tests Only" is excluded.)
+
+| Region | Adult advertiser | Kids advertiser |
+|---|---|---|
+| USA (English) | 1000520 | 1000521 |
+| USA (Spanish) | 1000522 | 1000523 |
+| United Kingdom | 1207836 | 1209288 |
+| Canada (English) | 1207832 | 1209274 |
+| Canada (French) | 1209272 | 1209273 |
+| Australia | 1222262 | 1296461 |
+| LATAM | 1207826 | 1207827 |
+| Brazil | 1207828 | 1207830 |
+| Ireland | 1371480 | 1371481 |
+| GSA | 1207845 | 1209283 |
+| Spain/Italy/France/Finland/Norway/Sweden/Denmark | (see mapping) | (see mapping) |
+
+**Enumeration rules (per your guidance):** under a promo advertiser, keep only campaigns
+that are ACTIVE, have **at least one active IO/placement**, and do **not** contain
+"Bumper" or "test" in the name. `list-campaigns` has no advertiser filter and its rows
+omit advertiser_id, so `scripts/extract_reference_io.py --advertiser <id> [--name <prefix>]`
+name-searches then confirms each via `show-a-campaign` + an active-placement check.
 
 ## Domestic (USA)
 
