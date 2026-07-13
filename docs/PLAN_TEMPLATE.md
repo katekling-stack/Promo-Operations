@@ -75,10 +75,22 @@ Column headers are matched by prefix, so `Audience Segments (Tier 1)` works.
 
 ## How to use it
 
-1. **Create the sheet.** Make a Google Sheet with two tabs named exactly `Plan` and
-   `Targeting`. Import `templates/campaign-plan/Plan.csv` into the first and
-   `Targeting.csv` into the second (File → Import → Replace current sheet), or copy
-   the master sheet once we create it.
+1. **Use the master workbook (recommended).** Upload
+   `templates/campaign-plan/Campaign-Plan-Template.xlsx` to Google Drive and open it
+   with Google Sheets. It already has the `Plan` + `Targeting` tabs and **dropdowns**
+   on the constrained fields (Region, Campaign, Content Type, Video Domination,
+   Takeover, Brand), so planners pick valid values instead of typing them. Copy it per
+   campaign.
+
+   The workbook is generated from the CSVs + config so the dropdowns stay in sync:
+   ```bash
+   pip install -e '.[template]'
+   python scripts/build_template_workbook.py   # -> Campaign-Plan-Template.xlsx
+   ```
+   Regenerate it whenever the campaign/brand/format lists change in `config/`.
+
+   *(Or, from scratch:* make a Google Sheet with two tabs named exactly `Plan` and
+   `Targeting`, and import `Plan.csv` / `Targeting.csv` into them — no dropdowns.)
 2. **Fill it in** per campaign.
 3. **Build from it:**
    ```bash

@@ -19,7 +19,9 @@ dependencies = [
 salesforce = ["simple-salesforce>=1.12"]
 gam = ["googleads>=42.0"]
 gsheets = ["google-api-python-client>=2.0", "google-auth>=2.0"]
-dev = ["pytest>=7.0"]
+# Building the master .xlsx plan template (scripts/build_template_workbook.py).
+template = ["openpyxl>=3.1"]
+dev = ["pytest>=7.0", "openpyxl>=3.1"]
 
 [project.scripts]
 promo-ops = "promo_ops.cli:main"
