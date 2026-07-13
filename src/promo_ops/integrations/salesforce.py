@@ -51,7 +51,20 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Video_Domination__c": "video_domination",   # option key (pluto / standard / ...)
     "Video_Domination_Targeting__c": "video_domination_targeting",  # list (Pluto cats)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
+    # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
+    "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
+    "Include_Pause_Ads__c": ("product_overrides", "pause_ads"),
+    "Include_Premium_Pre_Roll__c": ("product_overrides", "premium_preroll"),
+    "Include_Essential_Bumper__c": ("product_overrides", "essential_bumper"),
+    "Include_CBS_Pre_Roll__c": ("product_overrides", "cbs_preroll"),
+    "Include_After_Mid_Roll_Bumper__c": ("product_overrides", "after_midroll_bumper"),
+    "Include_1Z_Lockdown__c": ("product_overrides", "cbs_1z_lockdown"),
+    "Include_2Z_Lockdown__c": ("product_overrides", "cbs_2z_lockdown"),
 }
+
+# Tuple targets under this key hold Yes/No/(blank) toggles -> bool.
+_BOOL_TARGET_ROOT = "product_overrides"
+_TRUE_TEXT = {"yes", "y", "true", "1", "x", "✓", "checked"}
 
 # Core fields that are semicolon/newline lists.
 _LIST_FIELDS = {"durations", "formats", "video_domination_targeting"}
@@ -83,6 +96,8 @@ def build_plan_dict(case_fields: dict[str, Any],
         if value in (None, ""):
             continue
         if isinstance(target, tuple):
+            if target[0] == _BOOL_TARGET_ROOT:
+                value = value is True or str(value).strip().lower() in _TRUE_TEXT
             plan.setdefault(target[0], {})[target[1]] = value
         else:
             plan[target] = _split(value) if target in _LIST_FIELDS else value

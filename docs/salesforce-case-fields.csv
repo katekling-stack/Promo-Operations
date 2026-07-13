@@ -13,6 +13,14 @@ Case,Optional,Flight Code,Flight_Code__c,Text,20,No,Launch beat / flight code; u
 Case,Optional,Video Domination,Video_Domination__c,Picklist,pluto; standard; aus_10_streaming; uk_my5,No,Video Domination product selector.
 Case,Optional,Video Domination Targeting,Video_Domination_Targeting__c,Long Text Area,255,No,Pluto categories; semicolon-separated (Pluto VD only).
 Case,Optional,Takeover,Takeover__c,Picklist,hpto; first_impression; arena_takeover; three_peat,No,Operative to GAM takeover type.
+Case,Products,Include Remnant Video,Include_Remnant_Video__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include Pause Ads,Include_Pause_Ads__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include Premium Pre-Roll,Include_Premium_Pre_Roll__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include Essential Bumper,Include_Essential_Bumper__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include CBS Pre-Roll,Include_CBS_Pre_Roll__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include After Mid-Roll Bumper,Include_After_Mid_Roll_Bumper__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include 1Z Lockdown,Include_1Z_Lockdown__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
+Case,Products,Include 2Z Lockdown,Include_2Z_Lockdown__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
 Case,Override,Brand,Brand__c,Picklist,paramount_plus_domestic; cbs_sports; cbs_news; cbs_network; mtve; bet; pluto_tv; pluto_tv_xco,No,Auto-derived from Campaign; override only if needed.
 Case,Override,Advertiser,Advertiser__c,Text,120,No,Auto-derived from Brand; exact advertiser name.
 Case,Override,Advertiser ID,Advertiser_ID__c,Text,40,No,Auto-derived from Brand; FreeWheel advertiser id.

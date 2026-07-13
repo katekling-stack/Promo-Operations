@@ -37,6 +37,12 @@ def _csv_rows(name: str) -> list[list[str]]:
         return list(csv.reader(fh))
 
 
+def _product_toggle_labels() -> list[str]:
+    """The Products section toggle labels (from the shared PRODUCT_TOGGLES map)."""
+    from promo_ops.integrations.gsheets import PRODUCT_TOGGLES
+    return list(PRODUCT_TOGGLES)
+
+
 def dropdown_sources() -> dict[str, list[str]]:
     """field-label (lowercased) -> allowed values, sourced from config."""
     regions = list(_yaml("regions.yaml").get("regions", {}))
@@ -45,7 +51,7 @@ def dropdown_sources() -> dict[str, list[str]]:
     brand_keys = list(brands)
     vds = list(_yaml("video_dominations.yaml").get("options", {}))
     takeovers = list(_yaml("operative_takeovers.yaml").get("types", {}))
-    return {
+    sources = {
         "region": regions,
         "campaign name": campaigns,
         "content type": ["show", "movie"],
@@ -53,6 +59,10 @@ def dropdown_sources() -> dict[str, list[str]]:
         "takeover": takeovers,
         "brand": brand_keys,
     }
+    # Every Products toggle shares one Yes/No list.
+    for label in _product_toggle_labels():
+        sources[label] = ["Yes", "No"]
+    return sources
 
 
 # Styling
@@ -72,14 +82,20 @@ def build(out: Path | None = None) -> Path:
 
     sources = dropdown_sources()
 
-    # --- hidden _Lists sheet: one column per dropdown, referenced by validations ---
+    # --- hidden _Lists sheet: one column per distinct value-set (Yes/No is shared) ---
     col_ranges: dict[str, str] = {}
-    for i, (label, values) in enumerate(sources.items(), start=1):
-        letter = get_column_letter(i)
-        lists_ws.cell(row=1, column=i, value=label)
-        for r, v in enumerate(values, start=2):
-            lists_ws.cell(row=r, column=i, value=v)
-        col_ranges[label] = f"_Lists!${letter}$2:${letter}${1 + len(values)}"
+    range_by_values: dict[tuple, str] = {}
+    next_col = 1
+    for label, values in sources.items():
+        key = tuple(values)
+        if key not in range_by_values:
+            letter = get_column_letter(next_col)
+            lists_ws.cell(row=1, column=next_col, value=label)
+            for r, v in enumerate(values, start=2):
+                lists_ws.cell(row=r, column=next_col, value=v)
+            range_by_values[key] = f"_Lists!${letter}$2:${letter}${1 + len(values)}"
+            next_col += 1
+        col_ranges[label] = range_by_values[key]
     lists_ws.sheet_state = "hidden"
 
     # --- Plan tab ---

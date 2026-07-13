@@ -50,6 +50,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         video_domination=raw.get("video_domination") or None,
         video_domination_targeting=list(raw.get("video_domination_targeting") or []),
         takeover=raw.get("takeover") or None,
+        product_overrides=dict(raw.get("product_overrides") or {}),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
@@ -70,15 +71,40 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
 def _apply_defaults(plan: SupportPlan) -> None:
     """Fill fields that derive from the Campaign/Brand so a lean sheet == a full plan.
 
-    Brand derives from the Campaign; Formats default to the brand's format set. Leaves
-    everything else to the builder's own defaults (IO name, recommended/exclude show).
+    Brand derives from the Campaign; Formats default to the brand's format set, then the
+    Products toggles include/exclude specific products. Leaves everything else to the
+    builder's own defaults (IO name, recommended/exclude show).
     """
     from .config import brand_for_campaign, brands_config
     if not plan.brand:
         plan.brand = brand_for_campaign(plan.campaign)
+    cfg = brands_config().get("brands", {}).get(plan.brand or "", {})
     if not plan.formats and plan.brand:
-        cfg = brands_config().get("brands", {}).get(plan.brand, {})
         plan.formats = list(cfg.get("formats") or [])
+    _apply_product_overrides(plan, cfg)
+
+
+def _apply_product_overrides(plan: SupportPlan, brand_cfg: dict[str, Any]) -> None:
+    """Include/exclude products per the plan's Products toggles (blank = brand default).
+
+    True includes the product (only if the brand supports it — its default set plus any
+    `optional_formats`), False removes it. Preserves the existing format order and
+    appends opted-in extras.
+    """
+    from .models import PRODUCT_FAMILIES
+    if not plan.product_overrides:
+        return
+    available = set(brand_cfg.get("formats") or []) | set(brand_cfg.get("optional_formats") or [])
+    formats = list(plan.formats)
+    for family_key, want in plan.product_overrides.items():
+        members = PRODUCT_FAMILIES.get(family_key, [family_key])
+        if want is False:
+            formats = [f for f in formats if f not in members]
+        elif want is True:
+            for member in members:
+                if member in available and member not in formats:
+                    formats.append(member)
+    plan.formats = formats
 
 
 def load_plan(path: str | Path) -> SupportPlan:

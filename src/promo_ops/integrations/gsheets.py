@@ -135,6 +135,19 @@ def _slug(text: str) -> str:
 # example) and docs/PLAN_TEMPLATE.md for the field reference.
 # --------------------------------------------------------------------------- #
 
+# Products section: template label -> PRODUCT_FAMILIES key. Each is a Yes/No toggle;
+# blank = brand default. Order here is the order they appear in the Plan tab.
+PRODUCT_TOGGLES: dict[str, str] = {
+    "include remnant video": "remnant_video",
+    "include pause ads": "pause_ads",
+    "include premium pre-roll": "premium_preroll",
+    "include essential bumper": "essential_bumper",
+    "include cbs pre-roll": "cbs_preroll",
+    "include after mid-roll bumper": "after_midroll_bumper",
+    "include 1z lockdown": "cbs_1z_lockdown",
+    "include 2z lockdown": "cbs_2z_lockdown",
+}
+
 # Plan tab: normalized label -> where it lands in the plan dict (+ optional type).
 PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "promoted title": {"path": ["promoted_title"]},
@@ -171,6 +184,10 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "demographics age": {"path": ["demographics", "age"]},
     "demographics gender": {"path": ["demographics", "gender"]},
 }
+
+# Product toggles land in plan["product_overrides"][<family>] as booleans.
+for _label, _family in PRODUCT_TOGGLES.items():
+    PLAN_TAB_FIELDS[_label] = {"path": ["product_overrides", _family], "type": "bool"}
 
 # Targeting tab: normalized column header -> where its column of values lands.
 # Matching is by prefix, so "Audience Segments (Tier 1)" matches "audience segments".

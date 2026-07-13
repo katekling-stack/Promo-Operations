@@ -41,6 +41,13 @@ blank.
 | Video Domination Targeting | | Pluto categories (semicolon list) — **Pluto VD only**. |
 | Takeover | | Optional Operative→GAM takeover: `hpto` \| `first_impression` \| `arena_takeover` \| `three_peat`. |
 
+**Products section (Y/N toggles)** — the placements this campaign runs. Each is
+**Yes / No / (blank)**; **blank keeps the brand's default set**, `No` drops that product
+(not every campaign runs every one), `Yes` adds it if the brand supports it. Toggles:
+Include Remnant Video, Pause Ads, Premium Pre-Roll, Essential Bumper, CBS Pre-Roll,
+After Mid-Roll Bumper, 1Z Lockdown, 2Z Lockdown. (`Formats` in the Overrides section is
+the escape hatch for the rare case the toggles can't express.)
+
 **Overrides — usually blank, auto-derived** (`— OVERRIDES —` section)
 
 | Field | Auto-derived from | Override when |

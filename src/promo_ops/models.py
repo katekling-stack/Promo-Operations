@@ -17,6 +17,25 @@ from typing import Any, Optional
 # Input: the support plan
 # --------------------------------------------------------------------------- #
 
+# Toggleable products for the plan template's "Products" section. Each friendly family
+# key maps to the placement format(s) it controls. A planner toggle of True INCLUDES
+# the product, False EXCLUDES it, and blank/absent leaves the brand's default set. Not
+# every campaign runs every product, so this is mostly used to drop one a campaign
+# doesn't have. "after_midroll_bumper" spans the three brand-specific bumper formats;
+# only the one in the brand's set is ever added.
+PRODUCT_FAMILIES: dict[str, list[str]] = {
+    "remnant_video": ["remnant_video"],
+    "pause_ads": ["pause_ads"],
+    "premium_preroll": ["premium_preroll"],
+    "essential_bumper": ["essential_bumper"],
+    "cbs_preroll": ["cbs_preroll"],
+    "after_midroll_bumper": ["cbs_after_midroll_bumper", "mtve_after_midroll_bumper",
+                             "bet_after_midroll_bumper"],
+    "cbs_1z_lockdown": ["cbs_1z_lockdown"],
+    "cbs_2z_lockdown": ["cbs_2z_lockdown"],
+}
+
+
 @dataclass
 class Flight:
     start: Optional[str] = None
@@ -62,6 +81,9 @@ class SupportPlan:
     # Operative takeover selector (config/operative_takeovers.yaml type key:
     # hpto | first_impression | arena_takeover | three_peat).
     takeover: Optional[str] = None
+    # Per-campaign product toggles (Products section of the template). Keys are
+    # PRODUCT_FAMILIES keys; True includes / False excludes / absent = brand default.
+    product_overrides: dict[str, bool] = field(default_factory=dict)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None
