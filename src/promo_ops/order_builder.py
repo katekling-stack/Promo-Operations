@@ -285,6 +285,11 @@ class OrderBuilder:
                 "brand_id": plan.brand_id,
             },
         )
+        # Kids brands only build when a Kids audience (Older/Younger) is selected in the
+        # Salesforce targeting; no audience -> no Kids IOs.
+        if brand_cfg.get("kids") and not plan.kids_audience:
+            return order
+
         for fmt in plan.formats:
             order.placements.extend(self._placements_for_format(plan, fmt))
         return order

@@ -30,3 +30,13 @@ domestic_usa:
     platform_site_groups: ["929447", "929449"]         # SG: Platform: CTV, Desktop
     exclude_key_values: ["sb=14", "tsb=14", "tve=14", "tve=17"]
     exclude_video_groups: ["98314060", "98405426", "311826361"]
+
+# Paramount+ Kids — the global Older/Younger Kids audience maps to Video Groups, layered
+# with the Kids content Site Group (kids VGs + SG AND-ed together, then AND-ed with the
+# platform/main SGs). Sourced from the Salesforce targeting; if NO audience is selected,
+# no Kids placements are built at all.
+kids:
+  base_video_group: "86471529"      # always included when any kids audience is selected
+  older_video_group: "73408862"     # Older Kids
+  younger_video_group: "73408864"   # Younger Kids
+  content_site_group: "932400"      # Kids content SG (grouped with the kids VGs)

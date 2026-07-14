@@ -51,6 +51,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         video_domination_targeting=list(raw.get("video_domination_targeting") or []),
         takeover=raw.get("takeover") or None,
         product_overrides=dict(raw.get("product_overrides") or {}),
+        kids_audience=list(raw.get("kids_audience") or []),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
@@ -164,6 +165,11 @@ def validate_plan(plan: SupportPlan) -> list[str]:
         elif plan.video_domination == "pluto" and not plan.video_domination_targeting:
             problems.append("Pluto Video Domination selected but no Video Domination "
                             "Targeting (Pluto categories) provided.")
+
+    known_kids = {"older", "younger"}
+    for a in plan.kids_audience:
+        if str(a).strip().lower() not in known_kids:
+            problems.append(f"Unknown Kids Audience {a!r}. Known: older, younger.")
 
     if plan.takeover:
         from .config import operative_takeovers_config

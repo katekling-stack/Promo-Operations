@@ -84,6 +84,10 @@ class SupportPlan:
     # Per-campaign product toggles (Products section of the template). Keys are
     # PRODUCT_FAMILIES keys; True includes / False excludes / absent = brand default.
     product_overrides: dict[str, bool] = field(default_factory=dict)
+    # Kids audience (from the Salesforce targeting): which age group(s) to build Kids
+    # placements for — values "older" / "younger". Empty => NO Kids IOs are built for a
+    # Kids brand. Selects the Kids Video Groups layered into Kids targeting.
+    kids_audience: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None

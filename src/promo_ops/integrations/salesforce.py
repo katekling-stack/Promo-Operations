@@ -50,6 +50,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Formats__c": "formats",                     # list
     "Video_Domination__c": "video_domination",   # option key (pluto / standard / ...)
     "Video_Domination_Targeting__c": "video_domination_targeting",  # list (Pluto cats)
+    "Kids_Audience__c": "kids_audience",          # list: older / younger (Kids brands)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
     # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
     "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
@@ -67,7 +68,7 @@ _BOOL_TARGET_ROOT = "product_overrides"
 _TRUE_TEXT = {"yes", "y", "true", "1", "x", "✓", "checked"}
 
 # Core fields that are semicolon/newline lists.
-_LIST_FIELDS = {"durations", "formats", "video_domination_targeting"}
+_LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience"}
 
 
 def _split(value: Any) -> Any:

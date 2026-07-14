@@ -193,6 +193,7 @@ for _label, _family in PRODUCT_TOGGLES.items():
 # Matching is by prefix, so "Audience Segments (Tier 1)" matches "audience segments".
 TARGETING_TAB_COLUMNS: dict[str, list[str]] = {
     "audience segments": ["audience_segments"],   # Tier 1
+    "kids audience": ["kids_audience"],            # older / younger (Kids brands)
     "networks": ["networks"],
     "genres": ["genres"],
     "showlist": ["showlist"],

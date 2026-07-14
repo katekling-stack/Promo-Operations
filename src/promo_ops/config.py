@@ -68,6 +68,29 @@ def video_dominations_config() -> dict[str, Any]:
     return load_yaml("video_dominations.yaml")
 
 
+def kids_targeting_config() -> dict[str, Any]:
+    """The Kids audience -> Video Group mapping (config/relationship_targeting.yaml)."""
+    return load_yaml("relationship_targeting.yaml").get("kids", {})
+
+
+def kids_video_groups(audience: list[str] | None) -> list[str]:
+    """Resolve a Kids audience selection to its Video Group IDs.
+
+    "older" -> older VG, "younger" -> younger VG; the base VG is always included when
+    ANY audience is selected. Empty selection -> [] (no Kids targeting -> no Kids IOs).
+    """
+    audience = [str(a).strip().lower() for a in (audience or []) if str(a).strip()]
+    if not audience:
+        return []
+    cfg = kids_targeting_config()
+    vgs = [cfg.get("base_video_group")]
+    if "older" in audience:
+        vgs.append(cfg.get("older_video_group"))
+    if "younger" in audience:
+        vgs.append(cfg.get("younger_video_group"))
+    return [v for v in vgs if v]
+
+
 def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
     """Derive the brand key from a plan's campaign (id or name).
 
