@@ -1,77 +1,63 @@
-# Brand → FreeWheel advertiser mapping.
-#
-# Orders are created under Advertisers whose name contains "VCBS" (per the kickoff:
-# "Advertisers that contain 'VCBS' in the name"). We don't hard-code advertiser IDs
-# here because they should be resolved live from FreeWheel by name filter — see
-# integrations/freewheel.py `find_advertisers()`. This file records the mapping and
-# the region-code template each brand's orders are cloned from.
-#
-# `advertiser_name_contains` narrows the VCBS advertiser list to the right one per
-# brand. `template_campaign_id` / `template_io_id` point at an existing campaign to
-# clone Order/Placement structure from (the "similar Region Code template per brand").
-
-network_id: 520311   # cbsi-mrm.freewheel.tv/app/520311 (from the reference campaign)
-
-# Per-brand nuances (verified against each brand's reference IO). Keys the order
-# builder uses:
-#   ad_unit_groups        — {format: ad-unit group in config/ad_units.yaml} override
-#   extra_exclude_site_groups / extra_exclude_video_groups — always-exclude, layered
-#                           onto the shared DNR exclude in every relationship set
-#   formats               — the format set this brand runs
-#   template_campaign_id / template_io_id — the reference IO reverse-engineered from
+network_id: 520311
 brands:
-  # Paramount+ Domestic — the Frisco King / Dutton Ranch model.
   paramount_plus_domestic:
-    display_name: "Paramount+ Domestic"
-    advertiser_name_contains: ["VCBS", "Paramount"]
-    template_campaign_id: "86543608"   # Dutton Ranch (IO 92725144)
-    template_io_id: "92725144"
-    campaign_name: "Paramount + - USA"
+    display_name: Paramount+ Domestic
+    advertiser_name_contains:
+    - VCBS
+    - Paramount
+    template_campaign_id: '86543608'
+    template_io_id: '92725144'
+    campaign_name: Paramount + - USA
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
       pause_ads: pause_ads
       premium_preroll: premium_preroll
       essential_bumper: essential_bumper
-    formats: ["remnant_video", "pause_ads", "premium_preroll", "essential_bumper"]
-
-  # CBS Sports — Tiers 1-4 + PSA lines. House Pre/Mid/Post units.
+    formats:
+    - remnant_video
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
   cbs_sports:
-    display_name: "CBS Sports"
-    advertiser_name_contains: ["VCBS", "CBS"]
-    template_campaign_id: "54413703"   # PGA Tour - USA (IO 91459093)
-    template_io_id: "91459093"
-    campaign_name: "CBS Sports - USA"
+    display_name: CBS Sports
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '54413703'
+    template_io_id: '91459093'
+    campaign_name: CBS Sports - USA
     ad_unit_groups:
       remnant_video: cbs_house_all
-    extra_exclude_video_groups: ["73409791"]   # content-format exclude on the ref IO
-    formats: ["remnant_video"]
-
-  # CBS News — Tiers 1-4. Mid+Post units (no Pre-Roll). Always excludes Pluto News SGs.
+    extra_exclude_video_groups:
+    - '73409791'
+    formats:
+    - remnant_video
   cbs_news:
-    display_name: "CBS News"
-    advertiser_name_contains: ["VCBS", "CBS"]
-    template_campaign_id: "54413662"   # Money Moves - USA (IO 94971594)
-    template_io_id: "94971594"
-    campaign_name: "CBS News - USA"
+    display_name: CBS News
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '54413662'
+    template_io_id: '94971594'
+    campaign_name: CBS News - USA
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
-    # Pluto News Promo Category SGs — never promo CBS News against competing news.
     extra_exclude_site_groups:
-      - "1037683"   # SG: PlutoTV Promo Category: Local News: US
-      - "1038397"   # SG: PlutoTV Promo Category: News - Large News Channels: US
-      - "1038398"   # SG: PlutoTV Promo Category: News - Finance/Business: US
-      - "1038399"   # SG: PlutoTV Promo Category: News - Politics: US
-      - "1038400"   # SG: PlutoTV Promo Category: News - Other: US
-    formats: ["remnant_video"]
-
-  # CBS Network — Tiers 1-4 video + guaranteed CBS Pre-Roll + After Mid-Roll Bumper
-  # (both precedence HIGHEST). Addressable / 1z-2z lockdown lines ignored for now.
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
   cbs_network:
-    display_name: "CBS Network"
-    advertiser_name_contains: ["VCBS", "CBS"]
-    template_campaign_id: "54407793"   # Eternally Yours - USA (IO 93984940)
-    template_io_id: "93984940"
-    campaign_name: "CBS Network - USA"
+    display_name: CBS Network
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '54407793'
+    template_io_id: '93984940'
+    campaign_name: CBS Network - USA
     ad_unit_groups:
       remnant_video: cbs_house_all
       pause_ads: pause_ads
@@ -79,78 +65,118 @@ brands:
       cbs_after_midroll_bumper: cbs_after_midroll_bumper
       cbs_1z_lockdown: cbs_1z_lockdown
       cbs_2z_lockdown: cbs_2z_lockdown
-    formats: ["remnant_video", "pause_ads", "cbs_preroll",
-              "cbs_after_midroll_bumper", "cbs_1z_lockdown", "cbs_2z_lockdown"]
-
-  # MTVE — Viacom pre-roll + house. Runs on PlutoTV/VCBS/CBS Local (no P+). Includes
-  # the MTV brand video group in the genre set; excludes CBS Entertainment content.
+    formats:
+    - remnant_video
+    - pause_ads
+    - cbs_preroll
+    - cbs_after_midroll_bumper
+    - cbs_1z_lockdown
+    - cbs_2z_lockdown
   mtve:
-    display_name: "MTVE"
-    advertiser_name_contains: ["VCBS", "MTV"]
-    template_campaign_id: "54413666"   # Jersey Shore Family Vacation (IO 59975938)
-    template_io_id: "59975938"
-    campaign_name: "MTVE - USA"
-    main_site_groups: ["929392", "932592", "932591"]   # PlutoTV, VCBS, CBS Local
-    include_video_groups: ["73408899"]                 # VG: Cable Adults: MTV
-    extra_exclude_video_groups: ["73408858", "73408859"]  # CBS Entertainment VGs
+    display_name: MTVE
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '54413666'
+    template_io_id: '59975938'
+    campaign_name: MTVE - USA
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
-    formats: ["remnant_video", "mtve_after_midroll_bumper"]
-
-  # BET — Viacom pre-roll + house. Runs on BET Plus. Includes the BET brand video
-  # group; excludes all other cable-brand content.
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
   bet:
-    display_name: "BET"
-    advertiser_name_contains: ["VCBS", "BET"]
-    template_campaign_id: "68562294"   # OG Stories (IO 94999325)
-    template_io_id: "94999325"
-    campaign_name: "BET Media Group - USA"
-    main_site_groups: ["1072587"]      # BET Plus streaming endpoint
-    include_video_groups: ["73408894"] # VG: Cable Adults: BET
-    extra_exclude_video_groups:        # other cable brands
-      - "73408899"   # MTV
-      - "73408859"   # CBS Entertainment: CBS
-      - "73408891"   # Paramount Network
-      - "73408896"   # TVLand
-      - "73408858"   # CBS Entertainment
-      - "73408890"   # Comedy Central
-      - "73408897"   # CMT
+    display_name: BET
+    advertiser_name_contains:
+    - VCBS
+    - BET
+    template_campaign_id: '68562294'
+    template_io_id: '94999325'
+    campaign_name: BET Media Group - USA
+    main_site_groups:
+    - '1072587'
+    include_video_groups:
+    - '73408894'
+    extra_exclude_video_groups:
+    - '73408899'
+    - '73408859'
+    - '73408891'
+    - '73408896'
+    - '73408858'
+    - '73408890'
+    - '73408897'
     ad_unit_groups:
       remnant_video: viacom_promo
       bet_after_midroll_bumper: cbs_after_midroll_bumper
-    formats: ["remnant_video", "bet_after_midroll_bumper"]
-
-  # Pluto TV — house Mid+Post (no Pre-Roll). Runs on the PlutoTV platform. Always
-  # excludes the Samsung TV Plus partner SGs (and the promoted show's own channel SG,
-  # added by the CM). Recommended Show(s) key-value on Tier 1.
+    formats:
+    - remnant_video
+    - bet_after_midroll_bumper
   pluto_tv:
-    display_name: "Pluto TV"
-    advertiser_name_contains: ["VCBS", "Pluto"]
-    template_campaign_id: "54413718"   # Chip & Jo (IO 90867946)
-    template_io_id: "90867946"
-    campaign_name: "Pluto TV - USA"
-    main_site_groups: ["929392"]       # PlutoTV
+    display_name: Pluto TV
+    advertiser_name_contains:
+    - VCBS
+    - Pluto
+    template_campaign_id: '54413718'
+    template_io_id: '90867946'
+    campaign_name: Pluto TV - USA
+    main_site_groups:
+    - '929392'
     extra_exclude_site_groups:
-      - "932411"   # SG: PlutoTV: Partner: Samsung TV Plus
-      - "932412"   # SG: PlutoTV: Partner: Samsung TV Plus Mobile
+    - '932411'
+    - '932412'
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
       pluto_video_domination: pluto_video_domination
-    formats: ["remnant_video"]   # Video Domination staged (guaranteed + Operative/GAM)
-
-  # Pluto TV XCO — house Pre/Mid/Post. Runs on VCBS/CBS Local. Excludes the PlutoTV
-  # platform SG and the VCBS Samsung TV Plus partner SG on every placement.
+    formats:
+    - remnant_video
   pluto_tv_xco:
-    display_name: "Pluto TV XCO"
-    advertiser_name_contains: ["VCBS"]
-    template_campaign_id: "54413625"   # The Expendables (IO 95107045)
-    template_io_id: "95107045"
-    campaign_name: "Pluto TV (Cross-Company) - USA"
-    main_site_groups: ["932592", "932591"]   # VCBS, CBS Local
+    display_name: Pluto TV XCO
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '54413625'
+    template_io_id: '95107045'
+    campaign_name: Pluto TV (Cross-Company) - USA
+    main_site_groups:
+    - '932592'
+    - '932591'
     extra_exclude_site_groups:
-      - "929392"   # SG: Platform: PlutoTV
-      - "931759"   # SG: VCBS: Partner: Samsung TV Plus
+    - '929392'
+    - '931759'
     ad_unit_groups:
       remnant_video: cbs_house_all
-    formats: ["remnant_video"]
+    formats:
+    - remnant_video
+  pluto_es_adult:
+    display_name: Pluto TV - En Español
+    advertiser_name_contains:
+    - VCBS
+    - Spanish
+    template_campaign_id: '54439023'
+    campaign_name: Pluto TV - En Espanol - USA
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: Spanish - USA
+  pluto_es_kids:
+    display_name: Pluto TV - En Español - Kids
+    advertiser_name_contains:
+    - VCBS
+    - Spanish
+    template_campaign_id: '62081253'
+    campaign_name: Pluto TV - Kids - En Espanol - USA
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: Kids

@@ -1,143 +1,173 @@
-# Placement templates per format.
-#
-# One Placement is built per (format × region). These templates carry the standard
-# defaults from the deck (frequency caps, creative durations, priority order,
-# endpoints). Per-campaign overrides live in the support plan.
-#
-# `naming` is a Python str.format template. Available fields:
-#   {promoted_title} {region} {format_code} {brand} {flight_code}
-
 defaults:
-  frequency_cap: "1 per 30 min / 20 per month"   # deck standard remnant cap
-  currency: "USD"
-
+  frequency_cap: 1 per 30 min / 20 per month
+  currency: USD
 formats:
   remnant_video:
-    format_code: "RVID"
-    display_name: "Non-Guaranteed Video"
-    uses_durations: true            # one placement per tier x duration
-    endpoints: ["Desktop", "Mobile", "CTV"]
-    # Deck priority: :30 > :45/:60 > :15 > :20/:10
-    creative_durations_priority: [30, 45, 60, 15, 20, 10]
-    platforms: ["Paramount+", "Pluto TV", "CBS", "MTVE", "BET", "Nick"]
-    salesforce_asset_field: "Video Assets"
-
+    format_code: RVID
+    display_name: Non-Guaranteed Video
+    uses_durations: true
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    creative_durations_priority:
+    - 30
+    - 45
+    - 60
+    - 15
+    - 20
+    - 10
+    platforms:
+    - Paramount+
+    - Pluto TV
+    - CBS
+    - MTVE
+    - BET
+    - Nick
+    salesforce_asset_field: Video Assets
   pause_ads:
-    format_code: "PAUSE"
-    display_name: "Non-Guaranteed Pause Ads"
-    name_token: "Pause Ad"          # appears in the placement name (no duration)
-    endpoints: ["Desktop", "CTV"]
-    spec: "1018x674 PNG"
-    platforms: ["Paramount+", "CBS", "BET (CTV)", "Pluto TV (VOD)"]
-    salesforce_asset_field: "Pause Ad Assets"
-
+    format_code: PAUSE
+    display_name: Non-Guaranteed Pause Ads
+    name_token: Pause Ad
+    endpoints:
+    - Desktop
+    - CTV
+    spec: 1018x674 PNG
+    platforms:
+    - Paramount+
+    - CBS
+    - BET (CTV)
+    - Pluto TV (VOD)
+    salesforce_asset_field: Pause Ad Assets
   remnant_display:
-    format_code: "DISP"
-    display_name: "Non-Guaranteed Display"
-    naming: "{promoted_title} - {region} - Display"
-    endpoints: ["Desktop", "Mobile"]
-    standard_sizes: ["970x66","728x90","320x50","300x250","300x600","1024x90","970x250","300x50","768x90"]
-    platforms: ["CBS Sports", "CBS News", "CMV", "MTVE", "Nick", "BET"]
-    salesforce_asset_field: "Display Assets"
-
+    format_code: DISP
+    display_name: Non-Guaranteed Display
+    naming: '{promoted_title} - {region} - Display'
+    endpoints:
+    - Desktop
+    - Mobile
+    standard_sizes:
+    - 970x66
+    - 728x90
+    - 320x50
+    - 300x250
+    - 300x600
+    - 1024x90
+    - 970x250
+    - 300x50
+    - 768x90
+    platforms:
+    - CBS Sports
+    - CBS News
+    - CMV
+    - MTVE
+    - Nick
+    - BET
+    salesforce_asset_field: Display Assets
   podcast:
-    format_code: "POD"
-    display_name: "Non-Guaranteed Podcast"
-    naming: "{promoted_title} - {region} - Podcast"
-    creative_durations_priority: [15, 30]
-    platforms: ["Megaphone"]
-    salesforce_asset_field: "Podcast"
-
-  # --- Guaranteed P+ formats (Retention/Lifecycle-managed) -------------------
-  # These live in an EXISTING guaranteed order, not the new remnant IO. Each is
-  # built from exactly two arguments: a genre-specific value and the recommended
-  # show value. No tier stack.
-  # Guaranteed name convention (from the Dutton Ranch IO):
-  #   "Paramount + - {unit_label} - {plan_label} - {title} - {region} - [ShowID:{id}]"
+    format_code: POD
+    display_name: Non-Guaranteed Podcast
+    naming: '{promoted_title} - {region} - Podcast'
+    creative_durations_priority:
+    - 15
+    - 30
+    platforms:
+    - Megaphone
+    salesforce_asset_field: Podcast
   premium_preroll:
-    format_code: "PREM-PRE"
-    display_name: "P+ Premium Pre-Roll"
-    unit_label: "Pre-Roll"
-    plan_label: "Premium Plan"
+    format_code: PREM-PRE
+    display_name: P+ Premium Pre-Roll
+    unit_label: Pre-Roll
+    plan_label: Premium Plan
     guaranteed: true
-    nests_in: "existing_guaranteed_order"
-    platforms: ["Paramount+ Premium"]
-    arguments: ["genre", "recommended_show"]
-    creative_durations_priority: [30]
-
+    nests_in: existing_guaranteed_order
+    platforms:
+    - Paramount+ Premium
+    arguments:
+    - genre
+    - recommended_show
+    creative_durations_priority:
+    - 30
   essential_bumper:
-    format_code: "ESS-BMP"
-    display_name: "P+ Essential Bumper"
-    unit_label: "Bumper"
-    plan_label: "Essential Plan"
+    format_code: ESS-BMP
+    display_name: P+ Essential Bumper
+    unit_label: Bumper
+    plan_label: Essential Plan
     guaranteed: true
-    nests_in: "existing_guaranteed_order"
-    platforms: ["Paramount+ Essential"]
-    arguments: ["genre", "recommended_show"]
-    creative_durations_priority: [30]
-
-  # --- CBS Network guaranteed sponsorship lines -----------------------------
-  # Simple GUARANTEED lines: ad unit + geo only, precedence HIGHEST, no targeting
-  # sets.  name: "{title} - {guaranteed_label} - {region}"
+    nests_in: existing_guaranteed_order
+    platforms:
+    - Paramount+ Essential
+    arguments:
+    - genre
+    - recommended_show
+    creative_durations_priority:
+    - 30
   cbs_preroll:
-    format_code: "CBS-PRE"
-    display_name: "CBS Pre-Roll"
+    format_code: CBS-PRE
+    display_name: CBS Pre-Roll
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "CBS Pre-Roll"
-    precedence_level: "HIGHEST"
-    frequency_cap: "2 per day"
+    name_style: simple
+    guaranteed_label: CBS Pre-Roll
+    precedence_level: HIGHEST
+    frequency_cap: 2 per day
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
-
+    nests_in: existing_guaranteed_order
   cbs_after_midroll_bumper:
-    format_code: "CBS-BMP"
-    display_name: "CBS After Mid-Roll Bumper"
+    format_code: CBS-BMP
+    display_name: CBS After Mid-Roll Bumper
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "CBS After Mid-Roll Bumper"
-    precedence_level: "HIGHEST"
+    name_style: simple
+    guaranteed_label: CBS After Mid-Roll Bumper
+    precedence_level: HIGHEST
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
-
-  # Same structure as the CBS bumper (unit CBS_Brand Bumper, HIGHEST, no targeting);
-  # only the placement-name label differs per brand.
+    nests_in: existing_guaranteed_order
   mtve_after_midroll_bumper:
-    format_code: "MTVE-BMP"
-    display_name: "MTVE After Mid-Roll Bumper"
+    format_code: MTVE-BMP
+    display_name: MTVE After Mid-Roll Bumper
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "MTVE After Mid-Roll Bumper"
-    precedence_level: "HIGHEST"
+    name_style: simple
+    guaranteed_label: MTVE After Mid-Roll Bumper
+    precedence_level: HIGHEST
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
-
+    nests_in: existing_guaranteed_order
   bet_after_midroll_bumper:
-    format_code: "BET-BMP"
-    display_name: "BET After Mid-Roll Bumper"
+    format_code: BET-BMP
+    display_name: BET After Mid-Roll Bumper
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "After Mid-Roll Bumper"     # BET has no brand prefix
-    precedence_level: "HIGHEST"
+    name_style: simple
+    guaranteed_label: After Mid-Roll Bumper
+    precedence_level: HIGHEST
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
-
+    nests_in: existing_guaranteed_order
   cbs_1z_lockdown:
-    format_code: "CBS-1Z"
-    display_name: "CBS 1Z Lockdown"
+    format_code: CBS-1Z
+    display_name: CBS 1Z Lockdown
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "1Z Lockdown"
-    precedence_level: "HIGHEST"
+    name_style: simple
+    guaranteed_label: 1Z Lockdown
+    precedence_level: HIGHEST
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
-
+    nests_in: existing_guaranteed_order
   cbs_2z_lockdown:
-    format_code: "CBS-2Z"
-    display_name: "CBS 2Z Lockdown"
+    format_code: CBS-2Z
+    display_name: CBS 2Z Lockdown
     guaranteed: true
-    name_style: "simple"
-    guaranteed_label: "2Z Lockdown"
-    precedence_level: "HIGHEST"
+    name_style: simple
+    guaranteed_label: 2Z Lockdown
+    precedence_level: HIGHEST
     no_targeting: true
-    nests_in: "existing_guaranteed_order"
+    nests_in: existing_guaranteed_order
+  pluto_es_remnant:
+    format_code: RVID
+    display_name: Non-Guaranteed Video (Simple Remnant)
+    uses_durations: true
+    flat_line: true
+    no_targeting: true
+    line_label: Stream Ahora
+    drop_preroll_at_duration: 30
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Pluto TV

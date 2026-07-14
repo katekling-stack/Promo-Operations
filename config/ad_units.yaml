@@ -1,70 +1,55 @@
-# Ad units + IO-level frequency caps.
-# Source: "Global Digital O&O — Promo Settings Reference" -> "Ad Units – Domestic" tab.
-#
-# KEY: Frequency caps are set at the INSERTION ORDER level (not per placement).
-# Ad units are named inventory assigned to a placement's ad_product
-# (ad_product.ad_unit_node[].ad_unit_id). These are the NAMES the team uses; the
-# tool resolves each to its FW ad-unit ID via the ad-unit table (data/ad_units,
-# refreshed by FreeWheelClient.sync_ad_units — verified against the live API, e.g.
-# Paramount House Preroll=71999, Midroll=72000, Postroll=72001, Pause_Ad=63413).
-
-# IO-level frequency caps
 io_frequency_caps:
-  adults: ["20 per 1 Month", "1 per 30 Minutes"]
-  kids: ["1 per 15 Minutes"]
-
-# Ad unit names by platform group (domestic).
+  adults:
+  - 20 per 1 Month
+  - 1 per 30 Minutes
+  kids:
+  - 1 per 15 Minutes
 ad_units:
-  pplus_cbs_pluto_vcbs:        # P+ / LOCAL / VCBS / Pluto Live & VOD
-    - "Paramount House Preroll"
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
-  mtve_bet_vh1:                # MTVE / BET / VH1 (domestic)
-    - "Viacom_Promo_Pre_Roll"
-    - "Paramount House Preroll"
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
-  nick:                        # Nick / Nick Jr. (domestic, kids)
-    - "Viacom_NickJR_Promo_Pre_Roll"
-    - "ViacomCBS_Kids_Promo_Mid_Roll"
-    - "ViacomCBS_Kids_Promo_Pre_Roll"
-    - "Paramount House Preroll"
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
+  pplus_cbs_pluto_vcbs:
+  - Paramount House Preroll
+  - Paramount House Midroll
+  - Paramount House Postroll
+  mtve_bet_vh1:
+  - Viacom_Promo_Pre_Roll
+  - Paramount House Preroll
+  - Paramount House Midroll
+  - Paramount House Postroll
+  nick:
+  - Viacom_NickJR_Promo_Pre_Roll
+  - ViacomCBS_Kids_Promo_Mid_Roll
+  - ViacomCBS_Kids_Promo_Pre_Roll
+  - Paramount House Preroll
+  - Paramount House Midroll
+  - Paramount House Postroll
   pause_ads:
-    - "Pause_Ad"
-  # GUARANTEED (sponsored) formats — units confirmed from the Dutton Ranch IO.
+  - Pause_Ad
   premium_preroll:
-    - "PPlus_Commercial Free_Promo"
-    - "PPlus_LinearSkippable_Promo_Pre_Roll_1s"
+  - PPlus_Commercial Free_Promo
+  - PPlus_LinearSkippable_Promo_Pre_Roll_1s
   essential_bumper:
-    - "CBS_Brand Bumper_Mid_Roll_Last"
-  # CBS house units (confirmed from CBS Sports / News / Network IOs).
-  cbs_house_all:               # CBS Sports + CBS Network remnant video
-    - "Paramount House Preroll"
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
-  cbs_house_mid_post:          # CBS News — Mid + Post roll only (no Pre-Roll)
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
-  cbs_preroll:                 # CBS Network guaranteed Pre-Roll
-    - "CBS_Promo_Pre_Roll"
-  cbs_after_midroll_bumper:    # CBS Network guaranteed After Mid-Roll Bumper
-    - "CBS_Brand Bumper_Mid_Roll_Last"
-  cbs_1z_lockdown:             # CBS Network 1Z Lockdown
-    - "Mid_Roll_Break 1_Last"
-  cbs_2z_lockdown:             # CBS Network 2Z Lockdown
-    - "Mid_Roll_Break 2_Last"
-  viacom_promo:                # MTVE / BET remnant video (Viacom pre-roll + house)
-    - "Viacom_Promo_Pre_Roll"
-    - "Paramount House Midroll"
-    - "Paramount House Postroll"
-  pluto_video_domination:      # Pluto TV guaranteed Video Domination
-    - "Paramount House Preroll"
-    - "Paramount House Midroll"
-
-# Default (fallback) ad-unit group each format uses. Per-brand overrides live in
-# config/brands.yaml (`ad_unit_groups`), which win when the plan names a brand.
+  - CBS_Brand Bumper_Mid_Roll_Last
+  cbs_house_all:
+  - Paramount House Preroll
+  - Paramount House Midroll
+  - Paramount House Postroll
+  cbs_house_mid_post:
+  - Paramount House Midroll
+  - Paramount House Postroll
+  cbs_preroll:
+  - CBS_Promo_Pre_Roll
+  cbs_after_midroll_bumper:
+  - CBS_Brand Bumper_Mid_Roll_Last
+  cbs_1z_lockdown:
+  - Mid_Roll_Break 1_Last
+  cbs_2z_lockdown:
+  - Mid_Roll_Break 2_Last
+  viacom_promo:
+  - Viacom_Promo_Pre_Roll
+  - Paramount House Midroll
+  - Paramount House Postroll
+  pluto_video_domination:
+  - Paramount House Preroll
+  - Paramount House Midroll
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
@@ -74,6 +59,7 @@ format_ad_unit_group:
   cbs_after_midroll_bumper: cbs_after_midroll_bumper
   cbs_1z_lockdown: cbs_1z_lockdown
   cbs_2z_lockdown: cbs_2z_lockdown
-  mtve_after_midroll_bumper: cbs_after_midroll_bumper   # same unit (CBS_Brand Bumper)
+  mtve_after_midroll_bumper: cbs_after_midroll_bumper
   bet_after_midroll_bumper: cbs_after_midroll_bumper
   pluto_video_domination: pluto_video_domination
+  pluto_es_remnant: pplus_cbs_pluto_vcbs

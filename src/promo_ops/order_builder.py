@@ -94,6 +94,16 @@ class OrderBuilder:
         # Resolve the format's ad-unit NAMES -> FW ad-unit IDs (data/ad_units table).
         return self.ad_unit_resolver.ids_for(self._ad_unit_names(brand_cfg, fmt))
 
+    def _ad_units_for_duration(self, brand_cfg: dict, fmt: str, tmpl: dict,
+                               duration) -> tuple[list, list]:
+        """Ad-unit (names, ids) for a duration. House Pre-Roll runs on short creatives
+        only — it drops at `drop_preroll_at_duration` (e.g. 30s: mid+post only)."""
+        names = self._ad_unit_names(brand_cfg, fmt)
+        drop_at = tmpl.get("drop_preroll_at_duration")
+        if drop_at and duration and int(duration) >= int(drop_at):
+            names = [n for n in names if "preroll" not in n.lower()]
+        return names, self.ad_unit_resolver.ids_for(names)
+
     def _resolve_brand(self, plan: SupportPlan) -> Optional[str]:
         # Explicit brand wins; otherwise derive it from the campaign (1:1 per region).
         if plan.brand:
@@ -221,21 +231,30 @@ class OrderBuilder:
                 priority_level=self._guaranteed_priority(), frequency_cap=fc,
             )]
 
-        # Flat filler lines (PSA): one placement per duration at a fixed tier's
-        # priority + targeting, named "{title} - {label} - {duration} - {region}".
+        # Flat lines: one placement per duration, named
+        # "{title} - {label} - {duration} - {suffix}". Used for the simple untargeted
+        # remnant brands (e.g. Pluto En Español): no tier stack, ad units + geo only.
+        # `label` defaults to the plan messaging (else the template's line_label); the
+        # naming `suffix` is the brand's placement_name_suffix (else the region). Short
+        # durations get the House Pre-Roll; it drops at `drop_preroll_at_duration`.
         if tmpl.get("flat_line"):
             ptier = tmpl.get("priority_tier", 4)
-            label = tmpl.get("line_label", "")
+            label = plan.season_or_messaging or tmpl.get("line_label", "")
+            suffix = brand_cfg.get("placement_name_suffix") or plan.region
+            no_targeting = bool(tmpl.get("no_targeting"))
             out: list[Placement] = []
             for dur in self._durations(plan):
-                parts = [plan.promoted_title, label, str(dur), plan.region]
-                out.append(base(
+                parts = [plan.promoted_title, label, str(dur), suffix]
+                names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
+                placement = base(
                     " - ".join(p for p in parts if p),
                     TieredTargeting(format=fmt),
-                    tier=ptier, duration=dur,
+                    tier=ptier, duration=dur, no_targeting=no_targeting,
                     priority_level=self._priority(ptier, dur),
                     frequency_cap=self._freq_cap(ptier, fmt),
-                ))
+                )
+                placement.ad_unit_names, placement.ad_unit_ids = names, ids
+                out.append(placement)
             return out
 
         targeting = self.engine.build(plan, fmt)
