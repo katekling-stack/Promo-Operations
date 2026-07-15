@@ -219,3 +219,39 @@ formats:
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Essential
+  pplus_kids_remnant_pplus:
+    format_code: RVID
+    uses_durations: true
+    flat_line: true
+    kids: true
+    audience_label: Kids
+    line_label: Streaming Now
+    drop_preroll_at_duration: 30
+    drop_units: &id001
+    - Paramount House Preroll
+    endpoints: &id002
+    - Desktop
+    - Mobile
+    - CTV
+    display_name: P+ Kids Non-Guaranteed Video (P+ line)
+    kids_main_site_groups:
+    - '932583'
+    platforms:
+    - Paramount+
+  pplus_kids_remnant_pluto:
+    format_code: RVID
+    uses_durations: true
+    flat_line: true
+    kids: true
+    audience_label: Kids
+    line_label: Streaming Now
+    drop_preroll_at_duration: 30
+    drop_units: *id001
+    endpoints: *id002
+    display_name: P+ Kids Non-Guaranteed Video (Pluto line)
+    kids_main_site_groups:
+    - '1109067'
+    - '1120870'
+    duration_infix: (Pluto)
+    platforms:
+    - Pluto TV

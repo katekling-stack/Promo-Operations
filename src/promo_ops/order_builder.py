@@ -102,7 +102,13 @@ class OrderBuilder:
         names = self._ad_unit_names(brand_cfg, fmt)
         drop_at = tmpl.get("drop_preroll_at_duration")
         if drop_at and duration and int(duration) >= int(drop_at):
-            names = [n for n in names if "preroll" not in n.lower()]
+            # `drop_units` (explicit names) drops only those; else drop by "preroll"
+            # substring. UK P+ keeps the INTL pre-roll, dropping only the House Pre-Roll.
+            drop_units = tmpl.get("drop_units")
+            if drop_units:
+                names = [n for n in names if n not in drop_units]
+            else:
+                names = [n for n in names if "preroll" not in n.lower()]
         return names, self.ad_unit_resolver.ids_for(names)
 
     def _resolve_brand(self, plan: SupportPlan) -> Optional[str]:
@@ -177,12 +183,14 @@ class OrderBuilder:
         fmt_templates = self._templates.get("formats", {})
         if fmt not in fmt_templates:
             raise KeyError(f"Unknown format {fmt!r}. Known formats: {', '.join(fmt_templates)}")
-        tmpl = fmt_templates[fmt]
+        brand_cfg = self._brand_cfg(self._resolve_brand(plan))
+        # Brand-level per-format overrides (e.g. UK bumper "Basic Plan", region-specific
+        # main SGs) let regions reuse a format without a new template.
+        overrides = (brand_cfg.get("format_overrides", {}) or {}).get(fmt, {})
+        tmpl = {**fmt_templates[fmt], **overrides}
         exclude = plan.exclude_show or plan.promoted_title
         recommended = plan.recommended_show or plan.promoted_title
         extra = {k: tmpl[k] for k in ("spec", "standard_sizes", "salesforce_asset_field") if k in tmpl}
-
-        brand_cfg = self._brand_cfg(self._resolve_brand(plan))
         geo_names = self._geo_country_names(plan.region)
         geo_ids = self._geo_country_ids(geo_names)
         ad_unit_names = self._ad_unit_names(brand_cfg, fmt)

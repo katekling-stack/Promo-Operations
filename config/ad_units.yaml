@@ -50,6 +50,11 @@ ad_units:
   pluto_video_domination:
   - Paramount House Preroll
   - Paramount House Midroll
+  pplus_uk_house:
+  - Pplus_INTL_Promo_Pre_Roll
+  - Paramount House Preroll
+  - Paramount House Midroll
+  - Paramount House Postroll
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
@@ -66,3 +71,5 @@ format_ad_unit_group:
   pplus_kids_remnant: pplus_cbs_pluto_vcbs
   pplus_kids_premium_preroll: premium_preroll
   pplus_kids_essential_bumper: essential_bumper
+  pplus_kids_remnant_pplus: pplus_uk_house
+  pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs

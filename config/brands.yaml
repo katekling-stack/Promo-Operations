@@ -196,3 +196,23 @@ brands:
       pplus_kids_remnant: pplus_cbs_pluto_vcbs
       pplus_kids_premium_preroll: premium_preroll
       pplus_kids_essential_bumper: essential_bumper
+  paramount_plus_kids_uk:
+    display_name: Paramount+ Kids (UK)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '75617429'
+    campaign_name: Paramount + - Kids - UK
+    kids: true
+    formats:
+    - pplus_kids_remnant_pplus
+    - pplus_kids_remnant_pluto
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant_pplus: pplus_uk_house
+      pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
