@@ -63,3 +63,6 @@ format_ad_unit_group:
   bet_after_midroll_bumper: cbs_after_midroll_bumper
   pluto_video_domination: pluto_video_domination
   pluto_es_remnant: pplus_cbs_pluto_vcbs
+  pplus_kids_remnant: pplus_cbs_pluto_vcbs
+  pplus_kids_premium_preroll: premium_preroll
+  pplus_kids_essential_bumper: essential_bumper

@@ -180,3 +180,19 @@ brands:
     ad_unit_groups:
       pluto_es_remnant: pplus_cbs_pluto_vcbs
     placement_name_suffix: Kids
+  paramount_plus_kids:
+    display_name: Paramount+ Kids (USA)
+    advertiser_name_contains:
+    - VCBS
+    - Kids
+    template_campaign_id: '54440942'
+    campaign_name: Paramount + - Kids - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper

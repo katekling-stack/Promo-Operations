@@ -1,0 +1,73 @@
+"""Paramount+ Kids — Kids targeting shape + Older/Younger + the no-audience gate."""
+
+from __future__ import annotations
+
+from promo_ops.integrations.freewheel import FreeWheelClient
+from promo_ops.order_builder import OrderBuilder
+from promo_ops.plan_loader import support_plan_from_dict
+
+CAMPAIGN = "Paramount + - Kids - USA"
+
+
+def _build(audience, **extra):
+    plan = support_plan_from_dict({
+        "promoted_title": "Avatar: The Last Airbender", "region": "USA",
+        "campaign": {"name": CAMPAIGN}, "content_type": "show",
+        "content_id": "61456660", "season_or_messaging": "Evergreen",
+        "durations": [15, 30], "kids_audience": audience, **extra,
+    })
+    return plan, OrderBuilder().build(plan)
+
+
+def _kids_set(placement):
+    body = FreeWheelClient._placement_body(placement)
+    sets = body.get("relationship_targeting", {}).get("set", [])
+    inc = sets[0]["content_targeting"]["network_items"]["include"]
+    subs = inc["set"] if "set" in inc else [inc]
+    vgs = next((s.get("video_group") for s in subs if s.get("video_group")), [])
+    # the "main" subset is the one with only site_group (no video_group)
+    main = next((s.get("site_group") for s in subs if s.get("video_group") is None), None)
+    return set(vgs or []), set(main or [])
+
+
+def test_no_kids_audience_builds_nothing():
+    _, order = _build([])
+    assert order.placements == []
+
+
+def test_older_kids_full_shape():
+    plan, order = _build(["older"])
+    assert plan.brand == "paramount_plus_kids"
+    assert len(order.placements) == 4
+    names = [p.name for p in order.placements]
+    assert "Avatar: The Last Airbender - Evergreen - 15 (P+/Pluto) - Kids - USA" in names
+    assert ("Paramount + - Pre-Roll - Premium Plan - Avatar: The Last Airbender - Kids "
+            "- USA - [ShowID:61456660]") in names
+    assert ("Paramount + - Bumper - Essential Plan - Avatar: The Last Airbender - Kids "
+            "- USA - [ShowID:61456660]") in names
+
+    remnant = next(p for p in order.placements if not p.guaranteed and p.duration == 15)
+    vgs, main = _kids_set(remnant)
+    assert vgs == {"73408862", "86471529"}          # Older + base
+    assert main == {"929392", "932583"}             # Pluto + P+
+    assert set(remnant.ad_unit_ids) == {"71999", "72000", "72001"}
+
+    preroll = next(p for p in order.placements if p.guaranteed and "Pre-Roll" in p.name)
+    vgs_g, main_g = _kids_set(preroll)
+    assert vgs_g == {"73408862", "86471529"}
+    assert main_g == {"932583"}                     # guaranteed = P+ only
+    assert set(preroll.ad_unit_ids) == {"61120", "67610"}
+
+
+def test_younger_uses_younger_video_group():
+    _, order = _build(["younger"])
+    remnant = next(p for p in order.placements if not p.guaranteed)
+    vgs, _ = _kids_set(remnant)
+    assert vgs == {"73408864", "86471529"}          # Younger + base
+
+
+def test_both_ages_include_all_video_groups():
+    _, order = _build(["older", "younger"])
+    remnant = next(p for p in order.placements if not p.guaranteed)
+    vgs, _ = _kids_set(remnant)
+    assert vgs == {"73408862", "73408864", "86471529"}

@@ -171,3 +171,51 @@ formats:
     - CTV
     platforms:
     - Pluto TV
+  pplus_kids_remnant:
+    format_code: RVID
+    display_name: P+ Kids Non-Guaranteed Video (P+/Pluto)
+    uses_durations: true
+    flat_line: true
+    kids: true
+    kids_main_site_groups:
+    - '929392'
+    - '932583'
+    duration_infix: (P+/Pluto)
+    audience_label: Kids
+    line_label: Now Streaming
+    drop_preroll_at_duration: 30
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Paramount+
+    - Pluto TV
+  pplus_kids_premium_preroll:
+    format_code: PREM-PRE
+    display_name: P+ Kids Premium Pre-Roll
+    unit_label: Pre-Roll
+    plan_label: Premium Plan
+    audience_label: Kids
+    guaranteed: true
+    kids: true
+    kids_main_site_groups:
+    - '932583'
+    precedence_level: HIGH
+    nests_in: existing_guaranteed_order
+    platforms:
+    - Paramount+ Premium
+  pplus_kids_essential_bumper:
+    format_code: ESS-BMP
+    display_name: P+ Kids Essential Bumper
+    unit_label: Bumper
+    plan_label: Essential Plan
+    audience_label: Kids
+    guaranteed: true
+    kids: true
+    kids_main_site_groups:
+    - '932583'
+    precedence_level: HIGH
+    nests_in: existing_guaranteed_order
+    platforms:
+    - Paramount+ Essential

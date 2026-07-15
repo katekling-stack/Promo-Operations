@@ -212,6 +212,11 @@ class Placement:
     # content VGs AND-ed into the genre targeting (e.g. the MTV / BET brand VG).
     main_site_groups: list[str] = field(default_factory=list)
     include_video_groups: list[str] = field(default_factory=list)
+    # Kids targeting: the Older/Younger Video Groups + the Kids content Site Group,
+    # grouped together and AND-ed with main_site_groups (mirrors the P+ Kids IOs).
+    # Set only for Kids-brand placements; drives the "Kids" relationship set.
+    kids_video_groups: list[str] = field(default_factory=list)
+    kids_content_site_group: Optional[str] = None
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.

@@ -711,6 +711,17 @@ class FreeWheelClient:
                              **FreeWheelClient._content(plat_subsets, ex)})
             return sets
 
+        # Kids: one "Kids" set = (kids Video Groups + Kids content SG) AND main SGs.
+        # Mirrors the P+ Kids IOs; used by both remnant and guaranteed Kids lines.
+        kids_vgs = sorted(set(getattr(p, "kids_video_groups", []) or []))
+        if kids_vgs:
+            kids_sg = getattr(p, "kids_content_site_group", None)
+            subsets = [{"video_group": kids_vgs,
+                        "site_group": [kids_sg] if kids_sg else []},
+                       {"site_group": main}]
+            return [{"set_name": "Kids",
+                     **FreeWheelClient._content(subsets, base_exclude())}]
+
         if getattr(p, "no_targeting", False):
             return []   # bare sponsorship line (ad unit + geo only)
 

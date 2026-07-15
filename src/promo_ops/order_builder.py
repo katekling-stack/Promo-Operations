@@ -22,7 +22,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .config import (ad_units_config, brands_config, placement_templates_config,
+from .config import (ad_units_config, brands_config, kids_targeting_config,
+                     kids_video_groups, placement_templates_config,
                      priorities_config, regions_config)
 from .ad_units import AdUnitResolver
 from .geo import CountryResolver
@@ -136,7 +137,8 @@ class OrderBuilder:
         label = "MovieID" if (plan.content_type or "show").lower() == "movie" else "ShowID"
         unit = tmpl.get("unit_label", "")
         plan_label = tmpl.get("plan_label", "")
-        parts = ["Paramount +", unit, plan_label, plan.promoted_title, plan.region]
+        audience = tmpl.get("audience_label", "")   # e.g. "Kids" -> "… - Kids - {region}"
+        parts = ["Paramount +", unit, plan_label, plan.promoted_title, audience, plan.region]
         return " - ".join(p for p in parts if p) + f" - [{label}:{plan.content_id or ''}]"
 
     # --- caps / priority ------------------------------------------------- #
@@ -190,6 +192,14 @@ class OrderBuilder:
         main_sgs = list(brand_cfg.get("main_site_groups", []))
         include_vgs = list(brand_cfg.get("include_video_groups", []))
 
+        # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
+        # (remnant P+/Pluto = [Pluto, P+]; guaranteed = [P+]).
+        is_kids = bool(brand_cfg.get("kids") and tmpl.get("kids"))
+        kids_vgs = kids_video_groups(plan.kids_audience) if is_kids else []
+        kids_sg = kids_targeting_config().get("content_site_group") if is_kids else None
+        if is_kids and tmpl.get("kids_main_site_groups"):
+            main_sgs = list(tmpl["kids_main_site_groups"])
+
         def base(name, targeting, **kw) -> Placement:
             return Placement(
                 name=name, format=fmt, format_code=tmpl["format_code"], region=plan.region,
@@ -199,11 +209,21 @@ class OrderBuilder:
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,
+                kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.
         if tmpl.get("guaranteed"):
             precedence = tmpl.get("precedence_level", "HIGH")
+            # Kids guaranteed (Pre-Roll/Bumper): Kids targeting instead of the adult
+            # genre + recommended-show arguments.
+            if tmpl.get("kids"):
+                fc = tmpl.get("frequency_cap") or self._freq_cap(None, fmt)
+                return [base(
+                    self._guaranteed_name(plan, tmpl), TieredTargeting(format=fmt),
+                    guaranteed=True, precedence_level=precedence,
+                    priority_level=self._guaranteed_priority(), frequency_cap=fc,
+                )]
             # Simple sponsorship lines (CBS Pre-Roll / Bumper / Lockdown): ad unit +
             # geo only, no targeting sets, HIGHEST precedence. Only capped if the
             # template names a cap (Bumper/Lockdown have none).
@@ -240,11 +260,18 @@ class OrderBuilder:
         if tmpl.get("flat_line"):
             ptier = tmpl.get("priority_tier", 4)
             label = plan.season_or_messaging or tmpl.get("line_label", "")
-            suffix = brand_cfg.get("placement_name_suffix") or plan.region
+            # Naming suffix: an audience label ("Kids") becomes "{audience} - {region}";
+            # else the brand's placement_name_suffix; else the region. A duration_infix
+            # (e.g. "(P+/Pluto)") rides with the duration: "15 (P+/Pluto)".
+            audience = tmpl.get("audience_label")
+            suffix = (f"{audience} - {plan.region}" if audience
+                      else brand_cfg.get("placement_name_suffix") or plan.region)
+            infix = tmpl.get("duration_infix")
             no_targeting = bool(tmpl.get("no_targeting"))
             out: list[Placement] = []
             for dur in self._durations(plan):
-                parts = [plan.promoted_title, label, str(dur), suffix]
+                slot = f"{dur} {infix}" if infix else str(dur)
+                parts = [plan.promoted_title, label, slot, suffix]
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(
                     " - ".join(p for p in parts if p),
