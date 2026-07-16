@@ -146,6 +146,7 @@ PRODUCT_TOGGLES: dict[str, str] = {
     "include after mid-roll bumper": "after_midroll_bumper",
     "include 1z lockdown": "cbs_1z_lockdown",
     "include 2z lockdown": "cbs_2z_lockdown",
+    "include pluto": "pluto_breakout",     # UK P+ only — adds the Pluto breakout lines
 }
 
 # Plan tab: normalized label -> where it lands in the plan dict (+ optional type).

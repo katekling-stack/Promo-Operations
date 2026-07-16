@@ -33,6 +33,9 @@ PRODUCT_FAMILIES: dict[str, list[str]] = {
                              "bet_after_midroll_bumper"],
     "cbs_1z_lockdown": ["cbs_1z_lockdown"],
     "cbs_2z_lockdown": ["cbs_2z_lockdown"],
+    # UK P+ only: the optional Pluto breakout remnant lines. Off by default; the
+    # "Include Pluto" checkbox opts them in (Pluto is auto-combined in other regions).
+    "pluto_breakout": ["pplus_uk_remnant_pluto"],
 }
 
 

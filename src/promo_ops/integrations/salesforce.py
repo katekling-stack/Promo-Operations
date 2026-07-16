@@ -61,6 +61,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Include_After_Mid_Roll_Bumper__c": ("product_overrides", "after_midroll_bumper"),
     "Include_1Z_Lockdown__c": ("product_overrides", "cbs_1z_lockdown"),
     "Include_2Z_Lockdown__c": ("product_overrides", "cbs_2z_lockdown"),
+    "Include_Pluto__c": ("product_overrides", "pluto_breakout"),   # UK P+ only
 }
 
 # Tuple targets under this key hold Yes/No/(blank) toggles -> bool.

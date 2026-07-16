@@ -309,7 +309,6 @@ brands:
     campaign_name: Paramount + - UK
     formats:
     - pplus_uk_remnant_pplus
-    - pplus_uk_remnant_pluto
     - pause_ads
     - premium_preroll
     - essential_bumper
@@ -322,3 +321,5 @@ brands:
     format_overrides:
       essential_bumper:
         plan_label: Basic Plan
+    optional_formats:
+    - pplus_uk_remnant_pluto

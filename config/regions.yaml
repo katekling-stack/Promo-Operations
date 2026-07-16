@@ -1,45 +1,56 @@
-# Region codes used in Order/Placement naming and geo targeting.
-# `tier1_eligible` mirrors the deck: "Tier 1 applies to USA, AU, CA, LATAM, BR
-# currently. Remainder of markets TBD."
-#
-# `code` is the Region Code used in Pluto segment naming
-# ("SG: PlutoTV Channels: {code}: {channel}").
-#
-# GEO TARGETING: the team searches geography by NAME in FreeWheel (Add New
-# Country -> "United States"). `countries` lists the exact country NAME(s) to
-# select per region; the tool resolves each name to its FW country ID via the
-# country table (data/geo/*.csv, from `sync_countries`). See docs/REGIONS.md for
-# the region -> country selection guide (with FW IDs).
 regions:
   USA:
-    name: "United States"
-    code: "US"
-    domestic: true              # Pluto category uses "Promo Category" prefix
+    name: United States
+    code: US
+    domestic: true
     tier1_eligible: true
-    countries: ["United States"]        # FW id 165
+    countries:
+    - United States
+    has_pluto: true
   CA:
-    name: "Canada"
-    code: "CA"
+    name: Canada
+    code: CA
     tier1_eligible: true
-    countries: ["Canada"]               # FW id 27
+    countries:
+    - Canada
+    has_pluto: true
   AU:
-    name: "Australia"
-    code: "AU"
+    name: Australia
+    code: AU
     tier1_eligible: true
-    countries: ["Australia"]            # FW id 10
+    countries:
+    - Australia
+    has_pluto: false
   LATAM:
-    name: "Latin America"
-    code: "LATAM"
+    name: Latin America
+    code: LATAM
     tier1_eligible: true
-    # Representative LATAM markets; refine per campaign brief.
-    countries: ["Mexico", "Argentina", "Chile", "Colombia", "Peru", "Brazil"]
+    countries:
+    - Mexico
+    - Argentina
+    - Chile
+    - Colombia
+    - Peru
+    - Brazil
+    has_pluto: true
   BR:
-    name: "Brazil"
-    code: "BR"
+    name: Brazil
+    code: BR
     tier1_eligible: true
-    countries: ["Brazil"]               # FW id 21
+    countries:
+    - Brazil
+    has_pluto: true
   UK:
-    name: "United Kingdom"
-    code: "UK"
+    name: United Kingdom
+    code: UK
     tier1_eligible: false
-    countries: ["United Kingdom"]       # FW id 56
+    countries:
+    - United Kingdom
+    has_pluto: true
+  IE:
+    name: Ireland
+    code: IE
+    tier1_eligible: false
+    has_pluto: false
+    countries:
+    - Ireland

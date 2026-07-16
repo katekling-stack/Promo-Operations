@@ -7,19 +7,29 @@ from promo_ops.order_builder import OrderBuilder
 from promo_ops.plan_loader import support_plan_from_dict
 
 
-def _order():
+def _order(include_pluto: bool = True):
     plan = support_plan_from_dict({
         "promoted_title": "The Agency", "region": "UK",
         "campaign": {"name": "Paramount + - UK"}, "content_type": "show",
         "content_id": "943970057", "season_or_messaging": "Season 2",
         "durations": [15, 30], "showlist": ["NCIS"], "genres": ["Drama"],
         "pluto": {"channels": ["Westerns"], "categories": ["Movies - Action"]},
+        "product_overrides": {"pluto_breakout": include_pluto} if include_pluto else {},
     })
     return plan, OrderBuilder().build(plan)
 
 
+def test_include_pluto_checkbox_gates_the_breakout():
+    # Off by default: P+ lines + pause + guaranteed, no Pluto breakout.
+    _, off = _order(include_pluto=False)
+    assert not any("(Pluto)" in p.name for p in off.placements)
+    # Checkbox on: adds the Pluto breakout lines.
+    _, on = _order(include_pluto=True)
+    assert sum("(Pluto)" in p.name for p in on.placements) == 6
+
+
 def test_pplus_uk_split_and_naming():
-    plan, order = _order()
+    plan, order = _order(include_pluto=True)
     assert plan.brand == "paramount_plus_uk"
     names = [p.name for p in order.placements]
     # tier always in parens; Pluto lines carry the "(Pluto)" infix after the tier
@@ -32,7 +42,7 @@ def test_pplus_uk_split_and_naming():
 
 
 def test_pplus_uk_line_ad_units_and_main_sgs():
-    _, order = _order()
+    _, order = _order(include_pluto=True)
 
     def main_sgs(p):
         body = FreeWheelClient._placement_body(p)

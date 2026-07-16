@@ -23,6 +23,7 @@ Include CBS Pre-Roll,,(Y/N) — CBS Network
 Include After Mid-Roll Bumper,,(Y/N) — CBS Network / MTVE / BET
 Include 1Z Lockdown,,(Y/N) — CBS Network
 Include 2Z Lockdown,,(Y/N) — CBS Network
+Include Pluto,,(Y/N) — UK Paramount+ only; adds the Pluto breakout lines
 Video Domination,,(optional) — pluto | standard | aus_10_streaming | uk_my5
 Video Domination Targeting,,(Pluto VD only) — Pluto categories; semicolon-separated
 Takeover,,(optional) — hpto | first_impression | arena_takeover | three_peat
