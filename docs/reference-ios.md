@@ -88,10 +88,19 @@ name-searches then confirms each via `show-a-campaign` + an active-placement che
 - Bumper - **Basic Plan** (guaranteed): AU `61123`; no CT   ← UK uses "Basic" not "Essential"
 
 ### Pluto TV UK — campaign 72286125, IO 87074612 (MacGyver, "Stream Now")
-- Tier 2 (15s): CT = big UK Pluto channel `SG [1107704…1235383]`
-- Tier 4 (10/15/20s): CT = `SG 929392` (Pluto)
-- Tier 3: no CT
-- All: AU `71999,72000,72001`
+Re-read WITH relationship targeting — it's a **Pluto-only 3-tier remnant** (no Tier 1):
+- **Tier 2 "Channels"** (content_targeting): UK Pluto channel `SG [1107704,1107749,
+  1107757,1107762,1107822,1107829,1107859,1107865,1200881,1204409,1214150,1224837,
+  1235383]`
+- **Tier 3** (relationship sets):
+  - "Genres": `VG [74003220,74003231,74003269,74003454,75343512,75343611,99965267]` AND
+    `SG 929392`
+  - "Categories": `SG [1162830,1163098,1189781,1192163]`
+- **Tier 4 "RON"** (content_targeting): `SG 929392` (Pluto)
+- All lines: ad units `71999,72000,72001`; geo 56; IMPRESSION_TARGET.
+- **Data dependency to build:** the Tier-3 genre Video Groups are **UK-specific**
+  (74003220…) — the genre resolver's VG table is domestic, so UK genre VGs need syncing
+  / a UK genre→VG mapping before this brand can resolve genres from a plan.
 
 ### Paramount+ Kids UK — campaign 75617429, IO 86215521 (Kamp Koral, ShowID 61457250)
 - P+ lines "Streaming Now - 15/30 - Kids": CT = `SG 932583` AND (`VG [73408862,86471529]` + `SG 932400`); AU `69304,72000,72001(,71999)`
