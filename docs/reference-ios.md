@@ -83,9 +83,23 @@ name-searches then confirms each via `show-a-campaign` + an active-placement che
 ## UK (country 56)
 
 ### Paramount+ UK — campaign 73711557, IO 81277963 (The Agency, ShowID 943970057)
-- Remnant tiers 2 & 3 "Season 2 - 30": AU `69304,72000,72001`; no CT
-- Pre-Roll - Premium Plan (guaranteed): AU `61120,67610`; no CT
-- Bumper - **Basic Plan** (guaranteed): AU `61123`; no CT   ← UK uses "Basic" not "Essential"
+Re-read WITH relationship targeting — it's the **standard tiered model**, split P+/Pluto:
+- **P+ lines** (main SG `[932583 P+, 932591 CBS Local, 932592 VCBS]`, NO Pluto, NO
+  Tier 1): Tier 2 "Showlist" (main AND video+series), Tier 3 "Genre" (main AND genre
+  VGs), Tier 4 (main RON). AU `[69304 INTL pre-roll, 71999 house pre-roll, 72000, 72001]`
+  (house pre-roll drops at 30s; INTL stays).
+- **Pluto lines** ("(Pluto)" infix, main SG `929392`): Tier 2 "Channels" (Pluto channel
+  SGs), Tier 3 "Genre" (929392 AND genre VGs) + "Categories" (Pluto category SGs), Tier
+  4 (929392 RON). AU `[71999,72000,72001]`.
+- **Pause Ads** (AU `63413`): tiers 2/3/4 with main `[929392,932583,932592]` AND
+  platform SGs `[929447 CTV, 929449 Desktop]` — same pattern as domestic pause.
+- **Guaranteed**: Pre-Roll Premium `[61120,67610]` + Bumper **Basic Plan** `[61123]` —
+  each Genre (932583 AND genre VGs) + Recommended Show (932583). Identical to domestic
+  P+ guaranteed except the "Basic Plan" label.
+- Genre VGs in the IO are the OLD region-specific set — use the **standard** genre
+  resolver (per Kate).
+- Note: the **P+/Pluto split** (separate line sets by inventory) is the current UK
+  pattern (also seen in P+ Kids UK); domestic P+ combines them into one remnant.
 
 ### Pluto TV UK — campaign 72286125, IO 87074612 (MacGyver, "Stream Now")
 Re-read WITH relationship targeting — it's a **Pluto-only 3-tier remnant** (no Tier 1):
