@@ -711,6 +711,18 @@ class FreeWheelClient:
                              **FreeWheelClient._content(plat_subsets, ex)})
             return sets
 
+        # Brand-constant relationship sets (built verbatim from config) — e.g. Pluto
+        # En Español's fixed "Targeting VOD" / "En Espanol" sets. Each set's include is
+        # a list of subsets (AND-ed, OR within) and an explicit exclude.
+        static_sets = getattr(p, "static_relationship_sets", None) or []
+        if static_sets:
+            out: list[dict[str, Any]] = []
+            for sd in static_sets:
+                node = FreeWheelClient._content(sd.get("include", []), sd.get("exclude"))
+                if node:
+                    out.append({"set_name": sd.get("set_name"), **node})
+            return out
+
         # Kids: one "Kids" set = (kids Video Groups + Kids content SG) AND main SGs.
         # Mirrors the P+ Kids IOs; used by both remnant and guaranteed Kids lines.
         kids_vgs = sorted(set(getattr(p, "kids_video_groups", []) or []))

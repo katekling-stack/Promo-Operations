@@ -168,6 +168,29 @@ brands:
     ad_unit_groups:
       pluto_es_remnant: pplus_cbs_pluto_vcbs
     placement_name_suffix: Spanish - USA
+    relationship_sets:
+    - set_name: Targeting VOD
+      include:
+      - video_group:
+        - '75279406'
+      - site_group:
+        - '1120870'
+        - '1253848'
+      exclude:
+        site_group:
+        - '932270'
+        - '932411'
+        - '932412'
+    - set_name: En Espanol
+      include:
+      - site_group:
+        - '951392'
+        - '1163091'
+      exclude:
+        site_group:
+        - '932270'
+        - '932411'
+        - '932412'
   pluto_es_kids:
     display_name: Pluto TV - En Español - Kids
     advertiser_name_contains:
@@ -180,6 +203,51 @@ brands:
     ad_unit_groups:
       pluto_es_remnant: pplus_cbs_pluto_vcbs
     placement_name_suffix: Kids
+    relationship_sets:
+    - set_name: Set One
+      include:
+      - site_group:
+        - '929392'
+      - site_group:
+        - '932215'
+      - video_group:
+        - '73408862'
+        - '86471529'
+        site_group:
+        - '932400'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    - set_name: Set Two
+      include:
+      - video_group:
+        - '75279406'
+      - video_group:
+        - '73408862'
+        - '73408864'
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '929392'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+        - '1237515'
+    - set_name: Kids Channels
+      include:
+      - video_group:
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '932063'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
   paramount_plus_kids:
     display_name: Paramount+ Kids (USA)
     advertiser_name_contains:

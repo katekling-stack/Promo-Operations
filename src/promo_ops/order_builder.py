@@ -275,7 +275,10 @@ class OrderBuilder:
             suffix = (f"{audience} - {plan.region}" if audience
                       else brand_cfg.get("placement_name_suffix") or plan.region)
             infix = tmpl.get("duration_infix")
-            no_targeting = bool(tmpl.get("no_targeting"))
+            # Brand-constant relationship sets (e.g. Pluto En Español). When present they
+            # ARE the targeting; otherwise the line is untargeted per the template.
+            static_sets = list(brand_cfg.get("relationship_sets") or [])
+            no_targeting = bool(tmpl.get("no_targeting")) and not static_sets
             out: list[Placement] = []
             for dur in self._durations(plan):
                 slot = f"{dur} {infix}" if infix else str(dur)
@@ -285,6 +288,7 @@ class OrderBuilder:
                     " - ".join(p for p in parts if p),
                     TieredTargeting(format=fmt),
                     tier=ptier, duration=dur, no_targeting=no_targeting,
+                    static_relationship_sets=static_sets,
                     priority_level=self._priority(ptier, dur),
                     frequency_cap=self._freq_cap(ptier, fmt),
                 )

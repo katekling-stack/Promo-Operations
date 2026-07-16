@@ -1,7 +1,8 @@
-"""Pluto En Español — simple untargeted remnant (mirrors live reference IOs)."""
+"""Pluto En Español — remnant with brand-constant relationship sets (from live IOs)."""
 
 from __future__ import annotations
 
+from promo_ops.integrations.freewheel import FreeWheelClient
 from promo_ops.order_builder import OrderBuilder
 from promo_ops.plan_loader import support_plan_from_dict
 
@@ -14,27 +15,44 @@ def _order(title: str, campaign: str):
     return plan, OrderBuilder().build(plan)
 
 
-def test_pluto_es_adult_matches_reference():
+def _set_names(placement):
+    body = FreeWheelClient._placement_body(placement)
+    return [s.get("set_name") for s in body.get("relationship_targeting", {}).get("set", [])]
+
+
+def test_pluto_es_adult_names_and_ad_units():
     plan, order = _order("Crímenes imperfectos", "Pluto TV - En Espanol - USA")
     assert plan.brand == "pluto_es_adult"
-    names = [p.name for p in order.placements]
-    assert names == [
+    assert [p.name for p in order.placements] == [
         "Crímenes imperfectos - Stream Ahora - 15 - Spanish - USA",
         "Crímenes imperfectos - Stream Ahora - 30 - Spanish - USA",
     ]
-    p15 = order.placements[0]
-    p30 = order.placements[1]
-    # House Pre-Roll on 15s only; mid+post on 30s. No relationship targeting.
-    assert set(p15.ad_unit_ids) == {"71999", "72000", "72001"}
-    assert set(p30.ad_unit_ids) == {"72000", "72001"}
-    assert all(p.no_targeting for p in order.placements)
+    assert set(order.placements[0].ad_unit_ids) == {"71999", "72000", "72001"}
+    assert set(order.placements[1].ad_unit_ids) == {"72000", "72001"}
     assert all(p.geo_country_ids == ["165"] for p in order.placements)
 
 
-def test_pluto_es_kids_is_plain_remnant_not_gated():
-    # The En Español Kids brand runs plain remnant (no kids VG targeting), so it builds
-    # even without a kids audience.
-    plan, order = _order("El Reino Infantil", "Pluto TV - Kids - En Espanol - USA")
-    assert plan.brand == "pluto_es_kids"
-    assert order.placements[0].name == "El Reino Infantil - Stream Ahora - 15 - Kids"
-    assert len(order.placements) == 2
+def test_pluto_es_adult_relationship_sets():
+    _, order = _order("Crímenes imperfectos", "Pluto TV - En Espanol - USA")
+    p = order.placements[0]
+    assert _set_names(p) == ["Targeting VOD", "En Espanol"]
+    body = FreeWheelClient._placement_body(p)
+    vod = body["relationship_targeting"]["set"][0]
+    ni = vod["content_targeting"]["network_items"]
+    subs = ni["include"]["set"]
+    assert {"75279406"} == set(subs[0]["video_group"])
+    assert {"1120870", "1253848"} == set(subs[1]["site_group"])
+    assert set(ni["exclude"]["site_group"]) == {"932270", "932411", "932412"}
+
+
+def test_pluto_es_kids_has_three_sets():
+    _, order = _order("El Reino Infantil", "Pluto TV - Kids - En Espanol - USA")
+    p = order.placements[0]
+    assert _set_names(p) == ["Set One", "Set Two", "Kids Channels"]
+    body = FreeWheelClient._placement_body(p)
+    # Set Two carries both age VGs + base with the Kids content SG.
+    set_two = body["relationship_targeting"]["set"][1]["content_targeting"]["network_items"]["include"]["set"]
+    # the kids subset pairs the age VGs with the Kids content SG 932400
+    kids_sub = next(s for s in set_two
+                    if s.get("video_group") and "932400" in (s.get("site_group") or []))
+    assert set(kids_sub["video_group"]) == {"73408862", "73408864", "86471529"}
