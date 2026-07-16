@@ -126,11 +126,15 @@ class OrderBuilder:
     # --- naming ---------------------------------------------------------- #
 
     @staticmethod
-    def _tier_name(title, season, duration, tier, region, token=None) -> str:
-        # {title} - {season} - {duration|token} - Tier N - {region}, skipping blanks.
-        # Video uses the duration; formats without a duration (e.g. Pause Ad) use token.
-        slot = str(duration) if duration else token
-        parts = [title, season, slot, f"Tier {tier}", region]
+    def _tier_name(title, season, duration, tier, region, token=None, infix=None) -> str:
+        # {title} - {season} - {duration|token} (Tier N)[ (infix)] - {region}.
+        # The tier ALWAYS rides in parentheses with the duration/token slot (e.g.
+        # "30 (Tier 1)"), matching the live IOs. `infix` appends a line marker like
+        # "(Pluto)" -> "15 (Tier 2) (Pluto)". Blanks are skipped.
+        slot = str(duration) if duration else (token or "")
+        tier_part = f"(Tier {tier})" if tier else ""
+        slot = " ".join(x for x in (slot, tier_part, infix) if x)
+        parts = [title, season, slot, region]
         return " - ".join(p for p in parts if p)
 
     def _guaranteed_name(self, plan: SupportPlan, tmpl: dict) -> str:

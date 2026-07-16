@@ -40,7 +40,7 @@ def test_do_not_use_entries_are_skipped():
 def test_frisco_king_pluto_fully_resolves_into_placement_body():
     plan = load_plan(str(REPO_ROOT / "plans" / "frisco-king-usa.yaml"))
     order = OrderBuilder().build(plan)
-    t2 = next(p for p in order.placements if p.name.endswith("Tier 2 - USA") and p.duration == 30)
+    t2 = next(p for p in order.placements if p.name.endswith("(Tier 2) - USA") and p.duration == 30)
     body = FreeWheelClient._placement_body(t2)
     # Tier 2 mirrors Dutton: "Affinity Shows" (Video Series AND main platform SGs) +
     # "Channels" (Pluto channel SGs).
