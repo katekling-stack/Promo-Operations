@@ -284,3 +284,19 @@ brands:
     format_overrides:
       pplus_kids_essential_bumper:
         plan_label: Basic Plan
+  pluto_tv_uk:
+    display_name: Pluto TV (UK)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72286125'
+    template_io_id: '87074612'
+    campaign_name: Pluto TV - UK
+    main_site_groups:
+    - '929392'
+    extra_exclude_site_groups:
+    - '932411'
+    - '932412'
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    formats:
+    - remnant_video
