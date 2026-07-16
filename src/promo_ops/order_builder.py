@@ -202,6 +202,9 @@ class OrderBuilder:
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
         excl_vgs = list(brand_cfg.get("extra_exclude_video_groups", []))
         main_sgs = list(brand_cfg.get("main_site_groups", []))
+        # Per-format main-SG override (the UK P+/Pluto split: P+ line vs Pluto line).
+        if tmpl.get("main_site_groups"):
+            main_sgs = list(tmpl["main_site_groups"])
         include_vgs = list(brand_cfg.get("include_video_groups", []))
 
         # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
@@ -304,26 +307,37 @@ class OrderBuilder:
         uses_durations = bool(tmpl.get("uses_durations"))
         durations = self._durations(plan) if uses_durations else [None]
         name_token = tmpl.get("name_token")   # e.g. "Pause Ad" for non-duration formats
+        tier_infix = tmpl.get("tier_infix")   # e.g. "(Pluto)" for the UK Pluto split line
+        # Per-format targeting routing (the UK P+/Pluto split): P+ lines keep the showlist
+        # (series), Pluto lines keep channels/categories. Empty => keep everything.
+        kinds = tmpl.get("targeting_kinds")
 
         placements: list[Placement] = []
         for tier in targeting.tiers:
+            tids = self._targeting_ids(plan, tier)
+            if kinds is not None:
+                tids = {k: v for k, v in tids.items() if k in kinds}
             for dur in durations:
                 name = self._tier_name(plan.promoted_title, plan.season_or_messaging,
-                                       dur, tier.id, plan.region, token=name_token)
-                placements.append(base(
+                                       dur, tier.id, plan.region, token=name_token,
+                                       infix=tier_infix)
+                names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
+                placement = base(
                     name,
                     TieredTargeting(format=fmt, tiers=[tier]),   # one tier per placement
                     tier=tier.id,
                     duration=dur,
                     season_or_messaging=plan.season_or_messaging,
-                    targeting_ids=self._targeting_ids(plan, tier),
+                    targeting_ids=tids,
                     # Recommended Show rides on Tier 1 (mirrors Dutton).
                     recommended_show_value=(plan.recommended_show_id or plan.content_id)
                                            if tier.id == 1 else None,
                     priority_level=self._priority(tier.id, dur),
                     frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
-                ))
+                )
+                placement.ad_unit_names, placement.ad_unit_ids = names, ids
+                placements.append(placement)
         return placements
 
     def build(self, plan: SupportPlan) -> Order:

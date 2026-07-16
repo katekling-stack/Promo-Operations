@@ -300,3 +300,25 @@ brands:
       remnant_video: pplus_cbs_pluto_vcbs
     formats:
     - remnant_video
+  paramount_plus_uk:
+    display_name: Paramount+ (UK)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73711557'
+    template_io_id: '81277963'
+    campaign_name: Paramount + - UK
+    formats:
+    - pplus_uk_remnant_pplus
+    - pplus_uk_remnant_pluto
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      pplus_uk_remnant_pplus: pplus_uk_house
+      pplus_uk_remnant_pluto: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      essential_bumper:
+        plan_label: Basic Plan
