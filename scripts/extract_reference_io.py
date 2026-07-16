@@ -24,18 +24,33 @@ from pathlib import Path
 from promo_ops.integrations.freewheel import FreeWheelClient
 
 WIDGETS = ["ad_product", "content_targeting", "geography_targeting",
-           "audience_targeting", "budget"]
+           "audience_targeting", "budget", "relationship_targeting"]
 
 
 def _placement_detail(fw: FreeWheelClient, pid: str) -> dict:
-    """Merge the per-widget show-a-placement reads (only one widget works per call)."""
+    """Merge the per-widget show-a-placement reads (only one widget works per call).
+
+    IMPORTANT: targeting can live in EITHER placement-level `content_targeting` OR the
+    named `relationship_targeting.set[]` ("Relationships" in the UI). Always read both.
+    `relationship_targeting` is returned by show=<name> WITHOUT a boolean widget flag.
+    """
     out: dict = {}
     for w in WIDGETS:
-        r = fw._invoke("sh_1_0_show-a-placement", placement_id=int(pid), show=w, **{w: "true"})
+        kwargs = {"show": w} if w == "relationship_targeting" else {"show": w, w: "true"}
+        r = fw._invoke("sh_1_0_show-a-placement", placement_id=int(pid), **kwargs)
         pl = (r or {}).get("data", {}).get("placement", {})
         if isinstance(pl, dict) and w in pl:
             out[w] = pl[w]
     return out
+
+
+def _relationship_sets(detail: dict) -> list[dict]:
+    """Flatten relationship_targeting.set[] (dict or list) to a list of sets."""
+    rt = detail.get("relationship_targeting")
+    sets = rt.get("set") if isinstance(rt, dict) else None
+    if isinstance(sets, dict):
+        return [sets]
+    return sets or []
 
 
 def _active_ad_units(detail: dict) -> list[str]:
@@ -62,6 +77,12 @@ def profile_io(fw: FreeWheelClient, io_id: str) -> dict:
             "budget_model": (d.get("budget") or {}).get("budget_model"),
             "content_targeting": (d.get("content_targeting") or {}).get("include"),
             "audience_targeting": (d.get("audience_targeting") or {}).get("include"),
+            "relationship_sets": [
+                {"set_name": s.get("set_name"),
+                 "content": (s.get("content_targeting") or {}).get("network_items", {}).get("include"),
+                 "audience": (s.get("audience_targeting") or {}).get("include")}
+                for s in _relationship_sets(d)
+            ],
         })
     return {"io_id": io_id, "active": len(active), "total": len(placements),
             "placements": rows}
@@ -130,6 +151,10 @@ def _print_io(prof: dict) -> None:
             print(f"    content_targeting: {json.dumps(r['content_targeting'])[:2000]}")
         if r["audience_targeting"]:
             print(f"    audience_targeting: {json.dumps(r['audience_targeting'])[:1200]}")
+        for s in r.get("relationship_sets", []):
+            print(f"    rel-set {s['set_name']!r}: "
+                  f"{json.dumps(s['content'])[:1000] if s['content'] else '(no content)'}"
+                  + (f" | aud {json.dumps(s['audience'])[:400]}" if s['audience'] else ""))
 
 
 def main() -> int:

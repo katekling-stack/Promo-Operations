@@ -1,5 +1,14 @@
 # Reference IO extractions (live FreeWheel reads)
 
+> **Targeting lives in TWO places.** A placement can carry targeting under
+> placement-level `content_targeting` OR under named `relationship_targeting.set[]`
+> ("Relationships" in the UI). `show-a-placement` returns the latter only via
+> `show=relationship_targeting` (no boolean flag). ALWAYS read both — reading only
+> `content_targeting` makes relationship-targeted placements look empty. P+ Kids uses
+> content_targeting; The Agency UK and Pluto En Español use relationship sets.
+> `scripts/extract_reference_io.py` now reads both.
+
+
 Captured with `scripts/extract_reference_io.py` (ACTIVE placements only). IDs here feed
 the `config/brands.yaml` + `config/regions.yaml` entries. Ad-unit / site-group / video-
 group IDs still need name resolution (sync tables) before finalizing.
