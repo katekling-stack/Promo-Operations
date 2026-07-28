@@ -52,6 +52,10 @@ class SupportPlan:
 
     promoted_title: str
     region: str
+    # Language (from Salesforce) for multi-language regions like Canada — routes the
+    # campaign to the matching French vs English advertiser/campaign. The campaign name
+    # already encodes it; this documents/validates the routing.
+    language: Optional[str] = None
     formats: list[str] = field(default_factory=list)
     # Optional legacy grouping; the exact Advertiser + Campaign are the real inputs.
     brand: Optional[str] = None

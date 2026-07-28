@@ -31,6 +31,7 @@ from .gsheets import parse_targeting_tab
 CASE_FIELD_MAP: dict[str, Any] = {
     "Promoted_Title__c": "promoted_title",
     "Region__c": "region",
+    "Language__c": "language",          # English | French (CA routing)
     "Brand__c": "brand",
     "Advertiser__c": ("advertiser", "name"),
     "Advertiser_ID__c": ("advertiser", "resolved_id"),

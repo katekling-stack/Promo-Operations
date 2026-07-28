@@ -153,6 +153,7 @@ PRODUCT_TOGGLES: dict[str, str] = {
 PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "promoted title": {"path": ["promoted_title"]},
     "region": {"path": ["region"]},
+    "language": {"path": ["language"]},   # English | French (CA routing)
     "salesforce case": {"path": ["salesforce_case"]},
     # FreeWheel nesting: IO under an existing Campaign under an Advertiser.
     # Specify the EXACT Advertiser + Campaign (name and/or id).

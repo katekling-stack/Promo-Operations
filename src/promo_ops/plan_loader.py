@@ -31,6 +31,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
     plan = SupportPlan(
         promoted_title=raw["promoted_title"],
         region=raw["region"],
+        language=raw.get("language"),
         brand=raw.get("brand"),
         formats=list(raw.get("formats") or []),
         networks=list(raw.get("networks") or []),

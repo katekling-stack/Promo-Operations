@@ -384,3 +384,48 @@ brands:
     format_overrides:
       pplus_kids_remnant:
         duration_infix: ''
+  pluto_ca_kids_en:
+    display_name: Pluto TV - Kids - English (CA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72722746'
+    campaign_name: Pluto TV - Kids - English - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+  nick_ca_en:
+    display_name: Nick - Kids - English (CA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '86542904'
+    campaign_name: Nick - Kids - English - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_ca_fr:
+    display_name: Pluto TV - French (CA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72302590'
+    campaign_name: Pluto TV - French - CA
+    main_site_groups:
+    - '929392'
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: French - CA
