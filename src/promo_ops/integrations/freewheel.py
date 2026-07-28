@@ -607,7 +607,14 @@ class FreeWheelClient:
         # plain-remnant lines that have no relationship sets.
         content_excl = getattr(p, "content_exclude_site_groups", None)
         if content_excl:
-            body["content_targeting"] = {"exclude": {"site_group": list(content_excl)}}
+            # FreeWheel requires an include alongside a content-level exclude — pair the
+            # Samsung exclude with the brand's main SGs (mirrors the live Pluto lines:
+            # include {site_group: 929392}, exclude {Samsung}).
+            include_sgs = list(getattr(p, "main_site_groups", []) or [])
+            ct: dict[str, Any] = {"exclude": {"site_group": list(content_excl)}}
+            if include_sgs:
+                ct["include"] = {"site_group": include_sgs}
+                body["content_targeting"] = ct
         if p.recommended_show_value in (None, "") and sets:
             body["_cm_adds_in_ui"] = {
                 "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
