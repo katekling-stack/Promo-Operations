@@ -465,3 +465,35 @@ brands:
         - Paramount House Preroll
     optional_formats:
     - network_10_remnant
+  nick_au:
+    display_name: Nick - Kids (AU)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '80947033'
+    campaign_name: Nick - Kids - AU
+    kids: true
+    formats:
+    - nick_au_remnant
+    optional_formats:
+    - nick_au_network_10_remnant
+    - nick_au_network_10_bumper
+    ad_unit_groups:
+      nick_au_remnant: pplus_cbs_pluto_vcbs
+      nick_au_network_10_remnant: network_10_house
+      nick_au_network_10_bumper: network_10_bumper
+  nick_jr_au:
+    display_name: Nick Jr. - Kids (AU)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '80947027'
+    campaign_name: Nick Jr. - Kids - AU
+    kids: true
+    formats:
+    - nick_au_remnant
+    optional_formats:
+    - nick_au_network_10_remnant
+    - nick_au_network_10_bumper
+    ad_unit_groups:
+      nick_au_remnant: pplus_cbs_pluto_vcbs
+      nick_au_network_10_remnant: network_10_house
+      nick_au_network_10_bumper: network_10_bumper

@@ -337,9 +337,16 @@ class OrderBuilder:
             # else the brand's placement_name_suffix; else the region. A duration_infix
             # (e.g. "(P+/Pluto)") rides with the duration: "15 (P+/Pluto)".
             audience = tmpl.get("audience_label")
-            suffix = (f"{audience} - {plan.region}" if audience
-                      else brand_cfg.get("placement_name_suffix") or plan.region)
+            region_suffix = brand_cfg.get("placement_name_suffix") or plan.region
+            suffix = f"{audience} - {plan.region}" if audience else region_suffix
             infix = tmpl.get("duration_infix")
+            # Kids O&O lines put the audience BEFORE the duration slot (mirrors the AU
+            # Nick IOs: "{title} - {msg} - Kids - 15 (10 Streaming) - AU").
+            audience_first = bool(audience and tmpl.get("audience_before_slot"))
+            # Fixed priority / frequency cap override the tier-derived defaults — kids
+            # remnant lines run at priority 1 (override -1) with the kids cap, not tier 4.
+            fixed_priority = tmpl.get("priority")
+            fixed_fc = tmpl.get("frequency_cap")
             # Brand-constant relationship sets (e.g. Pluto En Español). When present they
             # ARE the targeting; otherwise the line is untargeted per the template.
             static_sets = list(brand_cfg.get("relationship_sets") or [])
@@ -347,15 +354,18 @@ class OrderBuilder:
             out: list[Placement] = []
             for dur in self._durations(plan):
                 slot = f"{dur} {infix}" if infix else str(dur)
-                parts = [plan.promoted_title, label, slot, suffix]
+                parts = ([plan.promoted_title, label, audience, slot, region_suffix]
+                         if audience_first
+                         else [plan.promoted_title, label, slot, suffix])
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(
                     " - ".join(p for p in parts if p),
                     TieredTargeting(format=fmt),
                     tier=ptier, duration=dur, no_targeting=no_targeting,
                     static_relationship_sets=static_sets,
-                    priority_level=self._priority(ptier, dur),
-                    frequency_cap=self._freq_cap(ptier, fmt),
+                    priority_level=(fixed_priority if fixed_priority is not None
+                                    else self._priority(ptier, dur)),
+                    frequency_cap=fixed_fc or self._freq_cap(ptier, fmt),
                 )
                 placement.ad_unit_names, placement.ad_unit_ids = names, ids
                 out.append(placement)

@@ -188,6 +188,8 @@ formats:
     audience_label: Kids
     line_label: Now Streaming
     drop_preroll_at_duration: 30
+    priority: 1
+    frequency_cap: 1 per 15 min
     endpoints:
     - Desktop
     - Mobile
@@ -235,6 +237,8 @@ formats:
     audience_label: Kids
     line_label: Streaming Now
     drop_preroll_at_duration: 30
+    priority: 1
+    frequency_cap: 1 per 15 min
     drop_units: &id001
     - Paramount House Preroll
     endpoints: &id002
@@ -254,6 +258,8 @@ formats:
     audience_label: Kids
     line_label: Streaming Now
     drop_preroll_at_duration: 30
+    priority: 1
+    frequency_cap: 1 per 15 min
     drop_units: *id001
     endpoints: *id002
     display_name: P+ Kids Non-Guaranteed Video (Pluto line)
@@ -346,5 +352,69 @@ formats:
     - Desktop
     - Mobile
     - CTV
+    platforms:
+    - Network 10
+  # --- Nick / Nick Jr (AU) — Kids O&O -------------------------------------- #
+  # Standard Kids remnant (Paramount+ SG). Always built for a Nick AU brand.
+  # "{title} - {msg} - Kids - {dur} - AU"; kids VGs + COPPA AND the P+ SG.
+  nick_au_remnant:
+    format_code: RVID
+    display_name: Nick Kids Non-Guaranteed Video (Standard)
+    uses_durations: true
+    flat_line: true
+    kids: true
+    audience_label: Kids
+    audience_before_slot: true
+    line_label: Generic
+    kids_main_site_groups:
+    - '932583'
+    drop_preroll_at_duration: 30
+    drop_units:
+    - Paramount House Preroll
+    priority: 1
+    frequency_cap: 1 per 15 min
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Paramount+
+  # Network 10 (10 Streaming) Kids remnant (Ten Play SG). Opt-in via Include Network 10.
+  nick_au_network_10_remnant:
+    format_code: RVID
+    display_name: Nick Kids Non-Guaranteed Video (10 Streaming)
+    uses_durations: true
+    flat_line: true
+    kids: true
+    audience_label: Kids
+    audience_before_slot: true
+    line_label: Generic
+    duration_infix: (10 Streaming)
+    kids_main_site_groups:
+    - '1238405'
+    drop_preroll_at_duration: 30
+    drop_units:
+    - Paramount House Preroll
+    priority: 1
+    frequency_cap: 1 per 15 min
+    applies_rating_restrictions: true
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Network 10
+  # Network 10 (10 Streaming) After Mid-Roll Bumper — guaranteed Kids line, HIGHEST.
+  nick_au_network_10_bumper:
+    format_code: NET10-BMP
+    display_name: Nick 10 Streaming After Mid-Roll Bumper
+    guaranteed: true
+    kids: true
+    name_style: simple
+    guaranteed_label: 10 Streaming After Mid-Roll Bumper - Kids
+    precedence_level: HIGHEST
+    kids_main_site_groups:
+    - '1238405'
+    nests_in: existing_guaranteed_order
     platforms:
     - Network 10

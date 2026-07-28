@@ -36,8 +36,11 @@ PRODUCT_FAMILIES: dict[str, list[str]] = {
     # UK P+ only: the optional Pluto breakout remnant lines. Off by default; the
     # "Include Pluto" checkbox opts them in (Pluto is auto-combined in other regions).
     "pluto_breakout": ["pplus_uk_remnant_pluto"],
-    # AU P+ only: optional Network 10 (10 Streaming) tiered lines.
-    "network_10": ["network_10_remnant"],
+    # AU only: optional Network 10 (10 Streaming) lines. The opt-in adds whichever
+    # members the selected brand supports — P+ AU gets the tiered remnant; Nick AU gets
+    # the Kids 10 Streaming remnant + After Mid-Roll Bumper.
+    "network_10": ["network_10_remnant", "nick_au_network_10_remnant",
+                   "nick_au_network_10_bumper"],
 }
 
 

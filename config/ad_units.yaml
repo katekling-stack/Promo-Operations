@@ -60,6 +60,8 @@ ad_units:
   - Paramount House Preroll
   - Paramount House Midroll
   - Paramount House Postroll
+  network_10_bumper:
+  - Net10_Brand_Bumper_Mid_Roll
 format_ad_unit_group:
   remnant_video: pplus_cbs_pluto_vcbs
   pause_ads: pause_ads
@@ -82,3 +84,6 @@ format_ad_unit_group:
   pplus_uk_remnant_pluto: pplus_cbs_pluto_vcbs
   pluto_ca_remnant: pplus_cbs_pluto_vcbs
   network_10_remnant: network_10_house
+  nick_au_remnant: pplus_cbs_pluto_vcbs
+  nick_au_network_10_remnant: network_10_house
+  nick_au_network_10_bumper: network_10_bumper
