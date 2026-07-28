@@ -437,3 +437,28 @@ brands:
       pluto_es_remnant: pplus_cbs_pluto_vcbs
     placement_name_suffix: French - CA
     pluto_brand: true
+  paramount_plus_au:
+    display_name: Paramount+ (AU)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73850057'
+    campaign_name: Paramount + - AU
+    main_site_groups:
+    - '932583'
+    - '932591'
+    - '932592'
+    formats:
+    - remnant_video
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      remnant_video: pplus_uk_house
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      essential_bumper:
+        plan_label: Basic Plan
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
