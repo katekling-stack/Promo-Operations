@@ -101,19 +101,23 @@ def test_pplus_kids_uk_split_lines_and_basic_plan():
     assert any("Bumper - Basic Plan" in p.name for p in order.placements)
 
 
-def test_older_only_excludes_younger_nick_jr_vg():
-    # Older-kids-only must always exclude the Younger (Nick Jr) VG 73408864.
-    _, older = _build(["older"])
-    remnant = next(p for p in older.placements if not p.guaranteed)
+def _remnant_exclude_vgs(audience):
+    _, order = _build(audience)
+    remnant = next(p for p in order.placements if not p.guaranteed)
     exc = (FreeWheelClient._placement_body(remnant)["relationship_targeting"]["set"][0]
            ["content_targeting"]["network_items"].get("exclude", {}))
-    assert "73408864" in exc.get("video_group", [])
-    # Both ages selected -> no younger exclusion.
-    _, both = _build(["older", "younger"])
-    remnant_b = next(p for p in both.placements if not p.guaranteed)
-    exc_b = (FreeWheelClient._placement_body(remnant_b)["relationship_targeting"]["set"][0]
-             ["content_targeting"]["network_items"].get("exclude", {}))
-    assert "73408864" not in exc_b.get("video_group", [])
+    return set(exc.get("video_group", []))
+
+
+def test_single_age_excludes_the_other_cable_kids_vg():
+    # Older-only excludes Nick Jr (73408864); younger-only excludes Nick (73408862).
+    assert "73408864" in _remnant_exclude_vgs(["older"])
+    assert "73408862" not in _remnant_exclude_vgs(["older"])
+    assert "73408862" in _remnant_exclude_vgs(["younger"])
+    assert "73408864" not in _remnant_exclude_vgs(["younger"])
+    # Both ages -> include Nick + Nick Jr + COPPA, no age exclusion.
+    both = _remnant_exclude_vgs(["older", "younger"])
+    assert "73408862" not in both and "73408864" not in both
 
 
 def test_us_pluto_dnr_scope():

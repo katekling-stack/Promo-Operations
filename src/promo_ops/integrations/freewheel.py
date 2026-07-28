@@ -730,11 +730,15 @@ class FreeWheelClient:
             kids_sg = getattr(p, "kids_content_site_group", None)
             kcfg = relationship_targeting_config().get("kids", {})
             older, younger = kcfg.get("older_video_group"), kcfg.get("younger_video_group")
-            # Older-kids-only: ALWAYS exclude the Younger (Nick Jr) VG, globally.
-            kids_excl = {}
+            # Single-age campaigns exclude the OTHER age's Cable Kids VG, globally:
+            #   older-only  -> exclude Nick Jr (younger); younger-only -> exclude Nick (older).
+            # Both ages -> include both (+ the Kids COPPA VG/SG), no exclusion.
+            excl_vgs = []
             if older in kids_vgs and younger and younger not in kids_vgs:
-                kids_excl["video_group"] = [younger]
-            excl = base_exclude(**kids_excl)
+                excl_vgs.append(younger)
+            if younger in kids_vgs and older and older not in kids_vgs:
+                excl_vgs.append(older)
+            excl = base_exclude(video_group=excl_vgs) if excl_vgs else base_exclude()
             subsets = [{"video_group": kids_vgs,
                         "site_group": [kids_sg] if kids_sg else []},
                        {"site_group": main}]

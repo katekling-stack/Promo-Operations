@@ -30,9 +30,9 @@ domestic_usa:
     - '311826361'
 kids:
   base_video_group: '86471529'
+  content_site_group: '932400'
   older_video_group: '73408862'
   younger_video_group: '73408864'
-  content_site_group: '932400'
 us_pluto_dnr:
   site_group: '951172'
   except_brands:
