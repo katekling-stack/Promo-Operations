@@ -668,6 +668,7 @@ class FreeWheelClient:
         # excludes the Pluto News category SGs).
         excl_sg_all = list(excl_sg) + list(getattr(p, "extra_exclude_site_groups", []))
         excl_vg_brand = list(getattr(p, "extra_exclude_video_groups", []))
+        excl_series = list(getattr(p, "exclude_series", []))   # promoted show's own series
 
         def base_exclude(**extra):
             e = dict(extra)
@@ -675,6 +676,8 @@ class FreeWheelClient:
                 e["video_group"] = sorted(set(e.get("video_group", []) + excl_vg_brand))
             if excl_sg_all:
                 e["site_group"] = sorted(set(excl_sg_all))
+            if excl_series:
+                e["series"] = sorted(set(e.get("series", []) + excl_series))
             return e or None
 
         def rec_show_set(platform_sg):

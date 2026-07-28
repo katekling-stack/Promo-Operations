@@ -111,6 +111,29 @@ class OrderBuilder:
                 names = [n for n in names if "preroll" not in n.lower()]
         return names, self.ad_unit_resolver.ids_for(names)
 
+    def _self_exclusions(self, plan: SupportPlan) -> tuple[list, list]:
+        """The promoted show's OWN Video Series IDs + Channel SG IDs, to exclude
+        everywhere (so it never promos against itself). Resolved from the exclude show
+        (defaults to the promoted title)."""
+        target = plan.exclude_show or plan.promoted_title
+        if not target:
+            return [], []
+        series = [s["id"] for s in self.engine.series_resolver.resolve(target).series]
+        channel_sgs: list = []
+        naming = (self._pluto_cfg().get("naming") or {}).get("channel")
+        if naming:
+            code = self._regions.get("regions", {}).get(plan.region, {}).get("code", plan.region)
+            prefix, _, suffix = naming.format(region_code=code, name="\x00").partition("\x00")
+            m = self.engine.site_group_resolver.select_all(target, prefix=prefix, suffix=suffix)
+            if m.matched:
+                channel_sgs = [sg["id"] for sg in m.site_groups]
+        return series, channel_sgs
+
+    @staticmethod
+    def _pluto_cfg() -> dict:
+        from .config import pluto_config
+        return pluto_config()
+
     def _resolve_brand(self, plan: SupportPlan) -> Optional[str]:
         # Explicit brand wins; otherwise derive it from the campaign (1:1 per region).
         if plan.brand:
@@ -225,6 +248,10 @@ class OrderBuilder:
             samsung = relationship_targeting_config().get("samsung_tv_plus", {})
             content_excl_sgs = list(samsung.get("domestic" if plan.region == "USA"
                                                 else "international", []))
+        # Self-exclusion: the promoted show's own Video Series (excluded on every set)
+        # + its Channel SGs (added to the site-group excludes).
+        self_series, self_channel_sgs = self._self_exclusions(plan)
+        excl_sgs += [sg for sg in self_channel_sgs if sg not in excl_sgs]
 
         # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
         # (remnant P+/Pluto = [Pluto, P+]; guaranteed = [P+]).
@@ -245,6 +272,7 @@ class OrderBuilder:
                 main_site_groups=main_sgs, include_video_groups=include_vgs,
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 content_exclude_site_groups=list(content_excl_sgs),
+                exclude_series=list(self_series),
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

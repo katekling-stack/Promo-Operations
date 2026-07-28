@@ -227,6 +227,9 @@ class Placement:
     # Placement-level content_targeting.exclude (applies to the whole placement, not a
     # relationship set) — Pluto TV brands exclude the Samsung TV Plus SGs everywhere.
     content_exclude_site_groups: list[str] = field(default_factory=list)
+    # Self-exclusion: the promoted show's OWN Video Series IDs, excluded on every set so
+    # it never promos against itself (its Channel SGs go in extra_exclude_site_groups).
+    exclude_series: list[str] = field(default_factory=list)
     # Brand-constant relationship sets (targeting fixed per brand, not derived from the
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
     # {set_name, include: [subset,...], exclude: {site_group:[...]}}. Built verbatim.
