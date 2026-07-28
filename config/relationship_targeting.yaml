@@ -37,3 +37,11 @@ us_pluto_dnr:
   site_group: '951172'
   except_brands:
   - pluto_tv
+samsung_tv_plus:
+  domestic:
+  - '932411'
+  - '932412'
+  international:
+  - '1121578'
+  - '1164068'
+  - '1164069'

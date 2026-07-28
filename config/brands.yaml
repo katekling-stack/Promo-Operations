@@ -139,6 +139,7 @@ brands:
       pluto_video_domination: pluto_video_domination
     formats:
     - remnant_video
+    pluto_brand: true
   pluto_tv_xco:
     display_name: Pluto TV XCO
     advertiser_name_contains:
@@ -156,6 +157,7 @@ brands:
       remnant_video: cbs_house_all
     formats:
     - remnant_video
+    pluto_brand: true
   pluto_es_adult:
     display_name: Pluto TV - En Español
     advertiser_name_contains:
@@ -191,6 +193,7 @@ brands:
         - '932270'
         - '932411'
         - '932412'
+    pluto_brand: true
   pluto_es_kids:
     display_name: Pluto TV - En Español - Kids
     advertiser_name_contains:
@@ -248,6 +251,7 @@ brands:
         site_group:
         - '932411'
         - '932412'
+    pluto_brand: true
   paramount_plus_kids:
     display_name: Paramount+ Kids (USA)
     advertiser_name_contains:
@@ -300,6 +304,7 @@ brands:
       remnant_video: pplus_cbs_pluto_vcbs
     formats:
     - remnant_video
+    pluto_brand: true
   paramount_plus_uk:
     display_name: Paramount+ (UK)
     advertiser_name_contains:
@@ -340,6 +345,7 @@ brands:
         drop_preroll_at_duration: 30
         drop_units:
         - Paramount House Preroll
+    pluto_brand: true
   paramount_plus_ca:
     display_name: Paramount+ - English (CA)
     advertiser_name_contains:
@@ -400,6 +406,7 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: ''
+    pluto_brand: true
   nick_ca_en:
     display_name: Nick - Kids - English (CA)
     advertiser_name_contains:
@@ -429,3 +436,4 @@ brands:
     ad_unit_groups:
       pluto_es_remnant: pplus_cbs_pluto_vcbs
     placement_name_suffix: French - CA
+    pluto_brand: true

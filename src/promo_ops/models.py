@@ -224,6 +224,9 @@ class Placement:
     # Set only for Kids-brand placements; drives the "Kids" relationship set.
     kids_video_groups: list[str] = field(default_factory=list)
     kids_content_site_group: Optional[str] = None
+    # Placement-level content_targeting.exclude (applies to the whole placement, not a
+    # relationship set) — Pluto TV brands exclude the Samsung TV Plus SGs everywhere.
+    content_exclude_site_groups: list[str] = field(default_factory=list)
     # Brand-constant relationship sets (targeting fixed per brand, not derived from the
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
     # {set_name, include: [subset,...], exclude: {site_group:[...]}}. Built verbatim.

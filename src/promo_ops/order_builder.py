@@ -218,6 +218,13 @@ class OrderBuilder:
         if tmpl.get("main_site_groups"):
             main_sgs = list(tmpl["main_site_groups"])
         include_vgs = list(brand_cfg.get("include_video_groups", []))
+        # Pluto TV brands exclude Samsung TV Plus SGs on EVERY placement (placement-level
+        # content exclude), region-scoped: US SGs domestically, the intl SGs abroad.
+        content_excl_sgs: list[str] = []
+        if brand_cfg.get("pluto_brand"):
+            samsung = relationship_targeting_config().get("samsung_tv_plus", {})
+            content_excl_sgs = list(samsung.get("domestic" if plan.region == "USA"
+                                                else "international", []))
 
         # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
         # (remnant P+/Pluto = [Pluto, P+]; guaranteed = [P+]).
@@ -237,6 +244,7 @@ class OrderBuilder:
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
+                content_exclude_site_groups=list(content_excl_sgs),
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

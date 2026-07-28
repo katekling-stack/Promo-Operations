@@ -602,6 +602,12 @@ class FreeWheelClient:
         sets = FreeWheelClient._relationship_sets(p)
         if sets:
             body["relationship_targeting"] = {"set": sets}
+        # Placement-level content exclude (separate from the relationship sets) —
+        # Pluto TV brands exclude the Samsung TV Plus SGs on EVERY placement, incl.
+        # plain-remnant lines that have no relationship sets.
+        content_excl = getattr(p, "content_exclude_site_groups", None)
+        if content_excl:
+            body["content_targeting"] = {"exclude": {"site_group": list(content_excl)}}
         if p.recommended_show_value in (None, "") and sets:
             body["_cm_adds_in_ui"] = {
                 "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
