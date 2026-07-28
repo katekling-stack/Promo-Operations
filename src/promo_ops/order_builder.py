@@ -201,6 +201,13 @@ class OrderBuilder:
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
         excl_vgs = list(brand_cfg.get("extra_exclude_video_groups", []))
+        # US Pluto FREQUENT DNR: excluded on every US brand EXCEPT Pluto TV - USA.
+        from .config import relationship_targeting_config
+        dnr = relationship_targeting_config().get("us_pluto_dnr", {})
+        if (plan.region == "USA" and dnr.get("site_group")
+                and self._resolve_brand(plan) not in dnr.get("except_brands", [])):
+            if dnr["site_group"] not in excl_sgs:
+                excl_sgs.append(dnr["site_group"])
         main_sgs = list(brand_cfg.get("main_site_groups", []))
         # Per-format main-SG override (the UK P+/Pluto split: P+ line vs Pluto line).
         if tmpl.get("main_site_groups"):

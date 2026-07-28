@@ -332,9 +332,14 @@ brands:
     main_site_groups:
     - '929392'
     formats:
-    - pluto_ca_remnant
+    - remnant_video
     ad_unit_groups:
-      pluto_ca_remnant: pplus_cbs_pluto_vcbs
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
   paramount_plus_ca:
     display_name: Paramount+ - English (CA)
     advertiser_name_contains:

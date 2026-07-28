@@ -1,42 +1,39 @@
-# Relationship-targeting constants — mirror the Dutton Ranch IO exactly.
-#
-# Targeting is layered into named relationship sets. The "main SGs" (platform /
-# business-division Site Groups) are AND-ed into the Showlist / Genre / Audience
-# targeting in every tier so everything runs on our O&O inventory. Pause Ads have
-# their own platform footprint and never use Pluto channels/categories.
-#
-# IDs verified live (show-a-site-group / show-a-video-group).
-
 domestic_usa:
-  # Platform / biz-div Site Groups AND-ed into Tier 1 (audience), Tier 2 (showlist),
-  # Tier 3 (genre) and Tier 4 for remnant video.
-  main_site_groups:                       # 929392 PlutoTV, 932583 P+, 932591 CBS Local, 932592 VCBS
-    - "929392"
-    - "932583"
-    - "932591"
-    - "932592"
-  pplus_site_group: ["932583"]            # Paramount+ only (guaranteed + Recommended Show)
-  exclude_site_groups: ["951172"]         # SG: Pluto TV: FREQUENT DNR (excluded everywhere)
-  exclude_video_groups: ["73410101"]      # VG: Content Format: Clips (excluded on genre sets)
-  recommended_show_key: "recommended_show"
-  # Pre-built into Tier 1 + the guaranteed Plan placements. When no Recommended Show
-  # ID / Content ID is given, the key-value is scaffolded with this placeholder for
-  # the CM to replace (an empty value is rejected by FreeWheel).
-  recommended_show_placeholder: "TBD"
-
-  # Pause Ads: platform biz-div (no CBS Local) AND device platforms; NO Pluto.
+  main_site_groups:
+  - '929392'
+  - '932583'
+  - '932591'
+  - '932592'
+  pplus_site_group:
+  - '932583'
+  exclude_site_groups: []
+  exclude_video_groups:
+  - '73410101'
+  recommended_show_key: recommended_show
+  recommended_show_placeholder: TBD
   pause:
-    main_site_groups: ["929392", "932583", "932592"]   # PlutoTV, P+, VCBS
-    platform_site_groups: ["929447", "929449"]         # SG: Platform: CTV, Desktop
-    exclude_key_values: ["sb=14", "tsb=14", "tve=14", "tve=17"]
-    exclude_video_groups: ["98314060", "98405426", "311826361"]
-
-# Paramount+ Kids — the global Older/Younger Kids audience maps to Video Groups, layered
-# with the Kids content Site Group (kids VGs + SG AND-ed together, then AND-ed with the
-# platform/main SGs). Sourced from the Salesforce targeting; if NO audience is selected,
-# no Kids placements are built at all.
+    main_site_groups:
+    - '929392'
+    - '932583'
+    - '932592'
+    platform_site_groups:
+    - '929447'
+    - '929449'
+    exclude_key_values:
+    - sb=14
+    - tsb=14
+    - tve=14
+    - tve=17
+    exclude_video_groups:
+    - '98314060'
+    - '98405426'
+    - '311826361'
 kids:
-  base_video_group: "86471529"      # always included when any kids audience is selected
-  older_video_group: "73408862"     # Older Kids
-  younger_video_group: "73408864"   # Younger Kids
-  content_site_group: "932400"      # Kids content SG (grouped with the kids VGs)
+  base_video_group: '86471529'
+  older_video_group: '73408862'
+  younger_video_group: '73408864'
+  content_site_group: '932400'
+us_pluto_dnr:
+  site_group: '951172'
+  except_brands:
+  - pluto_tv

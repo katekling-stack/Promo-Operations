@@ -17,23 +17,21 @@ def _order(campaign: str):
     return plan, OrderBuilder().build(plan)
 
 
-def test_ca_pluto_english_not_tiered():
+def test_ca_pluto_english_is_tiered_pluto_only():
     plan, order = _order("Pluto TV - English - CA")
     assert plan.brand == "pluto_ca_en"
     names = [p.name for p in order.placements]
-    # NOT tiered: no "(Tier N)" in the name, one placement per duration
-    assert names == ["Scary Movie - AI Scene Lift - 15 - CA",
-                     "Scary Movie - AI Scene Lift - 30 - CA"]
-    assert not any("Tier" in n for n in names)
-    assert all(p.geo_country_ids == ["27"] for p in order.placements)     # Canada
-    # Pluto-only Genre set (main SG 929392), standard genre VGs
-    body = FreeWheelClient._placement_body(order.placements[0])
-    genre = next(s for s in body["relationship_targeting"]["set"] if s["set_name"] == "Genre")
-    subs = genre["content_targeting"]["network_items"]["include"]["set"]
-    assert set(next(s["site_group"] for s in subs if s.get("site_group"))) == {"929392"}
-    # House Pre-Roll on 15s, dropped on 30s
-    assert set(order.placements[0].ad_unit_ids) == {"71999", "72000", "72001"}
-    assert set(order.placements[1].ad_unit_ids) == {"72000", "72001"}
+    # English = tiered (parenthetical), Pluto-only, geo Canada
+    assert "Scary Movie - AI Scene Lift - 15 (Tier 4) - CA" in names
+    assert all(p.geo_country_ids == ["27"] for p in order.placements)
+    t4 = next(p for p in order.placements if p.tier == 4)
+    body = FreeWheelClient._placement_body(t4)
+    main = set(body["relationship_targeting"]["set"][0]["content_targeting"]
+               ["network_items"]["include"]["site_group"])
+    assert main == {"929392"}                          # Pluto only
+    # non-US brand: no US Pluto DNR exclude
+    for p in order.placements:
+        assert "951172" not in (p.extra_exclude_site_groups or [])
 
 
 def test_ca_pplus_english_is_tiered_and_combined():

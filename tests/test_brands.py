@@ -32,7 +32,8 @@ def test_cbs_news_always_excludes_pluto_news_sgs():
     for s in body["relationship_targeting"]["set"]:
         exc = s["content_targeting"]["network_items"].get("exclude", {})
         assert news_sgs.issubset(set(exc.get("site_group", [])))
-        assert "951172" in exc["site_group"]           # shared DNR still there
+        # US Pluto DNR (951172) applies to every US brand except Pluto TV - USA.
+        assert "951172" in exc["site_group"]
 
 
 def _cbs_network_order():

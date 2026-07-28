@@ -728,11 +728,18 @@ class FreeWheelClient:
         kids_vgs = sorted(set(getattr(p, "kids_video_groups", []) or []))
         if kids_vgs:
             kids_sg = getattr(p, "kids_content_site_group", None)
+            kcfg = relationship_targeting_config().get("kids", {})
+            older, younger = kcfg.get("older_video_group"), kcfg.get("younger_video_group")
+            # Older-kids-only: ALWAYS exclude the Younger (Nick Jr) VG, globally.
+            kids_excl = {}
+            if older in kids_vgs and younger and younger not in kids_vgs:
+                kids_excl["video_group"] = [younger]
+            excl = base_exclude(**kids_excl)
             subsets = [{"video_group": kids_vgs,
                         "site_group": [kids_sg] if kids_sg else []},
                        {"site_group": main}]
             return [{"set_name": "Kids",
-                     **FreeWheelClient._content(subsets, base_exclude())}]
+                     **FreeWheelClient._content(subsets, excl)}]
 
         if getattr(p, "no_targeting", False):
             return []   # bare sponsorship line (ad unit + geo only)

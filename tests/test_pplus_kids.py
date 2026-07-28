@@ -99,3 +99,31 @@ def test_pplus_kids_uk_split_lines_and_basic_plan():
     assert "69304" not in pluto15.ad_unit_ids           # no INTL pre-roll on Pluto line
 
     assert any("Bumper - Basic Plan" in p.name for p in order.placements)
+
+
+def test_older_only_excludes_younger_nick_jr_vg():
+    # Older-kids-only must always exclude the Younger (Nick Jr) VG 73408864.
+    _, older = _build(["older"])
+    remnant = next(p for p in older.placements if not p.guaranteed)
+    exc = (FreeWheelClient._placement_body(remnant)["relationship_targeting"]["set"][0]
+           ["content_targeting"]["network_items"].get("exclude", {}))
+    assert "73408864" in exc.get("video_group", [])
+    # Both ages selected -> no younger exclusion.
+    _, both = _build(["older", "younger"])
+    remnant_b = next(p for p in both.placements if not p.guaranteed)
+    exc_b = (FreeWheelClient._placement_body(remnant_b)["relationship_targeting"]["set"][0]
+             ["content_targeting"]["network_items"].get("exclude", {}))
+    assert "73408864" not in exc_b.get("video_group", [])
+
+
+def test_us_pluto_dnr_scope():
+    # DNR 951172 on every US brand EXCEPT Pluto TV - USA.
+    def dnr(campaign, **extra):
+        plan = support_plan_from_dict({"promoted_title": "X", "region": "USA",
+                                       "campaign": {"name": campaign}, "durations": [30],
+                                       "genres": ["Drama"], **extra})
+        return any("951172" in (p.extra_exclude_site_groups or [])
+                   for p in OrderBuilder().build(plan).placements)
+    assert dnr("CBS Sports - USA") is True
+    assert dnr("Paramount + - Kids - USA", kids_audience=["older"]) is True
+    assert dnr("Pluto TV - USA") is False
