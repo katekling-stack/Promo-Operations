@@ -201,6 +201,11 @@ class OrderBuilder:
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
         excl_vgs = list(brand_cfg.get("extra_exclude_video_groups", []))
+        # Format-level always-excludes applied to EVERY set of the placement, e.g. the
+        # guaranteed Plan rules: Bumper excludes SG Stream Type: Live; Pre-Roll excludes
+        # VG Format: Clips (kids + adults, all regions).
+        excl_sgs += list(tmpl.get("extra_exclude_site_groups", []))
+        excl_vgs += list(tmpl.get("extra_exclude_video_groups", []))
         # US Pluto FREQUENT DNR: excluded on every US brand EXCEPT Pluto TV - USA.
         from .config import relationship_targeting_config
         dnr = relationship_targeting_config().get("us_pluto_dnr", {})

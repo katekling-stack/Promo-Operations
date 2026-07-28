@@ -747,10 +747,11 @@ class FreeWheelClient:
         if p.guaranteed:
             # P+ sponsored (Plan placements): exactly one Genre argument (genre Video
             # Groups on Paramount+) + one Recommended Show argument. No showlist.
+            # Format-level excludes (Bumper -> Stream Type: Live SG; Pre-Roll -> Clips VG)
+            # ride on base_exclude via the placement, so they hit EVERY set below.
             if genre_vgs:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                    [{"site_group": pplus}, {"video_group": genre_vgs}],
-                    base_exclude(video_group=excl_clips))})
+                    [{"site_group": pplus}, {"video_group": genre_vgs}], base_exclude())})
             sets.append(rec_show_set(pplus))
             return sets
 

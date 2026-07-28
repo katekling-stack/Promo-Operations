@@ -88,6 +88,8 @@ formats:
     - recommended_show
     creative_durations_priority:
     - 30
+    extra_exclude_video_groups:
+    - '73410101'
   essential_bumper:
     format_code: ESS-BMP
     display_name: P+ Essential Bumper
@@ -102,6 +104,8 @@ formats:
     - recommended_show
     creative_durations_priority:
     - 30
+    extra_exclude_site_groups:
+    - '929395'
   cbs_preroll:
     format_code: CBS-PRE
     display_name: CBS Pre-Roll
@@ -205,6 +209,8 @@ formats:
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Premium
+    extra_exclude_video_groups:
+    - '73410101'
   pplus_kids_essential_bumper:
     format_code: ESS-BMP
     display_name: P+ Kids Essential Bumper
@@ -219,6 +225,8 @@ formats:
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Essential
+    extra_exclude_site_groups:
+    - '929395'
   pplus_kids_remnant_pplus:
     format_code: RVID
     uses_durations: true
