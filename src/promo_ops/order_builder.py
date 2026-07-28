@@ -246,8 +246,13 @@ class OrderBuilder:
         content_excl_sgs: list[str] = []
         if brand_cfg.get("pluto_brand"):
             samsung = relationship_targeting_config().get("samsung_tv_plus", {})
-            content_excl_sgs = list(samsung.get("domestic" if plan.region == "USA"
-                                                else "international", []))
+            samsung_sgs = list(samsung.get("domestic" if plan.region == "USA"
+                                           else "international", []))
+            # Placements WITH relationship sets: Samsung goes in the set excludes (the
+            # API drops a placement-level content_targeting when sets are present).
+            excl_sgs += [sg for sg in samsung_sgs if sg not in excl_sgs]
+            # Set-less flat lines carry it at the placement-level content exclude.
+            content_excl_sgs = samsung_sgs
         # Self-exclusion: the promoted show's own Video Series (excluded on every set)
         # + its Channel SGs (added to the site-group excludes).
         self_series, self_channel_sgs = self._self_exclusions(plan)

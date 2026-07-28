@@ -606,10 +606,10 @@ class FreeWheelClient:
         # Pluto TV brands exclude the Samsung TV Plus SGs on EVERY placement, incl.
         # plain-remnant lines that have no relationship sets.
         content_excl = getattr(p, "content_exclude_site_groups", None)
-        if content_excl:
-            # FreeWheel requires an include alongside a content-level exclude — pair the
-            # Samsung exclude with the brand's main SGs (mirrors the live Pluto lines:
-            # include {site_group: 929392}, exclude {Samsung}).
+        # Placement-level content exclude only for SET-LESS lines (flat remnant): the
+        # API drops content_targeting when relationship_targeting sets are present, so
+        # for those Samsung rides in the set excludes instead (via extra_exclude SGs).
+        if content_excl and not sets:
             include_sgs = list(getattr(p, "main_site_groups", []) or [])
             ct: dict[str, Any] = {"exclude": {"site_group": list(content_excl)}}
             if include_sgs:
