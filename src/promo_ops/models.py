@@ -36,6 +36,8 @@ PRODUCT_FAMILIES: dict[str, list[str]] = {
     # UK P+ only: the optional Pluto breakout remnant lines. Off by default; the
     # "Include Pluto" checkbox opts them in (Pluto is auto-combined in other regions).
     "pluto_breakout": ["pplus_uk_remnant_pluto"],
+    # AU P+ only: optional Network 10 (10 Streaming) tiered lines.
+    "network_10": ["network_10_remnant"],
 }
 
 
@@ -95,6 +97,10 @@ class SupportPlan:
     # placements for — values "older" / "younger". Empty => NO Kids IOs are built for a
     # Kids brand. Selects the Kids Video Groups layered into Kids targeting.
     kids_audience: list[str] = field(default_factory=list)
+    # Rating restrictions (VG values). Network 10 (AU) sometimes supplies rating-based
+    # Video Groups that must be excluded from its (10 Streaming) lines. Empty => none.
+    # Only applied to formats flagged `applies_rating_restrictions` in the template.
+    rating_restrictions: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None

@@ -88,3 +88,8 @@ format_tier_defaults:
   - 4
   pluto_ca_remnant:
   - 3
+  network_10_remnant:
+  - 1
+  - 2
+  - 3
+  - 4

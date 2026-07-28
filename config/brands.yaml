@@ -455,6 +455,7 @@ brands:
       remnant_video: pplus_uk_house
       premium_preroll: premium_preroll
       essential_bumper: essential_bumper
+      network_10_remnant: network_10_house
     format_overrides:
       essential_bumper:
         plan_label: Basic Plan
@@ -462,3 +463,5 @@ brands:
         drop_preroll_at_duration: 30
         drop_units:
         - Paramount House Preroll
+    optional_formats:
+    - network_10_remnant

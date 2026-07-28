@@ -52,6 +52,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Video_Domination__c": "video_domination",   # option key (pluto / standard / ...)
     "Video_Domination_Targeting__c": "video_domination_targeting",  # list (Pluto cats)
     "Kids_Audience__c": "kids_audience",          # list: older / younger (Kids brands)
+    "Rating_Restrictions__c": "rating_restrictions",  # list: VG values (AU Network 10)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
     # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
     "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
@@ -63,6 +64,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Include_1Z_Lockdown__c": ("product_overrides", "cbs_1z_lockdown"),
     "Include_2Z_Lockdown__c": ("product_overrides", "cbs_2z_lockdown"),
     "Include_Pluto__c": ("product_overrides", "pluto_breakout"),   # UK P+ only
+    "Include_Network_10__c": ("product_overrides", "network_10"),  # AU P+ only
 }
 
 # Tuple targets under this key hold Yes/No/(blank) toggles -> bool.
@@ -70,7 +72,8 @@ _BOOL_TARGET_ROOT = "product_overrides"
 _TRUE_TEXT = {"yes", "y", "true", "1", "x", "✓", "checked"}
 
 # Core fields that are semicolon/newline lists.
-_LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience"}
+_LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience",
+                "rating_restrictions"}
 
 
 def _split(value: Any) -> Any:

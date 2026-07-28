@@ -323,3 +323,28 @@ formats:
     - CTV
     platforms:
     - Pluto TV
+  network_10_remnant:
+    format_code: RVID
+    display_name: Network 10 (10 Streaming) Non-Guaranteed Video
+    uses_durations: true
+    tier_infix: (10 Streaming)
+    main_site_groups:
+    - '932591'
+    - '932592'
+    - '1238405'
+    targeting_kinds:
+    - dda
+    - series
+    - genre_vgs
+    drop_preroll_at_duration: 30
+    drop_units:
+    - Paramount House Preroll
+    # Network 10 sometimes supplies VG rating restrictions to exclude on its lines.
+    # When plan.rating_restrictions is set, those VGs are excluded on every set here.
+    applies_rating_restrictions: true
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Network 10

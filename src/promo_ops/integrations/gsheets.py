@@ -147,6 +147,7 @@ PRODUCT_TOGGLES: dict[str, str] = {
     "include 1z lockdown": "cbs_1z_lockdown",
     "include 2z lockdown": "cbs_2z_lockdown",
     "include pluto": "pluto_breakout",     # UK P+ only — adds the Pluto breakout lines
+    "include network 10": "network_10",   # AU P+ only — adds the 10 Streaming lines
 }
 
 # Plan tab: normalized label -> where it lands in the plan dict (+ optional type).
@@ -175,6 +176,9 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "video domination": {"path": ["video_domination"]},
     "video domination targeting": {"path": ["video_domination_targeting"], "type": "list"},
     "takeover": {"path": ["takeover"]},
+    # Rating restrictions (AU Network 10) — VG values to exclude on the 10 Streaming
+    # lines when Network 10 supplies them. Blank = none.
+    "rating restrictions": {"path": ["rating_restrictions"], "type": "list"},
     # Optional / legacy — kept for back-compat, not in the standard template.
     "brand": {"path": ["brand"]},
     "advertiser name contains": {"path": ["advertiser", "name_contains"], "type": "list"},

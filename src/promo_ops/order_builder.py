@@ -229,6 +229,11 @@ class OrderBuilder:
         # VG Format: Clips (kids + adults, all regions).
         excl_sgs += list(tmpl.get("extra_exclude_site_groups", []))
         excl_vgs += list(tmpl.get("extra_exclude_video_groups", []))
+        # Rating restrictions (Network 10 AU): VG values supplied per-campaign, excluded
+        # on every set of the opted-in format. Passed through as VG IDs (Network 10
+        # supplies the values); resolved names would be layered here if ever needed.
+        if tmpl.get("applies_rating_restrictions") and plan.rating_restrictions:
+            excl_vgs += [vg for vg in plan.rating_restrictions if vg not in excl_vgs]
         # US Pluto FREQUENT DNR: excluded on every US brand EXCEPT Pluto TV - USA.
         from .config import relationship_targeting_config
         dnr = relationship_targeting_config().get("us_pluto_dnr", {})

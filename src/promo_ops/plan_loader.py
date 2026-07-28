@@ -53,6 +53,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         takeover=raw.get("takeover") or None,
         product_overrides=dict(raw.get("product_overrides") or {}),
         kids_audience=list(raw.get("kids_audience") or []),
+        rating_restrictions=list(raw.get("rating_restrictions") or []),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),
