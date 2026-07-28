@@ -361,3 +361,21 @@ brands:
         drop_preroll_at_duration: 30
         drop_units:
         - Paramount House Preroll
+  paramount_plus_kids_ca:
+    display_name: Paramount+ Kids (CA English)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72729853'
+    campaign_name: Paramount + - Kids - English - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant:
+        duration_infix: ''
