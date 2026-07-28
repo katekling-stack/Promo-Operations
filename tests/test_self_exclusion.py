@@ -18,6 +18,16 @@ class _FakeSeries:
         return [self.resolve(s) for s in shows]
 
 
+def test_series_resolver_matches_underscore_and_spaced_names():
+    """(10 Streaming) / Network 10 series come underscored ("masterchef_australia")
+    and spaced ("MasterChef Australia"). One keyword must catch BOTH — for the Tier-2
+    showlist include AND self-exclusion."""
+    from promo_ops.series import SeriesResolver
+    ids = [s["id"] for s in SeriesResolver().load().resolve("MasterChef Australia").series]
+    assert "1179587696" in ids   # masterchef_australia (underscored)
+    assert "134200301" in ids    # MasterChef Australia (spaced)
+
+
 def test_promoted_series_excluded_on_every_set(monkeypatch):
     builder = OrderBuilder()
     monkeypatch.setattr(builder.engine, "series_resolver", _FakeSeries())

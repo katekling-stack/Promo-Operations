@@ -7,8 +7,10 @@ domestic_usa:
   pplus_site_group:
   - '932583'
   exclude_site_groups: []
-  exclude_video_groups:
-  - '73410101'
+  # VG: Format Clips (73410101) is a PREMIUM PRE-ROLL exclude only (carried by the
+  # premium_preroll template's extra_exclude_video_groups) — it must NOT ride on the
+  # remnant Genre/tier-3 sets. Keep this empty.
+  exclude_video_groups: []
   recommended_show_key: recommended_show
   recommended_show_placeholder: TBD
   pause:

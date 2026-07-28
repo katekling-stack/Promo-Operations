@@ -25,6 +25,17 @@ from .config import REPO_ROOT
 DATA_DIR = REPO_ROOT / "data" / "series"
 
 
+def _norm_series(name: str) -> str:
+    """Normalize a series name for matching, treating '_' as a space.
+
+    Video Series come in both spaced ("MasterChef Australia") and underscored
+    ("masterchef_australia") forms — notably the Network 10 / 10 Streaming catalog.
+    Folding underscores to spaces makes a single keyword match BOTH variants, so a
+    showlist include (Tier 2) and the self-exclusion both catch every spelling.
+    """
+    return normalize_title(name.replace("_", " "))
+
+
 @dataclass
 class SeriesMatch:
     show: str
@@ -58,13 +69,13 @@ class SeriesResolver:
                 if not (_id and name) or _id in seen:
                     continue
                 seen.add(_id)
-                self._rows.append({"id": _id, "name": name, "norm": normalize_title(name)})
+                self._rows.append({"id": _id, "name": name, "norm": _norm_series(name)})
 
     def resolve(self, show: str, limit: int = 200) -> SeriesMatch:
         """Keyword select-all: every Video Series whose name contains the show."""
         if not self._loaded:
             self.load()
-        kw = normalize_title(show)
+        kw = _norm_series(show)
         if not kw:
             return SeriesMatch(show=show)
         hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if kw in r["norm"]]
