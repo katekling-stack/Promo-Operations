@@ -86,3 +86,5 @@ format_tier_defaults:
   - 2
   - 3
   - 4
+  pluto_ca_remnant:
+  - 3

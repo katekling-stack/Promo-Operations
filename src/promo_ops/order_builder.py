@@ -318,8 +318,10 @@ class OrderBuilder:
             if kinds is not None:
                 tids = {k: v for k, v in tids.items() if k in kinds}
             for dur in durations:
+                # CA (and other non-tiered markets) suppress the "(Tier N)" label.
+                label_tier = None if tmpl.get("no_tier_label") else tier.id
                 name = self._tier_name(plan.promoted_title, plan.season_or_messaging,
-                                       dur, tier.id, plan.region, token=name_token,
+                                       dur, label_tier, plan.region, token=name_token,
                                        infix=tier_infix)
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(

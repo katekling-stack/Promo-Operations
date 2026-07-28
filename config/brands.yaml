@@ -323,3 +323,15 @@ brands:
         plan_label: Basic Plan
     optional_formats:
     - pplus_uk_remnant_pluto
+  pluto_ca_en:
+    display_name: Pluto TV - English (CA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285996'
+    campaign_name: Pluto TV - English - CA
+    main_site_groups:
+    - '929392'
+    formats:
+    - pluto_ca_remnant
+    ad_unit_groups:
+      pluto_ca_remnant: pplus_cbs_pluto_vcbs

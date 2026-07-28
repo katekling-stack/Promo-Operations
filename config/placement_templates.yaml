@@ -296,3 +296,22 @@ formats:
     - CTV
     platforms:
     - Pluto TV
+  pluto_ca_remnant:
+    format_code: RVID
+    display_name: CA Pluto Non-Guaranteed (Genre + Categories)
+    uses_durations: true
+    main_site_groups:
+    - '929392'
+    targeting_kinds:
+    - genre_vgs
+    - categories
+    no_tier_label: true
+    drop_preroll_at_duration: 30
+    drop_units:
+    - Paramount House Preroll
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Pluto TV
