@@ -605,16 +605,27 @@ class FreeWheelClient:
         # Placement-level content exclude (separate from the relationship sets) —
         # Pluto TV brands exclude the Samsung TV Plus SGs on EVERY placement, incl.
         # plain-remnant lines that have no relationship sets.
-        content_excl = getattr(p, "content_exclude_site_groups", None)
-        # Placement-level content exclude only for SET-LESS lines (flat remnant): the
-        # API drops content_targeting when relationship_targeting sets are present, so
-        # for those Samsung rides in the set excludes instead (via extra_exclude SGs).
-        if content_excl and not sets:
+        # Set-less lines (flat remnant) have no relationship sets to carry excludes, so
+        # ALL excludes (Samsung, self-series, self-channel + brand SGs/VGs) go in the
+        # placement-level content_targeting, paired with the main SGs as the include.
+        # (Placements WITH sets carry these in the set excludes; the API drops a
+        # placement-level content_targeting when sets are present.)
+        if not sets:
+            ex_sgs = sorted(set(getattr(p, "extra_exclude_site_groups", []) or [])
+                            | set(getattr(p, "content_exclude_site_groups", []) or []))
+            ex_series = sorted(set(getattr(p, "exclude_series", []) or []))
+            ex_vgs = sorted(set(getattr(p, "extra_exclude_video_groups", []) or []))
+            excl: dict[str, Any] = {}
+            if ex_sgs:
+                excl["site_group"] = ex_sgs
+            if ex_series:
+                excl["series"] = ex_series
+            if ex_vgs:
+                excl["video_group"] = ex_vgs
             include_sgs = list(getattr(p, "main_site_groups", []) or [])
-            ct: dict[str, Any] = {"exclude": {"site_group": list(content_excl)}}
-            if include_sgs:
-                ct["include"] = {"site_group": include_sgs}
-                body["content_targeting"] = ct
+            if excl and include_sgs:
+                body["content_targeting"] = {"include": {"site_group": include_sgs},
+                                             "exclude": excl}
         if p.recommended_show_value in (None, "") and sets:
             body["_cm_adds_in_ui"] = {
                 "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
