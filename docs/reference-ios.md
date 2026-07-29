@@ -196,6 +196,24 @@ Deferred (distinct advertisers, not the VCBS promo structure): **Paramount Pictu
 (LATAM/BR/UK) and **Paramount Consumer Products** (BR Kids). BR P+ also runs a flat
 always-on "brand" IO (VG `1625229912`, P+/Pluto split) separate from title promos.
 
+## EU markets — FR, IT, GSA, FI, DK, NO, SE, ES
+
+International, tiered **2/3/4 (no Tier 1)**, combined Pluto in the main SGs, **house
+units** (`pplus_cbs_pluto_vcbs`, pre-roll drops at :30 — no INTL pre-roll), per-country
+geo. **GSA** = Germany (41) + Switzerland (30) + Austria (9); FR 54, IT 79, FI 51,
+DK 42, NO 122, SE 140, ES 49.
+
+Brand availability: **FR / IT / GSA** — P+, P+ Kids, Pluto TV, Pluto TV Kids, Nick.
+**FI / DK / NO / SE** — Pluto TV, Pluto TV Kids, Nick. **ES** — Pluto TV, Pluto TV
+Kids, Nick, Nick Jr. (No P+ adult/kids in ES/Nordics.)
+
+Structures reuse existing formats: **P+** (remnant tiered + Pause Ads + Premium
+Pre-Roll + Basic bumper) · **Pluto TV** (remnant on `929392` + Pause Ads, Samsung intl
+excludes) · **Pluto TV Kids** (flat kids on `929392`, no infix, Samsung — it IS a Pluto
+TV campaign) · **Nick / Nick Jr** (flat kids on `929392`, "(Pluto)" infix, no Samsung).
+IT's Nick is "Nickelodeon - Kids - IT" and its P+ Kids campaign has a double space
+("Paramount + - Kids  - IT") — both matched exactly for routing.
+
 ## Open design questions
 
 1. **Older vs Younger Kids** (global): which VG maps to which? (`73408864` present domestic, absent UK.)

@@ -56,3 +56,62 @@ regions:
     has_pluto: false
     countries:
     - Ireland
+
+  FR:
+    name: France
+    code: FR
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - France
+  IT:
+    name: Italy
+    code: IT
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Italy
+  GSA:
+    name: Germany / Switzerland / Austria
+    code: GSA
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Germany
+    - Switzerland
+    - Austria
+  FI:
+    name: Finland
+    code: FI
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Finland
+  DK:
+    name: Denmark
+    code: DK
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Denmark
+  'NO':
+    name: Norway
+    code: 'NO'
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Norway
+  SE:
+    name: Sweden
+    code: SE
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Sweden
+  ES:
+    name: Spain
+    code: ES
+    tier1_eligible: false
+    has_pluto: true
+    countries:
+    - Spain

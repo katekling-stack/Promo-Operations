@@ -728,3 +728,587 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: (Pluto)
+  paramount_plus_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285968'
+    campaign_name: Paramount + - FR
+    display_name: Paramount+ (FR)
+    main_site_groups:
+    - '929392'
+    - '932583'
+    - '932591'
+    - '932592'
+    formats:
+    - remnant_video
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+      essential_bumper:
+        plan_label: Basic Plan
+  paramount_plus_kids_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '88708650'
+    campaign_name: Paramount + - Kids - FR
+    display_name: Paramount+ Kids (FR)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant:
+        duration_infix: ''
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
+  pluto_tv_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285972'
+    campaign_name: Pluto TV - FR
+    display_name: Pluto TV (FR)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72878165'
+    campaign_name: Pluto TV - Kids - FR
+    display_name: Pluto TV Kids (FR)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73322683'
+    campaign_name: Nick - Kids - FR
+    display_name: Nick - Kids (FR)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  paramount_plus_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285921'
+    campaign_name: Paramount + - IT
+    display_name: Paramount+ (IT)
+    main_site_groups:
+    - '929392'
+    - '932583'
+    - '932591'
+    - '932592'
+    formats:
+    - remnant_video
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+      essential_bumper:
+        plan_label: Basic Plan
+  paramount_plus_kids_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '87646450'
+    campaign_name: Paramount + - Kids  - IT
+    display_name: Paramount+ Kids (IT)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant:
+        duration_infix: ''
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
+  pluto_tv_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285925'
+    campaign_name: Pluto TV - IT
+    display_name: Pluto TV (IT)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72869690'
+    campaign_name: Pluto TV - Kids - IT
+    display_name: Pluto TV Kids (IT)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74219204'
+    campaign_name: Nickelodeon - Kids - IT
+    display_name: Nick - Kids (IT)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  paramount_plus_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285871'
+    campaign_name: Paramount + - GSA
+    display_name: Paramount+ (GSA)
+    main_site_groups:
+    - '929392'
+    - '932583'
+    - '932591'
+    - '932592'
+    formats:
+    - remnant_video
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+      essential_bumper:
+        plan_label: Basic Plan
+  paramount_plus_kids_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76363542'
+    campaign_name: Paramount + - Kids - GSA
+    display_name: Paramount+ Kids (GSA)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant:
+        duration_infix: ''
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
+  pluto_tv_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285880'
+    campaign_name: Pluto TV - GSA
+    display_name: Pluto TV (GSA)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72584711'
+    campaign_name: Pluto TV - Kids - GSA
+    display_name: Pluto TV Kids (GSA)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72635404'
+    campaign_name: Nick - Kids - GSA
+    display_name: Nick - Kids (GSA)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_tv_fi:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72286105'
+    campaign_name: Pluto TV - FI
+    display_name: Pluto TV (FI)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_fi:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72837345'
+    campaign_name: Pluto TV - Kids - FI
+    display_name: Pluto TV Kids (FI)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_fi:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72838419'
+    campaign_name: Nick - Kids - FI
+    display_name: Nick - Kids (FI)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_tv_dk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72679847'
+    campaign_name: Pluto TV - DK
+    display_name: Pluto TV (DK)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_dk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72703461'
+    campaign_name: Pluto TV - Kids - DK
+    display_name: Pluto TV Kids (DK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_dk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72703114'
+    campaign_name: Nick - Kids - DK
+    display_name: Nick - Kids (DK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_tv_no:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72286117'
+    campaign_name: Pluto TV - NO
+    display_name: Pluto TV (NO)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_no:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72909955'
+    campaign_name: Pluto TV - Kids - NO
+    display_name: Pluto TV Kids (NO)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_no:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73525199'
+    campaign_name: Nick - Kids - NO
+    display_name: Nick - Kids (NO)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_tv_se:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72910056'
+    campaign_name: Pluto TV - SE
+    display_name: Pluto TV (SE)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_se:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72910006'
+    campaign_name: Pluto TV - Kids - SE
+    display_name: Pluto TV Kids (SE)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_se:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73614121'
+    campaign_name: Nick - Kids - SE
+    display_name: Nick - Kids (SE)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  pluto_tv_es:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285904'
+    campaign_name: Pluto TV - ES
+    display_name: Pluto TV (ES)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    - pause_ads
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  pluto_tv_kids_es:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72836132'
+    campaign_name: Pluto TV - Kids - ES
+    display_name: Pluto TV Kids (ES)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+  nick_es:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74380514'
+    campaign_name: Nick - Kids - ES
+    display_name: Nick - Kids (ES)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  nick_jr_es:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73339436'
+    campaign_name: Nick Jr. - Kids - ES
+    display_name: Nick Jr. - Kids (ES)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
