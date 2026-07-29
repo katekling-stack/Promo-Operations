@@ -713,7 +713,11 @@ class FreeWheelClient:
 
         if p.format == "pause_ads":
             pause = cfg.get("pause", {})
-            pmain = pause.get("main_site_groups", [])
+            pmain = list(pause.get("main_site_groups", []))
+            # No-Pluto regions (e.g. IE) drop the Pluto SG from the pause main set.
+            if not getattr(p, "region_has_pluto", True):
+                pluto_sg = pause.get("pluto_main_site_group")
+                pmain = [sg for sg in pmain if sg != pluto_sg]
             pplat = pause.get("platform_site_groups", [])
             plat_subsets = [{"site_group": pmain}, {"site_group": pplat}]
             ex = base_exclude(video_group=pause.get("exclude_video_groups", []))

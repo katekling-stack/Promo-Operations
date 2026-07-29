@@ -283,6 +283,8 @@ class OrderBuilder:
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 content_exclude_site_groups=list(content_excl_sgs),
                 exclude_series=list(self_series),
+                region_has_pluto=bool(self._regions.get("regions", {})
+                                      .get(plan.region, {}).get("has_pluto", True)),
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

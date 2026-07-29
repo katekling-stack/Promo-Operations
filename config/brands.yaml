@@ -328,6 +328,45 @@ brands:
         plan_label: Basic Plan
     optional_formats:
     - pplus_uk_remnant_pluto
+  paramount_plus_ie:
+    display_name: Paramount+ (IE)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '84716396'
+    campaign_name: Paramount + - IE
+    formats:
+    - pplus_uk_remnant_pplus
+    - pause_ads
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      pplus_uk_remnant_pplus: pplus_uk_house
+      pause_ads: pause_ads
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      essential_bumper:
+        plan_label: Basic Plan
+  paramount_plus_kids_ie:
+    display_name: Paramount+ Kids (IE)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '84717005'
+    campaign_name: Paramount + - Kids - IE
+    kids: true
+    formats:
+    - pplus_kids_remnant_pplus
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant_pplus: pplus_uk_house
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant_pplus:
+        line_label: Now Streaming
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
   pluto_ca_en:
     display_name: Pluto TV - English (CA)
     advertiser_name_contains:

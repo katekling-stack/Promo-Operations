@@ -158,6 +158,23 @@ showlist keyword resolves **both** spellings — this applies to the **Tier-2 sh
 include** *and* to self-exclusion, so every underscore + spaced variant is targeted /
 excluded together.
 
+## Ireland (country 73) — no Pluto
+
+IE mirrors the UK P+ tiered model (tiers **2/3/4**, no Tier 1 — UK/IE aren't
+tier1-eligible) but has **no Pluto** anywhere. Standard genres/VGs.
+
+### Paramount+ IE — campaign `84716396` (`Paramount + - IE`)
+- Tiered remnant on main `[932583 P+, 932591 CBS Local, 932592 VCBS]`, AU
+  `[69304 INTL pre-roll, 71999 house, 72000, 72001]` (house pre-roll drops at :30).
+- **Pause Ads** (`63413`): main `[932583, 932592]` — **Pluto `929392` dropped** (no
+  Pluto in IE) — AND the pause platform SGs `[929447, 929449]`, tiers 2/3/4.
+- Premium Pre-Roll `[61120, 67610]` + **Basic Plan** bumper `61123` (UK/IE convention).
+
+### Paramount+ Kids IE — campaign `84717005` (`Paramount + - Kids - IE`)
+- Kids remnant "**Now Streaming** - {dur} - Kids - IE": CT = (`VG kids` + `SG 932400
+  COPPA`) AND `SG 932583 P+`; AU `[69304, 72000, 72001(, 71999)]`. **P+ line only** —
+  no Pluto breakout line. Premium Pre-Roll + Basic Plan bumper.
+
 ## Open design questions
 
 1. **Older vs Younger Kids** (global): which VG maps to which? (`73408864` present domestic, absent UK.)

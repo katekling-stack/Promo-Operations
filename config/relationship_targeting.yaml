@@ -14,6 +14,8 @@ domestic_usa:
   recommended_show_key: recommended_show
   recommended_show_placeholder: TBD
   pause:
+    # Pluto SG dropped from the pause main set in no-Pluto regions (e.g. IE).
+    pluto_main_site_group: '929392'
     main_site_groups:
     - '929392'
     - '932583'
