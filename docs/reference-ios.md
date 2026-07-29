@@ -121,6 +121,37 @@ Re-read WITH relationship targeting — it's a **Pluto-only 3-tier remnant** (no
 - Pluto lines "… (Pluto) - Kids": CT = (`VG [73408862,86471529]` + `SG 932400`) AND `SG [1109067,1120870]`; AU `72000,72001(,71999)`
 - Bumper - Basic Plan / Pre-Roll - Premium Plan (guaranteed): kids CT as above
 
+## Australia (country 10) — no Pluto
+
+AU has **no Pluto** and **no Samsung** excludes. Standard genres/VGs everywhere.
+
+### Paramount+ AU — campaign `73850057` (`Paramount + - AU`)
+- Tiered remnant on main `[932583 P+, 932591 CBS Local, 932592 VCBS]` (no Pluto).
+  AU `[69304 INTL pre-roll, 71999 house pre-roll, 72000, 72001]`; house pre-roll drops
+  at :30. Premium Pre-Roll + Basic Plan (UK-style "Basic", not "Essential") bumper.
+- **Include Network 10** (opt-in): adds `(10 Streaming)` **tiered** remnant lines on
+  main `[932591, 932592, 1238405 Ten Play]`, AU `[70313 Net10 Live pre-roll, house]`,
+  `(10 Streaming)` after the tier. Sometimes ships **VG rating restrictions** — supplied
+  per-case (`Rating_Restrictions__c` / "Rating Restrictions"), excluded on the 10
+  Streaming sets only.
+
+### Nick / Nick Jr AU (Kids) — campaigns `80947033` / `80947027`
+- Flat Kids remnant (no tier stack): CT = (`VG kids` + `SG 932400 COPPA`) AND main SG.
+  Standard line main = `932583 P+`, AU `[71999,72000,72001]` (drops pre-roll at :30).
+  Kids remnant runs at **priority 1 (override −1) + cap 1 per 15 min** (not tier 4).
+- **Include Network 10** (opt-in): adds `(10 Streaming)` Kids remnant on main
+  `1238405 Ten Play`, AU `[70313, house]`, + a **10 Streaming After Mid-Roll Bumper**
+  (guaranteed, HIGHEST, AU `70049 Net10_Brand_Bumper_Mid_Roll`).
+- Naming: `{title} - {msg} - Kids - {dur}[ (10 Streaming)] - AU` (audience before dur).
+
+### NOTE — (10 Streaming) Video Series come **underscored**
+The Network 10 / 10 Streaming catalog names Video Series with underscores
+(`masterchef_australia` = `1179587696`) alongside the standard spaced entries
+(`MasterChef Australia` = `134200301`). Series matching folds `_` → space, so a single
+showlist keyword resolves **both** spellings — this applies to the **Tier-2 showlist
+include** *and* to self-exclusion, so every underscore + spaced variant is targeted /
+excluded together.
+
 ## Open design questions
 
 1. **Older vs Younger Kids** (global): which VG maps to which? (`73408864` present domestic, absent UK.)
