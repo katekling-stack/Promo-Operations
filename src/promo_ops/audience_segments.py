@@ -70,6 +70,21 @@ class SegmentMatch:
         }
 
 
+# Tier-1 audience-segment naming conventions, in _dda_tokens (normalized) form. The
+# resolver keeps only segments matching a known convention, and each region resolves
+# against ITS convention. The global default is the GL-DDA-1P DDA convention; AU uses
+# the DWH "Summit" segments instead ("AU - DWH - <src> - ID - Summit - ..." — never the
+# GL-DDA-1P ones).
+DEFAULT_TIER1_CONVENTION = "gl dda 1p"
+TIER1_CONVENTIONS: dict[str, str] = {
+    "AU": "au dwh",
+}
+
+
+def _convention_for_region(region: Optional[str]) -> str:
+    return TIER1_CONVENTIONS.get((region or "").upper(), DEFAULT_TIER1_CONVENTION)
+
+
 def _dda_tokens(text: str) -> str:
     """Normalize a DDA segment name / show to space-separated alphanumeric tokens.
 
@@ -93,12 +108,16 @@ class AudienceSegmentResolver:
 
     def __init__(self, data_dir: Path = DATA_DIR):
         self.data_dir = Path(data_dir)
-        self._records: list[SegmentRecord] = []   # all GL-DDA-1P records
+        self._records: list[SegmentRecord] = []   # Tier-1 convention records
         self._norm: list[str] = []                # parallel normalized names
+        self._conv: list[str] = []                # parallel matched convention prefix
         self._loaded = False
 
+    def _conventions(self) -> list[str]:
+        return [DEFAULT_TIER1_CONVENTION, *TIER1_CONVENTIONS.values()]
+
     def load(self) -> "AudienceSegmentResolver":
-        self._records, self._norm = [], []
+        self._records, self._norm, self._conv = [], [], []
         if self.data_dir.exists():
             for csv_path in sorted(self.data_dir.glob("*.csv")):
                 self._load_csv(csv_path)
@@ -106,11 +125,19 @@ class AudienceSegmentResolver:
         return self
 
     def _load_csv(self, path: Path) -> None:
+        conventions = self._conventions()
         with path.open("r", encoding="utf-8", newline="") as fh:
             for row in csv.DictReader(fh):
                 seg_name = (row.get("segment_name") or "").strip()
-                # DDA ONLY. AAM segments are sunset and must never be targeted.
-                if not seg_name or not seg_name.upper().startswith("GL-DDA-1P"):
+                # Skip deactivated segments — the name carries a "deactivated" marker and
+                # targeting one would deliver nothing.
+                if not seg_name or "deactivated" in seg_name.lower():
+                    continue
+                norm = _dda_tokens(seg_name)
+                # Keep DDA/Summit segments matching a known Tier-1 convention only. AAM
+                # (and other) segments are sunset and must never be targeted.
+                conv = next((c for c in conventions if norm.startswith(c)), None)
+                if conv is None:
                     continue
                 self._records.append(SegmentRecord(
                     show=(row.get("show") or "").strip(),
@@ -120,18 +147,23 @@ class AudienceSegmentResolver:
                     region=(row.get("region") or "").strip() or None,
                     source=(row.get("source") or path.stem).strip() or None,
                 ))
-                self._norm.append(_dda_tokens(seg_name))
+                self._norm.append(norm)
+                self._conv.append(conv)
 
     def resolve(self, show: str, region: Optional[str] = None) -> SegmentMatch:
-        """Select-all: every GL-DDA-1P segment whose name contains the show tokens."""
+        """Select-all: every Tier-1 segment (in the REGION's convention) whose name
+        contains the show tokens. AU resolves the DWH Summit segments; all other regions
+        the global GL-DDA-1P DDA segments."""
         if not self._loaded:
             self.load()
         kw = _dda_tokens(show)
         if not kw:
             return SegmentMatch(show=show, matched=False)
+        want_conv = _convention_for_region(region)
         # word-boundary token match so "FBI" doesn't hit inside another word
         pat = re.compile(rf"(?:^| ){re.escape(kw)}(?: |$)")
-        recs = [r for r, n in zip(self._records, self._norm) if pat.search(n)]
+        recs = [r for r, n, c in zip(self._records, self._norm, self._conv)
+                if c == want_conv and pat.search(n)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:

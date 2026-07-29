@@ -125,6 +125,12 @@ Re-read WITH relationship targeting — it's a **Pluto-only 3-tier remnant** (no
 
 AU has **no Pluto** and **no Samsung** excludes. Standard genres/VGs everywhere.
 
+### NOTE — Tier-1 audience segments use the DWH "Summit" convention
+Every AU campaign resolves Tier 1 against the **`AU - DWH - <src> - ID - Summit - ...`**
+audience segments — **not** the global `GL-DDA-1P-` DDA segments used everywhere else.
+Region-scoped in the resolver: AU → Summit, all other regions → GL-DDA-1P (neither
+leaks across). Deactivated segments (name contains "deactivated") are never targeted.
+
 ### Paramount+ AU — campaign `73850057` (`Paramount + - AU`)
 - Tiered remnant on main `[932583 P+, 932591 CBS Local, 932592 VCBS]` (no Pluto).
   AU `[69304 INTL pre-roll, 71999 house pre-roll, 72000, 72001]`; house pre-roll drops
