@@ -175,6 +175,27 @@ tier1-eligible) but has **no Pluto** anywhere. Standard genres/VGs.
   COPPA`) AND `SG 932583 P+`; AU `[69304, 72000, 72001(, 71999)]`. **P+ line only** —
   no Pluto breakout line. Premium Pre-Roll + Basic Plan bumper.
 
+## LATAM & Brazil — tiered, combined Pluto
+
+Both are tier1-eligible and have Pluto (combined into the main SGs, like domestic).
+International ad units (`69304` INTL pre-roll + house, house pre-roll drops at :30).
+**Geo differs:** LATAM targets a FreeWheel geography **region `1069`**; BR targets
+**country Brazil (21)**. Otherwise the two regions are structurally identical.
+
+Per region: **P+** (tiered 1–4, main `[929392,932583,932591,932592]`, Premium Pre-Roll
++ Basic Plan bumper) · **Pluto TV** (remnant on `929392`, Samsung intl excludes) ·
+**P+ Kids** (combined-Pluto line `[929392,932583]`, no split/infix, INTL+house) ·
+**Nick / Nick Jr** (Kids Pluto line `929392`, "(Pluto)" infix — NOT a Pluto TV
+campaign, so no Samsung exclude).
+
+Campaigns — LATAM: P+ `72285952`, Pluto `72285964`, P+ Kids `72285884`, Nick
+`76801313`, Nick Jr `87568403`. BR: P+ `73420202`, Pluto `72286109`, P+ Kids
+`73622884`, Nick `76801100`, Nick Jr `87645248`.
+
+Deferred (distinct advertisers, not the VCBS promo structure): **Paramount Pictures**
+(LATAM/BR/UK) and **Paramount Consumer Products** (BR Kids). BR P+ also runs a flat
+always-on "brand" IO (VG `1625229912`, P+/Pluto split) separate from title promos.
+
 ## Open design questions
 
 1. **Older vs Younger Kids** (global): which VG maps to which? (`73408864` present domestic, absent UK.)
