@@ -208,6 +208,10 @@ class Placement:
     # config; IDs resolve via the country table (data/geo).
     geo_country_names: list[str] = field(default_factory=list)
     geo_country_ids: list[str] = field(default_factory=list)
+    # Some regions target a FreeWheel geography REGION (a country grouping) instead of
+    # individual countries — e.g. LATAM = region 1069. When set, it takes precedence
+    # over geo_country_ids in the geography_targeting body.
+    geo_region_ids: list[str] = field(default_factory=list)
     # Ad unit names/IDs — names mirror past setups + the priority doc; IDs resolve
     # once the ad-unit table is synced.
     ad_unit_names: list[str] = field(default_factory=list)

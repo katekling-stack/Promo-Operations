@@ -220,6 +220,11 @@ class OrderBuilder:
         extra = {k: tmpl[k] for k in ("spec", "standard_sizes", "salesforce_asset_field") if k in tmpl}
         geo_names = self._geo_country_names(plan.region)
         geo_ids = self._geo_country_ids(geo_names)
+        # Region-grouping geo (e.g. LATAM -> FW geography region 1069) overrides the
+        # per-country geo when the region config names one.
+        region_cfg = self._regions.get("regions", {}).get(plan.region, {})
+        geo_region_ids = ([str(region_cfg["geo_region"])]
+                          if region_cfg.get("geo_region") else [])
         ad_unit_names = self._ad_unit_names(brand_cfg, fmt)
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
@@ -277,6 +282,7 @@ class OrderBuilder:
                 targeting=targeting, endpoints=list(tmpl.get("endpoints", [])),
                 platforms=list(tmpl.get("platforms", [])), exclusions=[exclude],
                 geo_country_names=geo_names, geo_country_ids=geo_ids,
+                geo_region_ids=list(geo_region_ids),
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,

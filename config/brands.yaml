@@ -367,6 +367,32 @@ brands:
         line_label: Now Streaming
       pplus_kids_essential_bumper:
         plan_label: Basic Plan
+  paramount_plus_latam:
+    display_name: Paramount+ (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285952'
+    campaign_name: Paramount + - LATAM
+    main_site_groups:
+    - '929392'
+    - '932583'
+    - '932591'
+    - '932592'
+    formats:
+    - remnant_video
+    - premium_preroll
+    - essential_bumper
+    ad_unit_groups:
+      remnant_video: pplus_uk_house
+      premium_preroll: premium_preroll
+      essential_bumper: essential_bumper
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+      essential_bumper:
+        plan_label: Basic Plan
   pluto_ca_en:
     display_name: Pluto TV - English (CA)
     advertiser_name_contains:

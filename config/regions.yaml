@@ -25,6 +25,8 @@ regions:
     name: Latin America
     code: LATAM
     tier1_eligible: true
+    # LATAM targets a single FreeWheel geography REGION grouping (not per-country).
+    geo_region: '1069'
     countries:
     - Mexico
     - Argentina

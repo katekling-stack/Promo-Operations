@@ -830,8 +830,11 @@ class FreeWheelClient:
     def _apply_geo_and_ad_units(body: dict[str, Any], p) -> None:
         """Geo + ad units — shared by remnant and guaranteed placements."""
         # Geo: API writes COUNTRY IDs (int64). Names ("United States") are what the
-        # team searches in the UI and are resolved to IDs via the country table.
-        if p.geo_country_ids:
+        # team searches in the UI and are resolved to IDs via the country table. Some
+        # regions target a geography REGION grouping instead (e.g. LATAM = region 1069).
+        if getattr(p, "geo_region_ids", None):
+            body["geography_targeting"] = {"include": {"region": p.geo_region_ids}}
+        elif p.geo_country_ids:
             body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
