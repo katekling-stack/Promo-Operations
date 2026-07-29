@@ -285,6 +285,8 @@ class OrderBuilder:
                 exclude_series=list(self_series),
                 region_has_pluto=bool(self._regions.get("regions", {})
                                       .get(plan.region, {}).get("has_pluto", True)),
+                region_is_domestic=bool(self._regions.get("regions", {})
+                                        .get(plan.region, {}).get("domestic", False)),
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

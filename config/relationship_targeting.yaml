@@ -23,11 +23,23 @@ domestic_usa:
     platform_site_groups:
     - '929447'
     - '929449'
+    # Custom-targeting key-value excludes on every pause set. Domestic (US) uses the
+    # short list; all international regions use the fuller list.
     exclude_key_values:
     - sb=14
     - tsb=14
     - tve=14
     - tve=17
+    exclude_key_values_international:
+    - sb=14
+    - sb=17
+    - tsb=14
+    - tsb=17
+    - tve=14
+    - tve=15
+    - tve=17
+    - tve=24
+    - tve=25
     exclude_video_groups:
     - '98314060'
     - '98405426'

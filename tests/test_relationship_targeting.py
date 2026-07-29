@@ -47,6 +47,29 @@ def test_tier3_genre_uses_video_groups():
     assert "74003267" in vg   # VG: Genre: Crime
 
 
+def test_pause_key_value_excludes_are_region_scoped():
+    """Domestic (US) pause sets use the short custom key-value exclude list; all
+    international regions use the fuller one."""
+    from promo_ops.plan_loader import support_plan_from_dict
+
+    def _pause_kv(region, campaign):
+        plan = support_plan_from_dict({
+            "promoted_title": "X", "region": region, "campaign": {"name": campaign},
+            "formats": ["pause_ads"], "durations": [30],
+            "showlist": ["NCIS"], "genres": ["Drama"],
+        })
+        order = OrderBuilder().build(plan)
+        p = next(pp for pp in order.placements if "Pause Ad (Tier 4)" in pp.name)
+        body = FreeWheelClient._placement_body(p)
+        return set(body["relationship_targeting"]["set"][0]["custom_targeting"]
+                   ["exclude"]["key_value"])
+
+    assert _pause_kv("USA", "Paramount + - USA") == {"sb=14", "tsb=14", "tve=14", "tve=17"}
+    assert _pause_kv("IE", "Paramount + - IE") == {
+        "sb=14", "sb=17", "tsb=14", "tsb=17",
+        "tve=14", "tve=15", "tve=17", "tve=24", "tve=25"}
+
+
 def test_recommended_show_key_value_when_content_id_present():
     order = _order(content_id="956609957")
     t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")

@@ -242,6 +242,9 @@ class Placement:
     # Whether the placement's region carries Pluto (regions.yaml has_pluto). Drives the
     # no-Pluto pause-ad main-SG drop (e.g. IE). Default True preserves existing behavior.
     region_has_pluto: bool = True
+    # Whether the region is Domestic (US). International regions use the fuller pause
+    # custom-targeting key-value exclude list. Default True preserves existing behavior.
+    region_is_domestic: bool = True
     # Brand-constant relationship sets (targeting fixed per brand, not derived from the
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
     # {set_name, include: [subset,...], exclude: {site_group:[...]}}. Built verbatim.
