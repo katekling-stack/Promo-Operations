@@ -35,3 +35,39 @@ def test_pplus_latam_tiered_geo_region():
     assert "69304" in p30.ad_unit_ids and "71999" not in p30.ad_unit_ids
     # Basic Plan bumper (international convention).
     assert any("Bumper - Basic Plan" in p.name for p in order.placements)
+
+
+def test_pplus_kids_latam_combined_pluto_intl_units():
+    plan = support_plan_from_dict({
+        "promoted_title": "Dora", "region": "LATAM",
+        "campaign": {"name": "Paramount + - Kids - LATAM"}, "content_type": "show",
+        "content_id": "1", "season_or_messaging": "Now Streaming",
+        "durations": [15, 30], "kids_audience": ["older", "younger"],
+    })
+    order = OrderBuilder().build(plan)
+    assert plan.brand == "paramount_plus_kids_latam"
+    rem = next(p for p in order.placements if p.duration == 15 and not p.guaranteed)
+    # Combined Pluto+P+ main (no split, no infix), INTL + house units, geo region.
+    assert "Dora - Now Streaming - 15 - Kids - LATAM" == rem.name
+    assert "69304" in rem.ad_unit_ids
+    inc = FreeWheelClient._placement_body(rem)["relationship_targeting"]["set"][0][
+        "content_targeting"]["network_items"]["include"]
+    subs = inc.get("set", [inc])
+    assert {"929392", "932583"} in [set(s.get("site_group", [])) for s in subs]
+
+
+def test_nick_latam_pluto_line_no_samsung():
+    plan = support_plan_from_dict({
+        "promoted_title": "Casagrandes", "region": "LATAM",
+        "campaign": {"name": "Nick - Kids - LATAM"}, "season_or_messaging": "Symphonies",
+        "durations": [30], "kids_audience": ["older", "younger"],
+    })
+    order = OrderBuilder().build(plan)
+    assert plan.brand == "nick_latam"
+    p = order.placements[0]
+    assert p.name == "Casagrandes - Symphonies - 30 (Pluto) - Kids - LATAM"
+    # Nick runs on Pluto (929392) but is NOT a Pluto TV campaign -> no Samsung exclude.
+    exc = FreeWheelClient._placement_body(p)["relationship_targeting"]["set"][0][
+        "content_targeting"]["network_items"].get("exclude", {})
+    assert not any(s in exc.get("site_group", [])
+                   for s in ["1121578", "1164068", "1164069"])

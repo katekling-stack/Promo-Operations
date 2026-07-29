@@ -393,6 +393,76 @@ brands:
         - Paramount House Preroll
       essential_bumper:
         plan_label: Basic Plan
+  pluto_tv_latam:
+    display_name: Pluto TV (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285964'
+    campaign_name: Pluto TV - LATAM
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  paramount_plus_kids_latam:
+    display_name: Paramount+ Kids (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72285884'
+    campaign_name: Paramount + - Kids - LATAM
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_uk_house
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_remnant:
+        duration_infix: ''
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
+  nick_latam:
+    display_name: Nick - Kids (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76801313'
+    campaign_name: Nick - Kids - LATAM
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+  nick_jr_latam:
+    display_name: Nick Jr. - Kids (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '87568403'
+    campaign_name: Nick Jr. - Kids - LATAM
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
   pluto_ca_en:
     display_name: Pluto TV - English (CA)
     advertiser_name_contains:
