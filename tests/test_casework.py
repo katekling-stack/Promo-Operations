@@ -134,6 +134,29 @@ def test_reprocessing_a_case_reuses_existing_io_no_duplicate():
     assert "no duplicate" in sf.comments[0][1].lower()
 
 
+def test_poll_loop_runs_bounded_cycles_with_injected_sleep():
+    from promo_ops.casework import poll_loop
+    sf, fw = FakeSF(GOOD_PLAN, ready=("A", "B")), FakeFW()
+    slept = []
+    cycles = poll_loop(sf=sf, fw=fw, interval=300, create=False, max_cycles=3,
+                       on_cycle=lambda c: None, sleep=slept.append)
+    assert len(cycles) == 3
+    assert all(c.processed == 2 and c.submitted == 2 for c in cycles)
+    assert slept == [300, 300]                 # sleeps BETWEEN cycles, not after the last
+
+
+def test_poll_cycle_survives_queue_listing_error():
+    from promo_ops.casework import run_poll_cycle
+
+    class BoomSF(FakeSF):
+        def list_ready_cases(self):
+            raise RuntimeError("SF down")
+
+    pc = run_poll_cycle(sf=BoomSF(GOOD_PLAN), fw=FakeFW(), create=False)
+    assert pc.error and "SF down" in pc.error and pc.processed == 0
+    assert "ERROR" in pc.render()
+
+
 def test_io_url():
     assert io_url("520311", "86543608", "95999001").endswith(
         "campaigns/86543608/?insertion_order_id=95999001")

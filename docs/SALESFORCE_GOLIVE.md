@@ -52,6 +52,28 @@ The flow: read Case core fields (`build_plan_dict`) + attached Targeting →
 automation sets Reason = "Submitted to FreeWheel" and comments the IO link; if it
 can't build, it sets Status = "Needs Info" with the reason.
 
+## 6. Schedule the poller (unattended)
+
+`poll-cases` processes every Case flagged "Ready for Automation". It is **idempotent** —
+an IO that already exists (by name, under the campaign) is reused, never duplicated — so
+it is safe to run repeatedly. Two ways to schedule:
+
+**A) Cron one-shot (recommended)** — each tick runs one pass and exits:
+```
+*/5 * * * *  cd /path/to/Promo-Operations && promo-ops poll-cases --live >> logs/poll.log 2>&1
+```
+
+**B) Long-running watcher** — one process loops on an interval:
+```
+promo-ops poll-cases --live --watch --interval 300          # every 5 min, forever
+promo-ops poll-cases --watch --interval 300 --max-cycles 10 # bounded (dry-run) test
+```
+For B under systemd, run it as a `simple` service with `Restart=on-failure`.
+
+Each cycle logs a one-line summary (`cycle N: X processed (Y submitted, Z needs-info)`)
+plus per-Case results. A transient Salesforce error is caught and the loop continues on
+the next tick. Start with dry-run (omit `--live`) to watch it pick up test Cases.
+
 ## What's already proven (no creds needed)
 - `build_plan_dict` (Case fields + Targeting → plan) — `tests/test_from_case.py`.
 - `check_case_schema` (describe → missing fields/values) — `tests/test_salesforce_preflight.py`.

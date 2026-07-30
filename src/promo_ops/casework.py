@@ -15,8 +15,9 @@ pipeline is unit-tested with fakes before live Salesforce credentials exist.
 
 from __future__ import annotations
 
+import time as _time
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from .config import env
 from .models import Order
@@ -186,3 +187,62 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
 def process_ready_cases(*, sf, fw, create: bool = True) -> list[CaseResult]:
     """Process every Case flagged READY_STATUS (the poll entry point)."""
     return [process_case(cid, sf=sf, fw=fw, create=create) for cid in sf.list_ready_cases()]
+
+
+@dataclass
+class PollCycle:
+    """Summary of one poll pass over the Ready queue."""
+    cycle: int
+    results: list[CaseResult] = field(default_factory=list)
+    error: Optional[str] = None
+
+    @property
+    def processed(self) -> int:
+        return len(self.results)
+
+    @property
+    def submitted(self) -> int:
+        return sum(1 for r in self.results if r.ok)
+
+    @property
+    def needs_info(self) -> int:
+        return sum(1 for r in self.results if not r.ok)
+
+    def render(self) -> str:
+        if self.error:
+            return f"cycle {self.cycle}: ERROR polling Ready queue — {self.error}"
+        if not self.results:
+            return f"cycle {self.cycle}: no Cases ready."
+        return (f"cycle {self.cycle}: {self.processed} processed "
+                f"({self.submitted} submitted, {self.needs_info} needs-info).")
+
+
+def run_poll_cycle(*, sf, fw, create: bool = True) -> PollCycle:
+    """One poll pass. A failure LISTING the queue is caught (so the daemon survives a
+    transient Salesforce error); per-Case failures are already handled in process_case."""
+    try:
+        results = process_ready_cases(sf=sf, fw=fw, create=create)
+    except Exception as exc:
+        return PollCycle(cycle=0, error=str(exc))
+    return PollCycle(cycle=0, results=results)
+
+
+def poll_loop(*, sf, fw, interval: float, create: bool = True,
+              max_cycles: Optional[int] = None,
+              on_cycle: Optional[Callable[[PollCycle], None]] = None,
+              sleep: Callable[[float], None] = _time.sleep) -> list[PollCycle]:
+    """Run the Ready-queue poll on an interval. Idempotent per-Case, so overlapping or
+    repeated cycles never create duplicate IOs. `max_cycles` bounds the run (None = run
+    forever); `sleep`/`on_cycle` are injectable for tests. Returns the cycle summaries."""
+    cycles: list[PollCycle] = []
+    n = 0
+    while max_cycles is None or n < max_cycles:
+        n += 1
+        pc = run_poll_cycle(sf=sf, fw=fw, create=create)
+        pc.cycle = n
+        (on_cycle or (lambda c: print(c.render())))(pc)
+        cycles.append(pc)
+        if max_cycles is not None and n >= max_cycles:
+            break
+        sleep(interval)
+    return cycles

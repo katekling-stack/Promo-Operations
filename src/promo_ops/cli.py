@@ -174,16 +174,26 @@ def _cmd_from_case(args: argparse.Namespace) -> int:
 
 
 def _cmd_poll_cases(args: argparse.Namespace) -> int:
-    """Process every Case flagged Ready for Ad Ops (the hand-off poll)."""
-    from .casework import process_ready_cases
+    """Process Cases flagged Ready for Ad Ops. One-shot by default; --watch loops on
+    --interval (idempotent, so repeated cycles never duplicate IOs)."""
+    from .casework import poll_loop, run_poll_cycle
     from .integrations.salesforce import SalesforceClient
     from .integrations.freewheel import FreeWheelClient
-    results = process_ready_cases(sf=SalesforceClient(), fw=FreeWheelClient(),
-                                  create=args.live)
-    for r in results:
-        print(f"[{'OK' if r.ok else 'SKIP'}] {r.case_id}: "
-              f"{r.io_link or (r.validation or r.error)}")
-    print(f"Processed {len(results)} case(s).")
+    sf, fw = SalesforceClient(), FreeWheelClient()
+
+    def _log(pc):
+        print(pc.render(), file=sys.stderr)
+        for r in pc.results:
+            print(f"  [{'OK' if r.ok else 'SKIP'}] {r.case_id}: "
+                  f"{r.io_link or (r.validation or r.error)}")
+
+    if args.watch:
+        poll_loop(sf=sf, fw=fw, interval=args.interval, create=args.live,
+                  max_cycles=args.max_cycles, on_cycle=_log)
+    else:
+        _log(run_poll_cycle(sf=sf, fw=fw, create=args.live))
+    if not args.live:
+        print("\n(dry-run — pass --live to create drafts)", file=sys.stderr)
     return 0
 
 
@@ -262,8 +272,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_case.add_argument("--live", action="store_true", help="Create the draft (default dry-run)")
     p_case.set_defaults(func=_cmd_from_case)
 
-    p_poll = sub.add_parser("poll-cases", help="Process all Cases flagged Ready for Ad Ops")
+    p_poll = sub.add_parser("poll-cases", help="Process Cases flagged Ready for Ad Ops")
     p_poll.add_argument("--live", action="store_true", help="Create drafts (default dry-run)")
+    p_poll.add_argument("--watch", action="store_true", help="Loop on --interval instead of one-shot")
+    p_poll.add_argument("--interval", type=float, default=300.0,
+                        help="Seconds between cycles when --watch (default 300)")
+    p_poll.add_argument("--max-cycles", type=int, default=None,
+                        help="Stop after N cycles when --watch (default: run forever)")
     p_poll.set_defaults(func=_cmd_poll_cases)
 
     p_sheet = sub.add_parser("build-from-sheet", help="Build from a campaign-plan Google Sheet")
