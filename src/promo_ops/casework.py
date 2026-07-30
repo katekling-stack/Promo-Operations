@@ -68,6 +68,12 @@ class CaseResult:
     addons: list[str] = field(default_factory=list)   # VD / takeover notes + links
     error: Optional[str] = None
 
+    def summary(self) -> dict[str, Any]:
+        """Compact record for the run log (one line per Case)."""
+        return {"case_id": self.case_id, "ok": self.ok, "io_id": self.io_id,
+                "io_link": self.io_link, "placements": self.placements,
+                "needs_info": self.validation or None, "error": self.error}
+
     def comment_body(self) -> str:
         if self.validation:
             return ("⚠️ Promo Ops could not build this campaign — please fix and re-flag:\n"
@@ -216,6 +222,12 @@ class PollCycle:
         return (f"cycle {self.cycle}: {self.processed} processed "
                 f"({self.submitted} submitted, {self.needs_info} needs-info).")
 
+    def to_record(self, ts: str) -> dict[str, Any]:
+        """One JSONL run-log record for this cycle."""
+        return {"ts": ts, "cycle": self.cycle, "processed": self.processed,
+                "submitted": self.submitted, "needs_info": self.needs_info,
+                "error": self.error, "cases": [r.summary() for r in self.results]}
+
 
 def run_poll_cycle(*, sf, fw, create: bool = True) -> PollCycle:
     """One poll pass. A failure LISTING the queue is caught (so the daemon survives a
@@ -227,13 +239,54 @@ def run_poll_cycle(*, sf, fw, create: bool = True) -> PollCycle:
     return PollCycle(cycle=0, results=results)
 
 
+def _default_now() -> str:
+    from datetime import datetime
+    return datetime.now().isoformat(timespec="seconds")
+
+
+def append_run_log(path, cycle: PollCycle, now: Callable[[], str] = _default_now) -> None:
+    """Append one JSONL record for a poll cycle (audit trail for the unattended loop)."""
+    import json
+    from pathlib import Path
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(cycle.to_record(now()), ensure_ascii=False) + "\n")
+
+
+def read_run_log(path) -> dict[str, Any]:
+    """Aggregate a JSONL run log into a status summary."""
+    import json
+    from pathlib import Path
+    p = Path(path)
+    recs: list[dict] = []
+    if p.exists():
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line:
+                try:
+                    recs.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    return {
+        "cycles": len(recs),
+        "submitted": sum(r.get("submitted", 0) for r in recs),
+        "needs_info": sum(r.get("needs_info", 0) for r in recs),
+        "errors": sum(1 for r in recs if r.get("error")),
+        "last_ts": recs[-1]["ts"] if recs else None,
+        "last": recs[-1] if recs else None,
+    }
+
+
 def poll_loop(*, sf, fw, interval: float, create: bool = True,
               max_cycles: Optional[int] = None,
               on_cycle: Optional[Callable[[PollCycle], None]] = None,
-              sleep: Callable[[float], None] = _time.sleep) -> list[PollCycle]:
+              sleep: Callable[[float], None] = _time.sleep,
+              log_path=None, now: Callable[[], str] = _default_now) -> list[PollCycle]:
     """Run the Ready-queue poll on an interval. Idempotent per-Case, so overlapping or
     repeated cycles never create duplicate IOs. `max_cycles` bounds the run (None = run
-    forever); `sleep`/`on_cycle` are injectable for tests. Returns the cycle summaries."""
+    forever); `log_path` persists a JSONL record per cycle; `sleep`/`on_cycle`/`now` are
+    injectable for tests. Returns the cycle summaries."""
     cycles: list[PollCycle] = []
     n = 0
     while max_cycles is None or n < max_cycles:
@@ -241,6 +294,8 @@ def poll_loop(*, sf, fw, interval: float, create: bool = True,
         pc = run_poll_cycle(sf=sf, fw=fw, create=create)
         pc.cycle = n
         (on_cycle or (lambda c: print(c.render())))(pc)
+        if log_path:
+            append_run_log(log_path, pc, now=now)
         cycles.append(pc)
         if max_cycles is not None and n >= max_cycles:
             break

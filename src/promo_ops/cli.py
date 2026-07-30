@@ -189,11 +189,36 @@ def _cmd_poll_cases(args: argparse.Namespace) -> int:
 
     if args.watch:
         poll_loop(sf=sf, fw=fw, interval=args.interval, create=args.live,
-                  max_cycles=args.max_cycles, on_cycle=_log)
+                  max_cycles=args.max_cycles, on_cycle=_log, log_path=args.log_file)
     else:
-        _log(run_poll_cycle(sf=sf, fw=fw, create=args.live))
+        pc = run_poll_cycle(sf=sf, fw=fw, create=args.live)
+        _log(pc)
+        if args.log_file:
+            from .casework import append_run_log
+            append_run_log(args.log_file, pc)
     if not args.live:
         print("\n(dry-run — pass --live to create drafts)", file=sys.stderr)
+    return 0
+
+
+def _cmd_poll_status(args: argparse.Namespace) -> int:
+    """Summarize the poll run log (audit trail)."""
+    from .casework import read_run_log
+    s = read_run_log(args.log_file)
+    if not s["cycles"]:
+        print(f"No run log at {args.log_file} yet.")
+        return 0
+    print(f"Run log: {args.log_file}")
+    print(f"  cycles run : {s['cycles']}  (last: {s['last_ts']})")
+    print(f"  submitted  : {s['submitted']}")
+    print(f"  needs-info : {s['needs_info']}")
+    print(f"  cycle errors: {s['errors']}")
+    last = s["last"] or {}
+    if last.get("cases"):
+        print("  last cycle:")
+        for c in last["cases"]:
+            mark = "OK" if c.get("ok") else "SKIP"
+            print(f"    [{mark}] {c.get('case_id')}: {c.get('io_link') or c.get('needs_info') or c.get('error')}")
     return 0
 
 
@@ -279,7 +304,12 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Seconds between cycles when --watch (default 300)")
     p_poll.add_argument("--max-cycles", type=int, default=None,
                         help="Stop after N cycles when --watch (default: run forever)")
+    p_poll.add_argument("--log-file", help="Append a JSONL run-log record per cycle")
     p_poll.set_defaults(func=_cmd_poll_cases)
+
+    p_pstat = sub.add_parser("poll-status", help="Summarize the poll run log")
+    p_pstat.add_argument("--log-file", default="logs/poll-runs.jsonl")
+    p_pstat.set_defaults(func=_cmd_poll_status)
 
     p_sheet = sub.add_parser("build-from-sheet", help="Build from a campaign-plan Google Sheet")
     p_sheet.add_argument("sheet_id")

@@ -74,6 +74,14 @@ Each cycle logs a one-line summary (`cycle N: X processed (Y submitted, Z needs-
 plus per-Case results. A transient Salesforce error is caught and the loop continues on
 the next tick. Start with dry-run (omit `--live`) to watch it pick up test Cases.
 
+**Run log (audit trail).** Add `--log-file logs/poll-runs.jsonl` to persist one JSONL
+record per cycle (timestamp, counts, per-Case case_id/IO link/needs-info/error). Review
+it any time with:
+```
+promo-ops poll-status --log-file logs/poll-runs.jsonl
+```
+which prints cumulative cycles/submitted/needs-info/errors and the last cycle's Cases.
+
 ## What's already proven (no creds needed)
 - `build_plan_dict` (Case fields + Targeting → plan) — `tests/test_from_case.py`.
 - `check_case_schema` (describe → missing fields/values) — `tests/test_salesforce_preflight.py`.

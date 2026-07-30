@@ -157,6 +157,28 @@ def test_poll_cycle_survives_queue_listing_error():
     assert "ERROR" in pc.render()
 
 
+def test_poll_loop_writes_and_reads_run_log(tmp_path):
+    from promo_ops.casework import poll_loop, read_run_log
+    sf, fw = FakeSF(GOOD_PLAN, ready=("A", "B")), FakeFW()
+    log = tmp_path / "poll-runs.jsonl"
+    clock = iter(["2026-08-01T09:00:00", "2026-08-01T09:05:00"])
+    poll_loop(sf=sf, fw=fw, interval=300, create=False, max_cycles=2,
+              on_cycle=lambda c: None, sleep=lambda s: None,
+              log_path=str(log), now=lambda: next(clock))
+    assert log.exists() and len(log.read_text().splitlines()) == 2
+    s = read_run_log(str(log))
+    assert s["cycles"] == 2 and s["submitted"] == 4 and s["needs_info"] == 0
+    assert s["last_ts"] == "2026-08-01T09:05:00"
+    assert s["last"]["cases"][0]["case_id"] in ("A", "B")
+
+
+def test_read_run_log_missing_file(tmp_path):
+    from promo_ops.casework import read_run_log
+    s = read_run_log(str(tmp_path / "nope.jsonl"))
+    assert s == {"cycles": 0, "submitted": 0, "needs_info": 0, "errors": 0,
+                 "last_ts": None, "last": None}
+
+
 def test_io_url():
     assert io_url("520311", "86543608", "95999001").endswith(
         "campaigns/86543608/?insertion_order_id=95999001")
