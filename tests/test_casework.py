@@ -54,10 +54,15 @@ class FakeFW:
 
     def __init__(self):
         self.created = []
+        self.addon_orders = []
 
     def create_order(self, order, dry_run=True):
         self.created.append((order, dry_run))
         return {"insertion_order": {"data": {"insertion_order": {"id": "95999001"}}}}
+
+    def create_addon_order(self, campaign_id, io_name, bodies, flight=None, dry_run=True):
+        self.addon_orders.append((campaign_id, io_name, bodies, dry_run))
+        return {"insertion_order": {"data": {"insertion_order": {"id": "95999777"}}}}
 
 
 def test_valid_case_builds_creates_and_comments():
@@ -87,6 +92,31 @@ def test_process_ready_cases_iterates():
     results = process_ready_cases(sf=sf, fw=fw, create=False)
     assert len(results) == 2 and all(r.ok for r in results)
     assert all(dry is True for _, dry in fw.created)         # create=False -> dry run
+
+
+def test_case_with_pluto_vd_and_takeover_addons():
+    plan = dict(GOOD_PLAN, campaign={"name": "Pluto TV - USA", "resolved_id": "54413718"},
+                brand="pluto_tv", video_domination="pluto",
+                video_domination_targeting=["True Crime"], takeover="hpto",
+                flight={"start": "2026-10-01", "end": "2026-10-07"})
+    sf, fw = FakeSF(plan), FakeFW()
+    result = process_case("500VD", sf=sf, fw=fw, create=True)
+    assert result.ok
+    # Pluto VD pushed as its own draft IO; link surfaced.
+    assert fw.addon_orders and fw.addon_orders[0][3] is False
+    body = sf.comments[0][1]
+    assert "Pluto Video Domination draft" in body and "insertion_order_id=95999777" in body
+    # Takeover surfaced as an Operative booking to-do.
+    assert "Takeover" in body and "CBS Interactive" in body
+
+
+def test_operative_vd_surfaces_booking_todo():
+    plan = dict(GOOD_PLAN, region="FR", campaign={"name": "Paramount + - FR", "resolved_id": "72285968"},
+                brand="paramount_plus_fr", video_domination="standard")
+    sf, fw = FakeSF(plan), FakeFW()
+    result = process_case("500OP", sf=sf, fw=fw, create=True)
+    assert result.ok and not fw.addon_orders          # operative VD is not pushed to FW
+    assert any("66933" in a for a in result.addons)   # copy-Operative-order instruction
 
 
 def test_io_url():

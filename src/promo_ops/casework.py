@@ -64,6 +64,7 @@ class CaseResult:
     placements: int = 0
     validation: list[str] = field(default_factory=list)
     todos: list[str] = field(default_factory=list)
+    addons: list[str] = field(default_factory=list)   # VD / takeover notes + links
     error: Optional[str] = None
 
     def comment_body(self) -> str:
@@ -75,7 +76,46 @@ class CaseResult:
         lines = [f"✅ FreeWheel draft created (NOT_BOOKED): {self.io_link}",
                  f"{self.placements} placements built. CM to-dos before booking:"]
         lines += [f"• {t}" for t in self.todos]
+        if self.addons:
+            lines.append("Add-ons (Video Domination / Takeover):")
+            lines += [f"• {a}" for a in self.addons]
         return "\n".join(lines)
+
+
+def _process_addons(plan, order, fw, create: bool, network_id: str) -> list[str]:
+    """Handle the plan's Video Domination + Takeover add-ons: push the Pluto VD as its
+    own draft IO; surface Operative VD / takeover bookings as CM to-dos. Returns notes
+    for the Case comment. Never raises — an add-on failure is reported, not fatal."""
+    from .addons import build_addons
+    notes: list[str] = []
+    built = build_addons(plan)
+    vd, tk = built["video_domination"], built["takeover"]
+    if vd and vd.engine == "freewheel":                       # Pluto VD -> FreeWheel draft
+        if vd.unresolved_categories:
+            notes.append(f"Pluto VD: no SG match for categories {vd.unresolved_categories} "
+                         "— check the region's Pluto category names.")
+        cid = plan.campaign.get("resolved_id")
+        if not cid:
+            notes.append("Pluto VD ready but campaign id missing — could not push.")
+        else:
+            try:
+                res = fw.create_addon_order(
+                    cid, vd.freewheel_placement["name"], [vd.freewheel_placement],
+                    flight={"start": plan.flight.start, "end": plan.flight.end},
+                    dry_run=not create)
+                vio = _io_from_result(res)
+                notes.append(f"Pluto Video Domination draft: {io_url(network_id, str(cid), str(vio))}"
+                             if vio else "Pluto Video Domination built (dry-run).")
+            except Exception as exc:
+                notes.append(f"Pluto VD could not be created: {exc}")
+    elif vd and vd.engine == "operative":                     # Operative VD -> booking to-do
+        notes.append(f"Video Domination ({vd.label}): copy Operative order {vd.operative_order_id} "
+                     f"“{vd.operative_order_name}”, set dates, push to GAM. {vd.note or ''}".strip())
+    if tk:                                                     # Takeover -> booking to-do
+        notes.append(f"Takeover ({tk.label}): book in Operative as “{tk.operative_order_name}” "
+                     f"with {len(tk.product_lines)} product line(s), then Push All to GAM under "
+                     f"{tk.gam_push_advertiser}.")
+    return notes
 
 
 def _io_from_result(res: dict) -> Optional[str]:
@@ -111,10 +151,12 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
         return result
 
     io_id = _io_from_result(res)
-    link = io_url(str(order.network_id or env("FREEWHEEL_NETWORK_ID") or ""),
-                  str(order.campaign.get("resolved_id") or ""), str(io_id or "")) if io_id else None
+    network_id = str(order.network_id or env("FREEWHEEL_NETWORK_ID") or "")
+    link = io_url(network_id, str(order.campaign.get("resolved_id") or ""),
+                  str(io_id or "")) if io_id else None
+    addon_notes = _process_addons(plan, order, fw, create, network_id)
     result = CaseResult(case_id, ok=True, io_id=io_id, io_link=link,
-                        placements=len(order.placements), todos=todos)
+                        placements=len(order.placements), todos=todos, addons=addon_notes)
     sf.post_case_comment(case_id, result.comment_body())
     sf.update_case_reason(case_id, sf.SUBMITTED_REASON)        # Reason -> Submitted to FreeWheel
     return result
