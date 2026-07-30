@@ -180,3 +180,41 @@ def build_addons(plan: SupportPlan, order_builder=None) -> dict[str, Any]:
     b = AddonBuilder(order_builder)
     return {"video_domination": b.build_video_domination(plan),
             "takeover": b.build_takeover(plan)}
+
+
+def render_booking_worksheet(addons: dict[str, Any]) -> str:
+    """A step-by-step worksheet for the manual Operative→GAM bookings (Operative VDs +
+    takeovers). The Pluto VD is built in FreeWheel directly, so it's noted, not booked
+    here. Mirrors docs/OPERATIVE_TAKEOVERS.md so a CM can execute it top to bottom."""
+    vd, tk = addons.get("video_domination"), addons.get("takeover")
+    out: list[str] = ["OPERATIVE / GAM BOOKING WORKSHEET", "=" * 32, ""]
+    if not vd and not tk:
+        return "No Video Domination or Takeover on this campaign — nothing to book."
+
+    if vd and vd.engine == "freewheel":
+        out += [f"[ ] Pluto Video Domination — built in FreeWheel directly (not Operative).",
+                f"    Placement: {vd.freewheel_placement['name']}", ""]
+    if vd and vd.engine == "operative":
+        out += [f"VIDEO DOMINATION — {vd.label}",
+                f"  [ ] Copy Operative order {vd.operative_order_id}: “{vd.operative_order_name}”",
+                f"  [ ] Rename + set the campaign flight dates" + (f"  ({vd.note})" if vd.note else ""),
+                f"  [ ] Submit for internal approval (x2) + manually approve",
+                f"  [ ] Ad Operations → set push quantities → Push All to GAM", ""]
+    if tk:
+        r = tk.booking_rules or {}
+        out += [f"TAKEOVER — {tk.label}  ({tk.line_kind})",
+                f"  [ ] Copy a similar Operative order → rename to:",
+                f"        “{tk.operative_order_name}”",
+                f"  [ ] Set these {len(tk.product_lines)} product line(s):"]
+        out += [f"        - {pl}" for pl in tk.product_lines]
+        if tk.line_kind == "sponsorship":
+            out += [f"  [ ] Each line: quantity {r.get('quantity', 1)}, unit cost {r.get('unit_cost', 0)}, "
+                    f"push quantity {r.get('push_quantity', 100)}"]
+        else:
+            out += [f"  [ ] Standard lines: increase push quantity by "
+                    f"{r.get('push_quantity_increase_pct', 3)}%"]
+        out += [f"  [ ] Submit for internal approval (x2) + manually approve",
+                f"  [ ] Ad Operations → Push All to GAM under advertiser “{tk.gam_push_advertiser}”"]
+        if tk.io_package_name:
+            out += [f"  [ ] Set IO Package custom field = “{tk.io_package_name}” on any new (non-copied) products"]
+    return "\n".join(out)

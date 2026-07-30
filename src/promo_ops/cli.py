@@ -148,6 +148,27 @@ def _cmd_addons(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_booking_sheet(args: argparse.Namespace) -> int:
+    """Print the Operative/GAM booking worksheet for a plan's VD + takeover."""
+    from .addons import build_addons, render_booking_worksheet
+    print(render_booking_worksheet(build_addons(load_plan(args.plan))))
+    return 0
+
+
+def _cmd_gam_check(args: argparse.Namespace) -> int:
+    """Preflight the GAM connection (run once GAM API access lands)."""
+    from .integrations.gam import GoogleAdManagerClient
+    try:
+        info = GoogleAdManagerClient().preflight()
+    except Exception as exc:
+        print(f"⚠️  Could not connect to GAM: {exc}", file=sys.stderr)
+        print("Check .env (GAM_NETWORK_CODE, GAM_SERVICE_ACCOUNT_JSON) and API access.",
+              file=sys.stderr)
+        return 2
+    print(f"✅ GAM connected — network {info['network_code']} ({info['display_name']}).")
+    return 0
+
+
 def _cmd_salesforce_check(args: argparse.Namespace) -> int:
     """Preflight the Salesforce connection + Case schema (run once creds land)."""
     from .integrations.salesforce import SalesforceClient
@@ -299,6 +320,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_addon.add_argument("--live", action="store_true",
                          help="Push the Pluto VD placement to FreeWheel (default dry-run)")
     p_addon.set_defaults(func=_cmd_addons)
+
+    p_book = sub.add_parser("booking-sheet",
+                            help="Print the Operative/GAM booking worksheet for a plan")
+    p_book.add_argument("plan")
+    p_book.set_defaults(func=_cmd_booking_sheet)
+
+    p_gamck = sub.add_parser("gam-check", help="Preflight the GAM connection")
+    p_gamck.set_defaults(func=_cmd_gam_check)
 
     p_sfck = sub.add_parser("salesforce-check",
                             help="Preflight: verify SF login + Case fields/picklists")

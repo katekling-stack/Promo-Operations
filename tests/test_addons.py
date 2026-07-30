@@ -57,6 +57,29 @@ def test_takeover_specs():
     assert tp.booking_rules.get("push_quantity_increase_pct") == 3
 
 
+def test_booking_worksheet_renders_takeover_steps():
+    from promo_ops.addons import render_booking_worksheet
+    plan = support_plan_from_dict({
+        "promoted_title": "Frisco King", "region": "USA",
+        "campaign": {"name": "Paramount + - USA"}, "takeover": "hpto",
+        "video_domination": "standard",
+        "flight": {"start": "2026-10-01", "end": "2026-10-07"}})
+    sheet = render_booking_worksheet(build_addons(plan))
+    assert "TAKEOVER — Home Page Takeover" in sheet
+    assert "Copy a similar Operative order" in sheet
+    assert "Push All to GAM under advertiser “CBS Interactive”" in sheet
+    assert "push quantity 100" in sheet                      # sponsorship rule
+    # Operative VD copy step present too.
+    assert "Copy Operative order 66933" in sheet
+
+
+def test_booking_worksheet_empty_when_no_addons():
+    from promo_ops.addons import render_booking_worksheet
+    plan = support_plan_from_dict({"promoted_title": "X", "region": "USA",
+                                   "campaign": {"name": "Paramount + - USA"}})
+    assert "nothing to book" in render_booking_worksheet(build_addons(plan))
+
+
 def test_no_addons_when_plan_has_none():
     plan = support_plan_from_dict({"promoted_title": "X", "region": "USA",
                                    "campaign": {"name": "Paramount + - USA"}})

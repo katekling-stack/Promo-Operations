@@ -40,6 +40,17 @@ class GoogleAdManagerClient:
             oauth2_client, self.application_name, network_code=self.network_code
         )
 
+    GAM_API_VERSION = "v202408"
+
+    def preflight(self) -> dict[str, Any]:
+        """Prove GAM access: connect and fetch the current network. Run `promo-ops
+        gam-check` once GAM API access + a service account land."""
+        client = self._ad_manager_client()
+        net = client.GetService("NetworkService",
+                                version=self.GAM_API_VERSION).getCurrentNetwork()
+        return {"ok": True, "network_code": net.get("networkCode"),
+                "display_name": net.get("displayName")}
+
     def create_order(self, order: Order, dry_run: bool = True) -> dict[str, Any]:
         payload = self.to_gam_payload(order)
         if dry_run:

@@ -42,6 +42,22 @@ The above is UI-driven in Operative. Automating it means, via the Operative API
 Package Name → submit + approve → set push quantities → push to GAM. That is the
 Operative → GAM execution layer (shared with the 3 Operative Video Dominations).
 
+## Live push status
+
+Operative bookings are a **UI workflow** (copy order → approve → Push All to GAM), not
+an API the automation drives — so the tool produces a **booking worksheet** the CM
+executes, rather than pushing live. GAM has an API: `GoogleAdManagerClient` +
+`promo-ops gam-check` (connectivity preflight) are ready to wire **if/when GAM API
+access + a service account are granted**; until then the worksheet is the path.
+
+## Booking worksheet (`promo-ops booking-sheet <plan>`)
+
+Prints a step-by-step, checkbox worksheet for a campaign's Video Domination + takeover:
+which Operative order to copy, the generated order name, the exact product lines, the
+per-line quantities/push rules, the approval steps, and the GAM push advertiser
+("CBS Interactive"). `render_booking_worksheet()` mirrors the runbook steps above, so a
+CM can execute it top to bottom.
+
 ## Building add-ons from a plan (`promo-ops addons`)
 
 `promo-ops addons <plan>` emits the Video Domination + Takeover specs for a campaign
