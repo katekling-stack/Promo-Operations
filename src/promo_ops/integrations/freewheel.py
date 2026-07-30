@@ -20,6 +20,7 @@ import hashlib
 import json
 import re
 import secrets
+import time
 from typing import Any, Optional
 from urllib.parse import parse_qs, urljoin, urlparse
 
@@ -27,6 +28,7 @@ import requests
 
 from ..config import env, require_env
 from ..models import Order
+from ..retry import TransientAPIError, is_transient_status, with_retries
 
 HUB_URL = "https://shmcp.freewheel.com"
 REDIRECT_URI = "http://localhost/callback"
@@ -48,6 +50,10 @@ class FreeWheelClient:
         self._session.headers["User-Agent"] = "promo-ops/0.1"
         self._token: Optional[str] = None
         self._tool_name_cache: dict[str, str] = {}
+        # Retry transient failures (network blips, 429/5xx) with backoff; NOT 4xx.
+        self._retry_attempts = int(env("FREEWHEEL_RETRY_ATTEMPTS", "4"))
+        self._retry_base_delay = float(env("FREEWHEEL_RETRY_BASE_DELAY", "2"))
+        self._sleep = time.sleep   # injectable in tests
 
     # --- auth (OAuth 2.1 PKCE) ------------------------------------------ #
 
@@ -116,14 +122,26 @@ class FreeWheelClient:
         return resp.json()
 
     def _invoke(self, tool_name: str, **parameters: Any) -> Any:
-        """Call an API tool via invoke_tool; unwrap the {ok,data} payload."""
-        self._ensure_auth()
-        r = self._mcp("tools/call", {"name": "invoke_tool",
-                                     "arguments": {"tool_name": tool_name, "parameters": parameters}})
-        try:
-            return json.loads(r["result"]["content"][0]["text"])
-        except (KeyError, TypeError, json.JSONDecodeError):
-            return r
+        """Call an API tool via invoke_tool; unwrap the {ok,data} payload. Retries
+        transient failures (connection/timeout, 429/5xx) with backoff; 4xx (e.g. 422
+        validation / IO-limit) raise immediately."""
+        def call() -> Any:
+            self._ensure_auth()
+            r = self._mcp("tools/call", {"name": "invoke_tool",
+                                         "arguments": {"tool_name": tool_name, "parameters": parameters}})
+            try:
+                out: Any = json.loads(r["result"]["content"][0]["text"])
+            except (KeyError, TypeError, json.JSONDecodeError):
+                out = r
+            if isinstance(out, dict) and out.get("ok") is False \
+                    and is_transient_status(out.get("status_code")):
+                raise TransientAPIError(out.get("status_code"), out.get("error"))
+            return out
+
+        return with_retries(
+            call, attempts=self._retry_attempts, base_delay=self._retry_base_delay,
+            retry_on=lambda e: isinstance(e, (TransientAPIError, requests.exceptions.RequestException)),
+            sleep=self._sleep)
 
     @staticmethod
     def _rows(payload: dict, plural: str) -> list[dict]:
