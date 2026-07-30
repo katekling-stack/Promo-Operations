@@ -71,6 +71,131 @@ CASE_FIELD_MAP: dict[str, Any] = {
 _BOOL_TARGET_ROOT = "product_overrides"
 _TRUE_TEXT = {"yes", "y", "true", "1", "x", "✓", "checked"}
 
+# --------------------------------------------------------------------------- #
+# Case field SPEC — the admin build sheet, generated from the live config so it
+# never drifts. Each entry: (API name, Section, Label, Data Type, picklist source,
+# Required, Help). `picklist` is either a literal "a; b" string, or a dynamic key
+# resolved from config at build time: regions | campaigns | brands | formats.
+# `build_case_field_rows()` fills the dynamic ones. Keys mirror CASE_FIELD_MAP.
+# --------------------------------------------------------------------------- #
+CASE_FIELD_SPEC: list[dict[str, Any]] = [
+    dict(api="Promoted_Title__c", section="Required", label="Promoted Title", type="Text",
+         picklist="120", required="Yes", help="The title being promoted."),
+    dict(api="Region__c", section="Required", label="Region", type="Picklist",
+         picklist="regions", required="Yes", help="Campaign region."),
+    dict(api="Language__c", section="Required", label="Language", type="Picklist",
+         picklist="English; French", required="No",
+         help="Routes multi-language regions (Canada) to the FR vs EN advertiser/campaign."),
+    dict(api="Campaign_Name__c", section="Required", label="Campaign Name", type="Picklist",
+         picklist="campaigns", required="Yes",
+         help="Existing FreeWheel campaign the new IO nests under. Drives Brand / Advertiser / default Formats."),
+    dict(api="Flight_Start__c", section="Required", label="Flight Start", type="Date",
+         picklist="", required="Yes", help="Campaign flight start."),
+    dict(api="Flight_End__c", section="Required", label="Flight End", type="Date",
+         picklist="", required="Yes", help="Campaign flight end."),
+    dict(api="Video_Durations__c", section="Required", label="Video Durations", type="Text",
+         picklist="50", required="Yes",
+         help="Seconds; semicolon-separated (e.g. 30;15). One placement per tier per duration."),
+    dict(api="Season_or_Messaging__c", section="Optional", label="Season or Messaging", type="Text",
+         picklist="80", required="No", help="Middle segment of placement names."),
+    dict(api="Content_Type__c", section="Optional", label="Content Type", type="Picklist",
+         picklist="show; movie", required="No", help="Selects guaranteed token [ShowID:] vs [MovieID:]."),
+    dict(api="Content_ID__c", section="Optional", label="Content ID", type="Text",
+         picklist="40", required="No", help="ShowID / MovieID for guaranteed placements."),
+    dict(api="Recommended_Show_ID__c", section="Optional", label="Recommended Show ID", type="Text",
+         picklist="40", required="No", help="recommended_show key-value; defaults to Content ID."),
+    dict(api="Flight_Code__c", section="Optional", label="Flight Code", type="Text",
+         picklist="20", required="No", help="Launch beat / flight code; used in placement names."),
+    dict(api="Kids_Audience__c", section="Optional", label="Kids Audience", type="Multi-Select Picklist",
+         picklist="older; younger", required="No",
+         help="Kids brands only: which age group(s) to build. Empty = no Kids IOs."),
+    dict(api="Rating_Restrictions__c", section="Optional", label="Rating Restrictions",
+         type="Long Text Area", picklist="255", required="No",
+         help="AU Network 10 only: VG rating-restriction values to exclude; semicolon-separated."),
+    dict(api="Video_Domination__c", section="Optional", label="Video Domination", type="Picklist",
+         picklist="pluto; standard; aus_10_streaming; uk_my5", required="No",
+         help="Video Domination product selector."),
+    dict(api="Video_Domination_Targeting__c", section="Optional", label="Video Domination Targeting",
+         type="Long Text Area", picklist="255", required="No",
+         help="Pluto categories; semicolon-separated (Pluto VD only)."),
+    dict(api="Takeover__c", section="Optional", label="Takeover", type="Picklist",
+         picklist="hpto; first_impression; arena_takeover; three_peat", required="No",
+         help="Operative to GAM takeover type."),
+    # Products — one Yes/No toggle each (blank = brand default).
+    dict(api="Include_Remnant_Video__c", section="Products", label="Include Remnant Video"),
+    dict(api="Include_Pause_Ads__c", section="Products", label="Include Pause Ads"),
+    dict(api="Include_Premium_Pre_Roll__c", section="Products", label="Include Premium Pre-Roll"),
+    dict(api="Include_Essential_Bumper__c", section="Products", label="Include Essential Bumper"),
+    dict(api="Include_CBS_Pre_Roll__c", section="Products", label="Include CBS Pre-Roll"),
+    dict(api="Include_After_Mid_Roll_Bumper__c", section="Products", label="Include After Mid-Roll Bumper"),
+    dict(api="Include_1Z_Lockdown__c", section="Products", label="Include 1Z Lockdown"),
+    dict(api="Include_2Z_Lockdown__c", section="Products", label="Include 2Z Lockdown"),
+    dict(api="Include_Pluto__c", section="Products", label="Include Pluto (UK P+ only)"),
+    dict(api="Include_Network_10__c", section="Products", label="Include Network 10 (AU only)"),
+    # Overrides — auto-derived; set only if needed.
+    dict(api="Brand__c", section="Override", label="Brand", type="Picklist",
+         picklist="brands", required="No", help="Auto-derived from Campaign; override only if needed."),
+    dict(api="Advertiser__c", section="Override", label="Advertiser", type="Text",
+         picklist="120", required="No", help="Auto-derived from Brand; exact advertiser name."),
+    dict(api="Advertiser_ID__c", section="Override", label="Advertiser ID", type="Text",
+         picklist="40", required="No", help="Auto-derived; FreeWheel advertiser id."),
+    dict(api="Campaign_ID__c", section="Override", label="Campaign ID", type="Text",
+         picklist="40", required="No", help="Auto-derived from Campaign Name; use when name is ambiguous."),
+    dict(api="Insertion_Order_Name__c", section="Override", label="Insertion Order Name", type="Text",
+         picklist="160", required="No", help="Auto-derived; defaults to {Title} - {Region}."),
+    dict(api="Recommended_Show__c", section="Override", label="Recommended Show", type="Text",
+         picklist="120", required="No", help="Auto-derived; defaults to Promoted Title."),
+    dict(api="Exclude_Show__c", section="Override", label="Exclude Show", type="Text",
+         picklist="120", required="No", help="Auto-derived; defaults to Promoted Title (self-exclusion)."),
+    dict(api="Formats__c", section="Override", label="Formats", type="Multi-Select Picklist",
+         picklist="formats", required="No", help="Auto-derived from Brand's format set; override the full set only if needed."),
+]
+
+# Status/Reason picklist VALUES the automation needs added (not fields).
+CASE_STATUS_REASON_VALUES = [
+    ("Status", "Ready for Automation", "Planner sets this to trigger the automation."),
+    ("Status", "Needs Info", "Automation sets this (+ comment) when a Case can't be built."),
+    ("Reason", "Submitted to FreeWheel", "Automation sets this after the draft IO is created."),
+]
+
+
+def _dynamic_picklist(source: str) -> str:
+    """Resolve a dynamic picklist source key to a '; '-joined value string from config."""
+    from ..config import brands_config, regions_config, placement_templates_config
+    if source == "regions":
+        return "; ".join(regions_config().get("regions", {}).keys())
+    if source == "brands":
+        return "; ".join(brands_config().get("brands", {}).keys())
+    if source == "campaigns":
+        names = [b.get("campaign_name") for b in brands_config().get("brands", {}).values()
+                 if b.get("campaign_name")]
+        return "; ".join(sorted(set(names)))
+    if source == "formats":
+        return "; ".join(placement_templates_config().get("formats", {}).keys())
+    return source
+
+
+def build_case_field_rows() -> list[dict[str, str]]:
+    """The admin build sheet rows, with dynamic picklists resolved from the live config.
+
+    Single source of truth for docs/salesforce-case-fields.csv — regenerate whenever
+    brands/regions/formats change so the Salesforce object spec never drifts."""
+    dynamic = {"regions", "brands", "campaigns", "formats"}
+    rows: list[dict[str, str]] = []
+    for spec in CASE_FIELD_SPEC:
+        if spec["section"] == "Products":                     # Yes/No toggle defaults
+            spec = {**spec, "type": "Picklist", "picklist": "Yes; No", "required": "No",
+                    "help": "Products toggle; blank = brand default."}
+        picklist = spec.get("picklist", "")
+        values = _dynamic_picklist(picklist) if picklist in dynamic else picklist
+        rows.append({
+            "Object": "Case", "Section": spec["section"], "Field Label": spec["label"],
+            "API Name": spec["api"], "Data Type": spec.get("type", "Text"),
+            "Length / Picklist Values": values, "Required (planner)": spec.get("required", "No"),
+            "Help Text": spec.get("help", ""),
+        })
+    return rows
+
 # Core fields that are semicolon/newline lists.
 _LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience",
                 "rating_restrictions"}

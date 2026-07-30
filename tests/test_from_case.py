@@ -62,3 +62,19 @@ def test_case_builds_full_order():
     # Recommended Show ID from the Case drives the key-value.
     t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
     assert t1.recommended_show_value == "956609957"
+
+
+def test_case_field_spec_covers_map_and_resolves_picklists():
+    """The admin field spec stays in sync with what the automation reads, and dynamic
+    picklists resolve from the live config."""
+    from promo_ops.integrations.salesforce import (CASE_FIELD_MAP, CASE_FIELD_SPEC,
+                                                   build_case_field_rows)
+    spec_apis = {s["api"] for s in CASE_FIELD_SPEC}
+    assert set(CASE_FIELD_MAP) <= spec_apis          # every mapped field is documented
+    rows = {r["API Name"]: r for r in build_case_field_rows()}
+    region = rows["Region__c"]["Length / Picklist Values"]
+    assert "IE" in region and "FR" in region and "USA" in region   # all regions
+    campaigns = rows["Campaign_Name__c"]["Length / Picklist Values"]
+    assert "Paramount Pictures - UK" in campaigns and "Pluto TV - BR" in campaigns
+    assert rows["Rating_Restrictions__c"]["Section"] == "Optional"
+    assert rows["Include_Network_10__c"]["Length / Picklist Values"] == "Yes; No"
