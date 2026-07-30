@@ -95,12 +95,18 @@ def _process_addons(plan, order, fw, create: bool, network_id: str) -> list[str]
             notes.append(f"Pluto VD: no SG match for categories {vd.unresolved_categories} "
                          "— check the region's Pluto category names.")
         cid = plan.campaign.get("resolved_id")
+        vd_name = vd.freewheel_placement["name"]
         if not cid:
             notes.append("Pluto VD ready but campaign id missing — could not push.")
+        elif create and hasattr(fw, "find_insertion_order_by_name") and \
+                fw.find_insertion_order_by_name(str(cid), vd_name):
+            existing = fw.find_insertion_order_by_name(str(cid), vd_name)
+            notes.append(f"Pluto Video Domination already exists (reused): "
+                         f"{io_url(network_id, str(cid), str(existing))}")
         else:
             try:
                 res = fw.create_addon_order(
-                    cid, vd.freewheel_placement["name"], [vd.freewheel_placement],
+                    cid, vd_name, [vd.freewheel_placement],
                     flight={"start": plan.flight.start, "end": plan.flight.end},
                     dry_run=not create)
                 vio = _io_from_result(res)
@@ -141,6 +147,23 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
 
     order = (builder or OrderBuilder()).build(plan)
     todos = cm_todos(order)
+    network_id = str(order.network_id or env("FREEWHEEL_NETWORK_ID") or "")
+    campaign_id = str(order.campaign.get("resolved_id") or "")
+
+    # Idempotency: if an IO with this name already exists under the campaign, reuse it
+    # instead of creating a duplicate (safe re-flagging / poll retries).
+    if create and campaign_id and hasattr(fw, "find_insertion_order_by_name"):
+        existing = fw.find_insertion_order_by_name(campaign_id, order.name)
+        if existing:
+            link = io_url(network_id, campaign_id, str(existing))
+            result = CaseResult(case_id, ok=True, io_id=str(existing), io_link=link,
+                                placements=len(order.placements), todos=todos,
+                                addons=["Existing draft reused — no duplicate created. "
+                                        "Delete the IO first to rebuild."])
+            sf.post_case_comment(case_id, result.comment_body())
+            sf.update_case_reason(case_id, sf.SUBMITTED_REASON)
+            return result
+
     try:
         res = fw.create_order(order, dry_run=not create)
     except Exception as exc:  # surface the failure back on the Case, don't crash the poll
@@ -151,9 +174,7 @@ def process_case(case_id: str, *, sf, fw, create: bool = True,
         return result
 
     io_id = _io_from_result(res)
-    network_id = str(order.network_id or env("FREEWHEEL_NETWORK_ID") or "")
-    link = io_url(network_id, str(order.campaign.get("resolved_id") or ""),
-                  str(io_id or "")) if io_id else None
+    link = io_url(network_id, campaign_id, str(io_id or "")) if io_id else None
     addon_notes = _process_addons(plan, order, fw, create, network_id)
     result = CaseResult(case_id, ok=True, io_id=io_id, io_link=link,
                         placements=len(order.placements), todos=todos, addons=addon_notes)

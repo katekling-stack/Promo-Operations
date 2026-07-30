@@ -52,9 +52,13 @@ class FakeSF:
 class FakeFW:
     network_id = "520311"
 
-    def __init__(self):
+    def __init__(self, existing_io=None):
         self.created = []
         self.addon_orders = []
+        self._existing = existing_io or {}     # {io_name: io_id}
+
+    def find_insertion_order_by_name(self, campaign_id, name, **kw):
+        return self._existing.get(name)
 
     def create_order(self, order, dry_run=True):
         self.created.append((order, dry_run))
@@ -117,6 +121,17 @@ def test_operative_vd_surfaces_booking_todo():
     result = process_case("500OP", sf=sf, fw=fw, create=True)
     assert result.ok and not fw.addon_orders          # operative VD is not pushed to FW
     assert any("66933" in a for a in result.addons)   # copy-Operative-order instruction
+
+
+def test_reprocessing_a_case_reuses_existing_io_no_duplicate():
+    # An IO named "Frisco King - USA" already exists under the campaign -> no new create.
+    fw = FakeFW(existing_io={"Frisco King - USA": "95990000"})
+    sf = FakeSF(dict(GOOD_PLAN, promoted_title="Frisco King", region="USA"))
+    result = process_case("500DUP", sf=sf, fw=fw, create=True)
+    assert result.ok and result.io_id == "95990000"
+    assert not fw.created                                    # nothing re-created
+    assert sf.reason["500DUP"] == FakeSF.SUBMITTED_REASON
+    assert "no duplicate" in sf.comments[0][1].lower()
 
 
 def test_io_url():

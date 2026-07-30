@@ -157,6 +157,27 @@ class FreeWheelClient:
     def get_insertion_order(self, io_id: str) -> dict[str, Any]:
         return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id))
 
+    def find_insertion_order_by_name(self, campaign_id: str, name: str,
+                                     max_pages: int = 6, per_page: int = 100) -> Optional[str]:
+        """Return the id of an existing IO with this exact name under the campaign, else
+        None. Used for idempotency — so re-processing a Case doesn't create a duplicate
+        IO. Paginates (a campaign can hold up to 500 IOs)."""
+        target = (name or "").strip()
+        if not target:
+            return None
+        for page in range(1, max_pages + 1):
+            payload = self._invoke("sh_1_1_list-insertion-orders-of-a-campaign",
+                                   campaign_id=int(campaign_id), per_page=per_page, page=page)
+            rows = self._rows(payload, "insertion_orders")
+            if not rows:
+                break
+            for io in rows:
+                if str(io.get("name", "")).strip() == target:
+                    return str(io.get("id"))
+            if len(rows) < per_page:
+                break
+        return None
+
     def list_placements(self, io_id: str) -> list[dict[str, Any]]:
         payload = self._invoke("sh_1_1_list-insertion-order-placements",
                                insertion_order_id=int(io_id), per_page=50)
