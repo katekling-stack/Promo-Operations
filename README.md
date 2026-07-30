@@ -5,11 +5,43 @@ or a planning sheet) into a fully-built **Order + Placements + tiered targeting*
 and push it into **FreeWheel** and **Google Ad Manager** — following the Paramount
 Digital Promo Ad Operations tiered targeting strategy.
 
-> Status: **Foundation / starting point.** The deterministic core (support plan →
-> tiered targeting → order + placement spec) is implemented and runnable today in
-> dry-run mode. The external-system push clients (FreeWheel, Salesforce, GAM,
-> Operative) are scaffolded against their documented APIs and gated on credentials.
-> See [`docs/ROADMAP.md`](docs/ROADMAP.md) for what is live vs. pending.
+> Status: **Live against FreeWheel production, building out coverage.** The
+> deterministic core (support plan → tiered targeting → Order + Placements) is
+> implemented, and the **FreeWheel integration is verified end-to-end against
+> production** (network 520311): the tool creates real Orders + Placements as
+> NOT_BOOKED `[QA TEST]` drafts under existing Advertisers/Campaigns and they
+> populate with the correct tiering, targeting, ad units, geo, and exclusions.
+> **15 regions and 40+ promo brands** are modeled from their live reference IOs.
+> Salesforce (case → plan) and GAM/Operative (video dominations, takeovers) are
+> designed and scaffolded, gated on credentials. See the coverage table below and
+> [`docs/ROADMAP.md`](docs/ROADMAP.md).
+
+## Coverage (built + verified in production drafts)
+
+| Region | Brands modeled |
+|---|---|
+| **USA** | P+ (adult + Kids), CBS Sports / News / Network, MTVE, BET, Pluto TV, Pluto XCO, Pluto En Español (+ Kids) |
+| **Canada** | P+ EN (+ Kids), Pluto EN (+ Kids), Pluto FR, Nick EN Kids — English tiered; French + Kids not tiered; language routing |
+| **UK** | P+ (+ Kids), Pluto TV — P+/Pluto split, "Include Pluto" toggle |
+| **Ireland** | P+ (+ Kids) — no Pluto |
+| **Australia** | P+, Nick (+ Nick Jr) Kids — no Pluto; "Include Network 10" (10 Streaming); rating restrictions; DWH Summit Tier-1 segments |
+| **LATAM** | P+, Pluto TV, P+ Kids, Nick (+ Nick Jr) — geo region 1069 |
+| **Brazil** | P+, Pluto TV, P+ Kids, Nick (+ Nick Jr) — geo country 21 |
+| **Europe** (FR, IT, GSA, FI, DK, NO, SE, ES) | P+ (+ Kids) where present, Pluto TV (+ Kids), Nick (+ Nick Jr ES) — per-country geo; GSA = DE+CH+AT |
+
+Each region was reverse-engineered from its live active IOs and confirmed with QA
+drafts in production. **130 automated tests** cover the tiering, naming, ad units,
+geo, and every global rule below.
+
+### Global targeting rules encoded (config-driven, applied everywhere)
+- Tier label always in parentheses `(Tier N)`; per-region tier eligibility (no Tier 1 in UK/IE/EU).
+- **Kids VG symmetry** — older-only excludes Nick Jr, younger-only excludes Nick, both include both, Kids COPPA always on.
+- **Guaranteed Plan excludes** — Premium Pre-Roll excludes Format: Clips; Basic/Essential Bumper excludes Stream Type: Live.
+- **Samsung TV Plus** excluded on all Pluto TV brand placements (US vs international SGs).
+- **Self-exclusion** — the promoted show's own Video Series (underscored + spaced) and Channel SGs excluded everywhere.
+- **US Pluto DNR** (951172) on all US brands except Pluto TV - USA; **LATAM/BR Promo Blocks** (1258011) on all adult Pluto placements except Pluto TV - BR/LATAM.
+- **Pause-ad excludes** region-scoped (US vs international key-values; no-Pluto regions drop the Pluto SG).
+- **Products toggles** (Yes/No) to include/exclude each product per campaign.
 
 ---
 
