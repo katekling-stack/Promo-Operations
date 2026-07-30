@@ -7,6 +7,14 @@ the proposal and everything we'd need from the Salesforce side to move forward. 
 full write-up (with a worked example) is attached as a PDF; a field-build sheet is
 attached as a CSV.
 
+WHERE THE BUILD IS
+The engine is live and verified end-to-end against FreeWheel production — it builds
+the full Order + tiered Placements as NOT_BOOKED drafts that populate correctly.
+Coverage is 15 regions and ~80 promo brands (US, CA, UK, IE, AU, LATAM, BR + 8 EU
+markets; Paramount+, Pluto TV, CBS, MTVE, BET, Nick, Paramount Pictures), plus Video
+Dominations and Operative takeovers. The Salesforce config below is the last piece
+to run it straight from a Case.
+
 THE SHORT VERSION
 A planner requests a promo campaign from a Salesforce Case. When they set the Case
 Status to "Ready for Automation," the automation reads the Case, builds the FreeWheel
@@ -24,7 +32,9 @@ INPUT MODEL (hybrid)
 
 WHAT WE NEED FROM SALESFORCE
   1. Create the custom fields on the Case object (see attached CSV — labels, API names,
-     types, and picklist values). Happy to rename API names to your conventions.
+     types, and picklist values for all 15 regions + every campaign). The CSV is
+     generated from the live automation config, so it's always complete and current.
+     Happy to rename API names to your conventions.
   2. Add these picklist values:
        - Status: "Ready for Automation" and "Needs Info"
        - Reason: "Submitted to FreeWheel"
@@ -46,7 +56,8 @@ SUGGESTED NEXT STEPS
   2. Sandbox: you create the fields/picklists + a test Connected App; we connect and run
      one sample Case end-to-end (creating a FreeWheel draft).
   3. Pilot one brand (Paramount+ Domestic) with a few real Cases, human-reviewed.
-  4. Roll out remaining brands.
+  4. Roll out remaining brands/regions; add the Operative→GAM Video Domination +
+     takeover path.
 
 Happy to walk through any of it live. Thanks!
 

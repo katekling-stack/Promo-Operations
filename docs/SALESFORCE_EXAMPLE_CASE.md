@@ -4,6 +4,11 @@ A concrete instance of the proposal, so the rep can see exactly what a planner f
 and what the automation derives. This is the real kickoff campaign (Frisco King, P+
 Domestic) mapped onto the proposed Case fields.
 
+> The same Case shape drives all 15 regions / ~80 brands — an international or Kids
+> campaign just fills a different Campaign Name (and, where relevant, Language, Kids
+> Audience, or the Include-* product toggles). The full field list is in
+> `salesforce-case-fields.csv`.
+
 ## What the planner fills (native Case fields)
 
 | Section | Field | API Name | Value |
