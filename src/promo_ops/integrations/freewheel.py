@@ -713,7 +713,8 @@ class FreeWheelClient:
 
         if p.format == "pause_ads":
             pause = cfg.get("pause", {})
-            pmain = list(pause.get("main_site_groups", []))
+            # Per-brand pause main override (e.g. Paramount Pictures) wins over the default.
+            pmain = list(getattr(p, "pause_main_site_groups", []) or pause.get("main_site_groups", []))
             # No-Pluto regions (e.g. IE) drop the Pluto SG from the pause main set.
             if not getattr(p, "region_has_pluto", True):
                 pluto_sg = pause.get("pluto_main_site_group")

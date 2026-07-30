@@ -214,6 +214,19 @@ TV campaign) · **Nick / Nick Jr** (flat kids on `929392`, "(Pluto)" infix, no S
 IT's Nick is "Nickelodeon - Kids - IT" and its P+ Kids campaign has a double space
 ("Paramount + - Kids  - IT") — both matched exactly for routing.
 
+## Paramount Pictures / Consumer Products (distinct advertiser)
+
+Paramount Pictures (theatrical / home-entertainment) runs its own campaigns per market
+(UK, FR, IT, GSA, DK, FI, NO, SE, ES, LATAM, BR). Tiered remnant **2/3/4 (no Tier 1)**
++ Pause Ads, main SGs **[929392 Pluto, 932591 CBS Local, 932592 VCBS]** — **no P+**.
+Pause uses the same main (also no P+) via a per-brand `pause_main_site_groups` override.
+House units, per-country geo (LATAM = region 1069). Adult -> gets the LATAM/BR promo-
+blocks exclude; not a Pluto TV campaign -> no Samsung. Format: `pictures_remnant`.
+
+BR also has kids Pluto lines: **Paramount Pictures - Kids - BR** and **Paramount
+Consumer Products - Kids - BR** (kids remnant on 929392). Consumer Products' live line
+carries a "Paramount Consumer Products - " name prefix — not yet mirrored (minor).
+
 ## Open design questions
 
 1. **Older vs Younger Kids** (global): which VG maps to which? (`73408864` present domestic, absent UK.)

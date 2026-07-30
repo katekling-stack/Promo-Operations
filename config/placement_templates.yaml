@@ -418,3 +418,17 @@ formats:
     nests_in: existing_guaranteed_order
     platforms:
     - Network 10
+  pictures_remnant:
+    format_code: RVID
+    display_name: Paramount Pictures Non-Guaranteed Video
+    uses_durations: true
+    drop_preroll_at_duration: 30
+    drop_units:
+    - Paramount House Preroll
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - Pluto TV
+    - CBS

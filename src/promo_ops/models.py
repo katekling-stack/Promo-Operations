@@ -232,6 +232,10 @@ class Placement:
     # content VGs AND-ed into the genre targeting (e.g. the MTV / BET brand VG).
     main_site_groups: list[str] = field(default_factory=list)
     include_video_groups: list[str] = field(default_factory=list)
+    # Per-brand Pause Ad main-SG override (independent of remnant main). Empty -> the
+    # shared pause config default. Paramount Pictures uses [Pluto, CBS Local, VCBS]
+    # (no P+) instead of the standard [Pluto, P+, VCBS].
+    pause_main_site_groups: list[str] = field(default_factory=list)
     # Kids targeting: the Older/Younger Video Groups + the Kids content Site Group,
     # grouped together and AND-ed with main_site_groups (mirrors the P+ Kids IOs).
     # Set only for Kids-brand placements; drives the "Kids" relationship set.

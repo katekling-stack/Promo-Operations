@@ -1312,3 +1312,255 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: (Pluto)
+  paramount_pictures_uk:
+    display_name: Paramount Pictures (UK)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450187'
+    campaign_name: Paramount Pictures - UK
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_fr:
+    display_name: Paramount Pictures (FR)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450128'
+    campaign_name: Paramount Pictures - FR
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_it:
+    display_name: Paramount Pictures (IT)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450124'
+    campaign_name: Paramount Pictures - IT
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_gsa:
+    display_name: Paramount Pictures (GSA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87449817'
+    campaign_name: Paramount Pictures - GSA
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_dk:
+    display_name: Paramount Pictures (DK)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87449595'
+    campaign_name: Paramount Pictures - DK
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_fi:
+    display_name: Paramount Pictures (FI)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450157'
+    campaign_name: Paramount Pictures - FI
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_no:
+    display_name: Paramount Pictures (NO)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450120'
+    campaign_name: Paramount Pictures - NO
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_se:
+    display_name: Paramount Pictures (SE)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87449423'
+    campaign_name: Paramount Pictures - SE
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_es:
+    display_name: Paramount Pictures (ES)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450183'
+    campaign_name: Paramount Pictures - ES
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_latam:
+    display_name: Paramount Pictures (LATAM)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450179'
+    campaign_name: Paramount Pictures - LATAM
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_br:
+    display_name: Paramount Pictures (BR)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87450116'
+    campaign_name: Paramount Pictures - BR
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+  paramount_pictures_kids_br:
+    display_name: Paramount Pictures Kids (BR)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87831679'
+    campaign_name: Paramount Pictures - Kids - BR
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+  paramount_consumer_products_kids_br:
+    display_name: Paramount Consumer Products Kids (BR)
+    advertiser_name_contains:
+    - Paramount
+    template_campaign_id: '95597611'
+    campaign_name: Paramount Consumer Products - Kids - BR
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
