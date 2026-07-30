@@ -1,0 +1,13 @@
+{
+  "Id": "500XX000000Frisco",
+  "Promoted_Title__c": "Frisco King",
+  "Region__c": "USA",
+  "Campaign_Name__c": "Paramount + - USA",
+  "Campaign_ID__c": "86543608",
+  "Season_or_Messaging__c": "Season 1",
+  "Content_Type__c": "show",
+  "Video_Durations__c": "30; 15",
+  "Flight_Start__c": "2026-10-01",
+  "Flight_End__c": "2026-12-31",
+  "Flight_Code__c": "L1"
+}

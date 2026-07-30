@@ -148,6 +148,45 @@ def _cmd_addons(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_from_case_file(args: argparse.Namespace) -> int:
+    """Run the exact Case → plan → order pipeline from a LOCAL Case-fields JSON (+ an
+    optional Targeting CSV) — no Salesforce needed. For demos/testing the SF path."""
+    import csv as _csv
+    from .integrations.salesforce import build_plan_dict
+    from .addons import build_addons, render_booking_worksheet
+    from .plan_loader import support_plan_from_dict, validate_plan
+    with open(args.case_file, encoding="utf-8") as fh:
+        case_fields = json.load(fh)
+    rows = None
+    if args.targeting:
+        with open(args.targeting, encoding="utf-8-sig", newline="") as fh:
+            rows = list(_csv.reader(fh))
+    plan = support_plan_from_dict(build_plan_dict(case_fields, rows))
+    problems = validate_plan(plan)
+    if problems:
+        print("⚠️  Needs info — the Case can't be built yet:")
+        for p in problems:
+            print(f"  • {p}")
+        return 1
+    order = OrderBuilder().build(plan)
+    print(f"Case → {order.name}")
+    print(f"  brand: {plan.brand}  region: {plan.region}  campaign: {order.campaign.get('name')}")
+    print(f"  {len(order.placements)} placements built:")
+    for p in order.placements:
+        print(f"    • {p.name}")
+    sheet = render_booking_worksheet(build_addons(plan))
+    if "nothing to book" not in sheet:
+        print("\n" + sheet)
+    if args.live:
+        from .integrations.freewheel import FreeWheelClient
+        res = FreeWheelClient().create_order(order, dry_run=False)
+        io = ((res.get("insertion_order") or {}).get("data") or {}).get("insertion_order") or {}
+        print(f"\nCreated FreeWheel draft IO {io.get('id')}")
+    else:
+        print("\n(dry-run — pass --live to create the FreeWheel draft)", file=sys.stderr)
+    return 0
+
+
 def _cmd_booking_sheet(args: argparse.Namespace) -> int:
     """Print the Operative/GAM booking worksheet for a plan's VD + takeover."""
     from .addons import build_addons, render_booking_worksheet
@@ -320,6 +359,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_addon.add_argument("--live", action="store_true",
                          help="Push the Pluto VD placement to FreeWheel (default dry-run)")
     p_addon.set_defaults(func=_cmd_addons)
+
+    p_cf = sub.add_parser("from-case-file",
+                          help="Run the Case→order pipeline from a local Case JSON (no SF)")
+    p_cf.add_argument("case_file")
+    p_cf.add_argument("--targeting", help="Optional Targeting CSV to merge")
+    p_cf.add_argument("--live", action="store_true", help="Create the FreeWheel draft")
+    p_cf.set_defaults(func=_cmd_from_case_file)
 
     p_book = sub.add_parser("booking-sheet",
                             help="Print the Operative/GAM booking worksheet for a plan")

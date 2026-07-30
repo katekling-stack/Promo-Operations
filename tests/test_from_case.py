@@ -64,6 +64,20 @@ def test_case_builds_full_order():
     assert t1.recommended_show_value == "956609957"
 
 
+def test_example_case_file_builds_a_full_order():
+    """The demo Case JSON (examples/) + the Targeting CSV builds a valid order — keeps
+    the `from-case-file` demo honest."""
+    import json
+    case = json.loads((REPO_ROOT / "examples" / "case-frisco-king-usa.json").read_text())
+    plan = support_plan_from_dict(build_plan_dict(case, _targeting_rows()))
+    assert plan.brand == "paramount_plus_domestic" and plan.region == "USA"
+    order = OrderBuilder().build(plan)
+    names = [p.name for p in order.placements]
+    assert order.name == "Frisco King - USA"
+    assert any("(Tier 1) - USA" in n for n in names)
+    assert any("Pre-Roll - Premium Plan" in n for n in names)
+
+
 def test_case_field_spec_covers_map_and_resolves_picklists():
     """The admin field spec stays in sync with what the automation reads, and dynamic
     picklists resolve from the live config."""
