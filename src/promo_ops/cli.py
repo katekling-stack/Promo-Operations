@@ -119,6 +119,35 @@ def _cmd_push(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_addons(args: argparse.Namespace) -> int:
+    """Build the Video Domination + Takeover add-ons; optionally push the Pluto VD."""
+    from dataclasses import asdict
+    from .addons import build_addons
+    plan = load_plan(args.plan)
+    addons = build_addons(plan)
+    vd, tk = addons["video_domination"], addons["takeover"]
+    out = {"video_domination": asdict(vd) if vd else None,
+           "takeover": asdict(tk) if tk else None}
+    print(json.dumps(out, indent=2, ensure_ascii=False))
+    if vd and vd.unresolved_categories:
+        print(f"\n⚠️  Unresolved Pluto categories (no SG match): {vd.unresolved_categories}",
+              file=sys.stderr)
+    if args.live and vd and vd.engine == "freewheel":
+        from .integrations.freewheel import FreeWheelClient
+        cid = plan.campaign.get("resolved_id")
+        if not cid:
+            print("Set campaign.resolved_id to push the Pluto VD.", file=sys.stderr)
+            return 2
+        res = FreeWheelClient().create_addon_order(
+            cid, vd.freewheel_placement["name"], [vd.freewheel_placement],
+            flight={"start": plan.flight.start, "end": plan.flight.end}, dry_run=False)
+        io_id = ((res.get("insertion_order") or {}).get("data") or {}).get("insertion_order", {}).get("id")
+        print(f"\nPushed Pluto VD -> IO {io_id}", file=sys.stderr)
+    elif not args.live:
+        print("\n(dry-run — pass --live to push the Pluto VD to FreeWheel)", file=sys.stderr)
+    return 0
+
+
 def _cmd_salesforce_check(args: argparse.Namespace) -> int:
     """Preflight the Salesforce connection + Case schema (run once creds land)."""
     from .integrations.salesforce import SalesforceClient
@@ -217,6 +246,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_push.add_argument("--target", required=True, choices=["freewheel", "gam"])
     p_push.add_argument("--live", action="store_true", help="Actually create (default dry-run)")
     p_push.set_defaults(func=_cmd_push)
+
+    p_addon = sub.add_parser("addons", help="Build Video Domination + Takeover add-ons from a plan")
+    p_addon.add_argument("plan")
+    p_addon.add_argument("--live", action="store_true",
+                         help="Push the Pluto VD placement to FreeWheel (default dry-run)")
+    p_addon.set_defaults(func=_cmd_addons)
 
     p_sfck = sub.add_parser("salesforce-check",
                             help="Preflight: verify SF login + Case fields/picklists")

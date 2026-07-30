@@ -41,3 +41,21 @@ The above is UI-driven in Operative. Automating it means, via the Operative API
 (capabilities to CONFIRM): copy order → set dates/quantities/unit cost → set IO
 Package Name → submit + approve → set push quantities → push to GAM. That is the
 Operative → GAM execution layer (shared with the 3 Operative Video Dominations).
+
+## Building add-ons from a plan (`promo-ops addons`)
+
+`promo-ops addons <plan>` emits the Video Domination + Takeover specs for a campaign
+(from the plan's `video_domination` / `takeover` fields), built by
+`src/promo_ops/addons.py`:
+
+- **Pluto VD** (`video_domination: pluto`) → a ready FreeWheel create-placement body
+  (guaranteed HIGHEST, House Pre/Mid units, 1/day+1/stream+1/asset caps, a "Categories"
+  set of the plan's Pluto category SGs — region-aware). Push it with
+  `promo-ops addons <plan> --live` (creates a NOT_BOOKED IO + the VD placement under
+  the plan's campaign). Verified against the live "… - Pluto Video Domination - …" IO.
+- **Operative VDs** (`standard` / `aus_10_streaming` / `uk_my5`) and **Takeovers**
+  (`hpto` / `first_impression` / `arena_takeover` / `three_peat`) → a **booking spec**:
+  which Operative order to copy, the new order name (per the naming patterns), the exact
+  product lines, the push quantities/rules, and the GAM push advertiser. Execute it in
+  Operative per the runbook below (no API drives that step).
+

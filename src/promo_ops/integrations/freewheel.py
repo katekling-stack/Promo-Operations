@@ -505,6 +505,28 @@ class FreeWheelClient:
             placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
         return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
 
+    def create_addon_order(self, campaign_id: str, io_name: str,
+                           placement_bodies: list[dict], flight: Optional[dict] = None,
+                           dry_run: bool = True) -> dict[str, Any]:
+        """Create an IO + raw placement bodies (e.g. the Pluto Video Domination line)
+        under an existing campaign. `placement_bodies` are ready create-placement dicts
+        (from addons.build_video_domination). NOT_BOOKED draft, like create_order."""
+        io_body: dict[str, Any] = {"name": io_name, "currency": "USD"}
+        if flight and flight.get("start"):
+            io_body["schedule"] = {"start_time": flight.get("start"), "end_time": flight.get("end")}
+        if dry_run:
+            return {"dry_run": True, "campaign_id": campaign_id,
+                    "insertion_order_body": io_body, "placement_bodies": placement_bodies}
+        io = self._invoke("sh_1_1_create-an-insertion-order",
+                          campaign_id=int(campaign_id), body=io_body)
+        io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
+        placements = []
+        for body in placement_bodies:
+            b = {k: v for k, v in body.items() if not k.startswith("_")}
+            b["insertion_order_id"] = io_id
+            placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
+        return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
+
     @staticmethod
     def to_freewheel_plan(order: Order) -> dict[str, Any]:
         """Build the FreeWheel call plan from our Order (confirmed field sets)."""

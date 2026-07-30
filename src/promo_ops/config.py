@@ -68,6 +68,10 @@ def video_dominations_config() -> dict[str, Any]:
     return load_yaml("video_dominations.yaml")
 
 
+def operative_takeovers_config() -> dict[str, Any]:
+    return load_yaml("operative_takeovers.yaml")
+
+
 def kids_targeting_config() -> dict[str, Any]:
     """The Kids audience -> Video Group mapping (config/relationship_targeting.yaml)."""
     return load_yaml("relationship_targeting.yaml").get("kids", {})
