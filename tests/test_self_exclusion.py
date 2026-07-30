@@ -14,8 +14,38 @@ class _FakeSeries:
         from promo_ops.series import SeriesMatch
         return SeriesMatch(show=show, series=[{"id": "555001", "name": show}])
 
+    def resolve_exact(self, show):
+        from promo_ops.series import SeriesMatch
+        return SeriesMatch(show=show, series=[{"id": "555001", "name": show}])
+
     def resolve_all(self, shows):
         return [self.resolve(s) for s in shows]
+
+
+def test_self_exclusion_series_is_exact_not_substring():
+    from promo_ops.series import SeriesResolver
+    r = SeriesResolver().load()
+    exact = {s["id"] for s in r.resolve_exact("MasterChef Australia").series}
+    substr = {s["id"] for s in r.resolve("MasterChef Australia").series}
+    assert exact == {"1179587696", "134200301"}      # only the title itself
+    assert exact < substr                            # substring is broader
+    assert "1179609079" not in exact                 # "junior_masterchef_australia" excluded
+
+
+def test_pplus_does_not_exclude_pluto_channel_but_pluto_tv_does():
+    from promo_ops.order_builder import OrderBuilder
+    from promo_ops.plan_loader import support_plan_from_dict
+    # P+ title: no Pluto channel SG self-exclusion.
+    pplus = OrderBuilder().build(support_plan_from_dict({
+        "promoted_title": "MacGyver", "region": "UK", "campaign": {"name": "Paramount + - UK"},
+        "content_id": "1", "durations": [30], "showlist": ["NCIS"], "genres": ["Drama"]}))
+    # MacGyver's Pluto channel SG (1189762) must NOT appear on the P+ lines.
+    assert not any("1189762" in p.extra_exclude_site_groups for p in pplus.placements)
+    # Pluto TV brand: the channel SG IS excluded.
+    pluto = OrderBuilder().build(support_plan_from_dict({
+        "promoted_title": "MacGyver", "region": "UK", "campaign": {"name": "Pluto TV - UK"},
+        "durations": [30], "pluto": {"channels": ["Westerns"]}}))
+    assert any("1189762" in p.extra_exclude_site_groups for p in pluto.placements)
 
 
 def test_series_resolver_matches_underscore_and_spaced_names():

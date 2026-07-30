@@ -81,5 +81,18 @@ class SeriesResolver:
         hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if kw in r["norm"]]
         return SeriesMatch(show=show, series=hits[:limit])
 
+    def resolve_exact(self, show: str) -> SeriesMatch:
+        """Exact-name match (underscore-folded): only Video Series whose name IS the
+        title — used for SELF-EXCLUSION so a promo never blocks unrelated shows that
+        merely contain the title words. Catches both "MasterChef Australia" and
+        "masterchef_australia", but not "Junior MasterChef Australia"."""
+        if not self._loaded:
+            self.load()
+        kw = _norm_series(show)
+        if not kw:
+            return SeriesMatch(show=show)
+        hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if r["norm"] == kw]
+        return SeriesMatch(show=show, series=hits)
+
     def resolve_all(self, shows: list[str]) -> list[SeriesMatch]:
         return [self.resolve(s) for s in shows]

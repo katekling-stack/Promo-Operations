@@ -108,3 +108,14 @@ class SiteGroupResolver:
                 continue
             out.append({"id": r["id"], "name": r["name"]})
         return SiteGroupMatch(keyword=keyword, site_groups=out)
+
+    def select_exact(self, keyword: str, prefix: str = "", suffix: str = "") -> SiteGroupMatch:
+        """Site groups whose name is EXACTLY prefix + keyword + suffix (normalized) —
+        used for SELF-EXCLUSION of a promoted show's own Channel SG, so only the
+        channel named for the title is excluded (not every channel containing the
+        title words)."""
+        if not self._loaded:
+            self.load()
+        target = _norm(f"{prefix}{keyword}{suffix}")
+        out = [{"id": r["id"], "name": r["name"]} for r in self._rows if r["norm"] == target]
+        return SiteGroupMatch(keyword=keyword, site_groups=out)

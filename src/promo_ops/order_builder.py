@@ -111,20 +111,23 @@ class OrderBuilder:
                 names = [n for n in names if "preroll" not in n.lower()]
         return names, self.ad_unit_resolver.ids_for(names)
 
-    def _self_exclusions(self, plan: SupportPlan) -> tuple[list, list]:
-        """The promoted show's OWN Video Series IDs + Channel SG IDs, to exclude
-        everywhere (so it never promos against itself). Resolved from the exclude show
-        (defaults to the promoted title)."""
+    def _self_exclusions(self, plan: SupportPlan, pluto_brand: bool = False) -> tuple[list, list]:
+        """The promoted show's OWN Video Series IDs + Channel SG IDs, to exclude so it
+        never promos against itself. Resolved from the exclude show (defaults to the
+        promoted title) by EXACT name — only the series/channel that IS the title, not
+        every one containing the title words. The Channel SG exclusion applies ONLY to
+        Pluto TV brand campaigns ("Pluto TV - Region ..."); a P+ (or other) title does
+        not exclude its Pluto channel."""
         target = plan.exclude_show or plan.promoted_title
         if not target:
             return [], []
-        series = [s["id"] for s in self.engine.series_resolver.resolve(target).series]
+        series = [s["id"] for s in self.engine.series_resolver.resolve_exact(target).series]
         channel_sgs: list = []
         naming = (self._pluto_cfg().get("naming") or {}).get("channel")
-        if naming:
+        if pluto_brand and naming:
             code = self._regions.get("regions", {}).get(plan.region, {}).get("code", plan.region)
             prefix, _, suffix = naming.format(region_code=code, name="\x00").partition("\x00")
-            m = self.engine.site_group_resolver.select_all(target, prefix=prefix, suffix=suffix)
+            m = self.engine.site_group_resolver.select_exact(target, prefix=prefix, suffix=suffix)
             if m.matched:
                 channel_sgs = [sg["id"] for sg in m.site_groups]
         return series, channel_sgs
@@ -265,7 +268,8 @@ class OrderBuilder:
             content_excl_sgs = samsung_sgs
         # Self-exclusion: the promoted show's own Video Series (excluded on every set)
         # + its Channel SGs (added to the site-group excludes).
-        self_series, self_channel_sgs = self._self_exclusions(plan)
+        self_series, self_channel_sgs = self._self_exclusions(
+            plan, pluto_brand=bool(brand_cfg.get("pluto_brand")))
         excl_sgs += [sg for sg in self_channel_sgs if sg not in excl_sgs]
 
         # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
