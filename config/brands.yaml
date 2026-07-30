@@ -297,9 +297,6 @@ brands:
     campaign_name: Pluto TV - UK
     main_site_groups:
     - '929392'
-    extra_exclude_site_groups:
-    - '932411'
-    - '932412'
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
     formats:
@@ -1555,6 +1552,7 @@ brands:
     template_campaign_id: '95597611'
     campaign_name: Paramount Consumer Products - Kids - BR
     kids: true
+    placement_name_prefix: Paramount Consumer Products
     formats:
     - pplus_kids_remnant
     ad_unit_groups:

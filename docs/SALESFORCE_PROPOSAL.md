@@ -56,7 +56,7 @@ override the value auto-derived from the Campaign.
 | Label | API Name | Type | Picklist values / format |
 |---|---|---|---|
 | Promoted Title | `Promoted_Title__c` | Text(120) | free text |
-| Region | `Region__c` | Picklist | `USA`, `CA`, `AU`, `LATAM`, `BR`, `UK` |
+| Region | `Region__c` | Picklist | `USA`, `CA`, `UK`, `IE`, `AU`, `LATAM`, `BR`, `FR`, `IT`, `GSA`, `FI`, `DK`, `NO`, `SE`, `ES` (15) — see `salesforce-case-fields.csv` for the authoritative, always-current field list |
 | Campaign Name | `Campaign_Name__c` | Picklist | `Paramount + - USA`, `CBS Sports - USA`, `CBS News - USA`, `CBS Network - USA`, `MTVE - USA`, `BET Media Group - USA`, `Pluto TV - USA`, `Pluto TV (Cross-Company) - USA` |
 | Flight Start | `Flight_Start__c` | Date | — |
 | Flight End | `Flight_End__c` | Date | — |

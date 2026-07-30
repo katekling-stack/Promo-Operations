@@ -67,3 +67,22 @@ def test_pictures_latam_geo_region_and_br_kids():
         order = OrderBuilder().build(plan)
         assert plan.brand == brand
         assert {"929392"} in _main(order.placements[0])
+
+
+def test_consumer_products_br_name_prefix():
+    order = OrderBuilder().build(support_plan_from_dict({
+        "promoted_title": "Paw Patrol: The Dino Movie", "region": "BR",
+        "campaign": {"name": "Paramount Consumer Products - Kids - BR"},
+        "durations": [15], "kids_audience": ["older", "younger"]}))
+    assert order.placements[0].name.startswith(
+        "Paramount Consumer Products - Paw Patrol: The Dino Movie")
+
+
+def test_pluto_uk_uses_only_international_samsung():
+    order = OrderBuilder().build(support_plan_from_dict({
+        "promoted_title": "MacGyver", "region": "UK", "campaign": {"name": "Pluto TV - UK"},
+        "durations": [30], "pluto": {"channels": ["Westerns"]}}))
+    exc = FreeWheelClient._placement_body(order.placements[0])["relationship_targeting"][
+        "set"][0]["content_targeting"]["network_items"]["exclude"]["site_group"]
+    assert all(s in exc for s in ["1121578", "1164068", "1164069"])   # intl Samsung
+    assert "932411" not in exc and "932412" not in exc                # not US Samsung

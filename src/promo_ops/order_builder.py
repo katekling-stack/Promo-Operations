@@ -383,12 +383,16 @@ class OrderBuilder:
             # ARE the targeting; otherwise the line is untargeted per the template.
             static_sets = list(brand_cfg.get("relationship_sets") or [])
             no_targeting = bool(tmpl.get("no_targeting")) and not static_sets
+            # Optional brand name prefix (e.g. "Paramount Consumer Products - {title} …").
+            name_prefix = brand_cfg.get("placement_name_prefix")
             out: list[Placement] = []
             for dur in self._durations(plan):
                 slot = f"{dur} {infix}" if infix else str(dur)
                 parts = ([plan.promoted_title, label, audience, slot, region_suffix]
                          if audience_first
                          else [plan.promoted_title, label, slot, suffix])
+                if name_prefix:
+                    parts = [name_prefix] + parts
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(
                     " - ".join(p for p in parts if p),
