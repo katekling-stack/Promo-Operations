@@ -30,6 +30,24 @@ def is_transient_status(code: Any) -> bool:
         return False
 
 
+def is_transient_exception(exc: Exception) -> bool:
+    """Generic transient check for HTTP-ish clients: a network error (requests
+    ConnectionError/Timeout) or an exception carrying a transient HTTP status
+    (`.status` or `.status_code`), e.g. simple-salesforce's SalesforceError."""
+    try:
+        import requests
+        if isinstance(exc, requests.exceptions.RequestException):
+            return True
+    except ImportError:  # pragma: no cover
+        pass
+    if isinstance(exc, TransientAPIError):
+        return True
+    for attr in ("status", "status_code"):
+        if is_transient_status(getattr(exc, attr, None)):
+            return True
+    return False
+
+
 def with_retries(fn: Callable[[], Any], *, attempts: int = 4, base_delay: float = 2.0,
                  max_delay: float = 30.0,
                  retry_on: Callable[[Exception], bool] = lambda e: True,

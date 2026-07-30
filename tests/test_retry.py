@@ -82,6 +82,62 @@ def test_freewheel_invoke_retries_transient_then_succeeds(monkeypatch):
     assert out == {"ok": True, "data": {"ok": 1}} and calls["n"] == 2 and len(slept) == 1
 
 
+def test_is_transient_exception():
+    from promo_ops.retry import is_transient_exception, TransientAPIError
+
+    class SFErr(Exception):
+        def __init__(self, status):
+            self.status = status
+    assert is_transient_exception(SFErr(503)) and is_transient_exception(SFErr(429))
+    assert not is_transient_exception(SFErr(400)) and not is_transient_exception(ValueError("x"))
+    assert is_transient_exception(TransientAPIError(500))
+
+
+class _FakeSObject:
+    """Minimal stand-in for simple-salesforce's Case/CaseComment objects."""
+    def __init__(self, err_times=0, status=503):
+        self.err_times = err_times
+        self.status = status
+        self.calls = 0
+
+    def _maybe_fail(self):
+        self.calls += 1
+        if self.calls <= self.err_times:
+            e = Exception("SF blip"); e.status = self.status; raise e
+
+    def get(self, cid):
+        self._maybe_fail(); return {"Id": cid, "Promoted_Title__c": "X"}
+
+    def update(self, cid, fields):
+        self._maybe_fail(); return {"ok": True}
+
+
+class _FakeSF:
+    def __init__(self, err_times=0, status=503):
+        self.Case = _FakeSObject(err_times, status)
+
+
+def test_salesforce_client_retries_transient(monkeypatch):
+    from promo_ops.integrations.salesforce import SalesforceClient
+    fake = _FakeSF(err_times=2, status=503)
+    c = SalesforceClient(sf=fake)
+    c._retry_base_delay = 0.01
+    slept = []; c._sleep = slept.append
+    out = c.get_case("500ABC")
+    assert out["Id"] == "500ABC" and fake.Case.calls == 3 and len(slept) == 2
+
+
+def test_salesforce_client_does_not_retry_permanent(monkeypatch):
+    import pytest
+    from promo_ops.integrations.salesforce import SalesforceClient
+    fake = _FakeSF(err_times=5, status=400)     # 400 = permanent
+    c = SalesforceClient(sf=fake)
+    slept = []; c._sleep = slept.append
+    with pytest.raises(Exception):
+        c.update_case_status("500ABC", "Needs Info")
+    assert fake.Case.calls == 1 and slept == []
+
+
 def test_freewheel_invoke_does_not_retry_422(monkeypatch):
     c = _fw_client(monkeypatch)
     slept: list[float] = []

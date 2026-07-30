@@ -352,8 +352,21 @@ class SalesforceClient:
     NEEDS_INFO_STATUS = "Needs Info"
     SUBMITTED_REASON = "Submitted to FreeWheel"
 
-    def __init__(self):
-        self._sf = _connect()
+    def __init__(self, sf: Any = None):
+        # `sf` is injectable for tests; otherwise connect for real.
+        self._sf = sf if sf is not None else _connect()
+        import time as _t
+        self._sleep = _t.sleep
+        self._retry_attempts = int(env("SALESFORCE_RETRY_ATTEMPTS", "4"))
+        self._retry_base_delay = float(env("SALESFORCE_RETRY_BASE_DELAY", "2"))
+
+    def _call(self, fn: Any) -> Any:
+        """Run a Salesforce call, retrying transient failures (network, 429/5xx) with
+        backoff. Permanent errors (bad SOQL, auth, 4xx) raise immediately."""
+        from ..retry import is_transient_exception, with_retries
+        return with_retries(fn, attempts=self._retry_attempts,
+                            base_delay=self._retry_base_delay,
+                            retry_on=is_transient_exception, sleep=self._sleep)
 
     def preflight(self) -> SchemaReport:
         """Connect and verify the Case has the fields + Status/Reason values we need.
@@ -362,27 +375,28 @@ class SalesforceClient:
         (proving credentials/access) and describes the Case object (proving the admin
         created the fields and picklist values from docs/salesforce-case-fields.csv).
         """
-        describe = self._sf.Case.describe()
+        describe = self._call(lambda: self._sf.Case.describe())
         return check_case_schema(describe, self.STATUS_FIELD, self.REASON_FIELD)
 
     def get_case(self, case_id: str) -> dict[str, Any]:
-        return self._sf.Case.get(case_id)
+        return self._call(lambda: self._sf.Case.get(case_id))
 
     def list_ready_cases(self) -> list[str]:
         """Case IDs flagged ready for Ad Ops build. CONFIRM the Status value/field."""
-        q = self._sf.query(
-            f"SELECT Id FROM Case WHERE {self.STATUS_FIELD} = '{self.READY_STATUS}'")
+        q = self._call(lambda: self._sf.query(
+            f"SELECT Id FROM Case WHERE {self.STATUS_FIELD} = '{self.READY_STATUS}'"))
         return [r["Id"] for r in q.get("records", [])]
 
     def post_case_comment(self, case_id: str, body: str) -> dict[str, Any]:
         """Post a comment back on the Case (IO link + to-dos). CONFIRM comment object."""
-        return self._sf.CaseComment.create({"ParentId": case_id, "CommentBody": body})
+        return self._call(lambda: self._sf.CaseComment.create(
+            {"ParentId": case_id, "CommentBody": body}))
 
     def update_case_status(self, case_id: str, status: str) -> dict[str, Any]:
-        return self._sf.Case.update(case_id, {self.STATUS_FIELD: status})
+        return self._call(lambda: self._sf.Case.update(case_id, {self.STATUS_FIELD: status}))
 
     def update_case_reason(self, case_id: str, reason: str) -> dict[str, Any]:
-        return self._sf.Case.update(case_id, {self.REASON_FIELD: reason})
+        return self._call(lambda: self._sf.Case.update(case_id, {self.REASON_FIELD: reason}))
 
     def _targeting_rows(self, case_id: str) -> Optional[list[list[str]]]:
         """Download the Case's attached Targeting sheet as CSV rows.
@@ -392,20 +406,21 @@ class SalesforceClient:
         holds the bytes. Excel attachments should be exported/saved as CSV, or add an
         xlsx parser here.
         """
-        links = self._sf.query(
+        links = self._call(lambda: self._sf.query(
             "SELECT ContentDocumentId FROM ContentDocumentLink "
             f"WHERE LinkedEntityId = '{case_id}'"
-        )
+        ))
         for row in links.get("records", []):
             doc_id = row["ContentDocumentId"]
-            ver = self._sf.query(
+            ver = self._call(lambda doc_id=doc_id: self._sf.query(
                 "SELECT Id, Title, FileExtension, VersionData FROM ContentVersion "
                 f"WHERE ContentDocumentId = '{doc_id}' AND IsLatest = true"
-            )
+            ))
             for v in ver.get("records", []):
                 if self.TARGETING_FILE_HINT.lower() in str(v.get("Title", "")).lower():
-                    raw = self._sf._call_salesforce("GET", self._sf.base_url.replace(
-                        "/services/data/", "") + v["VersionData"]).content
+                    raw = self._call(lambda v=v: self._sf._call_salesforce(
+                        "GET", self._sf.base_url.replace("/services/data/", "")
+                        + v["VersionData"]).content)
                     text = raw.decode("utf-8-sig", errors="replace")
                     return list(csv.reader(io.StringIO(text)))
         return None
