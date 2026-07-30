@@ -30,7 +30,7 @@ def test_workbook_builds_with_dropdowns(tmp_path: Path):
     wb = load_workbook(out)
     assert wb.sheetnames == ["Plan", "Targeting", "_Lists"]
     assert wb["_Lists"].sheet_state == "hidden"
-    # 6 constrained fields (region, campaign, content type, VD, takeover, brand)
-    # + one Yes/No dropdown per Products toggle.
-    expected = 6 + len(bw._product_toggle_labels())
+    # 7 constrained fields (region, language, campaign, content type, VD, takeover,
+    # brand) + one Yes/No dropdown per Products toggle.
+    expected = 7 + len(bw._product_toggle_labels())
     assert len(wb["Plan"].data_validations.dataValidation) == expected

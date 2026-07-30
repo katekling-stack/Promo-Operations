@@ -1,7 +1,8 @@
 Field,Value,Notes / Allowed values
 — CAMPAIGN —,,"Pick the Campaign; Brand, Advertiser and default Formats derive from it."
 Promoted Title,Frisco King,(required)
-Region,USA,(required) — USA | CA | AU | LATAM | BR | UK
+Region,USA,(required) — USA | CA | UK | IE | AU | LATAM | BR | FR | IT | GSA | FI | DK | NO | SE | ES
+Language,,(CA only) — English | French; routes to the FR vs EN advertiser
 Campaign Name,Paramount + - USA,"(required) — Paramount + - USA | CBS Sports - USA | CBS News - USA | CBS Network - USA | MTVE - USA | BET Media Group - USA | Pluto TV - USA | Pluto TV (Cross-Company) - USA"
 Salesforce Case,,(auto — from the Case)
 — CREATIVE / NAMING —,,

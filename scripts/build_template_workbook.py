@@ -53,6 +53,7 @@ def dropdown_sources() -> dict[str, list[str]]:
     takeovers = list(_yaml("operative_takeovers.yaml").get("types", {}))
     sources = {
         "region": regions,
+        "language": ["English", "French"],
         "campaign name": campaigns,
         "content type": ["show", "movie"],
         "video domination": vds,
