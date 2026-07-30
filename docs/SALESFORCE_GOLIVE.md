@@ -82,6 +82,14 @@ promo-ops poll-status --log-file logs/poll-runs.jsonl
 ```
 which prints cumulative cycles/submitted/needs-info/errors and the last cycle's Cases.
 
+**Daily digest.** For a shareable end-of-day summary (email/Slack), run:
+```
+promo-ops daily-digest --log-file logs/poll-runs.jsonl        # today
+promo-ops daily-digest --log-file logs/poll-runs.jsonl --day 2026-08-01
+```
+It de-dupes Cases across cycles (latest state wins) and lists the drafts created (with
+IO links + placement counts) and any needs-info Cases with their reasons.
+
 ## What's already proven (no creds needed)
 - `build_plan_dict` (Case fields + Targeting → plan) — `tests/test_from_case.py`.
 - `check_case_schema` (describe → missing fields/values) — `tests/test_salesforce_preflight.py`.

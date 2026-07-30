@@ -201,6 +201,18 @@ def _cmd_poll_cases(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_daily_digest(args: argparse.Namespace) -> int:
+    """Render a shareable daily digest from the poll run log."""
+    from .casework import read_run_records, daily_digest, render_digest
+    day = args.day
+    if day is None and not args.all:
+        from datetime import datetime
+        day = datetime.now().strftime("%Y-%m-%d")
+    d = daily_digest(read_run_records(args.log_file), day=day)
+    print(render_digest(d))
+    return 0
+
+
 def _cmd_poll_status(args: argparse.Namespace) -> int:
     """Summarize the poll run log (audit trail)."""
     from .casework import read_run_log
@@ -310,6 +322,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_pstat = sub.add_parser("poll-status", help="Summarize the poll run log")
     p_pstat.add_argument("--log-file", default="logs/poll-runs.jsonl")
     p_pstat.set_defaults(func=_cmd_poll_status)
+
+    p_dig = sub.add_parser("daily-digest", help="Render a shareable daily digest from the run log")
+    p_dig.add_argument("--log-file", default="logs/poll-runs.jsonl")
+    p_dig.add_argument("--day", help="YYYY-MM-DD (default: today)")
+    p_dig.add_argument("--all", action="store_true", help="All days, not just today")
+    p_dig.set_defaults(func=_cmd_daily_digest)
 
     p_sheet = sub.add_parser("build-from-sheet", help="Build from a campaign-plan Google Sheet")
     p_sheet.add_argument("sheet_id")

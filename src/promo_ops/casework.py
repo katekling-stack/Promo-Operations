@@ -254,8 +254,8 @@ def append_run_log(path, cycle: PollCycle, now: Callable[[], str] = _default_now
         fh.write(json.dumps(cycle.to_record(now()), ensure_ascii=False) + "\n")
 
 
-def read_run_log(path) -> dict[str, Any]:
-    """Aggregate a JSONL run log into a status summary."""
+def read_run_records(path) -> list[dict[str, Any]]:
+    """Parse a JSONL run log into its raw per-cycle records (skips bad lines)."""
     import json
     from pathlib import Path
     p = Path(path)
@@ -268,6 +268,12 @@ def read_run_log(path) -> dict[str, Any]:
                     recs.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
+    return recs
+
+
+def read_run_log(path) -> dict[str, Any]:
+    """Aggregate a JSONL run log into a status summary."""
+    recs = read_run_records(path)
     return {
         "cycles": len(recs),
         "submitted": sum(r.get("submitted", 0) for r in recs),
@@ -276,6 +282,52 @@ def read_run_log(path) -> dict[str, Any]:
         "last_ts": recs[-1]["ts"] if recs else None,
         "last": recs[-1] if recs else None,
     }
+
+
+def daily_digest(records: list[dict], day: Optional[str] = None) -> dict[str, Any]:
+    """Roll run-log records into a once-a-day summary. `day` filters by the record
+    timestamp's date prefix (e.g. "2026-08-01"); None = all records. De-dupes Cases
+    across cycles (latest state wins) so a re-processed Case is counted once."""
+    cycles = 0
+    errors = 0
+    per_case: dict[str, dict] = {}
+    for r in records:
+        if day and not str(r.get("ts", "")).startswith(day):
+            continue
+        cycles += 1
+        if r.get("error"):
+            errors += 1
+        for c in r.get("cases", []):
+            per_case[c.get("case_id")] = c
+    submitted = [c for c in per_case.values() if c.get("ok")]
+    needs = [c for c in per_case.values() if not c.get("ok")]
+    return {
+        "day": day, "cycles": cycles, "cycle_errors": errors,
+        "cases": len(per_case), "submitted": len(submitted), "needs_info": len(needs),
+        "ios": [{"case_id": c.get("case_id"), "io_link": c.get("io_link"),
+                 "placements": c.get("placements")} for c in submitted],
+        "needs_info_cases": [{"case_id": c.get("case_id"),
+                              "reason": c.get("needs_info") or c.get("error")} for c in needs],
+    }
+
+
+def render_digest(d: dict[str, Any]) -> str:
+    """A shareable text digest (email/Slack-ready)."""
+    when = d.get("day") or "all time"
+    lines = [f"Promo Ops — daily digest ({when})",
+             f"{d['submitted']} submitted · {d['needs_info']} needs-info · "
+             f"{d['cases']} Cases over {d['cycles']} poll cycle(s)"
+             + (f" · {d['cycle_errors']} cycle error(s)" if d.get("cycle_errors") else "")]
+    if d["ios"]:
+        lines.append("")
+        lines.append("Drafts created:")
+        lines += [f"  • {i['case_id']}: {i['io_link']} ({i['placements']} placements)"
+                  for i in d["ios"]]
+    if d["needs_info_cases"]:
+        lines.append("")
+        lines.append("Needs info (not built):")
+        lines += [f"  • {n['case_id']}: {n['reason']}" for n in d["needs_info_cases"]]
+    return "\n".join(lines)
 
 
 def poll_loop(*, sf, fw, interval: float, create: bool = True,

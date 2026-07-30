@@ -179,6 +179,36 @@ def test_read_run_log_missing_file(tmp_path):
                  "last_ts": None, "last": None}
 
 
+def test_daily_digest_aggregates_and_dedupes():
+    from promo_ops.casework import daily_digest, render_digest
+    records = [
+        {"ts": "2026-08-01T09:00:00", "cases": [
+            {"case_id": "A", "ok": True, "io_link": "http://io/1", "placements": 18},
+            {"case_id": "B", "ok": False, "needs_info": ["Unknown Region"], "error": None}]},
+        {"ts": "2026-08-01T09:05:00", "cases": [
+            {"case_id": "B", "ok": True, "io_link": "http://io/2", "placements": 4}]},  # B fixed
+        {"ts": "2026-08-02T09:00:00", "cases": [
+            {"case_id": "C", "ok": True, "io_link": "http://io/3", "placements": 6}]},
+    ]
+    d = daily_digest(records, day="2026-08-01")
+    assert d["cycles"] == 2 and d["cases"] == 2
+    assert d["submitted"] == 2 and d["needs_info"] == 0     # B's latest state (fixed) wins
+    assert {i["case_id"] for i in d["ios"]} == {"A", "B"}
+    assert "C" not in {i["case_id"] for i in d["ios"]}      # different day excluded
+    text = render_digest(d)
+    assert "2 submitted" in text and "http://io/2" in text
+
+
+def test_daily_digest_lists_needs_info():
+    from promo_ops.casework import daily_digest
+    records = [{"ts": "2026-08-03T10:00:00", "error": "SF down", "cases": []},
+               {"ts": "2026-08-03T10:05:00", "cases": [
+                   {"case_id": "X", "ok": False, "needs_info": ["Missing durations"]}]}]
+    d = daily_digest(records, day="2026-08-03")
+    assert d["cycle_errors"] == 1 and d["needs_info"] == 1
+    assert d["needs_info_cases"][0] == {"case_id": "X", "reason": ["Missing durations"]}
+
+
 def test_io_url():
     assert io_url("520311", "86543608", "95999001").endswith(
         "campaigns/86543608/?insertion_order_id=95999001")
