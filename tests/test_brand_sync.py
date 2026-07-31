@@ -74,9 +74,12 @@ def test_scaffold_clones_a_sibling_and_blanks_region_ids():
     assert entry["display_name"] == "Paramount + (DK)"
     assert entry["_cloned_from"]                     # records provenance
     assert entry["formats"]                          # format set carried over from sibling
-    # Region-specific FW ids are blanked with a TODO, never guessed.
+    # main_site_groups carry over as real ids (global VCBS groups, not per-country),
+    # so the scaffold is buildable; the per-market reference IO is dropped.
     if "main_site_groups" in entry:
-        assert str(entry["main_site_groups"]).startswith("TODO")
+        assert isinstance(entry["main_site_groups"], list)
+        assert not str(entry["main_site_groups"]).startswith("TODO")
+    assert "template_io_id" not in entry
 
 
 def test_scaffold_returns_none_without_sibling():

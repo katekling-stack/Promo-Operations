@@ -90,8 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\nScaffolded {len(added)} brand(s) into {where}:")
     for key, sib in added:
         print(f"  + {key}  (cloned from {sib})")
-    print("Review the diff, fill each 'TODO:' region id, then run "
-          "`python scripts/build_plan_form.py`.")
+    print("Review the diff, then run `python scripts/build_plan_form.py`.")
     return 0
 
 

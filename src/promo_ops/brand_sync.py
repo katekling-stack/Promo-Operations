@@ -195,18 +195,21 @@ def find_sibling(family: str, region: str,
     return same_group or any_match
 
 
-# Fields that are region-specific FW IDs — a clone can't reuse them, so we blank
-# them and leave a marker for a human (or a deeper FW sync) to fill.
-_REGION_SPECIFIC = ("main_site_groups", "pause_main_site_groups", "template_io_id")
+# A per-brand reference IO, so a clone's value would point at the WRONG market's
+# order — dropped from scaffolds (it's optional; most brands don't set one).
+_DROP_ON_CLONE = ("template_io_id",)
 
 
 def scaffold_entry(fw_row: dict[str, Any], brands_cfg: dict[str, Any]) -> Optional[tuple[str, dict]]:
     """Build a new brand-catalog entry for a FW campaign missing from config.
 
-    Clones the closest same-family sibling (so formats / ad-unit groups / kids flag
-    carry over), then overlays the FW-derived identity (campaign name + id + display
-    name) and blanks region-specific site-group IDs with a TODO so they're verified,
-    not guessed. Returns (brand_key, entry) or None if no sibling exists to clone.
+    Clones the closest same-family sibling and overlays the FW-derived identity
+    (campaign name + id + display name). The clone's main_site_groups carry over
+    unchanged: those are global VCBS inventory groups keyed to the brand type, not
+    the country (country targeting is applied separately via geography), so the
+    same-family sibling's values are already correct. template_io_id is dropped
+    because it names one market's reference order. Returns (brand_key, entry) or
+    None if no sibling exists to clone.
     """
     family, region = fw_row.get("family"), fw_row.get("region")
     if not (family and region):
@@ -220,9 +223,8 @@ def scaffold_entry(fw_row: dict[str, Any], brands_cfg: dict[str, Any]) -> Option
     entry["template_campaign_id"] = fw_row.get("campaign_id") or ""
     entry["display_name"] = _display_name(fw_row["campaign_name"])
     entry["_cloned_from"] = sib
-    for f in _REGION_SPECIFIC:
-        if f in entry:
-            entry[f] = f"TODO: set {region} {f} (cloned from {sib})"
+    for f in _DROP_ON_CLONE:
+        entry.pop(f, None)
     return _brand_key(fw_row["campaign_name"]), entry
 
 

@@ -1568,7 +1568,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '73870459'
-    template_io_id: 'TODO: set AU template_io_id (cloned from cbs_news)'
     campaign_name: CBS News - AU
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1587,7 +1586,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '73870650'
-    template_io_id: 'TODO: set ES template_io_id (cloned from cbs_news)'
     campaign_name: CBS News - ES
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1606,7 +1604,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '73870698'
-    template_io_id: 'TODO: set GSA template_io_id (cloned from cbs_news_es)'
     campaign_name: CBS News - GSA
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1625,7 +1622,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '73870587'
-    template_io_id: 'TODO: set LATAM template_io_id (cloned from cbs_news)'
     campaign_name: CBS News - LATAM
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1644,7 +1640,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '81323508'
-    template_io_id: 'TODO: set USA template_io_id (cloned from cbs_news_latam)'
     campaign_name: CBS News - Spanish - USA
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1663,7 +1658,6 @@ brands:
     - VCBS
     - CBS
     template_campaign_id: '73870871'
-    template_io_id: 'TODO: set UK template_io_id (cloned from cbs_news_es)'
     campaign_name: CBS News - UK
     ad_unit_groups:
       remnant_video: cbs_house_mid_post
@@ -1682,9 +1676,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '77516284'
-    template_io_id: 'TODO: set BR template_io_id (cloned from mtve)'
     campaign_name: MTVE - BR
-    main_site_groups: 'TODO: set BR main_site_groups (cloned from mtve)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1703,9 +1699,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '80191495'
-    template_io_id: 'TODO: set CA template_io_id (cloned from mtve)'
     campaign_name: MTVE - CA
-    main_site_groups: 'TODO: set CA main_site_groups (cloned from mtve)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1724,9 +1722,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '73209056'
-    template_io_id: 'TODO: set DK template_io_id (cloned from mtve)'
     campaign_name: MTVE - DK
-    main_site_groups: 'TODO: set DK main_site_groups (cloned from mtve)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1745,9 +1745,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '73351717'
-    template_io_id: 'TODO: set ES template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - ES
-    main_site_groups: 'TODO: set ES main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1766,9 +1768,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '75927053'
-    template_io_id: 'TODO: set FI template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - FI
-    main_site_groups: 'TODO: set FI main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1787,9 +1791,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '73327167'
-    template_io_id: 'TODO: set FR template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - FR
-    main_site_groups: 'TODO: set FR main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1808,9 +1814,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '72586523'
-    template_io_id: 'TODO: set GSA template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - GSA
-    main_site_groups: 'TODO: set GSA main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1829,9 +1837,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '73728650'
-    template_io_id: 'TODO: set IT template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - IT
-    main_site_groups: 'TODO: set IT main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1850,9 +1860,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '78708221'
-    template_io_id: 'TODO: set ES template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - Kids - ES
-    main_site_groups: 'TODO: set ES main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1871,9 +1883,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '82885167'
-    template_io_id: 'TODO: set GSA template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - Kids - GSA
-    main_site_groups: 'TODO: set GSA main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1892,9 +1906,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '80347770'
-    template_io_id: 'TODO: set LATAM template_io_id (cloned from mtve)'
     campaign_name: MTVE - Kids - LATAM
-    main_site_groups: 'TODO: set LATAM main_site_groups (cloned from mtve)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1913,9 +1929,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '77533263'
-    template_io_id: 'TODO: set LATAM template_io_id (cloned from mtve)'
     campaign_name: MTVE - LATAM
-    main_site_groups: 'TODO: set LATAM main_site_groups (cloned from mtve)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1934,9 +1952,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '75908458'
-    template_io_id: 'TODO: set NO template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - NO
-    main_site_groups: 'TODO: set NO main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1955,9 +1975,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '73590312'
-    template_io_id: 'TODO: set SE template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - SE
-    main_site_groups: 'TODO: set SE main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -1976,9 +1998,11 @@ brands:
     - VCBS
     - MTV
     template_campaign_id: '74589847'
-    template_io_id: 'TODO: set UK template_io_id (cloned from mtve_dk)'
     campaign_name: MTVE - UK
-    main_site_groups: 'TODO: set UK main_site_groups (cloned from mtve_dk)'
+    main_site_groups:
+    - '929392'
+    - '932592'
+    - '932591'
     include_video_groups:
     - '73408899'
     extra_exclude_video_groups:
@@ -2479,8 +2503,14 @@ brands:
     - Paramount Pictures
     template_campaign_id: '87647980'
     campaign_name: Paramount Pictures - AU
-    main_site_groups: 'TODO: set AU main_site_groups (cloned from paramount_pictures_uk)'
-    pause_main_site_groups: 'TODO: set AU pause_main_site_groups (cloned from paramount_pictures_uk)'
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
     formats:
     - pictures_remnant
     - pause_ads
@@ -2494,8 +2524,14 @@ brands:
     - Paramount Pictures
     template_campaign_id: '75689799'
     campaign_name: Paramount Pictures - English - CA
-    main_site_groups: 'TODO: set CA main_site_groups (cloned from paramount_pictures_latam)'
-    pause_main_site_groups: 'TODO: set CA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
     formats:
     - pictures_remnant
     - pause_ads
@@ -2509,8 +2545,14 @@ brands:
     - Paramount Pictures
     template_campaign_id: '81702851'
     campaign_name: Paramount Pictures - French - CA
-    main_site_groups: 'TODO: set CA main_site_groups (cloned from paramount_pictures_latam)'
-    pause_main_site_groups: 'TODO: set CA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
     formats:
     - pictures_remnant
     - pause_ads
@@ -2762,8 +2804,14 @@ brands:
     - Paramount Pictures
     template_campaign_id: '61756871'
     campaign_name: Paramount Pictures - USA
-    main_site_groups: 'TODO: set USA main_site_groups (cloned from paramount_pictures_latam)'
-    pause_main_site_groups: 'TODO: set USA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
     formats:
     - pictures_remnant
     - pause_ads
@@ -2776,9 +2824,9 @@ brands:
     advertiser_name_contains:
     - VCBS
     template_campaign_id: '84716411'
-    template_io_id: 'TODO: set IE template_io_id (cloned from pluto_tv_uk)'
     campaign_name: Pluto TV - IE
-    main_site_groups: 'TODO: set IE main_site_groups (cloned from pluto_tv_uk)'
+    main_site_groups:
+    - '929392'
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
     formats:
@@ -2998,3 +3046,17 @@ brands:
         duration_infix: ''
     pluto_brand: true
     _cloned_from: pluto_ca_kids_en
+  cbs_sports_spanish_usa:
+    display_name: CBS Sports - Spanish (USA)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '83776031'
+    campaign_name: CBS Sports - Spanish - USA
+    ad_unit_groups:
+      remnant_video: cbs_house_all
+    extra_exclude_video_groups:
+    - '73409791'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_sports
