@@ -17,7 +17,7 @@ Flight End,,(required) — YYYY-MM-DD
 Flight Code,L1,(optional)
 — PRODUCTS (Y/N — blank = brand default; not every campaign runs each) —,,"Toggle the placements this campaign runs. Blank keeps the brand's standard set."
 Include Remnant Video,,(Y/N) — core remnant video; blank = brand default
-Include Pause Ads,,(Y/N) — P+ / CBS Network
+Include Pause Ads,,(Y/N) — runs on most brands (P+, CBS Network, Pluto TV, …)
 Include Premium Pre-Roll,,(Y/N) — Paramount+
 Include Essential Bumper,,(Y/N) — Paramount+
 Include CBS Pre-Roll,,(Y/N) — CBS Network

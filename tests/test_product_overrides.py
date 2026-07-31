@@ -35,8 +35,15 @@ def test_bumper_family_optout_removes_brand_specific_bumper():
 
 
 def test_optin_to_unsupported_product_is_ignored():
-    # CBS Sports doesn't run pause ads; opting in shouldn't fabricate it.
-    assert _plan("CBS Sports - USA", {"pause_ads": True}) == ["remnant_video"]
+    # premium_preroll is a Paramount+ product; opting a CBS Sports plan into it
+    # shouldn't fabricate it.
+    assert _plan("CBS Sports - USA", {"premium_preroll": True}) == ["remnant_video"]
+
+
+def test_pause_ads_is_universally_optional():
+    # Pause Ads run across brands, so any campaign can opt in even when it isn't
+    # part of the brand's default set (CBS Sports defaults to remnant_video only).
+    assert _plan("CBS Sports - USA", {"pause_ads": True}) == ["remnant_video", "pause_ads"]
 
 
 def test_plan_tab_parses_yes_no_toggles():

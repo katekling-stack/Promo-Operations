@@ -90,14 +90,16 @@ def _apply_defaults(plan: SupportPlan) -> None:
 def _apply_product_overrides(plan: SupportPlan, brand_cfg: dict[str, Any]) -> None:
     """Include/exclude products per the plan's Products toggles (blank = brand default).
 
-    True includes the product (only if the brand supports it — its default set plus any
-    `optional_formats`), False removes it. Preserves the existing format order and
-    appends opted-in extras.
+    True includes the product (if the brand supports it — its default set plus any
+    `optional_formats`, plus the UNIVERSAL formats that run on any brand), False removes
+    it. Preserves the existing format order and appends opted-in extras.
     """
     from .models import PRODUCT_FAMILIES
     if not plan.product_overrides:
         return
-    available = set(brand_cfg.get("formats") or []) | set(brand_cfg.get("optional_formats") or [])
+    available = (set(brand_cfg.get("formats") or [])
+                 | set(brand_cfg.get("optional_formats") or [])
+                 | UNIVERSAL_OPTIONAL_FORMATS)
     formats = list(plan.formats)
     for family_key, want in plan.product_overrides.items():
         members = PRODUCT_FAMILIES.get(family_key, [family_key])
@@ -108,6 +110,12 @@ def _apply_product_overrides(plan: SupportPlan, brand_cfg: dict[str, Any]) -> No
                 if member in available and member not in formats:
                     formats.append(member)
     plan.formats = formats
+
+
+# Products that can run on ANY brand on request (not tied to a brand's default set) —
+# Pause Ads run across P+, CBS, Pluto TV, and more, so "Include Pause Ads = Yes" adds
+# them to any brand.
+UNIVERSAL_OPTIONAL_FORMATS = {"pause_ads"}
 
 
 def load_plan(path: str | Path) -> SupportPlan:
