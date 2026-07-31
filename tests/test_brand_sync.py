@@ -20,8 +20,23 @@ def test_region_and_family_classification():
 
 def test_looks_like_brand_campaign_filters_noise():
     assert brand_sync.looks_like_brand_campaign("Pluto TV - FR")
+    assert brand_sync.looks_like_brand_campaign("BET Media Group - USA")
+    assert brand_sync.looks_like_brand_campaign("Pluto TV (Cross-Company) - USA")
+    assert brand_sync.looks_like_brand_campaign("Paramount + - English - CA")
     assert not brand_sync.looks_like_brand_campaign("Q3 Sales House Campaign")   # no region/family
     assert not brand_sync.looks_like_brand_campaign("Pluto TV")                  # no region tail
+
+
+def test_canonical_parse_rejects_non_brand_noise():
+    # Movie-title campaigns, look-alike advertisers, and off-scope brands must NOT
+    # be mistaken for standing brand lines.
+    for noise in ["Nick Scali-AU",                       # furniture retailer, not Nickelodeon
+                  "Betterment - USA", "Bet365",          # 'bet' substring, not BET
+                  "BET+ - USA",                          # different brand than BET
+                  "Paramount Pictures-Gladiator II-USA",  # a movie campaign
+                  "Paramount Pictures-Mission: Impossible - Dead Reckoning - USA"]:
+        assert not brand_sync.looks_like_brand_campaign(noise), noise
+        assert brand_sync.brand_family(noise) is None, noise
 
 
 def test_reconcile_finds_missing_in_config():

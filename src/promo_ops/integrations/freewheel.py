@@ -172,41 +172,37 @@ class FreeWheelClient:
                 return str(c.get("id"))
         return None
 
-    def list_campaigns_of_advertiser(self, advertiser_id: str, max_pages: int = 10,
-                                     per_page: int = 100) -> list[dict[str, Any]]:
-        """Every campaign under an advertiser (paginated) — one per brand."""
-        rows: list[dict[str, Any]] = []
-        for page in range(1, max_pages + 1):
-            payload = self._invoke("sh_1_1_list-campaigns", advertiser_id=int(advertiser_id),
-                                   per_page=per_page, page=page)
-            batch = self._rows(payload, "campaigns")
-            if not batch:
-                break
-            rows.extend(batch)
-            if len(batch) < per_page:
-                break
-        return rows
+    def list_campaigns_by_name(self, name_prefix: str, per_page: int = 100) -> list[dict[str, Any]]:
+        """Campaigns whose name matches a prefix (the API's `name` filter is honored;
+        its `advertiser_id`/`page` filters are not, so we discover by brand prefix)."""
+        payload = self._invoke("sh_1_1_list-campaigns", name=name_prefix, per_page=per_page)
+        return self._rows(payload, "campaigns")
 
-    def discover_brand_campaigns(self, advertiser_name_contains: Optional[list[str]] = None
+    # Brand-name prefixes to sweep — union covers every promo brand family. Some
+    # broad prefixes overflow the API's 50-row page, so we also sweep finer prefixes
+    # (e.g. "Paramount + - Kids"); results union+dedupe, so overlap is harmless.
+    BRAND_PREFIXES = (
+        "Paramount +", "Paramount + - Kids", "Paramount Pictures",
+        "Paramount Pictures - Kids", "Paramount Consumer", "Pluto TV",
+        "Pluto TV - Kids", "Nick", "Nick - Kids", "Nick Jr", "Nickelodeon",
+        "CBS", "CBS News", "CBS Sports", "CBS Network", "BET", "BET Media", "MTVE")
+
+    def discover_brand_campaigns(self, prefixes: Optional[tuple[str, ...]] = None
                                  ) -> list[dict[str, Any]]:
-        """Enumerate advertisers -> their campaigns, the raw material for a brand sync.
+        """Sweep campaigns by brand-name prefix -> the raw material for a brand sync.
 
-        Walks every promo advertiser (default filter: VCBS, plus the Nick/Pluto/
-        Paramount families) and flattens their campaigns to {name, id,
-        advertiser_name, advertiser_id}. brand_sync.reconcile() turns this into a
-        FW↔config coverage diff. Read-only.
+        The Streaming Hub `list-campaigns` tool honors the `name` filter but ignores
+        `advertiser_id`/`page`, so we query each brand prefix and union the results
+        (deduped by name). Returns {name, id} rows; brand_sync.reconcile() filters
+        out non-brand noise and diffs against config. Read-only.
         """
-        fragments = advertiser_name_contains or ["VCBS", "Nick", "Pluto", "Paramount"]
-        seen_adv: dict[str, dict] = {}
-        for frag in fragments:
-            for adv in self.find_advertisers([frag]):
-                seen_adv.setdefault(str(adv.get("id")), adv)
-        out: list[dict[str, Any]] = []
-        for adv_id, adv in seen_adv.items():
-            for c in self.list_campaigns_of_advertiser(adv_id):
-                out.append({"name": c.get("name"), "id": c.get("id"),
-                            "advertiser_name": adv.get("name"), "advertiser_id": adv_id})
-        return out
+        seen: dict[str, dict[str, Any]] = {}
+        for prefix in (prefixes or self.BRAND_PREFIXES):
+            for c in self.list_campaigns_by_name(prefix):
+                name = (c.get("name") or "").strip()
+                if name:
+                    seen.setdefault(name, {"name": name, "id": c.get("id")})
+        return list(seen.values())
 
     def get_insertion_order(self, io_id: str) -> dict[str, Any]:
         return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id))

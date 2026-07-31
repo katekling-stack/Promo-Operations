@@ -23,24 +23,26 @@ from .config import regions_config
 # "USA" doesn't shadow nothing. Sourced from config so it can't drift.
 _REGION_CODES = sorted(regions_config().get("regions", {}).keys(), key=len, reverse=True)
 
-# Ordered (family, matcher) — first match wins, so specific beats general
-# (nick_jr before nick, *_kids before the adult brand).
-_FAMILY_RULES: list[tuple[str, Any]] = [
-    ("nick_jr", lambda n: "nick jr" in n),
-    ("nick", lambda n: "nick" in n or "nickelodeon" in n),
-    ("paramount_plus_kids", lambda n: "paramount +" in n and "kids" in n),
-    ("paramount_plus", lambda n: "paramount +" in n),
-    ("pluto_kids", lambda n: "pluto" in n and "kids" in n),
-    ("pluto", lambda n: "pluto" in n),
-    ("pictures_kids", lambda n: "pictures" in n and "kids" in n),
-    ("pictures", lambda n: "pictures" in n),
-    ("consumer_products", lambda n: "consumer products" in n),
-    ("cbs_sports", lambda n: "cbs sports" in n),
-    ("cbs_news", lambda n: "cbs news" in n),
-    ("cbs_network", lambda n: "cbs network" in n),
-    ("mtve", lambda n: "mtve" in n),
-    ("bet", lambda n: "bet" in n),
-]
+# Canonical brand tokens -> family. A brand campaign's leading segment must match
+# one of these EXACTLY (after normalizing), so "Betterment" doesn't match "BET" and
+# "Paramount Pictures-Gladiator II" (a movie campaign) doesn't match "Paramount
+# Pictures". "kids" is detected separately from the qualifier segments.
+_CANON_BRAND: dict[str, str] = {
+    "nick jr": "nick_jr", "nick jr.": "nick_jr",
+    "nick": "nick", "nickelodeon": "nick",
+    "paramount +": "paramount_plus", "paramount plus": "paramount_plus",
+    "pluto tv": "pluto",
+    "paramount pictures": "pictures",
+    "paramount consumer products": "consumer_products",
+    "cbs news": "cbs_news", "cbs sports": "cbs_sports", "cbs network": "cbs_network",
+    "mtve": "mtve", "bet": "bet", "bet media group": "bet",
+}
+# Segments allowed between the brand and the region tail (everything else = a title
+# or a non-brand advertiser, and disqualifies the campaign).
+_QUALIFIERS = {"kids", "english", "french", "en espanol", "en español", "espanol",
+               "español", "spanish", "cross-company", "xco"}
+# Families that gain a "_kids" variant when the campaign carries the kids qualifier.
+_KIDS_SPLIT = {"paramount_plus", "pluto", "pictures"}
 
 
 def region_of(campaign_name: str) -> Optional[str]:
@@ -52,22 +54,57 @@ def region_of(campaign_name: str) -> Optional[str]:
     return None
 
 
+def _parse(campaign_name: str) -> Optional[tuple[str, bool]]:
+    """Parse a canonical brand campaign -> (canonical_brand, is_kids), else None.
+
+    Structure: '<Brand>[ (<qualifier>)][ - <qualifier>]* - <REGION>'. The leading
+    segment must be a known brand and every middle segment a known qualifier — so
+    movie-title campaigns ('Paramount Pictures-Gladiator II - AU') and non-brand
+    advertisers ('Nick Scali-AU', 'Betterment - USA') are rejected.
+    """
+    region = region_of(campaign_name)
+    if not region:
+        return None
+    base = _norm(campaign_name)
+    base = re.sub(rf"(?:^|[\s-])\(?{re.escape(region)}\)?$", "", base).strip(" -")
+    # Pull out parenthetical qualifiers like "(Cross-Company)".
+    parens = [p.strip().lower() for p in re.findall(r"\(([^)]*)\)", base)]
+    base = _norm(re.sub(r"\([^)]*\)", "", base)).strip(" -")
+    segments = [s.strip() for s in base.split(" - ") if s.strip()]
+    if not segments:
+        return None
+    brand = segments[0].lower().replace(".", "").strip()
+    brand = re.sub(r"\s+", " ", brand)
+    # Match against canonical brands (also try the dotted form for "nick jr.").
+    family = _CANON_BRAND.get(brand) or _CANON_BRAND.get(segments[0].lower().strip())
+    if not family:
+        return None
+    quals = [s.lower() for s in segments[1:]] + parens
+    if any(q not in _QUALIFIERS for q in quals):
+        return None
+    is_kids = "kids" in quals
+    return family, is_kids
+
+
 def brand_family(campaign_name: str) -> Optional[str]:
     """Classify a campaign into a brand family (used to pick a sibling to clone)."""
-    n = (campaign_name or "").lower()
-    for family, matches in _FAMILY_RULES:
-        if matches(n):
-            return family
-    return None
+    parsed = _parse(campaign_name)
+    if not parsed:
+        return None
+    family, is_kids = parsed
+    if is_kids and family in _KIDS_SPLIT:
+        return f"{family}_kids"
+    return family
 
 
 def looks_like_brand_campaign(campaign_name: str) -> bool:
-    """A promo brand campaign = a known family AND a known region tail.
+    """A promo brand campaign parses cleanly to a canonical brand + region.
 
     Filters out the non-promo campaigns that also live under the VCBS advertisers
-    (sales orders, house campaigns, test campaigns) so they don't pollute the sync.
+    (sales orders, movie-title campaigns, non-brand advertisers) so they don't
+    pollute the sync.
     """
-    return bool(region_of(campaign_name) and brand_family(campaign_name))
+    return _parse(campaign_name) is not None
 
 
 def _norm(name: str) -> str:
