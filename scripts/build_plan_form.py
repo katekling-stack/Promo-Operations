@@ -70,9 +70,13 @@ def app_data() -> dict:
                      | {"pause_ads"})
         prods = [fam for fam, members in PRODUCT_FAMILIES.items()
                  if set(members) & available and fam in PRODUCT_LABEL]
+        from promo_ops import brand_sync
+        sig = brand_sync.brand_signature(cname)
         campaigns.append({"name": cname, "region": _region_of(cname),
                           "brand": b.get("display_name", key), "kids": bool(b.get("kids")),
-                          "products": prods})
+                          "products": prods,
+                          # brand identity for cross-market mirroring (family|kids)
+                          "sig": f"{sig[0]}|{int(sig[1])}" if sig else None})
     campaigns.sort(key=lambda c: (REGION_ORDER.index(c["region"]) if c["region"] in REGION_ORDER else 99, c["name"]))
     vd = [{"key": k, "label": v.get("label", k)}
           for k, v in _yaml("video_dominations.yaml").get("options", {}).items()]
@@ -160,6 +164,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .status{color:var(--muted);font-size:12.5px;flex:1}
 .toggle-adv{color:var(--blue);font-size:12.5px;font-weight:600;cursor:pointer;user-select:none}
+.mtargets{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+.mtargets button{border:1.5px solid var(--line);background:#fff;color:var(--muted);
+ border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+.mtargets button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.mtargets button:disabled{opacity:.35;cursor:not-allowed;text-decoration:line-through}
 datalist{display:none}
 </style></head>
 <body>
@@ -247,6 +256,14 @@ datalist{display:none}
     <div class="field"><span class="toggle-adv" id="advToggle">▸ Tier-1 audience segments (advanced)</span>
       <div class="chips hidden" data-chips="audience_segments" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved  ↵"></div></div>
   </div>
+
+  <div class="card hidden" id="mirrorCard">
+    <h2>Duplicate to another market</h2>
+    <p class="sub">Building the same title in other countries? Pick the target markets — each gets the same creative &amp; targeting, re-pointed at that country's equivalent brand, with naming and placements re-derived. Fill this plan out first, then download a plan file per market.</p>
+    <div class="mtargets" id="mirrorTargets"></div>
+    <div class="hint" id="mirrorNote"></div>
+    <button class="btn ghost" id="mirrorBtn" type="button" disabled>Download mirrored plan(s)</button>
+  </div>
 </div>
 
 <div class="bar"><div class="barw">
@@ -298,8 +315,53 @@ function onCampaign(){
   bindProducts();
   const isAU = c && c.region==="AU";
   $("#ratingWrap").classList.toggle("hidden", !(c && c.products.includes("network_10")));
+  renderMirrorTargets();
   validate();
 }
+
+// --- Duplicate to another market -----------------------------------------
+const mirrorTargets = new Set();
+function renderMirrorTargets(){
+  const c = currentCampaign();
+  $("#mirrorCard").classList.toggle("hidden", !c);
+  mirrorTargets.clear();
+  if(!c){ return; }
+  const box = $("#mirrorTargets");
+  box.innerHTML = APP.regions.filter(r=>r.code!==c.region).map(r=>{
+    const has = c.sig && APP.campaigns.some(x=>x.region===r.code && x.sig===c.sig);
+    return `<button type="button" data-r="${r.code}" ${has?"":"disabled title='no equivalent brand here'"}>${r.code}</button>`;
+  }).join("");
+  box.querySelectorAll("button:not([disabled])").forEach(b=>b.addEventListener("click",()=>{
+    const r=b.dataset.r;
+    if(mirrorTargets.has(r)){ mirrorTargets.delete(r); b.classList.remove("on"); }
+    else { mirrorTargets.add(r); b.classList.add("on"); }
+    updateMirrorBtn();
+  }));
+  $("#mirrorNote").textContent = c.sig
+    ? "Greyed-out markets have no equivalent brand for this campaign."
+    : "This campaign can't be mirrored automatically.";
+  updateMirrorBtn();
+}
+function updateMirrorBtn(){ $("#mirrorBtn").disabled = !(validate() && mirrorTargets.size); }
+function equivalentCampaign(region, sig){
+  const m = APP.campaigns.find(x=>x.region===region && x.sig===sig);
+  return m ? m.name : null;
+}
+$("#mirrorBtn").addEventListener("click",()=>{
+  if(!validate() || !mirrorTargets.size) return;
+  const c = currentCampaign(); const base = buildPlan();
+  [...mirrorTargets].forEach((region,i)=>{
+    const equ = equivalentCampaign(region, c.sig); if(!equ) return;
+    const plan = JSON.parse(JSON.stringify(base));
+    plan.region = region; plan.campaign = {name:equ};
+    const name = (plan.promoted_title+"-"+region).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".plan.json";
+    setTimeout(()=>{
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([JSON.stringify(plan,null,2)],{type:"application/json"}));
+      a.download=name; a.click();
+    }, i*250);   // stagger so the browser allows the batch of downloads
+  });
+});
 function prodRow(fam){
   return `<div class="prod" data-fam="${fam}"><div class="pl">${APP.productLabels[fam]||fam}</div>
     <div class="seg">

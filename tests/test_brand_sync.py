@@ -68,7 +68,7 @@ def test_scaffold_clones_a_sibling_and_blanks_region_ids():
     row = {"campaign_name": "Paramount + - DK", "campaign_id": "999999",
            "region": "DK", "family": "paramount_plus"}
     key, entry = brand_sync.scaffold_entry(row, brands)
-    assert key == "paramount_plus_dk"
+    assert key == "paramount_dk"                     # slug of the campaign name
     assert entry["campaign_name"] == "Paramount + - DK"
     assert entry["template_campaign_id"] == "999999"
     assert entry["display_name"] == "Paramount + (DK)"

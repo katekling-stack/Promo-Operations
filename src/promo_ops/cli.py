@@ -44,6 +44,31 @@ def _cmd_build(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_mirror(args: argparse.Namespace) -> int:
+    """Mirror a source plan to one or more other markets (same title, swap country)."""
+    import yaml
+    from . import mirror as _mirror
+    raw = yaml.safe_load(Path(args.plan).read_text(encoding="utf-8"))
+    targets: list[str] = []
+    for chunk in args.to:
+        targets.extend(t.strip() for t in chunk.split(",") if t.strip())
+    result = _mirror.mirror_to_markets(raw, targets)
+    out_dir = Path(args.out_dir) if args.out_dir else Path(args.plan).resolve().parent
+    out_dir.mkdir(parents=True, exist_ok=True)
+    title = str(raw.get("promoted_title") or "plan")
+    slug = "".join(c.lower() if c.isalnum() else "-" for c in title).strip("-")
+    for region, plan in result["plans"].items():
+        dest = out_dir / f"{slug}-{region.lower()}.plan.json"
+        dest.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"  {region}: {plan['campaign']['name']}  ->  {dest}")
+    for region, reason in result["skipped"].items():
+        print(f"  {region}: SKIPPED — {reason}")
+    if not result["plans"]:
+        print("No markets mirrored.")
+        return 1
+    return 0
+
+
 def _cmd_preview(args: argparse.Namespace) -> int:
     plan = load_plan(args.plan)
     order = OrderBuilder().build(plan)
@@ -347,6 +372,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_prev = sub.add_parser("preview", help="Human-readable tier breakdown")
     p_prev.add_argument("plan")
     p_prev.set_defaults(func=_cmd_preview)
+
+    p_mirror = sub.add_parser("mirror",
+                              help="Mirror a plan to other markets (same title, swap country)")
+    p_mirror.add_argument("plan")
+    p_mirror.add_argument("--to", required=True, action="append", metavar="REGION",
+                          help="Target region(s); repeat or comma-separate (e.g. --to GSA,IT)")
+    p_mirror.add_argument("--out-dir", help="Where to write the mirrored plan files")
+    p_mirror.set_defaults(func=_cmd_mirror)
 
     p_push = sub.add_parser("push", help="Push to an external system")
     p_push.add_argument("plan")

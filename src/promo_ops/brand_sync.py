@@ -97,6 +97,12 @@ def brand_family(campaign_name: str) -> Optional[str]:
     return family
 
 
+def brand_signature(campaign_name: str) -> Optional[tuple[str, bool]]:
+    """(family, is_kids) for a brand campaign, else None — the identity two
+    campaigns must share to be equivalent across regions (used by mirroring)."""
+    return _parse(campaign_name)
+
+
 def looks_like_brand_campaign(campaign_name: str) -> bool:
     """A promo brand campaign parses cleanly to a canonical brand + region.
 
@@ -151,8 +157,14 @@ def reconcile(fw_campaigns: Iterable[dict[str, Any]],
             "missing_in_fw": missing_in_fw}
 
 
-def _brand_key(family: str, region: str) -> str:
-    return f"{family}_{region}".lower()
+def _brand_key(campaign_name: str) -> str:
+    """A unique, readable config key from the campaign name.
+
+    Slugifies the whole name (not just family+region) so language / kids variants
+    don't collide — 'Paramount Pictures - English - CA' -> 'paramount_pictures_english_ca',
+    distinct from the French one.
+    """
+    return re.sub(r"[^a-z0-9]+", "_", _norm(campaign_name).lower()).strip("_")
 
 
 # Region groups — a clone from the same group carries the right regional shape
@@ -211,7 +223,7 @@ def scaffold_entry(fw_row: dict[str, Any], brands_cfg: dict[str, Any]) -> Option
     for f in _REGION_SPECIFIC:
         if f in entry:
             entry[f] = f"TODO: set {region} {f} (cloned from {sib})"
-    return _brand_key(family, region), entry
+    return _brand_key(fw_row["campaign_name"]), entry
 
 
 def _display_name(campaign_name: str) -> str:

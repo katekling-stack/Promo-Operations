@@ -1562,3 +1562,1439 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: ''
+  cbs_news_au:
+    display_name: CBS News (AU)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '73870459'
+    template_io_id: 'TODO: set AU template_io_id (cloned from cbs_news)'
+    campaign_name: CBS News - AU
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news
+  cbs_news_es:
+    display_name: CBS News (ES)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '73870650'
+    template_io_id: 'TODO: set ES template_io_id (cloned from cbs_news)'
+    campaign_name: CBS News - ES
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news
+  cbs_news_gsa:
+    display_name: CBS News (GSA)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '73870698'
+    template_io_id: 'TODO: set GSA template_io_id (cloned from cbs_news_es)'
+    campaign_name: CBS News - GSA
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news_es
+  cbs_news_latam:
+    display_name: CBS News (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '73870587'
+    template_io_id: 'TODO: set LATAM template_io_id (cloned from cbs_news)'
+    campaign_name: CBS News - LATAM
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news
+  cbs_news_spanish_usa:
+    display_name: CBS News - Spanish (USA)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '81323508'
+    template_io_id: 'TODO: set USA template_io_id (cloned from cbs_news_latam)'
+    campaign_name: CBS News - Spanish - USA
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news_latam
+  cbs_news_uk:
+    display_name: CBS News (UK)
+    advertiser_name_contains:
+    - VCBS
+    - CBS
+    template_campaign_id: '73870871'
+    template_io_id: 'TODO: set UK template_io_id (cloned from cbs_news_es)'
+    campaign_name: CBS News - UK
+    ad_unit_groups:
+      remnant_video: cbs_house_mid_post
+    extra_exclude_site_groups:
+    - '1037683'
+    - '1038397'
+    - '1038398'
+    - '1038399'
+    - '1038400'
+    formats:
+    - remnant_video
+    _cloned_from: cbs_news_es
+  mtve_br:
+    display_name: MTVE (BR)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '77516284'
+    template_io_id: 'TODO: set BR template_io_id (cloned from mtve)'
+    campaign_name: MTVE - BR
+    main_site_groups: 'TODO: set BR main_site_groups (cloned from mtve)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve
+  mtve_ca:
+    display_name: MTVE (CA)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '80191495'
+    template_io_id: 'TODO: set CA template_io_id (cloned from mtve)'
+    campaign_name: MTVE - CA
+    main_site_groups: 'TODO: set CA main_site_groups (cloned from mtve)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve
+  mtve_dk:
+    display_name: MTVE (DK)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '73209056'
+    template_io_id: 'TODO: set DK template_io_id (cloned from mtve)'
+    campaign_name: MTVE - DK
+    main_site_groups: 'TODO: set DK main_site_groups (cloned from mtve)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve
+  mtve_es:
+    display_name: MTVE (ES)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '73351717'
+    template_io_id: 'TODO: set ES template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - ES
+    main_site_groups: 'TODO: set ES main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_fi:
+    display_name: MTVE (FI)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '75927053'
+    template_io_id: 'TODO: set FI template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - FI
+    main_site_groups: 'TODO: set FI main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_fr:
+    display_name: MTVE (FR)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '73327167'
+    template_io_id: 'TODO: set FR template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - FR
+    main_site_groups: 'TODO: set FR main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_gsa:
+    display_name: MTVE (GSA)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '72586523'
+    template_io_id: 'TODO: set GSA template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - GSA
+    main_site_groups: 'TODO: set GSA main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_it:
+    display_name: MTVE (IT)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '73728650'
+    template_io_id: 'TODO: set IT template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - IT
+    main_site_groups: 'TODO: set IT main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_kids_es:
+    display_name: MTVE - Kids (ES)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '78708221'
+    template_io_id: 'TODO: set ES template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - Kids - ES
+    main_site_groups: 'TODO: set ES main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_kids_gsa:
+    display_name: MTVE - Kids (GSA)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '82885167'
+    template_io_id: 'TODO: set GSA template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - Kids - GSA
+    main_site_groups: 'TODO: set GSA main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_kids_latam:
+    display_name: MTVE - Kids (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '80347770'
+    template_io_id: 'TODO: set LATAM template_io_id (cloned from mtve)'
+    campaign_name: MTVE - Kids - LATAM
+    main_site_groups: 'TODO: set LATAM main_site_groups (cloned from mtve)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve
+  mtve_latam:
+    display_name: MTVE (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '77533263'
+    template_io_id: 'TODO: set LATAM template_io_id (cloned from mtve)'
+    campaign_name: MTVE - LATAM
+    main_site_groups: 'TODO: set LATAM main_site_groups (cloned from mtve)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve
+  mtve_no:
+    display_name: MTVE (NO)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '75908458'
+    template_io_id: 'TODO: set NO template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - NO
+    main_site_groups: 'TODO: set NO main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_se:
+    display_name: MTVE (SE)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '73590312'
+    template_io_id: 'TODO: set SE template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - SE
+    main_site_groups: 'TODO: set SE main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  mtve_uk:
+    display_name: MTVE (UK)
+    advertiser_name_contains:
+    - VCBS
+    - MTV
+    template_campaign_id: '74589847'
+    template_io_id: 'TODO: set UK template_io_id (cloned from mtve_dk)'
+    campaign_name: MTVE - UK
+    main_site_groups: 'TODO: set UK main_site_groups (cloned from mtve_dk)'
+    include_video_groups:
+    - '73408899'
+    extra_exclude_video_groups:
+    - '73408858'
+    - '73408859'
+    ad_unit_groups:
+      remnant_video: viacom_promo
+      mtve_after_midroll_bumper: cbs_after_midroll_bumper
+    formats:
+    - remnant_video
+    - mtve_after_midroll_bumper
+    _cloned_from: mtve_dk
+  nick_au_2:
+    display_name: Nick (AU)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '82751956'
+    campaign_name: Nick - AU
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_latam
+  nick_br_2:
+    display_name: Nick (BR)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '80511085'
+    campaign_name: Nick - BR
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_latam
+  nick_dk_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '91568031'
+    campaign_name: Nick - DK
+    display_name: Nick (DK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_es_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74380219'
+    campaign_name: Nick - ES
+    display_name: Nick (ES)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_fr_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '86961967'
+    campaign_name: Nick - FR
+    display_name: Nick (FR)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_it
+  nick_gsa_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '78658632'
+    campaign_name: Nick - GSA
+    display_name: Nick (GSA)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_kids_uk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74564479'
+    campaign_name: Nick - Kids - UK
+    display_name: Nick - Kids (UK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_latam_2:
+    display_name: Nick (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '80674046'
+    campaign_name: Nick - LATAM
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_ca_en
+  nick_se_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '91925687'
+    campaign_name: Nick - SE
+    display_name: Nick (SE)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_uk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '80491422'
+    campaign_name: Nick - UK
+    display_name: Nick (UK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_fr
+  nick_jr_kids_dk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76521916'
+    campaign_name: Nick Jr - Kids - DK
+    display_name: Nick Jr - Kids (DK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_gsa:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '88216030'
+    campaign_name: Nick Jr - Kids - GSA
+    display_name: Nick Jr - Kids (GSA)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_se:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76522673'
+    campaign_name: Nick Jr - Kids - SE
+    display_name: Nick Jr - Kids (SE)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_es_2:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '79874701'
+    campaign_name: Nick Jr. - ES
+    display_name: Nick Jr. (ES)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_kids_dk
+  nick_jr_kids_ca:
+    display_name: Nick Jr. - Kids (CA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '95159751'
+    campaign_name: Nick Jr. - Kids - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_latam
+  nick_jr_kids_fi:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76522930'
+    campaign_name: Nick Jr. - Kids - FI
+    display_name: Nick Jr. - Kids (FI)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_fr:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73322679'
+    campaign_name: Nick Jr. - Kids - FR
+    display_name: Nick Jr. - Kids (FR)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_it:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '73921283'
+    campaign_name: Nick Jr. - Kids - IT
+    display_name: Nick Jr. - Kids (IT)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_no:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '76524836'
+    campaign_name: Nick Jr. - Kids - NO
+    display_name: Nick Jr. - Kids (NO)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_uk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74325937'
+    campaign_name: Nick Jr. - Kids - UK
+    display_name: Nick Jr. - Kids (UK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nick_jr_kids_usa:
+    display_name: Nick Jr. - Kids (USA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '59162001'
+    campaign_name: Nick Jr. - Kids - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_latam
+  nick_jr_uk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '86585728'
+    campaign_name: Nick Jr. - UK
+    display_name: Nick Jr. (UK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_jr_es
+  nickelodeon_kids_usa:
+    display_name: Nickelodeon - Kids (USA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '59161945'
+    campaign_name: Nickelodeon - Kids - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_latam
+  nickelodeon_usa:
+    display_name: Nickelodeon (USA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '70829040'
+    campaign_name: Nickelodeon - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_latam
+  paramount_kids_au:
+    display_name: Paramount + - Kids (AU)
+    advertiser_name_contains:
+    - VCBS
+    - Kids
+    template_campaign_id: '76941012'
+    campaign_name: Paramount + - Kids - AU
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    _cloned_from: paramount_plus_kids
+  paramount_kids_dk:
+    display_name: Paramount + - Kids (DK)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72703315'
+    campaign_name: Paramount + - Kids - DK
+    kids: true
+    formats:
+    - pplus_kids_remnant_pplus
+    - pplus_kids_remnant_pluto
+    - pplus_kids_premium_preroll
+    - pplus_kids_essential_bumper
+    ad_unit_groups:
+      pplus_kids_remnant_pplus: pplus_uk_house
+      pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs
+      pplus_kids_premium_preroll: premium_preroll
+      pplus_kids_essential_bumper: essential_bumper
+    format_overrides:
+      pplus_kids_essential_bumper:
+        plan_label: Basic Plan
+    _cloned_from: paramount_plus_kids_uk
+  paramount_consumer_products_gsa:
+    display_name: Paramount Consumer Products (GSA)
+    advertiser_name_contains:
+    - Paramount
+    template_campaign_id: '87126976'
+    campaign_name: Paramount Consumer Products - GSA
+    kids: true
+    placement_name_prefix: Paramount Consumer Products
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_consumer_products_kids_br
+  paramount_consumer_products_kids_gsa:
+    display_name: Paramount Consumer Products - Kids (GSA)
+    advertiser_name_contains:
+    - Paramount
+    template_campaign_id: '73037038'
+    campaign_name: Paramount Consumer Products - Kids - GSA
+    kids: true
+    placement_name_prefix: Paramount Consumer Products
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_consumer_products_kids_br
+  paramount_pictures_au:
+    display_name: Paramount Pictures (AU)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87647980'
+    campaign_name: Paramount Pictures - AU
+    main_site_groups: 'TODO: set AU main_site_groups (cloned from paramount_pictures_uk)'
+    pause_main_site_groups: 'TODO: set AU pause_main_site_groups (cloned from paramount_pictures_uk)'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    _cloned_from: paramount_pictures_uk
+  paramount_pictures_english_ca:
+    display_name: Paramount Pictures - English (CA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '75689799'
+    campaign_name: Paramount Pictures - English - CA
+    main_site_groups: 'TODO: set CA main_site_groups (cloned from paramount_pictures_latam)'
+    pause_main_site_groups: 'TODO: set CA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    _cloned_from: paramount_pictures_latam
+  paramount_pictures_french_ca:
+    display_name: Paramount Pictures - French (CA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '81702851'
+    campaign_name: Paramount Pictures - French - CA
+    main_site_groups: 'TODO: set CA main_site_groups (cloned from paramount_pictures_latam)'
+    pause_main_site_groups: 'TODO: set CA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    _cloned_from: paramount_pictures_latam
+  paramount_pictures_kids_au:
+    display_name: Paramount Pictures - Kids (AU)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87647987'
+    campaign_name: Paramount Pictures - Kids - AU
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_kids_dk:
+    display_name: Paramount Pictures - Kids (DK)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '72703299'
+    campaign_name: Paramount Pictures - Kids - DK
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_kids_es:
+    display_name: Paramount Pictures - Kids (ES)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87832654'
+    campaign_name: Paramount Pictures - Kids - ES
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_english_ca:
+    display_name: Paramount Pictures - Kids - English (CA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '81613261'
+    campaign_name: Paramount Pictures - Kids - English - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_kids_fi:
+    display_name: Paramount Pictures - Kids (FI)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87892499'
+    campaign_name: Paramount Pictures - Kids - FI
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_fr:
+    display_name: Paramount Pictures - Kids (FR)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '88042125'
+    campaign_name: Paramount Pictures - Kids - FR
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_french_ca:
+    display_name: Paramount Pictures - Kids - French (CA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '81702703'
+    campaign_name: Paramount Pictures - Kids - French - CA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_kids_gsa:
+    display_name: Paramount Pictures - Kids (GSA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87832254'
+    campaign_name: Paramount Pictures - Kids - GSA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_it:
+    display_name: Paramount Pictures - Kids (IT)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87904324'
+    campaign_name: Paramount Pictures - Kids - IT
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_latam:
+    display_name: Paramount Pictures - Kids (LATAM)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '74174770'
+    campaign_name: Paramount Pictures - Kids - LATAM
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_kids_no:
+    display_name: Paramount Pictures - Kids (NO)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '90380862'
+    campaign_name: Paramount Pictures - Kids - NO
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_se:
+    display_name: Paramount Pictures - Kids (SE)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87891439'
+    campaign_name: Paramount Pictures - Kids - SE
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_uk:
+    display_name: Paramount Pictures - Kids (UK)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '87892919'
+    campaign_name: Paramount Pictures - Kids - UK
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_dk
+  paramount_pictures_kids_usa:
+    display_name: Paramount Pictures - Kids (USA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '70838129'
+    campaign_name: Paramount Pictures - Kids - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    _cloned_from: paramount_pictures_kids_br
+  paramount_pictures_usa:
+    display_name: Paramount Pictures (USA)
+    advertiser_name_contains:
+    - Paramount Pictures
+    template_campaign_id: '61756871'
+    campaign_name: Paramount Pictures - USA
+    main_site_groups: 'TODO: set USA main_site_groups (cloned from paramount_pictures_latam)'
+    pause_main_site_groups: 'TODO: set USA pause_main_site_groups (cloned from paramount_pictures_latam)'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    _cloned_from: paramount_pictures_latam
+  pluto_tv_ie:
+    display_name: Pluto TV (IE)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '84716411'
+    template_io_id: 'TODO: set IE template_io_id (cloned from pluto_tv_uk)'
+    campaign_name: Pluto TV - IE
+    main_site_groups: 'TODO: set IE main_site_groups (cloned from pluto_tv_uk)'
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    formats:
+    - remnant_video
+    pluto_brand: true
+    _cloned_from: pluto_tv_uk
+  pluto_tv_kids_br:
+    display_name: Pluto TV - Kids (BR)
+    advertiser_name_contains:
+    - VCBS
+    - Spanish
+    template_campaign_id: '72285933'
+    campaign_name: Pluto TV - Kids - BR
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: Kids
+    relationship_sets:
+    - set_name: Set One
+      include:
+      - site_group:
+        - '929392'
+      - site_group:
+        - '932215'
+      - video_group:
+        - '73408862'
+        - '86471529'
+        site_group:
+        - '932400'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    - set_name: Set Two
+      include:
+      - video_group:
+        - '75279406'
+      - video_group:
+        - '73408862'
+        - '73408864'
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '929392'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+        - '1237515'
+    - set_name: Kids Channels
+      include:
+      - video_group:
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '932063'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    pluto_brand: true
+    _cloned_from: pluto_es_kids
+  pluto_tv_kids_french_ca:
+    display_name: Pluto TV - Kids - French (CA)
+    advertiser_name_contains:
+    - VCBS
+    - Spanish
+    template_campaign_id: '72671627'
+    campaign_name: Pluto TV - Kids - French - CA
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: Kids
+    relationship_sets:
+    - set_name: Set One
+      include:
+      - site_group:
+        - '929392'
+      - site_group:
+        - '932215'
+      - video_group:
+        - '73408862'
+        - '86471529'
+        site_group:
+        - '932400'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    - set_name: Set Two
+      include:
+      - video_group:
+        - '75279406'
+      - video_group:
+        - '73408862'
+        - '73408864'
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '929392'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+        - '1237515'
+    - set_name: Kids Channels
+      include:
+      - video_group:
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '932063'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    pluto_brand: true
+    _cloned_from: pluto_es_kids
+  pluto_tv_kids_latam:
+    display_name: Pluto TV - Kids (LATAM)
+    advertiser_name_contains:
+    - VCBS
+    - Spanish
+    template_campaign_id: '72285888'
+    campaign_name: Pluto TV - Kids - LATAM
+    formats:
+    - pluto_es_remnant
+    ad_unit_groups:
+      pluto_es_remnant: pplus_cbs_pluto_vcbs
+    placement_name_suffix: Kids
+    relationship_sets:
+    - set_name: Set One
+      include:
+      - site_group:
+        - '929392'
+      - site_group:
+        - '932215'
+      - video_group:
+        - '73408862'
+        - '86471529'
+        site_group:
+        - '932400'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    - set_name: Set Two
+      include:
+      - video_group:
+        - '75279406'
+      - video_group:
+        - '73408862'
+        - '73408864'
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '929392'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+        - '1237515'
+    - set_name: Kids Channels
+      include:
+      - video_group:
+        - '86471529'
+        site_group:
+        - '932400'
+      - site_group:
+        - '932063'
+      exclude:
+        site_group:
+        - '932411'
+        - '932412'
+    pluto_brand: true
+    _cloned_from: pluto_es_kids
+  pluto_tv_kids_uk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72909929'
+    campaign_name: Pluto TV - Kids - UK
+    display_name: Pluto TV - Kids (UK)
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+    _cloned_from: pluto_tv_kids_fr
+  pluto_tv_kids_usa:
+    display_name: Pluto TV - Kids (USA)
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '54441687'
+    campaign_name: Pluto TV - Kids - USA
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: ''
+    pluto_brand: true
+    _cloned_from: pluto_ca_kids_en
