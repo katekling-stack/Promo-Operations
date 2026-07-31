@@ -172,6 +172,42 @@ class FreeWheelClient:
                 return str(c.get("id"))
         return None
 
+    def list_campaigns_of_advertiser(self, advertiser_id: str, max_pages: int = 10,
+                                     per_page: int = 100) -> list[dict[str, Any]]:
+        """Every campaign under an advertiser (paginated) — one per brand."""
+        rows: list[dict[str, Any]] = []
+        for page in range(1, max_pages + 1):
+            payload = self._invoke("sh_1_1_list-campaigns", advertiser_id=int(advertiser_id),
+                                   per_page=per_page, page=page)
+            batch = self._rows(payload, "campaigns")
+            if not batch:
+                break
+            rows.extend(batch)
+            if len(batch) < per_page:
+                break
+        return rows
+
+    def discover_brand_campaigns(self, advertiser_name_contains: Optional[list[str]] = None
+                                 ) -> list[dict[str, Any]]:
+        """Enumerate advertisers -> their campaigns, the raw material for a brand sync.
+
+        Walks every promo advertiser (default filter: VCBS, plus the Nick/Pluto/
+        Paramount families) and flattens their campaigns to {name, id,
+        advertiser_name, advertiser_id}. brand_sync.reconcile() turns this into a
+        FW↔config coverage diff. Read-only.
+        """
+        fragments = advertiser_name_contains or ["VCBS", "Nick", "Pluto", "Paramount"]
+        seen_adv: dict[str, dict] = {}
+        for frag in fragments:
+            for adv in self.find_advertisers([frag]):
+                seen_adv.setdefault(str(adv.get("id")), adv)
+        out: list[dict[str, Any]] = []
+        for adv_id, adv in seen_adv.items():
+            for c in self.list_campaigns_of_advertiser(adv_id):
+                out.append({"name": c.get("name"), "id": c.get("id"),
+                            "advertiser_name": adv.get("name"), "advertiser_id": adv_id})
+        return out
+
     def get_insertion_order(self, io_id: str) -> dict[str, Any]:
         return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id))
 
