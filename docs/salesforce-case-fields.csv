@@ -34,3 +34,6 @@ Case,Override,Insertion Order Name,Insertion_Order_Name__c,Text,160,No,Auto-deri
 Case,Override,Recommended Show,Recommended_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title.
 Case,Override,Exclude Show,Exclude_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title (self-exclusion).
 Case,Override,Formats,Formats__c,Multi-Select Picklist,remnant_video; pause_ads; remnant_display; podcast; premium_preroll; essential_bumper; cbs_preroll; cbs_after_midroll_bumper; mtve_after_midroll_bumper; bet_after_midroll_bumper; cbs_1z_lockdown; cbs_2z_lockdown; pluto_es_remnant; pplus_kids_remnant; pplus_kids_premium_preroll; pplus_kids_essential_bumper; pplus_kids_remnant_pplus; pplus_kids_remnant_pluto; pplus_uk_remnant_pplus; pplus_uk_remnant_pluto; pluto_ca_remnant; network_10_remnant; nick_au_remnant; nick_au_network_10_remnant; nick_au_network_10_bumper; pictures_remnant,No,Auto-derived from Brand's format set; override the full set only if needed.
+Case,Status/Reason,Status (add value),Status,Picklist value,Ready for Automation,,Planner sets this to trigger the automation.
+Case,Status/Reason,Status (add value),Status,Picklist value,Needs Info,,Automation sets this (+ comment) when a Case can't be built.
+Case,Status/Reason,Reason (add value),Reason,Picklist value,Submitted to FreeWheel,,Automation sets this after the draft IO is created.
