@@ -122,6 +122,8 @@ header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
 .field label{display:block;font-weight:600;font-size:13.5px;margin:0 0 6px}
 .field label .req{color:var(--no);margin-left:3px}
 .hint{color:var(--muted);font-size:12px;margin-top:5px}
+.note{background:#eef4ff;border:1px solid #cfe0ff;border-left:3px solid var(--blue);
+ color:#1a2540;border-radius:8px;padding:9px 12px;font-size:12.5px;margin:2px 0 12px}
 input[type=text],input[type=date],select,textarea{width:100%;padding:11px 13px;font-size:15px;
  border:1.5px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);
  transition:border-color .15s, box-shadow .15s;appearance:none}
@@ -247,6 +249,7 @@ datalist{display:none}
 
   <div class="card">
     <h2>Targeting</h2><p class="sub">List everything to target — type a value and press Enter to add it. Audience Segments (Tier 1) auto-resolve from the Showlist; leave blank.</p>
+    <div class="note hidden" id="plutoNudge">This is a <b>Pluto</b> campaign — add the specific <b>Pluto channels / categories</b> below to target that inventory directly. Left blank, the lines run across the whole Pluto platform (broadest reach).</div>
     <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist"><input type="text" placeholder="e.g. NCIS  ↵"></div></div>
     <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-suggest="genres"><input type="text" placeholder="e.g. Drama  ↵"></div></div>
     <div class="field"><label>Networks</label><div class="chips" data-chips="networks"><input type="text" placeholder="e.g. Paramount Network  ↵"></div></div>
@@ -315,6 +318,7 @@ function onCampaign(){
   bindProducts();
   const isAU = c && c.region==="AU";
   $("#ratingWrap").classList.toggle("hidden", !(c && c.products.includes("network_10")));
+  $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
   renderMirrorTargets();
   validate();
 }

@@ -1,5 +1,14 @@
 # Pluto TV targeting names — per-region reference
 
+> **Platform vs. channel-level targeting (decision).** For Pluto-brand campaigns the
+> tool targets the **specific Pluto channels/categories a plan provides** (Tier 2 =
+> channels, Tier 3 = categories). When those are left blank, the base line falls back
+> to the **whole Pluto platform** site-group (broadest reach) — this is the intended
+> default, not a bug. Channel-level targeting is therefore always available; it's opt-in
+> per plan by listing the region's channels/categories below. The plan form shows a
+> reminder on Pluto campaigns to encourage this. (Live human-built orders always list
+> channels, so they never hit the platform fallback.)
+
 Pluto **category** and **channel** names are **region-specific** — the same show/genre
 is named differently per market, and a US name will not resolve elsewhere. When a Case
 targets Pluto, use the region's actual names below (Tier 3 = categories, Tier 2 =
