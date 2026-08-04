@@ -1,0 +1,811 @@
+pluto_market,category
+AR,ClassicTV
+AR,Comedy
+AR,Crime
+AR,Daytime TV
+AR,Drama
+AR,Entertainment
+AR,French
+AR,Game Shows
+AR,Gaming Anime
+AR,History Factual
+AR,Holiday
+AR,Home Lifestyle Food Culture
+AR,Horror
+AR,Kids
+AR,Movies
+AR,Music
+AR,New To Pluto
+AR,News
+AR,Reality
+AR,Sci-Fi
+AR,Seasonal
+AR,Spanish
+AR,Sports
+AR,Teen
+AR,Westerns
+AT,ClassicTV
+AT,Comedy
+AT,Crime
+AT,Daytime TV
+AT,Drama
+AT,Entertainment
+AT,French
+AT,Game Shows
+AT,Gaming Anime
+AT,History Factual
+AT,Holiday
+AT,Home Lifestyle Food Culture
+AT,Horror
+AT,Kids
+AT,Movies
+AT,Music
+AT,New To Pluto
+AT,News
+AT,Paranormal
+AT,Reality
+AT,Sci-Fi
+AT,Seasonal
+AT,Sitcoms
+AT,Spanish
+AT,Sports
+AT,Westerns
+AU,ClassicTV
+AU,Comedy
+AU,Crime
+AU,Drama
+AU,Entertainment
+AU,Factual
+AU,Game Shows
+AU,Gaming Anime
+AU,History Factual
+AU,Home Lifestyle Food Culture
+AU,Horror
+AU,Kids
+AU,Movies
+AU,Music
+AU,Paranormal
+AU,Reality
+AU,Sci-Fi
+AU,Sports
+AU,Teen
+BO,ClassicTV
+BO,Comedy
+BO,Crime
+BO,Daytime TV
+BO,Drama
+BO,Entertainment
+BO,French
+BO,Game Shows
+BO,Gaming Anime
+BO,History Factual
+BO,Holiday
+BO,Home Lifestyle Food Culture
+BO,Horror
+BO,Kids
+BO,Movies
+BO,Music
+BO,New To Pluto
+BO,News
+BO,Reality
+BO,Sci-Fi
+BO,Seasonal
+BO,Spanish
+BO,Sports
+BO,Teen
+BO,Westerns
+BR,ClassicTV
+BR,Comedy
+BR,Crime
+BR,Curiosity
+BR,Drama
+BR,Entertainment
+BR,Gaming Anime
+BR,History Factual
+BR,Holiday
+BR,Home Lifestyle Food Culture
+BR,Kids
+BR,Movies
+BR,Music
+BR,New To Pluto
+BR,News
+BR,Reality
+BR,Sci-Fi
+BR,Sports
+BR,Teen
+CA,ClassicTV
+CA,Comedy
+CA,Crime
+CA,Daytime TV
+CA,Drama
+CA,Entertainment
+CA,French
+CA,Game Shows
+CA,Gaming Anime
+CA,History Factual
+CA,Holiday
+CA,Home Lifestyle Food Culture
+CA,Horror
+CA,Kids
+CA,Movies
+CA,Music
+CA,News
+CA,Paranormal
+CA,Reality
+CA,Sci-Fi
+CA,Sports
+CA,Westerns
+CH,ClassicTV
+CH,Comedy
+CH,Crime
+CH,Daytime TV
+CH,Drama
+CH,Entertainment
+CH,French
+CH,Game Shows
+CH,Gaming Anime
+CH,History Factual
+CH,Holiday
+CH,Home Lifestyle Food Culture
+CH,Horror
+CH,Kids
+CH,Movies
+CH,Music
+CH,New To Pluto
+CH,News
+CH,Paranormal
+CH,Reality
+CH,Sci-Fi
+CH,Seasonal
+CH,Spanish
+CH,Sports
+CH,Westerns
+CL,ClassicTV
+CL,Comedy
+CL,Crime
+CL,Daytime TV
+CL,Drama
+CL,Entertainment
+CL,French
+CL,Game Shows
+CL,Gaming Anime
+CL,History Factual
+CL,Holiday
+CL,Home Lifestyle Food Culture
+CL,Horror
+CL,Kids
+CL,Movies
+CL,Music
+CL,New To Pluto
+CL,News
+CL,Reality
+CL,Sci-Fi
+CL,Seasonal
+CL,Spanish
+CL,Sports
+CL,Teen
+CL,Westerns
+CO,ClassicTV
+CO,Comedy
+CO,Crime
+CO,Daytime TV
+CO,Drama
+CO,Entertainment
+CO,French
+CO,Game Shows
+CO,Gaming Anime
+CO,History Factual
+CO,Holiday
+CO,Home Lifestyle Food Culture
+CO,Horror
+CO,Kids
+CO,Movies
+CO,Music
+CO,New To Pluto
+CO,News
+CO,Reality
+CO,Sci-Fi
+CO,Seasonal
+CO,Spanish
+CO,Sports
+CO,Teen
+CO,Westerns
+CR,ClassicTV
+CR,Comedy
+CR,Crime
+CR,Daytime TV
+CR,Drama
+CR,Entertainment
+CR,French
+CR,Game Shows
+CR,Gaming Anime
+CR,History Factual
+CR,Holiday
+CR,Home Lifestyle Food Culture
+CR,Horror
+CR,Kids
+CR,Movies
+CR,Music
+CR,New To Pluto
+CR,News
+CR,Reality
+CR,Sci-Fi
+CR,Seasonal
+CR,Spanish
+CR,Sports
+CR,Teen
+CR,Westerns
+DE,ClassicTV
+DE,Comedy
+DE,Crime
+DE,Daytime TV
+DE,Drama
+DE,Entertainment
+DE,French
+DE,Game Shows
+DE,Gaming Anime
+DE,History Factual
+DE,Holiday
+DE,Home Lifestyle Food Culture
+DE,Horror
+DE,Kids
+DE,Movies
+DE,Music
+DE,New To Pluto
+DE,News
+DE,Paranormal
+DE,Reality
+DE,Sci-Fi
+DE,Seasonal
+DE,Spanish
+DE,Sports
+DE,Westerns
+DK,ClassicTV
+DK,Comedy
+DK,Crime
+DK,Drama
+DK,Entertainment
+DK,Game Shows
+DK,Gaming Anime
+DK,History Factual
+DK,Holiday
+DK,Home Lifestyle Food Culture
+DK,Horror
+DK,Kids
+DK,Movies
+DK,Music
+DK,New To Pluto
+DK,News
+DK,Reality
+DK,Sci-Fi
+DK,Sitcoms
+DK,Sports
+DK,Westerns
+DO,ClassicTV
+DO,Comedy
+DO,Crime
+DO,Daytime TV
+DO,Drama
+DO,Entertainment
+DO,French
+DO,Game Shows
+DO,Gaming Anime
+DO,History Factual
+DO,Holiday
+DO,Home Lifestyle Food Culture
+DO,Horror
+DO,Kids
+DO,Movies
+DO,Music
+DO,New To Pluto
+DO,News
+DO,Reality
+DO,Sci-Fi
+DO,Seasonal
+DO,Spanish
+DO,Sports
+DO,Teen
+DO,Westerns
+EC,ClassicTV
+EC,Comedy
+EC,Crime
+EC,Daytime TV
+EC,Drama
+EC,Entertainment
+EC,French
+EC,Game Shows
+EC,Gaming Anime
+EC,History Factual
+EC,Holiday
+EC,Home Lifestyle Food Culture
+EC,Horror
+EC,Kids
+EC,Movies
+EC,Music
+EC,New To Pluto
+EC,News
+EC,Reality
+EC,Sci-Fi
+EC,Seasonal
+EC,Spanish
+EC,Sports
+EC,Teen
+EC,Westerns
+ES,ClassicTV
+ES,Comedy
+ES,Crime
+ES,Drama
+ES,Entertainment
+ES,Gaming Anime
+ES,History Factual
+ES,Holiday
+ES,Home Lifestyle Food Culture
+ES,Horror
+ES,Kids
+ES,Movies
+ES,Music
+ES,New To Pluto
+ES,News
+ES,Reality
+ES,Sci-Fi
+ES,Spanish
+ES,Sports
+ES,Teen
+FI,ClassicTV
+FI,Comedy
+FI,Crime
+FI,Drama
+FI,Entertainment
+FI,Game Shows
+FI,History Factual
+FI,Holiday
+FI,Home Lifestyle Food Culture
+FI,Horror
+FI,Kids
+FI,Movies
+FI,Music
+FI,News
+FI,Paranormal
+FI,Reality
+FI,Sci-Fi
+FI,Sitcoms
+FI,Sports
+FI,Westerns
+FR,ClassicTV
+FR,Comedy
+FR,Crime
+FR,Drama
+FR,Entertainment
+FR,French
+FR,Game Shows
+FR,Gaming Anime
+FR,History Factual
+FR,Holiday
+FR,Home Lifestyle Food Culture
+FR,Horror
+FR,Kids
+FR,Movies
+FR,Music
+FR,News
+FR,Reality
+FR,Sci-Fi
+FR,Sports
+FR,Westerns
+GT,ClassicTV
+GT,Comedy
+GT,Crime
+GT,Daytime TV
+GT,Drama
+GT,Entertainment
+GT,French
+GT,Game Shows
+GT,Gaming Anime
+GT,History Factual
+GT,Holiday
+GT,Home Lifestyle Food Culture
+GT,Horror
+GT,Kids
+GT,Movies
+GT,Music
+GT,New To Pluto
+GT,News
+GT,Reality
+GT,Sci-Fi
+GT,Seasonal
+GT,Spanish
+GT,Sports
+GT,Teen
+GT,Westerns
+HN,ClassicTV
+HN,Comedy
+HN,Crime
+HN,Daytime TV
+HN,Drama
+HN,Entertainment
+HN,French
+HN,Game Shows
+HN,Gaming Anime
+HN,History Factual
+HN,Holiday
+HN,Home Lifestyle Food Culture
+HN,Horror
+HN,Kids
+HN,Movies
+HN,Music
+HN,New To Pluto
+HN,News
+HN,Reality
+HN,Sci-Fi
+HN,Seasonal
+HN,Spanish
+HN,Sports
+HN,Teen
+HN,Westerns
+IE,ClassicTV
+IE,Comedy
+IE,Crime
+IE,Drama
+IE,Entertainment
+IE,Game Shows
+IE,Gaming Anime
+IE,History Factual
+IE,Home Lifestyle Food Culture
+IE,Horror
+IE,Kids
+IE,Movies
+IE,Music
+IE,New To Pluto
+IE,News
+IE,Paranormal
+IE,Reality
+IE,Sci-Fi
+IE,Sports
+IT,ClassicTV
+IT,Comedy
+IT,Crime
+IT,Drama
+IT,Entertainment
+IT,Gaming Anime
+IT,History Factual
+IT,Holiday
+IT,Home Lifestyle Food Culture
+IT,Horror
+IT,Kids
+IT,Movies
+IT,Music
+IT,New To Pluto
+IT,News
+IT,Reality
+IT,Sci-Fi
+IT,Sports
+IT,Westerns
+MX,ClassicTV
+MX,Comedy
+MX,Crime
+MX,Daytime TV
+MX,Drama
+MX,Entertainment
+MX,French
+MX,Game Shows
+MX,Gaming Anime
+MX,History Factual
+MX,Holiday
+MX,Home Lifestyle Food Culture
+MX,Horror
+MX,Kids
+MX,Movies
+MX,Music
+MX,New To Pluto
+MX,News
+MX,Reality
+MX,Sci-Fi
+MX,Seasonal
+MX,Spanish
+MX,Sports
+MX,Teen
+MX,Westerns
+NI,ClassicTV
+NI,Comedy
+NI,Crime
+NI,Daytime TV
+NI,Drama
+NI,Entertainment
+NI,French
+NI,Game Shows
+NI,Gaming Anime
+NI,History Factual
+NI,Holiday
+NI,Home Lifestyle Food Culture
+NI,Horror
+NI,Kids
+NI,Movies
+NI,Music
+NI,New To Pluto
+NI,News
+NI,Reality
+NI,Sci-Fi
+NI,Seasonal
+NI,Spanish
+NI,Sports
+NI,Teen
+NI,Westerns
+NO,ClassicTV
+NO,Comedy
+NO,Crime
+NO,Drama
+NO,Entertainment
+NO,Gaming Anime
+NO,History Factual
+NO,Holiday
+NO,Home Lifestyle Food Culture
+NO,Horror
+NO,Kids
+NO,Movies
+NO,Music
+NO,New To Pluto
+NO,News
+NO,Reality
+NO,Sci-Fi
+NO,Sitcoms
+NO,Sports
+NO,Westerns
+PA,ClassicTV
+PA,Comedy
+PA,Crime
+PA,Daytime TV
+PA,Drama
+PA,Entertainment
+PA,French
+PA,Game Shows
+PA,Gaming Anime
+PA,History Factual
+PA,Holiday
+PA,Home Lifestyle Food Culture
+PA,Horror
+PA,Kids
+PA,Movies
+PA,Music
+PA,New To Pluto
+PA,News
+PA,Reality
+PA,Sci-Fi
+PA,Seasonal
+PA,Spanish
+PA,Sports
+PA,Teen
+PA,Westerns
+PE,ClassicTV
+PE,Comedy
+PE,Crime
+PE,Daytime TV
+PE,Drama
+PE,Entertainment
+PE,French
+PE,Game Shows
+PE,Gaming Anime
+PE,History Factual
+PE,Holiday
+PE,Home Lifestyle Food Culture
+PE,Horror
+PE,Kids
+PE,Movies
+PE,Music
+PE,New To Pluto
+PE,News
+PE,Reality
+PE,Sci-Fi
+PE,Seasonal
+PE,Spanish
+PE,Sports
+PE,Teen
+PE,Westerns
+PY,ClassicTV
+PY,Comedy
+PY,Crime
+PY,Daytime TV
+PY,Drama
+PY,Entertainment
+PY,French
+PY,Game Shows
+PY,Gaming Anime
+PY,History Factual
+PY,Holiday
+PY,Home Lifestyle Food Culture
+PY,Horror
+PY,Kids
+PY,Movies
+PY,Music
+PY,New To Pluto
+PY,News
+PY,Reality
+PY,Sci-Fi
+PY,Seasonal
+PY,Spanish
+PY,Sports
+PY,Teen
+PY,Westerns
+SE,ClassicTV
+SE,Comedy
+SE,Crime
+SE,Drama
+SE,Entertainment
+SE,Gaming Anime
+SE,History Factual
+SE,Holiday
+SE,Home Lifestyle Food Culture
+SE,Horror
+SE,Kids
+SE,Movies
+SE,Music
+SE,New To Pluto
+SE,News
+SE,Reality
+SE,Sci-Fi
+SE,Sitcoms
+SE,Sports
+SE,Westerns
+SV,ClassicTV
+SV,Comedy
+SV,Crime
+SV,Daytime TV
+SV,Drama
+SV,Entertainment
+SV,French
+SV,Game Shows
+SV,Gaming Anime
+SV,History Factual
+SV,Holiday
+SV,Home Lifestyle Food Culture
+SV,Horror
+SV,Kids
+SV,Movies
+SV,Music
+SV,New To Pluto
+SV,News
+SV,Reality
+SV,Sci-Fi
+SV,Seasonal
+SV,Spanish
+SV,Sports
+SV,Teen
+SV,Westerns
+UK,Adults
+UK,ClassicTV
+UK,Comedy
+UK,Crime
+UK,Daytime TV
+UK,Drama
+UK,Entertainment
+UK,Game Shows
+UK,Gaming Anime
+UK,History Factual
+UK,Holiday
+UK,Home Lifestyle Food Culture
+UK,Horror
+UK,Kids
+UK,Movies
+UK,Music
+UK,New To Pluto
+UK,News
+UK,Paranormal
+UK,Reality
+UK,Sci-Fi
+UK,Sports
+US,African American
+US,Animals + Nature
+US,Anime
+US,Big Brother
+US,Classic TV
+US,ClassicTV
+US,Comedy
+US,Crime
+US,Daytime TV
+US,Drama
+US,En Español
+US,Entertainment
+US,Entertainment - Celebrity
+US,Entertainment - General
+US,Entertainment - Romance
+US,Game Shows
+US,Gaming Anime
+US,Halloween Hits
+US,History + Science
+US,History Factual
+US,Holiday
+US,Home + Food
+US,Home Lifestyle Food Culture
+US,Kids
+US,Local News
+US,Movie
+US,Movies
+US,Movies - Action
+US,Movies - General
+US,Movies - Mainstream
+US,Movies - Thriller/Horror
+US,Movies - Throwback
+US,Music
+US,Music Videos
+US,News
+US,News + Opinion
+US,News - Finance/Business
+US,News - Other
+US,News - Paramount Owned
+US,News - Politics
+US,Paranormal
+US,Reality
+US,Reality - Adventure
+US,Reality - Competition
+US,Reality - Lifestyle
+US,Sci-Fi
+US,Seasonal
+US,Seasons Greeting
+US,Spanish
+US,Spanish: Comedy
+US,Spanish: Crime
+US,Spanish: Daytime
+US,Spanish: Entertainment - General
+US,Spanish: Fantasy
+US,Spanish: Food
+US,Spanish: Gaming-Anime
+US,Spanish: Horror-Thriller
+US,Spanish: Kids
+US,Spanish: Lifestyle-Culture
+US,Spanish: Movies - General
+US,Spanish: News
+US,Spanish: Reality
+US,Spanish: Romance-Novelas
+US,Spanish: Sports
+US,Sports
+US,True Crime
+US,Westerns
+US,Young Adult
+UY,ClassicTV
+UY,Comedy
+UY,Crime
+UY,Daytime TV
+UY,Drama
+UY,Entertainment
+UY,French
+UY,Game Shows
+UY,Gaming Anime
+UY,History Factual
+UY,Holiday
+UY,Home Lifestyle Food Culture
+UY,Horror
+UY,Kids
+UY,Movies
+UY,Music
+UY,New To Pluto
+UY,News
+UY,Reality
+UY,Sci-Fi
+UY,Seasonal
+UY,Spanish
+UY,Sports
+UY,Teen
+UY,Westerns
+VE,ClassicTV
+VE,Comedy
+VE,Crime
+VE,Daytime TV
+VE,Drama
+VE,Entertainment
+VE,French
+VE,Game Shows
+VE,Gaming Anime
+VE,History Factual
+VE,Holiday
+VE,Home Lifestyle Food Culture
+VE,Horror
+VE,Kids
+VE,Movies
+VE,Music
+VE,New To Pluto
+VE,News
+VE,Reality
+VE,Sci-Fi
+VE,Seasonal
+VE,Spanish
+VE,Sports
+VE,Teen
+VE,Westerns
