@@ -118,6 +118,21 @@ def _pluto():
     return out
 
 
+def shows() -> list[tuple[str, str]]:
+    """(series_id, name) for every active FreeWheel Video Series — the searchable
+    universe for the Showlist field. Too large to embed (~230k) so it backs a
+    type-to-search lookup, never a scroll picklist or a free-text box."""
+    path = DATA / "series" / "synced_series.csv"
+    out: dict[str, str] = {}
+    if path.exists():
+        for r in _active(path):
+            name = (r.get("name") or "").strip()
+            sid = str(r.get("id") or "")
+            if name and sid:
+                out.setdefault(name, sid)
+    return sorted((sid, name) for name, sid in out.items())
+
+
 def _classify_segment(name: str) -> str | None:
     for label, fn in AUDIENCE_STRUCTURES:
         if fn(name):
@@ -182,6 +197,11 @@ def build() -> dict[str, int]:
     with (OUT / "audience-segments.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh); w.writerow(["segment_name", "structure"])
         w.writerows(aud)
+
+    sh = shows()
+    with (OUT / "shows.csv").open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh); w.writerow(["series_id", "name"])
+        w.writerows(sh)
 
     lines = ["# Region → Pluto market mapping", "",
              "Pluto categories/channels are keyed by country. Single-country regions map",
