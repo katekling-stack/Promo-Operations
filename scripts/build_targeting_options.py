@@ -27,16 +27,16 @@ REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data"
 OUT = REPO / "templates" / "targeting-options"
 
-# Our campaign region -> the Pluto market code(s) its inventory lives under. Single-
-# country regions map 1:1; GSA and LATAM span several Pluto markets (confirm with the
-# team which markets a GSA/LATAM promo should actually target).
+# Our campaign region -> the Pluto market its inventory lives under. Single-country
+# regions map 1:1. GSA and LATAM span several Pluto markets, so per the team we use one
+# PRIMARY market each (GSA -> DE, LATAM -> MX) for a clean list — change these here if a
+# different lead market is preferred.
 REGION_TO_PLUTO_MARKETS = {
     "USA": ["US"], "CA": ["CA"], "AU": ["AU"], "BR": ["BR"], "UK": ["UK"],
     "IE": ["IE"], "FR": ["FR"], "IT": ["IT"], "FI": ["FI"], "DK": ["DK"],
     "NO": ["NO"], "SE": ["SE"], "ES": ["ES"],
-    "GSA": ["DE", "AT", "CH"],
-    "LATAM": ["AR", "BO", "CL", "CO", "CR", "DO", "EC", "GT", "HN", "MX",
-              "NI", "PA", "PE", "PY", "SV", "UY", "VE"],
+    "GSA": ["DE"],     # primary of DE/AT/CH
+    "LATAM": ["MX"],   # primary of the LATAM markets
 }
 
 
@@ -106,6 +106,18 @@ def build() -> dict[str, int]:
         for mkt in sorted(pluto):
             for ch in sorted(pluto[mkt].get("channels", [])):
                 w.writerow([mkt, ch])
+
+    # Same data keyed by OUR region (via the primary market) — the directly-usable form
+    # of the lists: for a Salesforce dependent picklist (Region controls the values).
+    def _by_region(kind: str, path: Path):
+        with path.open("w", newline="", encoding="utf-8") as fh:
+            w = csv.writer(fh); w.writerow(["region", kind[:-1] if kind.endswith("s") else kind])
+            for region, markets in REGION_TO_PLUTO_MARKETS.items():
+                vals = sorted({v for m in markets for v in pluto.get(m, {}).get(kind, [])})
+                for v in vals:
+                    w.writerow([region, v])
+    _by_region("categories", OUT / "pluto-categories-by-region.csv")
+    _by_region("channels", OUT / "pluto-channels-by-region.csv")
 
     aud = audience_segments()
     (OUT / "audience-segments.csv").write_text(

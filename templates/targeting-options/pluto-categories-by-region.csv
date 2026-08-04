@@ -1,0 +1,360 @@
+region,categorie
+USA,African American
+USA,Animals + Nature
+USA,Anime
+USA,Big Brother
+USA,Classic TV
+USA,ClassicTV
+USA,Comedy
+USA,Crime
+USA,Daytime TV
+USA,Drama
+USA,En Español
+USA,Entertainment
+USA,Entertainment - Celebrity
+USA,Entertainment - General
+USA,Entertainment - Romance
+USA,Game Shows
+USA,Gaming Anime
+USA,Halloween Hits
+USA,History + Science
+USA,History Factual
+USA,Holiday
+USA,Home + Food
+USA,Home Lifestyle Food Culture
+USA,Kids
+USA,Local News
+USA,Movie
+USA,Movies
+USA,Movies - Action
+USA,Movies - General
+USA,Movies - Mainstream
+USA,Movies - Thriller/Horror
+USA,Movies - Throwback
+USA,Music
+USA,Music Videos
+USA,News
+USA,News + Opinion
+USA,News - Finance/Business
+USA,News - Other
+USA,News - Paramount Owned
+USA,News - Politics
+USA,Paranormal
+USA,Reality
+USA,Reality - Adventure
+USA,Reality - Competition
+USA,Reality - Lifestyle
+USA,Sci-Fi
+USA,Seasonal
+USA,Seasons Greeting
+USA,Spanish
+USA,Spanish: Comedy
+USA,Spanish: Crime
+USA,Spanish: Daytime
+USA,Spanish: Entertainment - General
+USA,Spanish: Fantasy
+USA,Spanish: Food
+USA,Spanish: Gaming-Anime
+USA,Spanish: Horror-Thriller
+USA,Spanish: Kids
+USA,Spanish: Lifestyle-Culture
+USA,Spanish: Movies - General
+USA,Spanish: News
+USA,Spanish: Reality
+USA,Spanish: Romance-Novelas
+USA,Spanish: Sports
+USA,Sports
+USA,True Crime
+USA,Westerns
+USA,Young Adult
+CA,ClassicTV
+CA,Comedy
+CA,Crime
+CA,Daytime TV
+CA,Drama
+CA,Entertainment
+CA,French
+CA,Game Shows
+CA,Gaming Anime
+CA,History Factual
+CA,Holiday
+CA,Home Lifestyle Food Culture
+CA,Horror
+CA,Kids
+CA,Movies
+CA,Music
+CA,News
+CA,Paranormal
+CA,Reality
+CA,Sci-Fi
+CA,Sports
+CA,Westerns
+AU,ClassicTV
+AU,Comedy
+AU,Crime
+AU,Drama
+AU,Entertainment
+AU,Factual
+AU,Game Shows
+AU,Gaming Anime
+AU,History Factual
+AU,Home Lifestyle Food Culture
+AU,Horror
+AU,Kids
+AU,Movies
+AU,Music
+AU,Paranormal
+AU,Reality
+AU,Sci-Fi
+AU,Sports
+AU,Teen
+BR,ClassicTV
+BR,Comedy
+BR,Crime
+BR,Curiosity
+BR,Drama
+BR,Entertainment
+BR,Gaming Anime
+BR,History Factual
+BR,Holiday
+BR,Home Lifestyle Food Culture
+BR,Kids
+BR,Movies
+BR,Music
+BR,New To Pluto
+BR,News
+BR,Reality
+BR,Sci-Fi
+BR,Sports
+BR,Teen
+UK,Adults
+UK,ClassicTV
+UK,Comedy
+UK,Crime
+UK,Daytime TV
+UK,Drama
+UK,Entertainment
+UK,Game Shows
+UK,Gaming Anime
+UK,History Factual
+UK,Holiday
+UK,Home Lifestyle Food Culture
+UK,Horror
+UK,Kids
+UK,Movies
+UK,Music
+UK,New To Pluto
+UK,News
+UK,Paranormal
+UK,Reality
+UK,Sci-Fi
+UK,Sports
+IE,ClassicTV
+IE,Comedy
+IE,Crime
+IE,Drama
+IE,Entertainment
+IE,Game Shows
+IE,Gaming Anime
+IE,History Factual
+IE,Home Lifestyle Food Culture
+IE,Horror
+IE,Kids
+IE,Movies
+IE,Music
+IE,New To Pluto
+IE,News
+IE,Paranormal
+IE,Reality
+IE,Sci-Fi
+IE,Sports
+FR,ClassicTV
+FR,Comedy
+FR,Crime
+FR,Drama
+FR,Entertainment
+FR,French
+FR,Game Shows
+FR,Gaming Anime
+FR,History Factual
+FR,Holiday
+FR,Home Lifestyle Food Culture
+FR,Horror
+FR,Kids
+FR,Movies
+FR,Music
+FR,News
+FR,Reality
+FR,Sci-Fi
+FR,Sports
+FR,Westerns
+IT,ClassicTV
+IT,Comedy
+IT,Crime
+IT,Drama
+IT,Entertainment
+IT,Gaming Anime
+IT,History Factual
+IT,Holiday
+IT,Home Lifestyle Food Culture
+IT,Horror
+IT,Kids
+IT,Movies
+IT,Music
+IT,New To Pluto
+IT,News
+IT,Reality
+IT,Sci-Fi
+IT,Sports
+IT,Westerns
+FI,ClassicTV
+FI,Comedy
+FI,Crime
+FI,Drama
+FI,Entertainment
+FI,Game Shows
+FI,History Factual
+FI,Holiday
+FI,Home Lifestyle Food Culture
+FI,Horror
+FI,Kids
+FI,Movies
+FI,Music
+FI,News
+FI,Paranormal
+FI,Reality
+FI,Sci-Fi
+FI,Sitcoms
+FI,Sports
+FI,Westerns
+DK,ClassicTV
+DK,Comedy
+DK,Crime
+DK,Drama
+DK,Entertainment
+DK,Game Shows
+DK,Gaming Anime
+DK,History Factual
+DK,Holiday
+DK,Home Lifestyle Food Culture
+DK,Horror
+DK,Kids
+DK,Movies
+DK,Music
+DK,New To Pluto
+DK,News
+DK,Reality
+DK,Sci-Fi
+DK,Sitcoms
+DK,Sports
+DK,Westerns
+NO,ClassicTV
+NO,Comedy
+NO,Crime
+NO,Drama
+NO,Entertainment
+NO,Gaming Anime
+NO,History Factual
+NO,Holiday
+NO,Home Lifestyle Food Culture
+NO,Horror
+NO,Kids
+NO,Movies
+NO,Music
+NO,New To Pluto
+NO,News
+NO,Reality
+NO,Sci-Fi
+NO,Sitcoms
+NO,Sports
+NO,Westerns
+SE,ClassicTV
+SE,Comedy
+SE,Crime
+SE,Drama
+SE,Entertainment
+SE,Gaming Anime
+SE,History Factual
+SE,Holiday
+SE,Home Lifestyle Food Culture
+SE,Horror
+SE,Kids
+SE,Movies
+SE,Music
+SE,New To Pluto
+SE,News
+SE,Reality
+SE,Sci-Fi
+SE,Sitcoms
+SE,Sports
+SE,Westerns
+ES,ClassicTV
+ES,Comedy
+ES,Crime
+ES,Drama
+ES,Entertainment
+ES,Gaming Anime
+ES,History Factual
+ES,Holiday
+ES,Home Lifestyle Food Culture
+ES,Horror
+ES,Kids
+ES,Movies
+ES,Music
+ES,New To Pluto
+ES,News
+ES,Reality
+ES,Sci-Fi
+ES,Spanish
+ES,Sports
+ES,Teen
+GSA,ClassicTV
+GSA,Comedy
+GSA,Crime
+GSA,Daytime TV
+GSA,Drama
+GSA,Entertainment
+GSA,French
+GSA,Game Shows
+GSA,Gaming Anime
+GSA,History Factual
+GSA,Holiday
+GSA,Home Lifestyle Food Culture
+GSA,Horror
+GSA,Kids
+GSA,Movies
+GSA,Music
+GSA,New To Pluto
+GSA,News
+GSA,Paranormal
+GSA,Reality
+GSA,Sci-Fi
+GSA,Seasonal
+GSA,Spanish
+GSA,Sports
+GSA,Westerns
+LATAM,ClassicTV
+LATAM,Comedy
+LATAM,Crime
+LATAM,Daytime TV
+LATAM,Drama
+LATAM,Entertainment
+LATAM,French
+LATAM,Game Shows
+LATAM,Gaming Anime
+LATAM,History Factual
+LATAM,Holiday
+LATAM,Home Lifestyle Food Culture
+LATAM,Horror
+LATAM,Kids
+LATAM,Movies
+LATAM,Music
+LATAM,New To Pluto
+LATAM,News
+LATAM,Reality
+LATAM,Sci-Fi
+LATAM,Seasonal
+LATAM,Spanish
+LATAM,Sports
+LATAM,Teen
+LATAM,Westerns

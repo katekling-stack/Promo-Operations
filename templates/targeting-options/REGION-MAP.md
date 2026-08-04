@@ -18,5 +18,5 @@ map 1:1; GSA and LATAM span several markets (confirm the intended set).
 | NO | NO | 20 | 396 |
 | SE | SE | 20 | 418 |
 | ES | ES | 20 | 342 |
-| GSA | DE, AT, CH | 26 | 549 |
-| LATAM | AR, BO, CL, CO, CR, DO, EC, GT, HN, MX, NI, PA, PE, PY, SV, UY, VE | 25 | 321 |
+| GSA | DE | 25 | 544 |
+| LATAM | MX | 25 | 316 |
