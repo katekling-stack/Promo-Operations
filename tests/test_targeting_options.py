@@ -18,7 +18,9 @@ def test_genres_include_franchise_and_daypart_and_drop_removed():
     types = {t for _, t in g}
     assert "Drama" in values and "Comedy" in values
     assert {"Genre", "Franchise", "Daypart"} <= types      # all three kinds present
-    assert "Daytime" in values                             # Daypart: Daytime added
+    assert "Daypart: Daytime" in values and "Daypart: Sports" in values   # dayparts, prefixed
+    # daypart values are prefixed so they never collide with same-named genres
+    assert all(v.startswith("Daypart: ") for v, t in g if t == "Daypart")
     # removed values are gone
     for gone in ("Pluto TV: KIDS  CONTENT (COPPA)", "SERIES", "SPECIAL"):
         assert gone not in values, gone

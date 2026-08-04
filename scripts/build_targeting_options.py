@@ -42,8 +42,6 @@ REGION_TO_PLUTO_MARKETS = {
 
 # VG: Genre values to drop from the picklist (not real content genres).
 REMOVE_GENRES = {"Pluto TV: KIDS  CONTENT (COPPA)", "SERIES", "SPECIAL"}
-# Extra non-Genre video-group options the team wants in the same picklist.
-EXTRA_OPTIONS = [("Daytime", "Daypart")]   # VG: Daypart: Daytime
 
 # Canonical audience-segment naming STRUCTURES (from the Promo Ops workbook). New
 # segments matching these prefixes are ingested; anything else is ignored.
@@ -79,15 +77,19 @@ def genres() -> list[tuple[str, str]]:
             label = r["name"].split("VG: Genre:", 1)[1].strip()
             if label and label not in REMOVE_GENRES and label not in seen:
                 seen.add(label); out.append((label, "Genre"))
-    fr = DATA / "video_groups" / "seed_franchise_video_groups.csv"
-    if fr.exists():
-        for r in _active(fr):
-            label = r["name"].split("VG: Franchise:", 1)[-1].strip()
-            if label and label not in seen:
-                seen.add(label); out.append((label, "Franchise"))
-    for label, kind in EXTRA_OPTIONS:
-        if label not in seen:
-            seen.add(label); out.append((label, kind))
+    # Franchise values keep their bare name; Daypart values are prefixed "Daypart: X"
+    # so they read unambiguously and never collide with a same-named genre (Sports,
+    # News, Movies…), which are DIFFERENT FreeWheel video groups.
+    for fname, split_on, kind, label_prefix in (
+        ("seed_franchise_video_groups.csv", "VG: Franchise:", "Franchise", ""),
+        ("seed_daypart_video_groups.csv", "VG: Daypart:", "Daypart", "Daypart: "),
+    ):
+        path = DATA / "video_groups" / fname
+        if path.exists():
+            for r in _active(path):
+                label = label_prefix + r["name"].split(split_on, 1)[-1].strip()
+                if label and label not in seen:
+                    seen.add(label); out.append((label, kind))
     return sorted(out)
 
 
