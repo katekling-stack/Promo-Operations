@@ -5,15 +5,17 @@ both the interactive plan form's dropdowns and (eventually) the Salesforce pickl
 so a planner can only pick real values (no free-text typos).
 
 Outputs (templates/targeting-options/):
-  genres.csv                     one row per canonical genre (global, not per-region)
-  pluto-categories.csv           pluto_market, category   (Tier 3)
-  pluto-channels.csv             pluto_market, channel    (Tier 2)
-  audience-segments.csv          segment_name             (Tier 1 DDA)
-  REGION-MAP.md                  how our regions map to Pluto market codes
+  genres.csv                     value, type   (Genre / Franchise / Daypart)
+  pluto-categories-by-region.csv region, category   (Pluto regions only)
+  pluto-channels-by-region.csv   region, channel    (Pluto regions only)
+  pluto-categories.csv / -channels.csv   raw, keyed by Pluto market (reference)
+  audience-segments.csv          segment_name, structure
+  REGION-MAP.md                  our region -> Pluto market(s)
 
-Genres + categories are small (good as scroll/multi-select). Channels (~13k) and
-audience (~6k) are large — use a type-to-search picker. Showlist is NOT exported: FW
-has ~230k series, so it stays a search-as-you-type field, not a finite list.
+Refresh cadence: the Pluto/genre lists change slowly. Audience segments change DAILY —
+re-run `promo-ops sync-audience-items` (pulls the live FreeWheel audience library) then
+this script to ingest new ones. Showlist is NOT exported (FW has ~230k series -> stays a
+search-as-you-type field).
 
 Run: python scripts/build_targeting_options.py
 """
@@ -28,16 +30,31 @@ DATA = REPO / "data"
 OUT = REPO / "templates" / "targeting-options"
 
 # Our campaign region -> the Pluto market its inventory lives under. Single-country
-# regions map 1:1. GSA and LATAM span several Pluto markets, so per the team we use one
-# PRIMARY market each (GSA -> DE, LATAM -> MX) for a clean list — change these here if a
-# different lead market is preferred.
+# regions map 1:1. GSA and LATAM span several markets, so per the team we use one
+# PRIMARY market each (GSA -> DE, LATAM -> MX). Regions that don't run Pluto
+# (regions.yaml has_pluto: false, e.g. AU, IE) are dropped automatically.
 REGION_TO_PLUTO_MARKETS = {
     "USA": ["US"], "CA": ["CA"], "AU": ["AU"], "BR": ["BR"], "UK": ["UK"],
     "IE": ["IE"], "FR": ["FR"], "IT": ["IT"], "FI": ["FI"], "DK": ["DK"],
     "NO": ["NO"], "SE": ["SE"], "ES": ["ES"],
-    "GSA": ["DE"],     # primary of DE/AT/CH
-    "LATAM": ["MX"],   # primary of the LATAM markets
+    "GSA": ["DE"], "LATAM": ["MX"],
 }
+
+# VG: Genre values to drop from the picklist (not real content genres).
+REMOVE_GENRES = {"Pluto TV: KIDS  CONTENT (COPPA)", "SERIES", "SPECIAL"}
+# Extra non-Genre video-group options the team wants in the same picklist.
+EXTRA_OPTIONS = [("Daytime", "Daypart")]   # VG: Daypart: Daytime
+
+# Canonical audience-segment naming STRUCTURES (from the Promo Ops workbook). New
+# segments matching these prefixes are ingested; anything else is ignored.
+AUDIENCE_STRUCTURES = [
+    ("GL-DDA-1P", lambda s: s.startswith("GL-DDA-1P")),
+    ("AU-DWH-Summit", lambda s: s.startswith("AU - DWH -")),
+    ("AAM-VCBS-Extension", lambda s: s.startswith("AAM-VCBS-")
+        or s.startswith("AAM - ViacomCBS") or s.startswith("AAM-lotame")
+        or s.startswith("AAM-acxiom")),
+    ("comScore", lambda s: s.startswith("comScore")),
+]
 
 
 def _active(path: Path):
@@ -46,14 +63,32 @@ def _active(path: Path):
             yield r
 
 
-def genres() -> list[str]:
-    seen: dict[str, None] = {}
+def _pluto_regions() -> set[str]:
+    """Regions that actually run Pluto (regions.yaml has_pluto)."""
+    import yaml
+    regions = yaml.safe_load((REPO / "config" / "regions.yaml").read_text())["regions"]
+    return {r for r, cfg in regions.items() if cfg.get("has_pluto")}
+
+
+def genres() -> list[tuple[str, str]]:
+    """(value, type) rows: content Genres + Franchise values + Daypart options."""
+    out: list[tuple[str, str]] = []
+    seen: set[str] = set()
     for r in _active(DATA / "video_groups" / "seed_genre_video_groups.csv"):
-        name = r["name"]
-        if name.startswith("VG: Genre:"):
-            label = name.split("VG: Genre:", 1)[1].strip()
-            seen.setdefault(label, None)
-    return sorted(seen)
+        if r["name"].startswith("VG: Genre:"):
+            label = r["name"].split("VG: Genre:", 1)[1].strip()
+            if label and label not in REMOVE_GENRES and label not in seen:
+                seen.add(label); out.append((label, "Genre"))
+    fr = DATA / "video_groups" / "seed_franchise_video_groups.csv"
+    if fr.exists():
+        for r in _active(fr):
+            label = r["name"].split("VG: Franchise:", 1)[-1].strip()
+            if label and label not in seen:
+                seen.add(label); out.append((label, "Franchise"))
+    for label, kind in EXTRA_OPTIONS:
+        if label not in seen:
+            seen.add(label); out.append((label, kind))
+    return sorted(out)
 
 
 _CAT = re.compile(r"SG: PlutoTV (?:Promo )?Category:?\s*(.*)")
@@ -81,19 +116,40 @@ def _pluto():
     return out
 
 
-def audience_segments() -> list[str]:
-    path = DATA / "audience_segments" / "synced_audience_items.csv"
-    if not path.exists():
-        return []
-    names = {r.get("segment_name") or r.get("name") for r in csv.DictReader(path.open())}
-    return sorted(n for n in names if n)
+def _classify_segment(name: str) -> str | None:
+    for label, fn in AUDIENCE_STRUCTURES:
+        if fn(name):
+            return label
+    return None
+
+
+def audience_segments() -> list[tuple[str, str]]:
+    """(segment_name, structure) from the workbook seed UNION the live FW sync,
+    keeping only segments that match a canonical structure. Re-run the FW sync
+    (`promo-ops sync-audience-items`) before this to ingest the day's new segments."""
+    found: dict[str, str] = {}
+    seed = DATA / "audience_segments" / "seed_promo_segments.csv"
+    if seed.exists():
+        for r in csv.DictReader(seed.open()):
+            n = (r.get("segment_name") or "").strip()
+            if n:
+                found[n] = r.get("structure") or _classify_segment(n) or "other"
+    synced = DATA / "audience_segments" / "synced_audience_items.csv"
+    if synced.exists():
+        for r in csv.DictReader(synced.open()):
+            n = (r.get("segment_name") or r.get("name") or "").strip()
+            k = _classify_segment(n) if n else None
+            if k and n not in found:
+                found[n] = k
+    return sorted(found.items())
 
 
 def build() -> dict[str, int]:
     OUT.mkdir(parents=True, exist_ok=True)
     g = genres()
-    (OUT / "genres.csv").write_text(
-        "genre\n" + "\n".join(g) + "\n", encoding="utf-8")
+    with (OUT / "genres.csv").open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh); w.writerow(["value", "type"])
+        w.writerows(g)
 
     pluto = _pluto()
     with (OUT / "pluto-categories.csv").open("w", newline="", encoding="utf-8") as fh:
@@ -107,38 +163,45 @@ def build() -> dict[str, int]:
             for ch in sorted(pluto[mkt].get("channels", [])):
                 w.writerow([mkt, ch])
 
-    # Same data keyed by OUR region (via the primary market) — the directly-usable form
-    # of the lists: for a Salesforce dependent picklist (Region controls the values).
+    # Per-OUR-region files (via the primary market) — Pluto regions only.
+    pluto_regions = _pluto_regions()
+    active_regions = {r: m for r, m in REGION_TO_PLUTO_MARKETS.items() if r in pluto_regions}
+
     def _by_region(kind: str, path: Path):
         with path.open("w", newline="", encoding="utf-8") as fh:
             w = csv.writer(fh); w.writerow(["region", kind[:-1] if kind.endswith("s") else kind])
-            for region, markets in REGION_TO_PLUTO_MARKETS.items():
-                vals = sorted({v for m in markets for v in pluto.get(m, {}).get(kind, [])})
-                for v in vals:
+            for region, markets in active_regions.items():
+                for v in sorted({v for m in markets for v in pluto.get(m, {}).get(kind, [])}):
                     w.writerow([region, v])
     _by_region("categories", OUT / "pluto-categories-by-region.csv")
     _by_region("channels", OUT / "pluto-channels-by-region.csv")
 
     aud = audience_segments()
-    (OUT / "audience-segments.csv").write_text(
-        "segment_name\n" + "\n".join(aud) + "\n", encoding="utf-8")
+    with (OUT / "audience-segments.csv").open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh); w.writerow(["segment_name", "structure"])
+        w.writerows(aud)
 
     lines = ["# Region → Pluto market mapping", "",
-             "Pluto categories/channels are keyed by country. Our single-country regions",
-             "map 1:1; GSA and LATAM span several markets (confirm the intended set).", "",
+             "Pluto categories/channels are keyed by country. Single-country regions map",
+             "1:1; GSA and LATAM use a primary market (GSA→DE, LATAM→MX). Regions that",
+             "don't run Pluto (has_pluto: false) are omitted.", "",
              "| Our region | Pluto market(s) | categories | channels |",
              "|---|---|---|---|"]
-    for region, markets in REGION_TO_PLUTO_MARKETS.items():
+    for region, markets in active_regions.items():
         cats = len({c for m in markets for c in pluto.get(m, {}).get("categories", [])})
         chans = len({c for m in markets for c in pluto.get(m, {}).get("channels", [])})
         lines.append(f"| {region} | {', '.join(markets)} | {cats} | {chans} |")
     (OUT / "REGION-MAP.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    return {"genres": len(g),
-            "pluto_markets": len(pluto),
+    from collections import Counter
+    struct = Counter(s for _, s in aud)
+    return {"genres": sum(1 for _, t in g if t == "Genre"),
+            "franchise": sum(1 for _, t in g if t == "Franchise"),
+            "daypart": sum(1 for _, t in g if t == "Daypart"),
+            "pluto_regions": len(active_regions),
             "categories": sum(len(v.get("categories", [])) for v in pluto.values()),
             "channels": sum(len(v.get("channels", [])) for v in pluto.values()),
-            "audience_segments": len(aud)}
+            "audience_segments": len(aud), "audience_by_structure": dict(struct)}
 
 
 if __name__ == "__main__":

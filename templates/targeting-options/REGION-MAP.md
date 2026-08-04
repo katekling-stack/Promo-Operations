@@ -1,16 +1,15 @@
 # Region → Pluto market mapping
 
-Pluto categories/channels are keyed by country. Our single-country regions
-map 1:1; GSA and LATAM span several markets (confirm the intended set).
+Pluto categories/channels are keyed by country. Single-country regions map
+1:1; GSA and LATAM use a primary market (GSA→DE, LATAM→MX). Regions that
+don't run Pluto (has_pluto: false) are omitted.
 
 | Our region | Pluto market(s) | categories | channels |
 |---|---|---|---|
 | USA | US | 68 | 1037 |
 | CA | CA | 22 | 388 |
-| AU | AU | 19 | 77 |
 | BR | BR | 19 | 269 |
 | UK | UK | 22 | 526 |
-| IE | IE | 19 | 193 |
 | FR | FR | 20 | 280 |
 | IT | IT | 19 | 304 |
 | FI | FI | 20 | 265 |

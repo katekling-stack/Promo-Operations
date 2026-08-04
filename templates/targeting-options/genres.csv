@@ -1,271 +1,316 @@
-genre
-Action
-Action - Adventure
-Action Classics
-Action Comedies
-Action Sci-Fi & Fantasy
-Action Thrillers
-Adventure
-Adventures
-African-American Action
-African-American Comedies
-African-American Documentaries
-African-American Romance
-Alien Sci-Fi
-Animal Tales
-Animals
-Animation
-Anime
-Anime Action & Adventure
-Anime Comedy
-Anime Drama
-Anime Fantasy
-Anime Feature Films
-Anime Horror
-Anime Sci-Fi
-Anime Series
-Anime for Mature Audiences
-Art & Design
-Arts
-Asian Horror
-B-Movie Horror
-Ballet
-Best of British Humor
-Biographical Documentaries
-Blaxploitation
-Blues
-Book Characters
-Car Culture
-Career & Finance
-Cartoons
-Celebrity & Gossip
-Childrens Television
-Christian & Gospel
-Classic Comedies
-Classic Dramas
-Classic Movie Musicals
-Classic Rock
-Classic Sci-Fi & Fantasy
-Classic Stage Musicals
-Classic Thrillers
-Classic War Stories
-Classic Westerns
-Classical
-Classics
-Comedies
-Comedy
-Comic Books and Superheroes
-Coming of Age
-Competition
-Consumer Products & Software
-Contemporary Movie Musicals
-Contemporary R&B
-Cooking Instruction
-Country
-Creature Features
-Crime
-Crime Action
-Crime Documentaries
-Crime Thrillers
-Cult Comedies
-Cult Horror
-DIY & How To
-Dark Humor & Black Comedies
-Deadly Disasters
-Dinosaurs
-Disco
-Documentary
-Docuseries
-Drama
-Dramas
-Education & Guidance
-Educational
-Entertaining
-Entertainment
-Epics
-Erotic Thrillers
-Espionage Action
-Espionage Thrillers
-Esportes
-Experimental
-Fails & Pranks
-Faith & Spirituality Documentaries
-Faith & Spirituality Feature Films
-Family
-Family Adventures
-Family Animation
-Family Classics
-Family Comedies
-Family Dramas
-Family Sci-Fi & Fantasy
-Fantasy
-Fashion
-Fight
-Fighting & Self Defense
-Film Noir
-Fishing
-Food & Wine
-Food Stories
-Foreign Action & Adventure
-Foreign Art House
-Foreign Classic Comedies
-Foreign Classic Dramas
-Foreign Classics
-Foreign Comedies
-Foreign Documentaries
-Foreign Gay & Lesbian
-Foreign Horror
-Foreign Musicals
-Foreign Romance
-Foreign Sci-Fi & Fantasy
-Foreign Steamy Romance
-Foreign Thrillers
-Frankenstein
-GLBT
-Gardening
-Gay
-Gay & Lesbian Comedies
-Gay & Lesbian Dramas
-Gay & Lesbian Romance
-General Indie Film & Short Films
-General News
-Gospel
-Hard Rock & Heavy Metal
-Heist Films
-Hip-Hop
-Hip-Hop/Rap
-Historical Documentaries
-History & Social Studies
-Hobbies & Games
-Holiday
-Home & Garden
-Home Improvement
-Horror
-Horror Classics
-HowTo
-Hunting
-Independent
-Indie
-Indie Action
-Indie Classics
-Indie Comedies
-Indie Documentaries
-Indie Dramas
-Indie Gay & Lesbian
-Indie Romance
-Indie Suspense & Thriller
-Inspirational Biographies
-Inspirational Stories
-Inspirational Stories for Kids
-Investigative Journalism
-Italian Horror
-Kids
-Kids' Anime
-Kids' Inspirational
-Kids' Music
-Kids' TV
-Late Night
-Late Night Comedies
-Late Night TV
-Latino
-Latino Comedies
-Lesbian
-Lifestyle
-Live Action
-Magic & Illusion
-Makeover
-Martial Arts
-Men's Interest
-Military & War Action
-Military Documentaries
-Mindfulness & Prayer
-Miscellaneous Documentaries
-Mobster
-Mockumentaries
-Modern & Contemporary
-Monsters
-Music
-Music Documentaries
-Musical
-Must-See Concerts
-Must-See Musicals
-Mystery
-News
-None
-Pets
-Pluto TV: KIDS  CONTENT (COPPA)
-Poker & Gambling
-Political
-Political Comedies
-Political Documentaries
-Political Thrillers
-Politics
-Pop
-Preschool
-Psychological Thrillers
-Punk Rock
-R&B/Soul
-Rap & Hip-Hop
-Reality
-Reality TV
-RealityShow
-Reggae
-Religion & Mythology Documentaries
-Religious & Spiritual Dramas
-Retro
-Rock
-Rock & Roll Oldies
-Romance
-Romance Classics
-Romantic Comedies
-Romantic Dramas
-SERIES
-SPECIAL
-Satanic Stories
-Sci-Fi Adventure
-Sci-Fi Cult Classics
-Sci-Fi Dramas
-Sci-Fi Horror
-Sci-Fi Thrillers
-Science
-Science and Nature Documentaries
-Screwball
-Scripted
-Sculpture
-Showbiz Comedies
-Singer-Songwriters
-Singer/Songwriter
-Sitcom
-Sketch Comedies
-Slapstick
-Slashers and Serial Killers
-Social & Cultural Documentaries
-Spiritual Mysteries
-Spoofs and Satire
-Sports
-Sports & Sports Highlights
-Sports Comedies
-Sports Documentaries
-Stand-Up
-Super Swashbucklers
-Supernatural Horror
-Supernatural Sci-Fi
-Supernatural Thrillers
-Suspense
-Teen
-Teen Comedies
-Teen Dramas
-Teen Romance
-Teen Screams
-Travel
-Travel & Adventure Documentaries
-Urban & Dance
-Vampires
-Variety
-Video Games
-War
-Werewolves
-Western
-Westerns
-Women's Interest
-Zombies
+value,type
+16 & Pregnant,Franchise
+AFC Soccer,Franchise
+Action,Genre
+Action - Adventure,Genre
+Action Classics,Genre
+Action Comedies,Genre
+Action Sci-Fi & Fantasy,Genre
+Action Thrillers,Genre
+Adventure,Genre
+Adventures,Genre
+Aerial Series,Franchise
+Africa Series,Franchise
+African-American Action,Genre
+African-American Comedies,Genre
+African-American Documentaries,Genre
+African-American Romance,Genre
+Alien Sci-Fi,Genre
+Animal Tales,Genre
+Animals,Genre
+Animation,Genre
+Anime,Genre
+Anime Action & Adventure,Genre
+Anime Comedy,Genre
+Anime Drama,Genre
+Anime Fantasy,Genre
+Anime Feature Films,Genre
+Anime Horror,Genre
+Anime Sci-Fi,Genre
+Anime Series,Genre
+Anime for Mature Audiences,Genre
+Art & Design,Genre
+Arts,Genre
+Asian Horror,Genre
+B-Movie Horror,Genre
+Ballet,Genre
+Barclay's Super League,Franchise
+Basketball Wives,Franchise
+Beavis and Butt Head,Franchise
+Bellator,Franchise
+Best of British Humor,Genre
+Big Brother,Franchise
+Biographical Documentaries,Genre
+Black Ink Crew,Franchise
+Blaxploitation,Genre
+Blue's Clues,Franchise
+Blues,Genre
+Bob the Builder,Franchise
+Book Characters,Genre
+CSI,Franchise
+Car Culture,Genre
+Career & Finance,Genre
+Cartoons,Genre
+Celebrity & Gossip,Genre
+Challenge,Franchise
+Childrens Television,Genre
+Christian & Gospel,Genre
+Classic Comedies,Genre
+Classic Dramas,Genre
+Classic Movie Musicals,Genre
+Classic Rock,Genre
+Classic Sci-Fi & Fantasy,Genre
+Classic Stage Musicals,Genre
+Classic Thrillers,Genre
+Classic War Stories,Genre
+Classic Westerns,Genre
+Classical,Genre
+Classics,Genre
+Comedies,Genre
+Comedy,Genre
+Comedy Central Roasts,Franchise
+Comedy Specials,Franchise
+Comic Books and Superheroes,Genre
+Coming of Age,Genre
+Competition,Genre
+Concacaf,Franchise
+Consumer Products & Software,Genre
+Contemporary Movie Musicals,Genre
+Contemporary R&B,Genre
+Cooking Instruction,Genre
+Country,Genre
+Creature Features,Genre
+Crime,Genre
+Crime Action,Genre
+Crime Documentaries,Genre
+Crime Thrillers,Genre
+Cult Comedies,Genre
+Cult Horror,Genre
+DIY & How To,Genre
+Dark Humor & Black Comedies,Genre
+Daytime,Daypart
+Deadly Disasters,Genre
+Dinosaurs,Genre
+Disco,Genre
+Documentary,Genre
+Docuseries,Genre
+Dora The Explorer,Franchise
+Drama,Genre
+Dramas,Genre
+Drunk History,Franchise
+Education & Guidance,Genre
+Educational,Genre
+Entertaining,Genre
+Entertainment,Genre
+Epic Documentaries,Franchise
+Epics,Genre
+Erotic Thrillers,Genre
+Espionage Action,Genre
+Espionage Thrillers,Genre
+Esportes,Genre
+Experimental,Genre
+FBI Files,Franchise
+FBI Scripted,Franchise
+Fails & Pranks,Genre
+Faith & Spirituality Documentaries,Genre
+Faith & Spirituality Feature Films,Genre
+Family,Genre
+Family Adventures,Genre
+Family Animation,Genre
+Family Classics,Genre
+Family Comedies,Genre
+Family Dramas,Genre
+Family Sci-Fi & Fantasy,Genre
+Fantasy,Genre
+Fashion,Genre
+Fight,Genre
+Fighting & Self Defense,Genre
+Film Noir,Genre
+Fishing,Genre
+Food & Wine,Genre
+Food Stories,Genre
+Foreign Action & Adventure,Genre
+Foreign Art House,Genre
+Foreign Classic Comedies,Genre
+Foreign Classic Dramas,Genre
+Foreign Classics,Genre
+Foreign Comedies,Genre
+Foreign Documentaries,Genre
+Foreign Gay & Lesbian,Genre
+Foreign Horror,Genre
+Foreign Musicals,Genre
+Foreign Romance,Genre
+Foreign Sci-Fi & Fantasy,Genre
+Foreign Steamy Romance,Genre
+Foreign Thrillers,Genre
+Frankenstein,Genre
+GLBT,Genre
+Gardening,Genre
+Gay,Genre
+Gay & Lesbian Comedies,Genre
+Gay & Lesbian Dramas,Genre
+Gay & Lesbian Romance,Genre
+General Indie Film & Short Films,Genre
+General News,Genre
+Gospel,Genre
+Hard Rock & Heavy Metal,Genre
+Heist Films,Genre
+Hip-Hop,Genre
+Hip-Hop/Rap,Genre
+Historical Documentaries,Genre
+History & Social Studies,Genre
+Hobbies & Games,Genre
+Holiday,Genre
+Home & Garden,Genre
+Home Improvement,Genre
+Horror,Genre
+Horror Classics,Genre
+HowTo,Genre
+Hunting,Genre
+Independent,Genre
+Indie,Genre
+Indie Action,Genre
+Indie Classics,Genre
+Indie Comedies,Genre
+Indie Documentaries,Genre
+Indie Dramas,Genre
+Indie Gay & Lesbian,Genre
+Indie Romance,Genre
+Indie Suspense & Thriller,Genre
+Ink Master,Franchise
+Inspector Gadget,Franchise
+Inspirational Biographies,Genre
+Inspirational Stories,Genre
+Inspirational Stories for Kids,Genre
+Investigative Journalism,Genre
+Italian Horror,Genre
+Jersey Shore,Franchise
+JoJo Siwa,Franchise
+Kids,Genre
+Kids' Anime,Genre
+Kids' Inspirational,Genre
+Kids' Music,Genre
+Kids' TV,Genre
+Late Night,Genre
+Late Night Comedies,Genre
+Late Night TV,Genre
+Late Night including Daily Show,Franchise
+Latino,Genre
+Latino Comedies,Genre
+Lego,Franchise
+Lesbian,Genre
+Lifestyle,Genre
+Live Action,Genre
+Love & Hip Hop,Franchise
+Madeline,Franchise
+Magic & Illusion,Genre
+Makeover,Genre
+Martial Arts,Genre
+Men's Interest,Genre
+Military & War Action,Genre
+Military Documentaries,Genre
+Million Dollar American Princessess,Franchise
+Mindfulness & Prayer,Genre
+Miscellaneous Documentaries,Genre
+Mobster,Genre
+Mockumentaries,Genre
+Modern & Contemporary,Genre
+Monsters,Genre
+Music,Genre
+Music Documentaries,Genre
+Musical,Genre
+Must-See Concerts,Genre
+Must-See Musicals,Genre
+Mystery,Genre
+NCIS,Franchise
+News,Genre
+None,Genre
+PGA Tour,Franchise
+Paw Patrol,Franchise
+Pets,Genre
+Poker & Gambling,Genre
+Political,Genre
+Political Comedies,Genre
+Political Documentaries,Genre
+Political Thrillers,Genre
+Politics,Genre
+Pop,Genre
+Preschool,Genre
+Psychological Thrillers,Genre
+Punk Rock,Genre
+R&B/Soul,Genre
+Rap & Hip-Hop,Genre
+Real World,Franchise
+Reality,Genre
+Reality TV,Genre
+RealityShow,Genre
+Reggae,Genre
+Religion & Mythology Documentaries,Genre
+Religious & Spiritual Dramas,Genre
+Reno 911,Franchise
+Retro,Genre
+Rock,Genre
+Rock & Roll Oldies,Genre
+Romance,Genre
+Romance Classics,Genre
+Romantic Comedies,Genre
+Romantic Dramas,Genre
+RuPaul's Drag Race,Franchise
+Satanic Stories,Genre
+Sci-Fi Adventure,Genre
+Sci-Fi Cult Classics,Genre
+Sci-Fi Dramas,Genre
+Sci-Fi Horror,Genre
+Sci-Fi Thrillers,Genre
+Science,Genre
+Science and Nature Documentaries,Genre
+Screwball,Genre
+Scripted,Genre
+Sculpture,Genre
+Secret Life Documentaries,Franchise
+Showbiz Comedies,Genre
+Singer-Songwriters,Genre
+Singer/Songwriter,Genre
+Sitcom,Genre
+Sketch Comedies,Genre
+Slapstick,Genre
+Slashers and Serial Killers,Genre
+Social & Cultural Documentaries,Genre
+South Park,Franchise
+Spiritual Mysteries,Genre
+Spongebob,Franchise
+Spoofs and Satire,Genre
+Sports,Genre
+Sports & Sports Highlights,Genre
+Sports Comedies,Genre
+Sports Documentaries,Genre
+Stand-Up,Genre
+Star Trek,Franchise
+Strawberry Shortcake,Franchise
+Super Swashbucklers,Genre
+Supernatural Horror,Genre
+Supernatural Sci-Fi,Genre
+Supernatural Thrillers,Genre
+Survivor,Franchise
+Suspense,Genre
+Teen,Genre
+Teen Comedies,Genre
+Teen Dramas,Genre
+Teen Mom,Franchise
+Teen Romance,Genre
+Teen Screams,Genre
+Tony Awards,Franchise
+Travel,Genre
+Travel & Adventure Documentaries,Genre
+UEFA,Franchise
+UFC,Franchise
+Urban & Dance,Genre
+Vampires,Genre
+Variety,Genre
+Video Games,Genre
+War,Genre
+Werewolves,Genre
+Western,Genre
+Westerns,Genre
+Women's Interest,Genre
+Zombies,Genre
