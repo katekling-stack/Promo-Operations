@@ -1,0 +1,4 @@
+Salesforce Case,Region,Campaign Name,Promoted Title,Content Type,Content ID,Video Durations,Flight Start,Flight End,Genres,Showlist,Pluto Categories,Pluto Channels,Audience Segments,Exclude Series,Exclude Channels,Include Pause Ads
+00123456,USA,Paramount + - USA,Yellowstone,show,54321,15;30,2026-08-10,2026-09-10,Drama;Westerns,NCIS;FBI,Drama,Westerns,Adults 25-54,Yellowstone,Westerns,Y
+00123457,USA,Paramount + - USA,Tulsa King,show,54322,30,2026-08-10,2026-09-10,Drama,Mayor of Kingstown,Drama,,Adults 25-54,Tulsa King,,
+00123458,LATAM,Paramount + - LATAM,Land of Women,show,54323,15;30,2026-08-12,2026-09-12,Comedy,,Comedy,,,Land of Women,,

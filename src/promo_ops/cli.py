@@ -212,6 +212,31 @@ def _cmd_from_case_file(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_batch(args: argparse.Namespace) -> int:
+    """Build + create every case in ONE CSV (one row per Salesforce case). Dry-run by
+    default; --live creates the NOT_BOOKED drafts. Idempotent — re-running reuses IOs."""
+    from .batch import (load_batch_csv, process_batch, render_batch_summary,
+                        write_results_csv)
+    rows = load_batch_csv(args.cases_csv)
+    if not rows:
+        print(f"No case rows found in {args.cases_csv}", file=sys.stderr)
+        return 1
+    # dry-run still builds each order's planned calls (no network); --live authenticates
+    # and creates. Same pattern as `push`.
+    from .integrations.freewheel import FreeWheelClient
+    fw = FreeWheelClient()
+    results = process_batch(rows, fw=fw, create=args.live)
+    print(render_batch_summary(results, create=args.live))
+    if args.out:
+        write_results_csv(results, args.out)
+        print(f"\nResults written to {args.out}", file=sys.stderr)
+    if not args.live:
+        print("\n(dry-run — pass --live to create the FreeWheel drafts)", file=sys.stderr)
+    # Non-zero exit if any row failed to build (needs-info / error), so a scheduled run
+    # surfaces problems.
+    return 0 if all(r.ok for r in results) else 2
+
+
 def _cmd_booking_sheet(args: argparse.Namespace) -> int:
     """Print the Operative/GAM booking worksheet for a plan's VD + takeover."""
     from .addons import build_addons, render_booking_worksheet
@@ -451,6 +476,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_ai = sub.add_parser("sync-audience-items", help="Sync FreeWheel audience items (Tier 1 DDA)")
     p_ai.set_defaults(func=_cmd_sync_audience_items)
+
+    p_batch = sub.add_parser("batch",
+                             help="Build+create many cases from ONE CSV (one row per Salesforce case)")
+    p_batch.add_argument("cases_csv", help="CSV with one row per case (Salesforce Case column + plan fields)")
+    p_batch.add_argument("--live", action="store_true", help="Create the drafts (default dry-run)")
+    p_batch.add_argument("--out", help="Write the per-case results CSV here (Case # → IO link/status)")
+    p_batch.set_defaults(func=_cmd_batch)
 
     return parser
 

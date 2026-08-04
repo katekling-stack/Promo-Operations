@@ -4,6 +4,10 @@ The self-serve path for creating a FreeWheel Insertion Order from the campaign-p
 **form** — no Salesforce, no connectors. A planner fills the form; Ad Ops runs three
 commands; a NOT_BOOKED draft appears in FreeWheel for review.
 
+> **Doing 20+ a day? Use the batch flow instead**, not this form one at a time — one sheet,
+> one row per Salesforce case, one `promo-ops batch` run, results matched back to each Case #.
+> See **`docs/BATCH_RUNBOOK.md`**. This form is for a single ad-hoc campaign.
+
 > This is the primary intake today. The Salesforce → FreeWheel automation is a **phase-2**
 > add-on for whenever a Salesforce API user + connector is provisioned by a developer —
 > the tool's `from-case` / `poll-cases` pipeline is already built to plug in then, and the
