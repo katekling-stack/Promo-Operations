@@ -38,12 +38,13 @@ def test_block_on_adult_pluto_tiers_all():
     assert all(not _has_block(p) for p in order.placements if p.guaranteed)
 
 
-def test_block_on_domestic_and_us_pluto():
-    # Domestic brands rely on the default main (incl Pluto) -> block applies.
+def test_block_not_on_us():
+    # The block is BR/LATAM inventory — it must NEVER ride on a US IO (adult remnant or
+    # US Pluto). A US IO's only baseline Pluto exclude is FREQUENT DNR.
     dom = _order("USA", "Paramount + - USA", content_id="1", showlist=["NCIS"], genres=["Drama"])
-    assert all(_has_block(p) for p in dom.placements if not p.guaranteed)
+    assert all(not _has_block(p) for p in dom.placements)
     us_pluto = _order("USA", "Pluto TV - USA", pluto={"channels": ["Comedy"]})
-    assert all(_has_block(p) for p in us_pluto.placements)
+    assert all(not _has_block(p) for p in us_pluto.placements)
 
 
 def test_block_excepted_on_br_latam_pluto_campaigns():

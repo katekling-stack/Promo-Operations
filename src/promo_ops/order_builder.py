@@ -322,10 +322,12 @@ class OrderBuilder:
         is_kids = bool(brand_cfg.get("kids") and tmpl.get("kids"))
         kids_vgs = kids_video_groups(plan.kids_audience) if is_kids else []
         kids_sg = kids_targeting_config().get("content_site_group") if is_kids else None
-        # Brazil/LATAM Paramount Promo Blocks (SG 1258011): excluded on every ADULT
-        # placement that runs on Pluto (Pluto SG in its main SGs), across all tiers +
-        # standard lines. Skips kids brands, guaranteed P+ lines (not on Pluto), and the
-        # Pluto TV - BR / Pluto TV - LATAM campaigns (which ARE those blocks).
+        # Brazil/LATAM Paramount Promo Blocks (SG 1258011): this SG is BR/LATAM inventory,
+        # so it is excluded ONLY on adult Pluto placements in the BR + LATAM regions
+        # (Pluto SG in its main SGs), across all tiers + standard lines. Skips every other
+        # region (a US IO's only baseline Pluto exclude is FREQUENT DNR), kids brands,
+        # guaranteed P+ lines (not on Pluto), and the Pluto TV - BR / Pluto TV - LATAM
+        # campaigns (which ARE those blocks).
         pblk = relationship_targeting_config().get("latam_br_promo_blocks", {})
         # Effective main = the per-format/brand main, else the shared default (which
         # domestic brands like P+ Domestic / CBS / Pluto ES rely on) — same fallback
@@ -334,6 +336,7 @@ class OrderBuilder:
             "main_site_groups", [])
         effective_main = main_sgs or default_main
         if (pblk.get("site_group") and not is_kids and not tmpl.get("guaranteed")
+                and plan.region in pblk.get("regions", [])
                 and pblk.get("pluto_site_group") in effective_main
                 and self._resolve_brand(plan) not in pblk.get("except_brands", [])):
             if pblk["site_group"] not in excl_sgs:

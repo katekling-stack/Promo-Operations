@@ -53,13 +53,18 @@ us_pluto_dnr:
   site_group: '951172'
   except_brands:
   - pluto_tv
-# SG: Custom: Brazil and LATAM Paramount Promo Blocks (1258011). Excluded on every
-# ADULT placement that runs on Pluto TV (Pluto SG 929392 in its main SGs), across all
-# tiers + standard lines — EXCEPT the Pluto TV - BR / Pluto TV - LATAM campaigns, which
-# ARE those blocks. Not applied to guaranteed P+ lines (they don't run on Pluto).
+# SG: Custom: Brazil and LATAM Paramount Promo Blocks (1258011). This SG is Brazil/LATAM
+# inventory, so it is only excluded on ADULT Pluto placements in the BR + LATAM regions
+# (Pluto SG 929392 in its main SGs), across all tiers + standard lines — EXCEPT the
+# Pluto TV - BR / Pluto TV - LATAM campaigns, which ARE those blocks. NOT applied to US
+# or any other region (a US IO's only baseline Pluto exclude is FREQUENT DNR), to kids
+# brands, or to guaranteed P+ lines (they don't run on Pluto).
 latam_br_promo_blocks:
   site_group: '1258011'
   pluto_site_group: '929392'
+  regions:
+  - BR
+  - LATAM
   except_brands:
   - pluto_tv_br
   - pluto_tv_latam
