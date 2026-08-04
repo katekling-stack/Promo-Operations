@@ -47,7 +47,7 @@ def test_audience_segments_match_known_structures():
 def test_build_writes_all_files(tmp_path, monkeypatch):
     monkeypatch.setattr(opts, "OUT", tmp_path)
     counts = opts.build()
-    assert counts["genres"] > 50 and counts["franchise"] > 10 and counts["daypart"] == 1
+    assert counts["genres"] > 50 and counts["franchise"] > 10 and counts["daypart"] >= 8
     assert counts["categories"] > 100
     for f in ("genres.csv", "pluto-categories-by-region.csv",
               "pluto-channels-by-region.csv", "audience-segments.csv", "REGION-MAP.md"):
