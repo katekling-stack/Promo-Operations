@@ -19,7 +19,7 @@ follow.
 | Flight End | `Flight_End__c` | Date | — |
 | Video Durations | `Video_Durations__c` | Text (50) | e.g. `30;15` |
 
-**Then (28 more):** 10 optional creative/product selectors, 10 Yes/No product toggles,
+**Then (30 more):** 12 optional creative/product selectors (incl. the 2 Exclude fields), 10 Yes/No product toggles,
 8 auto-derived override fields — all in the CSV.
 
 ## B. Add picklist **values** (to existing Status/Reason fields — not new fields)
@@ -28,6 +28,16 @@ follow.
 | Status | `Ready for Automation` |
 | Status | `Needs Info` |
 | Reason | `Submitted to FreeWheel` |
+
+## B2. Add a "Campaign Setup Form" Record Type (or checkbox)
+So the automation knows which Cases are promo-setup requests. The Record Type scopes
+*which* Cases we process; Status = "Ready for Automation" says *when* to run.
+
+## B3. Targeting + exclude fields are pre-defined (no free text)
+Genre/Category/Daypart = picklists; Showlist, Pluto Channels, Audience Segments, and the
+two **Exclude** fields (`Exclude_Series__c`, `Exclude_Channels__c`) = **lookups** to
+objects we sync from FreeWheel (type-to-search, only real records). Value sources +
+refresh: `templates/targeting-options/`.
 
 ## C. Access for the integration
 - A **sandbox** to build/test in.

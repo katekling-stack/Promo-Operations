@@ -54,6 +54,8 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Kids_Audience__c": "kids_audience",          # list: older / younger (Kids brands)
     "Rating_Restrictions__c": "rating_restrictions",  # list: VG values (AU Network 10)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
+    "Exclude_Series__c": "exclude_series",        # list: extra series to exclude everywhere
+    "Exclude_Channels__c": "exclude_channels",    # list: Pluto channels to exclude everywhere
     # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
     "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
     "Include_Pause_Ads__c": ("product_overrides", "pause_ads"),
@@ -121,6 +123,14 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
     dict(api="Takeover__c", section="Optional", label="Takeover", type="Picklist",
          picklist="hpto; first_impression; arena_takeover; three_peat", required="No",
          help="Operative to GAM takeover type."),
+    dict(api="Exclude_Series__c", section="Optional", label="Series to Exclude",
+         type="Lookup / Multi-Select", picklist="FreeWheel Video Series", required="No",
+         help="Extra series to keep the promo OUT of, on every placement (the promoted "
+              "title is auto-excluded). Type-to-search real series; no free text."),
+    dict(api="Exclude_Channels__c", section="Optional", label="Pluto Channels to Exclude",
+         type="Lookup / Multi-Select", picklist="Pluto Channels (Region-scoped)", required="No",
+         help="Extra Pluto channels to keep the promo OUT of, on every placement. "
+              "Type-to-search real channels for the Region; no free text."),
     # Products — one Yes/No toggle each (blank = brand default).
     dict(api="Include_Remnant_Video__c", section="Products", label="Include Remnant Video"),
     dict(api="Include_Pause_Ads__c", section="Products", label="Include Pause Ads"),
@@ -198,7 +208,7 @@ def build_case_field_rows() -> list[dict[str, str]]:
 
 # Core fields that are semicolon/newline lists.
 _LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience",
-                "rating_restrictions"}
+                "rating_restrictions", "exclude_series", "exclude_channels"}
 
 
 def _split(value: Any) -> Any:

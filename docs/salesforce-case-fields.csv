@@ -16,6 +16,8 @@ Case,Optional,Rating Restrictions,Rating_Restrictions__c,Long Text Area,255,No,A
 Case,Optional,Video Domination,Video_Domination__c,Picklist,pluto; standard; aus_10_streaming; uk_my5,No,Video Domination product selector.
 Case,Optional,Video Domination Targeting,Video_Domination_Targeting__c,Long Text Area,255,No,Pluto categories; semicolon-separated (Pluto VD only).
 Case,Optional,Takeover,Takeover__c,Picklist,hpto; first_impression; arena_takeover; three_peat,No,Operative to GAM takeover type.
+Case,Optional,Series to Exclude,Exclude_Series__c,Lookup / Multi-Select,FreeWheel Video Series,No,"Extra series to keep the promo OUT of, on every placement (the promoted title is auto-excluded). Type-to-search real series; no free text."
+Case,Optional,Pluto Channels to Exclude,Exclude_Channels__c,Lookup / Multi-Select,Pluto Channels (Region-scoped),No,"Extra Pluto channels to keep the promo OUT of, on every placement. Type-to-search real channels for the Region; no free text."
 Case,Products,Include Remnant Video,Include_Remnant_Video__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
 Case,Products,Include Pause Ads,Include_Pause_Ads__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
 Case,Products,Include Premium Pre-Roll,Include_Premium_Pre_Roll__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
@@ -34,3 +36,6 @@ Case,Override,Insertion Order Name,Insertion_Order_Name__c,Text,160,No,Auto-deri
 Case,Override,Recommended Show,Recommended_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title.
 Case,Override,Exclude Show,Exclude_Show__c,Text,120,No,Auto-derived; defaults to Promoted Title (self-exclusion).
 Case,Override,Formats,Formats__c,Multi-Select Picklist,remnant_video; pause_ads; remnant_display; podcast; premium_preroll; essential_bumper; cbs_preroll; cbs_after_midroll_bumper; mtve_after_midroll_bumper; bet_after_midroll_bumper; cbs_1z_lockdown; cbs_2z_lockdown; pluto_es_remnant; pplus_kids_remnant; pplus_kids_premium_preroll; pplus_kids_essential_bumper; pplus_kids_remnant_pplus; pplus_kids_remnant_pluto; pplus_uk_remnant_pplus; pplus_uk_remnant_pluto; pluto_ca_remnant; network_10_remnant; nick_au_remnant; nick_au_network_10_remnant; nick_au_network_10_bumper; pictures_remnant,No,Auto-derived from Brand's format set; override the full set only if needed.
+Case,Status/Reason,Status (add value),Status,Picklist value,Ready for Automation,,Planner sets this to trigger the automation.
+Case,Status/Reason,Status (add value),Status,Picklist value,Needs Info,,Automation sets this (+ comment) when a Case can't be built.
+Case,Status/Reason,Reason (add value),Reason,Picklist value,Submitted to FreeWheel,,Automation sets this after the draft IO is created.

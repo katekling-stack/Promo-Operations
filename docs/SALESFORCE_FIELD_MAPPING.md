@@ -89,6 +89,8 @@ blank = "use the brand's standard set."
 | Video Domination | `Video_Domination__c` | Picklist | pluto; standard; aus_10_streaming; uk_my5 |
 | Video Domination Targeting | `Video_Domination_Targeting__c` | Long Text | Pluto categories *(Pluto VD only)* |
 | Takeover | `Takeover__c` | Picklist | hpto; first_impression; arena_takeover; three_peat |
+| Series to Exclude | `Exclude_Series__c` | Lookup / Multi-Select | keep the promo OUT of these series on every placement |
+| Pluto Channels to Exclude | `Exclude_Channels__c` | Lookup / Multi-Select | keep the promo OUT of these channels (Region-scoped) |
 
 ### Products — Yes / No toggles (10)  *(blank = brand default)*
 `Include_Remnant_Video__c`, `Include_Pause_Ads__c`, `Include_Premium_Pre_Roll__c`,
@@ -115,6 +117,31 @@ the Case's existing Status/Reason fields.
 | Status | **Needs Info** | Automation, when a Case can't be built (+ comment) |
 | Reason | **Submitted to FreeWheel** | Automation, after the draft IO is created (+ IO link) |
 
+**Trigger / Record Type (recommended).** So the automation reliably knows *which* Cases
+are promo-setup requests, add a **Record Type "Campaign Setup Form"** (or a checkbox
+`Campaign_Setup_Form__c`). That scopes which Cases we process (the layout + these fields);
+**Status = "Ready for Automation"** then says *when* to run. The poller filters on both.
+
+---
+
+## 4b. Targeting values are pre-defined — no free text
+
+Every targeting field draws from canonical lists generated from FreeWheel (see
+`templates/targeting-options/`), so a planner can only pick real values:
+
+| Field | SF control | Source |
+|---|---|---|
+| Genre (+ Franchise + Daypart) | Multi-select picklist | `genres.csv` |
+| Pluto Categories | **Region-dependent** picklist | `pluto-categories-by-region.csv` |
+| Pluto Channels | **Lookup / type-to-search** (Region-scoped) | `pluto-channels-by-region.csv` |
+| Audience Segments | Lookup / type-to-search (refreshed daily) | `audience-segments.csv` |
+| **Showlist / Series to Exclude** | **Lookup / type-to-search** | `shows.csv` (~188k FW series) |
+| **Pluto Channels to Exclude** | **Lookup / type-to-search** (Region-scoped) | `pluto-channels-by-region.csv` |
+
+Small finite lists = picklists; large lists (Showlist, Channels, Audience, the two
+Exclude fields) = **lookups to synced objects** — type-to-search, only real records, no
+typos. Refreshed on the daily sync. Full guidance: `templates/targeting-options/README.md`.
+
 ---
 
 ## 5. The attached "Targeting" sheet (7 columns)
@@ -133,9 +160,10 @@ the planner usually only fills Showlist + a couple of genre/category lists.
 
 ## 6. What we need from the Salesforce admin
 
-1. Create the **35 Case fields** above (CSV is import-ready). *Or* start with just the
+1. Create the **37 Case fields** above (CSV is import-ready). *Or* start with just the
    **7 required** to prove the loop, and add the rest incrementally.
-2. Add the **3 Status/Reason picklist values** in §4.
+2. Add the **3 Status/Reason picklist values** in §4, and a **"Campaign Setup Form"
+   Record Type (or checkbox)** so the automation knows which Cases are ours.
 3. Confirm the API user + permissions the automation will authenticate as (read Case +
    fields, write Status/Reason + comments).
 4. Confirm we can attach / read the **Targeting** sheet on a Case (or whether targeting

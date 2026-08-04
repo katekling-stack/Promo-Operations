@@ -22,7 +22,7 @@ configuration + credentials, not new code.
 |---|---|---|---|
 | 1.1 | Create the **7 required fields** (minimal path) | `SALESFORCE_ADMIN_ASKS.md` A / CSV | Fields exist in sandbox |
 | 1.2 | Add the **3 Status/Reason picklist values** | Admin Asks B | Values added |
-| 1.3 | *(Optional now / later)* create the remaining **28 fields** | full CSV | Full spec built |
+| 1.3 | *(Optional now / later)* create the remaining **30 fields** | full CSV | Full spec built |
 | 1.4 | Confirm we can **attach + read** a "Targeting" sheet on a Case | Admin Asks D | Attachment readable |
 | 1.5 | Flag any **API-name conventions** to change | — | We update `CASE_FIELD_MAP` (one file) |
 
@@ -68,7 +68,7 @@ Everything else (remaining fields, poller, rollout) follows once that loop works
 |---|---|---|
 | `SALESFORCE_ADMIN_ASKS.md` | 🟦 Admin | One-page build sheet (just their tasks) |
 | `salesforce-case-fields.csv` | 🟦 Admin | Import-ready field list (live config) |
-| `SALESFORCE_FIELD_MAPPING.md` (+PDF) | 🟨 Both | Full mapping: minimal 7, full 35, picklists, open Qs |
+| `SALESFORCE_FIELD_MAPPING.md` (+PDF) | 🟨 Both | Full mapping: minimal 7, full 37, picklists, open Qs |
 | `SALESFORCE_GOLIVE.md` | 🟩 Us | Technical runbook: creds → preflight → schedule |
 | `FRIDAY_DEMO.md` | 🟨 Both | Live demo script (form, automation, mirror) |
 
@@ -81,4 +81,4 @@ Everything else (remaining fields, poller, rollout) follows once that loop works
 - **Targeting model** — recommend the attached sheet (variable-length lists) over
   modeling every list as a field.
 - **Scope creep** — keep phase 1 to the pilot region + 7 fields; prove the loop before
-  building all 35 fields × 15 regions.
+  building all 37 fields × 15 regions.
