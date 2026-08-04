@@ -85,7 +85,32 @@ def app_data() -> dict:
     return {
         "regions": [{"code": c, "name": REGION_NAME.get(c, c)} for c in REGION_ORDER],
         "campaigns": campaigns, "productLabels": PRODUCT_LABEL,
-        "videoDominations": vd, "takeovers": tk, "genres": GENRES, "categories": CATEGORIES,
+        "videoDominations": vd, "takeovers": tk,
+        # Canonical targeting options for type-to-search (generated from FreeWheel).
+        **_targeting_options(),
+    }
+
+
+def _targeting_options() -> dict:
+    """Real FreeWheel option lists for the form's type-to-search pickers, from the
+    same generator that feeds templates/targeting-options/."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "build_targeting_options", REPO / "scripts" / "build_targeting_options.py")
+    bto = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bto)
+    pluto = bto._pluto()
+    active = {r: m for r, m in bto.REGION_TO_PLUTO_MARKETS.items() if r in bto._pluto_regions()}
+    cats = {r: sorted({c for m in ms for c in pluto.get(m, {}).get("categories", [])})
+            for r, ms in active.items()}
+    chans = {r: sorted({c for m in ms for c in pluto.get(m, {}).get("channels", [])})
+             for r, ms in active.items()}
+    return {
+        "genres": [v for v, _ in bto.genres()],
+        "categoriesByRegion": cats,
+        "channelsByRegion": chans,
+        "audienceSegments": [n for n, _ in bto.audience_segments()],
+        "shows": [n for _, n in bto.shows()],
     }
 
 
@@ -138,8 +163,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .hidden{display:none!important}
 /* chips input */
 .chips{display:flex;flex-wrap:wrap;gap:7px;border:1.5px solid var(--line);border-radius:11px;
- padding:8px;min-height:46px;background:#fff}
+ padding:8px;min-height:46px;background:#fff;position:relative}
 .chips.focus{border-color:var(--blue);box-shadow:0 0 0 4px var(--focus)}
+.results{position:absolute;left:-1px;right:-1px;top:100%;margin-top:5px;z-index:30;background:#fff;
+ border:1.5px solid var(--line);border-radius:11px;box-shadow:0 10px 28px rgba(20,40,90,.16);
+ max-height:260px;overflow:auto}
+.ritem{padding:9px 13px;font-size:13.5px;cursor:pointer}
+.ritem:hover{background:var(--chip);color:var(--navy)}
+.rnote{padding:9px 13px;font-size:12.5px;color:var(--muted)}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);color:var(--navy);
  border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;font-weight:600}
 .chip b{font-weight:600}
@@ -251,23 +282,22 @@ datalist{display:none}
   </div>
 
   <div class="card">
-    <h2>Targeting</h2><p class="sub">List everything to target — type a value and press Enter to add it. Audience Segments (Tier 1) auto-resolve from the Showlist; leave blank.</p>
+    <h2>Targeting</h2><p class="sub">Type to search — pick from the real FreeWheel list (no free text). Categories &amp; channels are for the selected Region. Audience Segments (Tier 1) auto-resolve from the Showlist; leave blank.</p>
     <div class="note hidden" id="plutoNudge">This is a <b>Pluto</b> campaign — add the specific <b>Pluto channels / categories</b> below to target that inventory directly. Left blank, the lines run across the whole Pluto platform (broadest reach).</div>
-    <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist"><input type="text" placeholder="e.g. NCIS  ↵"></div></div>
-    <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-suggest="genres"><input type="text" placeholder="e.g. Drama  ↵"></div></div>
-    <div class="field"><label>Networks</label><div class="chips" data-chips="networks"><input type="text" placeholder="e.g. Paramount Network  ↵"></div></div>
-    <div class="field"><label>Pluto categories</label><div class="chips" data-chips="pluto_categories" data-suggest="categories"><input type="text" placeholder="use your region's names  ↵"></div>
-      <div class="hint">Category / channel names differ by region — use your region's real names.</div></div>
-    <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels"><input type="text" placeholder="e.g. Westerns  ↵"></div></div>
+    <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
+    <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
+    <div class="field"><label>Pluto categories</label><div class="chips" data-chips="pluto_categories" data-source="categories"><input type="text" placeholder="type to search a category…"></div>
+      <div class="hint">Category / channel options are for the selected Region.</div></div>
+    <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
     <div class="field"><span class="toggle-adv" id="advToggle">▸ Tier-1 audience segments (advanced)</span>
-      <div class="chips hidden" data-chips="audience_segments" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved  ↵"></div></div>
+      <div class="chips hidden" data-chips="audience_segments" data-source="audience" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved"></div></div>
   </div>
 
   <div class="card">
     <h2>Exclude from all placements</h2>
     <p class="sub">Keep the promo from running inside a title or channel. The promoted title is excluded automatically — add any extra series or Pluto channels here and they're excluded on <b>every</b> placement in the order.</p>
-    <div class="field"><label>Series to exclude</label><div class="chips" data-chips="exclude_series"><input type="text" placeholder="search a series to exclude  ↵"></div></div>
-    <div class="field"><label>Pluto channels to exclude</label><div class="chips" data-chips="exclude_channels"><input type="text" placeholder="search a channel to exclude  ↵"></div></div>
+    <div class="field"><label>Series to exclude</label><div class="chips" data-chips="exclude_series" data-source="shows"><input type="text" placeholder="type to search a series to exclude…"></div></div>
+    <div class="field"><label>Pluto channels to exclude</label><div class="chips" data-chips="exclude_channels" data-source="channels"><input type="text" placeholder="type to search a channel to exclude…"></div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
@@ -285,18 +315,11 @@ datalist{display:none}
   <button class="btn primary" id="dlBtn" disabled>Download plan file</button>
 </div></div>
 
-<datalist id="dl-genres"></datalist>
-<datalist id="dl-categories"></datalist>
-
 <script>
 const APP = /*APP_DATA*/;
 const $ = s => document.querySelector(s);
 const state = {kids:new Set(), lists:{}};
 
-// datalists
-for(const [id,arr] of [["dl-genres",APP.genres],["dl-categories",APP.categories]]){
-  $("#"+id).innerHTML = arr.map(v=>`<option value="${v}">`).join("");
-}
 // region + campaign
 $("#region").innerHTML = '<option value="">Select region…</option>' +
   APP.regions.map(r=>`<option value="${r.code}">${r.name} (${r.code})</option>`).join("");
@@ -414,31 +437,76 @@ $("#advToggle").addEventListener("click",()=>{
   $("#advToggle").textContent = (box.classList.contains("hidden")?"▸":"▾")+" Tier-1 audience segments (advanced)";
 });
 
-// chips inputs
+// Region-aware source lists for the type-to-search pickers.
+function sourceList(name){
+  if(name==="shows") return APP.shows;
+  if(name==="genres") return APP.genres;
+  if(name==="audience") return APP.audienceSegments;
+  const rc=$("#region").value;
+  if(name==="categories") return (APP.categoriesByRegion||{})[rc]||[];
+  if(name==="channels") return (APP.channelsByRegion||{})[rc]||[];
+  return null;
+}
+
+// chip fields: type-to-search over a real FreeWheel list (strict — only real values),
+// or a plain chip input (numeric/free) when no data-source is set.
 document.querySelectorAll(".chips").forEach(box=>{
   const key=box.dataset.chips; state.lists[key]=[];
+  const src=box.dataset.source;
   const input=box.querySelector("input");
-  if(box.dataset.suggest) input.setAttribute("list","dl-"+box.dataset.suggest);
-  const add=v=>{ v=(v||"").trim(); if(!v) return;
-    if(box.dataset.numeric && !/^\d+$/.test(v)) return;
-    if(!state.lists[key].includes(v)){ state.lists[key].push(v); render(); } input.value=""; };
+  const menu=document.createElement("div"); menu.className="results hidden"; box.appendChild(menu);
   const render=()=>{
     box.querySelectorAll(".chip").forEach(c=>c.remove());
     state.lists[key].forEach((v,i)=>{
       const el=document.createElement("span"); el.className="chip";
-      el.innerHTML=`<b>${v}</b>`; const x=document.createElement("button"); x.textContent="×";
+      el.innerHTML=`<b></b>`; el.querySelector("b").textContent=v;
+      const x=document.createElement("button"); x.type="button"; x.textContent="×";
       x.onclick=()=>{ state.lists[key].splice(i,1); render(); };
       el.appendChild(x); box.insertBefore(el,input);
     }); validate();
   };
+  const add=v=>{ v=(v||"").trim(); if(!v) return;
+    if(box.dataset.numeric && !/^\d+$/.test(v)) return;
+    if(src){ const list=sourceList(src)||[];               // strict: must be a real value
+      const hit=list.find(x=>x.toLowerCase()===v.toLowerCase()); if(!hit) return; v=hit; }
+    if(!state.lists[key].includes(v)){ state.lists[key].push(v); render(); }
+    input.value=""; closeMenu(); };
+  const closeMenu=()=>{ menu.classList.add("hidden"); menu.innerHTML=""; };
+  const showMenu=()=>{
+    if(!src){ closeMenu(); return; }
+    const q=input.value.trim().toLowerCase();
+    if(q.length<2){ closeMenu(); return; }
+    const list=sourceList(src)||[];
+    if(!list.length){ menu.innerHTML='<div class="rnote">Pick a Region first</div>'; menu.classList.remove("hidden"); return; }
+    const raw=[]; for(let i=0;i<list.length && raw.length<250;i++){ if(list[i].toLowerCase().includes(q)) raw.push(list[i]); }
+    // Rank: whole-word / start-of-name matches above mid-word substrings ("NCIS"
+    // beats "Francisco"), then shorter names first.
+    const rank=s=>{ s=s.toLowerCase(); return s.startsWith(q)?0 : (s.includes(" "+q)||s.includes("-"+q)||s.includes(":"+q))?1 : 2; };
+    raw.sort((a,b)=>rank(a)-rank(b) || a.length-b.length);
+    const hits=raw.slice(0,40);
+    if(!hits.length){ menu.innerHTML='<div class="rnote">No match</div>'; menu.classList.remove("hidden"); return; }
+    menu.innerHTML=hits.map(h=>`<div class="ritem"></div>`).join("");
+    [...menu.children].forEach((el,i)=>{ el.textContent=hits[i]; el.onmousedown=e=>{e.preventDefault(); add(hits[i]);}; });
+    menu.classList.remove("hidden");
+  };
+  input.addEventListener("input",showMenu);
   input.addEventListener("keydown",e=>{
-    if(e.key==="Enter"||e.key===","){ e.preventDefault(); add(input.value); }
+    if(e.key==="Enter"){ e.preventDefault();
+      const first=menu.querySelector(".ritem"); add(first?first.textContent:input.value); }
+    else if(e.key==="Escape"){ closeMenu(); }
     else if(e.key==="Backspace"&&!input.value&&state.lists[key].length){ state.lists[key].pop(); render(); }
   });
-  input.addEventListener("blur",()=>add(input.value));
-  box.addEventListener("click",()=>input.focus());
-  input.addEventListener("focus",()=>box.classList.add("focus"));
-  input.addEventListener("blur",()=>box.classList.remove("focus"));
+  input.addEventListener("blur",()=>{ setTimeout(closeMenu,150); box.classList.remove("focus"); });
+  box.addEventListener("click",e=>{ if(e.target===box||e.target===input) input.focus(); });
+  input.addEventListener("focus",()=>{ box.classList.add("focus"); showMenu(); });
+});
+// Region change -> the region-scoped pickers (categories/channels) reset their options.
+$("#region").addEventListener("change",()=>{
+  ["pluto_categories","pluto_channels","exclude_channels"].forEach(k=>{
+    if(state.lists[k]&&state.lists[k].length){ state.lists[k]=[];
+      const box=document.querySelector(`[data-chips="${k}"]`);
+      if(box) box.querySelectorAll(".chip").forEach(c=>c.remove()); }
+  });
 });
 ["title"].forEach(id=>$("#"+id).addEventListener("input",validate));
 
@@ -474,7 +542,6 @@ function buildPlan(){
   if(L.vd_targeting.length) plan.video_domination_targeting=L.vd_targeting;
   if($("#takeover").value) plan.takeover=$("#takeover").value;
   if(L.rating_restrictions.length) plan.rating_restrictions=L.rating_restrictions;
-  if(L.networks.length) plan.networks=L.networks;
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
