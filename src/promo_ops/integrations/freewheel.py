@@ -722,7 +722,60 @@ class FreeWheelClient:
         if p.recommended_show_value in (None, "") and sets:
             body["_cm_adds_in_ui"] = {
                 "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
+        FreeWheelClient._exclude_wins(body)
         return body
+
+    @staticmethod
+    def _exclude_wins(body: dict) -> None:
+        """A site group must never be in both include and exclude (FreeWheel rejects it,
+        422). An exclude ALWAYS wins — drop the conflicting site group from the include
+        (so 'exclude from all placements' overrides any targeting that would run there).
+        If that empties a subset's targeting, the subset is dropped; if it empties a
+        whole relationship set's include, the set is dropped. Applies to each set and
+        the flat content_targeting."""
+        def has_targeting(s: dict) -> bool:
+            return any(k != "relation_in_set" and v for k, v in s.items())
+
+        def clean(node: dict) -> bool:
+            """Filter excluded site groups out of the include; return False if the
+            include ends up with no targeting (caller drops the set)."""
+            ex = set((node.get("exclude") or {}).get("site_group") or [])
+            inc = node.get("include")
+            if not isinstance(inc, dict):
+                return True
+            multi = isinstance(inc.get("set"), list)
+            subs = inc["set"] if multi else [inc]
+            for s in subs:
+                if isinstance(s, dict) and ex and s.get("site_group"):
+                    kept = [g for g in s["site_group"] if g not in ex]
+                    if kept:
+                        s["site_group"] = kept
+                    else:
+                        s.pop("site_group", None)
+            subs = [s for s in subs if isinstance(s, dict) and has_targeting(s)]
+            if not subs:
+                return False
+            if multi and len(subs) > 1:
+                inc["set"] = subs
+                inc["relation_between_sets"] = ["AND"] * (len(subs) - 1)
+            else:                                    # collapse to a single-subset include
+                node["include"] = {k: v for k, v in subs[0].items() if k != "relation_in_set"}
+            return True
+
+        rt = body.get("relationship_targeting")
+        if isinstance(rt, dict) and isinstance(rt.get("set"), list):
+            kept = []
+            for st in rt["set"]:
+                node = (st.get("content_targeting") or {}).get("network_items")
+                if not isinstance(node, dict) or clean(node):
+                    kept.append(st)
+            if kept:
+                rt["set"] = kept
+            else:
+                body.pop("relationship_targeting", None)
+        ct = body.get("content_targeting")
+        if isinstance(ct, dict):
+            clean(ct.get("network_items") if isinstance(ct.get("network_items"), dict) else ct)
 
     # --- relationship targeting (mirrors Dutton Ranch) ------------------- #
 
