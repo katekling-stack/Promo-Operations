@@ -40,7 +40,7 @@ def test_older_kids_full_shape():
     assert plan.brand == "paramount_plus_kids"
     assert len(order.placements) == 4
     names = [p.name for p in order.placements]
-    assert "Avatar: The Last Airbender - Evergreen - 15 (P+/Pluto) - Kids - USA" in names
+    assert "Avatar: The Last Airbender - Evergreen - 15 (P+/Pluto) - Kids - USA - [ShowID:61456660]" in names
     assert ("Paramount + - Pre-Roll - Premium Plan - Avatar: The Last Airbender - Kids "
             "- USA - [ShowID:61456660]") in names
     assert ("Paramount + - Bumper - Essential Plan - Avatar: The Last Airbender - Kids "
@@ -86,14 +86,14 @@ def test_pplus_kids_uk_split_lines_and_basic_plan():
     assert all(p.geo_country_ids == ["56"] for p in order.placements)   # UK
 
     pplus15 = next(p for p in order.placements
-                   if p.name == "Kamp Koral - Streaming Now - 15 - Kids - UK")
+                   if p.name == "Kamp Koral - Streaming Now - 15 - Kids - UK - [ShowID:61457250]")
     # P+ line keeps INTL pre-roll (69304) + house pre-roll on 15s
     assert set(pplus15.ad_unit_ids) == {"69304", "71999", "72000", "72001"}
     _, main = _kids_set(pplus15)
     assert main == {"932583"}
 
     pluto15 = next(p for p in order.placements
-                   if p.name == "Kamp Koral - Streaming Now - 15 (Pluto) - Kids - UK")
+                   if p.name == "Kamp Koral - Streaming Now - 15 (Pluto) - Kids - UK - [ShowID:61457250]")
     _, main_pl = _kids_set(pluto15)
     assert main_pl == {"1109067", "1120870"}            # UK Pluto kids SGs
     assert "69304" not in pluto15.ad_unit_ids           # no INTL pre-roll on Pluto line

@@ -46,13 +46,13 @@ def test_ca_pplus_english_is_tiered_and_combined():
     assert plan.brand == "paramount_plus_ca"
     names = [p.name for p in order.placements]
     # Fully tiered (parenthetical), combined main SGs (Pluto included), geo Canada
-    assert "Avatar Aang - Now Streaming - 15 (Tier 1) - CA" in names
-    assert "Avatar Aang - Now Streaming - 30 (Tier 4) - CA" in names
+    assert "Avatar Aang - Now Streaming - 15 (Tier 1) - CA - [MovieID:ALVE01]" in names
+    assert "Avatar Aang - Now Streaming - 30 (Tier 4) - CA - [MovieID:ALVE01]" in names
     assert "Paramount + - Bumper - Basic Plan - Avatar Aang - CA - [MovieID:ALVE01]" in names
     assert all(p.geo_country_ids == ["27"] for p in order.placements)
 
     t4_15 = next(p for p in order.placements
-                 if p.name == "Avatar Aang - Now Streaming - 15 (Tier 4) - CA")
+                 if p.name == "Avatar Aang - Now Streaming - 15 (Tier 4) - CA - [MovieID:ALVE01]")
     body = FreeWheelClient._placement_body(t4_15)
     main = set(body["relationship_targeting"]["set"][0]["content_targeting"]
                ["network_items"]["include"]["site_group"])
@@ -71,7 +71,7 @@ def test_ca_pplus_kids_not_tiered_combined():
     assert plan.brand == "paramount_plus_kids_ca"
     names = [p.name for p in order.placements]
     # not tiered, no "(P+/Pluto)" infix, Essential Plan bumper
-    assert "Avatar Aang: The Last Airbender - Now Streaming - 15 - Kids - CA" in names
+    assert "Avatar Aang: The Last Airbender - Now Streaming - 15 - Kids - CA - [MovieID:ALVE01]" in names
     assert not any("Tier" in n or "(P+/Pluto)" in n for n in names)
     assert any("Bumper - Essential Plan" in n for n in names)
     assert all(p.geo_country_ids == ["27"] for p in order.placements)

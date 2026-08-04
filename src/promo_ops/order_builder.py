@@ -177,6 +177,21 @@ class OrderBuilder:
         parts = ["Paramount +", unit, plan_label, plan.promoted_title, audience, plan.region]
         return " - ".join(p for p in parts if p) + f" - [{label}:{plan.content_id or ''}]"
 
+    def _pplus_id_token(self, plan: SupportPlan, brand_key: Optional[str]) -> str:
+        """The [ShowID:]/[MovieID:] token that rides on EVERY placement name for a
+        Paramount+ campaign (not just the guaranteed Plan lines). Mirrors the guaranteed
+        style: a blank id still stamps "[ShowID:]" so the CM fills it in the UI. Returns
+        "" for non-Paramount+ campaigns, so nothing changes for other brands.
+        """
+        from .brand_sync import brand_signature
+        sig = brand_signature((plan.campaign or {}).get("name", "") or "")
+        is_pplus = ((sig and sig[0] == "paramount_plus")
+                    or str(brand_key or "").startswith("paramount_plus"))
+        if not is_pplus:
+            return ""
+        label = "MovieID" if (plan.content_type or "show").lower() == "movie" else "ShowID"
+        return f" - [{label}:{plan.content_id or ''}]"
+
     # --- caps / priority ------------------------------------------------- #
 
     def _freq_cap(self, tier_id: Optional[int], fmt: str) -> str:
@@ -213,7 +228,11 @@ class OrderBuilder:
         fmt_templates = self._templates.get("formats", {})
         if fmt not in fmt_templates:
             raise KeyError(f"Unknown format {fmt!r}. Known formats: {', '.join(fmt_templates)}")
-        brand_cfg = self._brand_cfg(self._resolve_brand(plan))
+        brand_key = self._resolve_brand(plan)
+        brand_cfg = self._brand_cfg(brand_key)
+        # Paramount+ campaigns stamp the [ShowID:]/[MovieID:] token on EVERY placement
+        # name (guaranteed lines already carry it; this adds it to remnant/flat lines too).
+        pplus_id_token = self._pplus_id_token(plan, brand_key)
         # Brand-level per-format overrides (e.g. UK bumper "Basic Plan", region-specific
         # main SGs) let regions reuse a format without a new template.
         overrides = (brand_cfg.get("format_overrides", {}) or {}).get(fmt, {})
@@ -395,7 +414,7 @@ class OrderBuilder:
                     parts = [name_prefix] + parts
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(
-                    " - ".join(p for p in parts if p),
+                    " - ".join(p for p in parts if p) + pplus_id_token,
                     TieredTargeting(format=fmt),
                     tier=ptier, duration=dur, no_targeting=no_targeting,
                     static_relationship_sets=static_sets,
@@ -426,7 +445,7 @@ class OrderBuilder:
                 label_tier = None if tmpl.get("no_tier_label") else tier.id
                 name = self._tier_name(plan.promoted_title, plan.season_or_messaging,
                                        dur, label_tier, plan.region, token=name_token,
-                                       infix=tier_infix)
+                                       infix=tier_infix) + pplus_id_token
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
                 placement = base(
                     name,

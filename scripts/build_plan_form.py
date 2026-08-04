@@ -124,6 +124,7 @@ header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
 .hint{color:var(--muted);font-size:12px;margin-top:5px}
 .note{background:#eef4ff;border:1px solid #cfe0ff;border-left:3px solid var(--blue);
  color:#1a2540;border-radius:8px;padding:9px 12px;font-size:12.5px;margin:2px 0 12px}
+.note code{background:#dbe6ff}
 input[type=text],input[type=date],select,textarea{width:100%;padding:11px 13px;font-size:15px;
  border:1.5px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);
  transition:border-color .15s, box-shadow .15s;appearance:none}
@@ -205,9 +206,11 @@ datalist{display:none}
         <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option></select></div>
     </div>
     <div class="row">
-      <div class="field"><label>Content ID (ShowID / MovieID)</label><input type="text" id="content_id"></div>
+      <div class="field"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">
+        <div class="hint">Pick <b>Content type</b> above (Show vs Movie) to set the tag.</div></div>
       <div class="field"><label>Recommended Show ID</label><input type="text" id="rec_show_id"></div>
     </div>
+    <div class="note hidden" id="pplusIdNudge">This is a <b>Paramount+</b> campaign — the <b>Show / Movie ID</b> above is stamped as <code>[ShowID:…]</code> / <code>[MovieID:…]</code> onto <b>every placement</b> in the order (all tiers), not just the Pre-Roll/Bumper. Left blank, it's stamped empty for the CM to fill in FreeWheel.</div>
     <div class="field" id="kidsWrap"><label>Kids audience</label>
       <div class="seg" id="kidsSeg">
         <button type="button" data-k="older">Older</button>
@@ -319,6 +322,7 @@ function onCampaign(){
   const isAU = c && c.region==="AU";
   $("#ratingWrap").classList.toggle("hidden", !(c && c.products.includes("network_10")));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
+  $("#pplusIdNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("paramount_plus")));
   renderMirrorTargets();
   validate();
 }

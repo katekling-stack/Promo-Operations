@@ -55,7 +55,7 @@ def test_pplus_kids_ie_pplus_line_only_no_pluto():
     names = [p.name for p in order.placements]
     # P+ line only — no "(Pluto)" breakout line anywhere.
     assert not any("(Pluto)" in n for n in names)
-    assert "Spongebob - Now Streaming - 15 - Kids - IE" in names
+    assert "Spongebob - Now Streaming - 15 - Kids - IE - [ShowID:61456636]" in names
     # Kids remnant: COPPA + P+ SG (932583), Ireland geo, INTL+house units.
     rem = next(p for p in order.placements if p.duration == 15 and not p.guaranteed)
     assert rem.geo_country_ids == ["73"]

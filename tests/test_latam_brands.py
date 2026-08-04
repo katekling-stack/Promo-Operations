@@ -48,7 +48,7 @@ def test_pplus_kids_latam_combined_pluto_intl_units():
     assert plan.brand == "paramount_plus_kids_latam"
     rem = next(p for p in order.placements if p.duration == 15 and not p.guaranteed)
     # Combined Pluto+P+ main (no split, no infix), INTL + house units, geo region.
-    assert "Dora - Now Streaming - 15 - Kids - LATAM" == rem.name
+    assert "Dora - Now Streaming - 15 - Kids - LATAM - [ShowID:1]" == rem.name
     assert "69304" in rem.ad_unit_ids
     inc = FreeWheelClient._placement_body(rem)["relationship_targeting"]["set"][0][
         "content_targeting"]["network_items"]["include"]

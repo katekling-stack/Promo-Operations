@@ -34,7 +34,7 @@ def test_br_kids_and_nick():
         "content_id": "1", "season_or_messaging": "Now Streaming",
         "durations": [15], "kids_audience": ["older", "younger"]}))
     rem = next(p for p in kids.placements if not p.guaranteed)
-    assert rem.name == "Dora - Now Streaming - 15 - Kids - BR"
+    assert rem.name == "Dora - Now Streaming - 15 - Kids - BR - [ShowID:1]"
     assert _geo(rem) == {"country": ["21"]}
 
     nick = OrderBuilder().build(support_plan_from_dict({

@@ -56,16 +56,15 @@ another market."**
 - The hand-off is one flag: **Status = "Ready for Automation."**
 
 ## 6. The ask (hand these over)
-- **`docs/SALESFORCE_FIELD_MAPPING.md`** (+ PDF) — the field mapping: the minimal 7-field
-  path, the full 35-field spec, the Status/Reason values, and the open questions.
-- **`docs/salesforce-case-fields.csv`** — the exact fields to create (API names, types,
-  picklist values for all 15 regions / 153 campaigns). Generated from live config, so
-  it's complete and current.
+- **`docs/SALESFORCE_ADMIN_ASKS.md`** — one-page build sheet for the SF admin.
+- **`docs/SALESFORCE_FIELD_MAPPING.md`** (+ PDF) — the field mapping: minimal 7, full 35,
+  Status/Reason values, open questions.
+- **`docs/salesforce-case-fields.csv`** — import-ready field list (all 15 regions / 153
+  campaigns), generated from live config.
 - **`docs/SALESFORCE_GOLIVE.md`** — the go-live runbook (fields → creds → preflight →
   schedule).
 - Concretely we need: the custom fields created, the **Status/Reason** picklist values, a
   **sandbox + Connected App** (or integration user), and confirmation of the Case layout.
-  Offer to rename API names to their conventions.
 
 ## 7. What happens right after they say yes
 ```bash
@@ -85,9 +84,10 @@ piloting **one region (e.g. USA)** first to prove the loop, then open up all 15.
   reviews and activates in FreeWheel.
 
 ## 9. Proof points (numbers to cite)
-- **15 regions, 153 campaigns** — full parity with FreeWheel (every brand-campaign that
-  exists under the advertisers is selectable).
-- **180 automated tests** covering tiering, naming, ad units, geo, every exclusion rule,
+- **15 regions, 153 campaigns** — full parity with FreeWheel.
+- **Paramount+ placements carry the `[ShowID:]`/`[MovieID:]` tag across every tier** (new)
+  — set once on the Case, stamped on every placement in the order.
+- **180+ automated tests** covering tiering, naming, ad units, geo, every exclusion rule,
   the add-ons, mirroring, and the automation loop — all runnable with no credentials.
 - Reverse-engineered and verified against live reference IOs; site-groups confirmed
   against production.

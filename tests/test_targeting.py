@@ -81,9 +81,10 @@ def test_order_builder_per_tier_and_duration_naming():
     names = [p.name for p in order.placements]
     # remnant video: 4 tiers x 2 durations = 8; pause ads: 4 tiers; guaranteed: 2 -> 14
     assert len(order.placements) == 14
-    assert "Frisco King - Season 1 - 30 (Tier 1) - USA" in names
-    assert "Frisco King - Season 1 - Pause Ad (Tier 4) - USA" in names
-    assert "Frisco King - Season 1 - 15 (Tier 4) - USA" in names
+    # Paramount+ stamps the [ShowID:] tag on every placement (blank id here -> CM fills).
+    assert "Frisco King - Season 1 - 30 (Tier 1) - USA - [ShowID:]" in names
+    assert "Frisco King - Season 1 - Pause Ad (Tier 4) - USA - [ShowID:]" in names
+    assert "Frisco King - Season 1 - 15 (Tier 4) - USA - [ShowID:]" in names
 
 
 def test_guaranteed_placement_named_by_content_id():

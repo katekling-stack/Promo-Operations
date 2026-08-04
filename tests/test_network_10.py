@@ -32,9 +32,10 @@ def test_network_10_naming_and_geo():
     plan, order = _order(include_network_10=True)
     assert plan.brand == "paramount_plus_au"
     names = [p.name for p in order.placements]
-    # tier always in parens; the (10 Streaming) marker rides after the tier
-    assert "Traitors Australia - Sell - 15 (Tier 1) (10 Streaming) - AU" in names
-    assert "Traitors Australia - Sell - 30 (Tier 4) (10 Streaming) - AU" in names
+    # tier always in parens; the (10 Streaming) marker rides after the tier.
+    # Paramount+ (AU) stamps [ShowID:<id>] on every placement (all tiers).
+    assert "Traitors Australia - Sell - 15 (Tier 1) (10 Streaming) - AU - [ShowID:956519957]" in names
+    assert "Traitors Australia - Sell - 30 (Tier 4) (10 Streaming) - AU - [ShowID:956519957]" in names
     net10 = [p for p in order.placements if "(10 Streaming)" in p.name]
     assert all(p.geo_country_ids == ["10"] for p in net10)   # Australia
 
