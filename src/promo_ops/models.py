@@ -76,6 +76,12 @@ class SupportPlan:
     # Label to exclude from EVERY placement (label-based exclusion). Defaults to
     # promoted_title — the show being promoted is excluded everywhere.
     exclude_show: Optional[str] = None
+    # Extra Video Series / Pluto channels (BY NAME) to exclude from EVERY placement, on
+    # top of the automatic self-exclusion of the promoted title. Planner searches +
+    # picks these in the form; resolved to FreeWheel IDs at build time (keyword
+    # select-all, so "NCIS" excludes every NCIS series so the promo never runs in it).
+    exclude_series: list[str] = field(default_factory=list)
+    exclude_channels: list[str] = field(default_factory=list)
     # Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
     season_or_messaging: Optional[str] = None
     # Creative durations (seconds) that each video tier is split into (one placement

@@ -263,6 +263,13 @@ datalist{display:none}
       <div class="chips hidden" data-chips="audience_segments" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved  ↵"></div></div>
   </div>
 
+  <div class="card">
+    <h2>Exclude from all placements</h2>
+    <p class="sub">Keep the promo from running inside a title or channel. The promoted title is excluded automatically — add any extra series or Pluto channels here and they're excluded on <b>every</b> placement in the order.</p>
+    <div class="field"><label>Series to exclude</label><div class="chips" data-chips="exclude_series"><input type="text" placeholder="search a series to exclude  ↵"></div></div>
+    <div class="field"><label>Pluto channels to exclude</label><div class="chips" data-chips="exclude_channels"><input type="text" placeholder="search a channel to exclude  ↵"></div></div>
+  </div>
+
   <div class="card hidden" id="mirrorCard">
     <h2>Duplicate to another market</h2>
     <p class="sub">Building the same title in other countries? Pick the target markets — each gets the same creative &amp; targeting, re-pointed at that country's equivalent brand, with naming and placements re-derived. Fill this plan out first, then download a plan file per market.</p>
@@ -473,6 +480,8 @@ function buildPlan(){
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
   const pl={}; if(L.pluto_categories.length)pl.categories=L.pluto_categories;
   if(L.pluto_channels.length)pl.channels=L.pluto_channels; if(Object.keys(pl).length)plan.pluto=pl;
+  if(L.exclude_series.length) plan.exclude_series=L.exclude_series;
+  if(L.exclude_channels.length) plan.exclude_channels=L.exclude_channels;
   return plan;
 }
 function fname(){ const p=buildPlan();

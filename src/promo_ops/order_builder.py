@@ -132,6 +132,28 @@ class OrderBuilder:
                 channel_sgs = [sg["id"] for sg in m.site_groups]
         return series, channel_sgs
 
+    def _extra_exclusions(self, plan: SupportPlan) -> tuple[list, list]:
+        """Planner-specified extra excludes: Video Series + Pluto channels (by name) to
+        keep off EVERY placement, on top of the promoted-title self-exclusion. Series
+        use keyword select-all (exclude every matching series); channels resolve within
+        the region's Pluto channel section. Unlike self-exclusion, these apply on any
+        brand (a P+ promo can still exclude a Pluto channel it would otherwise run in)."""
+        series: list = []
+        for name in plan.exclude_series:
+            # Exact match (like the promoted-title self-exclusion): the planner picks a
+            # specific series from the list, so exclude that series, not every substring.
+            series += [s["id"] for s in self.engine.series_resolver.resolve_exact(name).series]
+        channel_sgs: list = []
+        naming = (self._pluto_cfg().get("naming") or {}).get("channel")
+        if plan.exclude_channels and naming:
+            code = self._regions.get("regions", {}).get(plan.region, {}).get("code", plan.region)
+            prefix, _, suffix = naming.format(region_code=code, name="\x00").partition("\x00")
+            for name in plan.exclude_channels:
+                m = self.engine.site_group_resolver.select_all(name, prefix=prefix, suffix=suffix)
+                if m.matched:
+                    channel_sgs += [sg["id"] for sg in m.site_groups]
+        return list(dict.fromkeys(series)), list(dict.fromkeys(channel_sgs))
+
     @staticmethod
     def _pluto_cfg() -> dict:
         from .config import pluto_config
@@ -287,10 +309,13 @@ class OrderBuilder:
             # Set-less flat lines carry it at the placement-level content exclude.
             content_excl_sgs = samsung_sgs
         # Self-exclusion: the promoted show's own Video Series (excluded on every set)
-        # + its Channel SGs (added to the site-group excludes).
+        # + its Channel SGs (added to the site-group excludes). Plus any planner-specified
+        # extra series/channel excludes, applied to EVERY placement the same way.
         self_series, self_channel_sgs = self._self_exclusions(
             plan, pluto_brand=bool(brand_cfg.get("pluto_brand")))
-        excl_sgs += [sg for sg in self_channel_sgs if sg not in excl_sgs]
+        extra_series, extra_channel_sgs = self._extra_exclusions(plan)
+        self_series = list(self_series) + [s for s in extra_series if s not in self_series]
+        excl_sgs += [sg for sg in self_channel_sgs + extra_channel_sgs if sg not in excl_sgs]
 
         # Kids: layer the Older/Younger VGs + Kids content SG. Main SGs are per-format
         # (remnant P+/Pluto = [Pluto, P+]; guaranteed = [P+]).
