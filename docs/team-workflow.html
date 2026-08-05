@@ -66,6 +66,15 @@
     live/serves until a Campaign Manager <b>books</b> it in FreeWheel. You’re always just “sending the draft over.”
   </div>
 
+  <div style="text-align:center;margin:20px 0 2px">
+    <a href="https://drive.google.com/file/d/1Sl8ZzCmZcjmaOmumc-So3JFgD49bMHnN/view" target="_blank" rel="noopener"
+       style="display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;
+              padding:13px 24px;border-radius:12px;font-size:16px;box-shadow:0 2px 6px rgba(26,86,219,.28)">
+      📋&nbsp; Open the Campaign Form &nbsp;↗</a>
+    <div class="tip" style="margin-top:9px">Opens in Google Drive → click <b>Download</b>, then open the downloaded
+      file to use the form. <span style="color:#9a6a00">(Drive can’t run the form in the browser — it must be downloaded first.)</span></div>
+  </div>
+
   <h2><span class="n">1</span> How it flows</h2>
   <div class="card">
     <div class="flow">
@@ -95,7 +104,9 @@
   <div class="card">
     <p><b>Campaign Manager</b></p>
     <ol>
-      <li>Open the form: <code>templates/campaign-plan/campaign-plan-form.html</code> (double-click it).</li>
+      <li><a href="https://drive.google.com/file/d/1Sl8ZzCmZcjmaOmumc-So3JFgD49bMHnN/view" target="_blank" rel="noopener">Open the Campaign Form</a>
+          (Drive → <b>Download</b> → open the downloaded file).
+          <span class="tip">Or a local copy: <code>templates/campaign-plan/campaign-plan-form.html</code>.</span></li>
       <li>Fill it in — Region, Campaign, Promoted Title, durations, flight, targeting.</li>
       <li>Click <b>Download &amp; post to Slack</b> → it saves the <code>…plan.json</code> to Downloads and opens
           <b>#promo-order-automations-submissions</b>. Drag the just-downloaded file into the message and send.
@@ -123,7 +134,7 @@ promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --liv
   <div class="card">
     <p><b>Campaign Manager</b> — for each campaign:</p>
     <ol>
-      <li>Fill the <b>form</b>.</li>
+      <li>Fill the <a href="https://drive.google.com/file/d/1Sl8ZzCmZcjmaOmumc-So3JFgD49bMHnN/view" target="_blank" rel="noopener">Campaign Form</a>.</li>
       <li>Click <b>Copy row for Sheet</b> (copies one row).</li>
       <li>Open the <b>shared team Google Sheet</b> → next empty row → paste (<code>⌘V</code>).
           <span class="tip">(Simple campaigns can be typed straight into the sheet.)</span></li>
