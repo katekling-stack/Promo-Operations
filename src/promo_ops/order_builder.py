@@ -141,7 +141,9 @@ class OrderBuilder:
         target = plan.exclude_show or plan.promoted_title
         if not target:
             return []
-        m = self.engine.resolver.resolve(target, region=plan.region)
+        # EXACT title only (not the franchise family) — self-exclusion must not knock out
+        # every related segment (e.g. exclude "NCIS", not "NCIS: Hawaii/Sydney/...").
+        m = self.engine.resolver.resolve_exact(target, region=plan.region)
         if not m.matched:
             return []
         ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
@@ -392,6 +394,7 @@ class OrderBuilder:
                                       .get(plan.region, {}).get("has_pluto", True)),
                 region_is_domestic=bool(self._regions.get("regions", {})
                                         .get(plan.region, {}).get("domestic", False)),
+                is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.

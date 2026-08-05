@@ -166,5 +166,18 @@ class AudienceSegmentResolver:
                 if c == want_conv and pat.search(n)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
+    def resolve_exact(self, show: str, region: Optional[str] = None) -> SegmentMatch:
+        """Only the segment(s) that ARE exactly this title — the title tokens are the
+        TRAILING tokens of the segment name — not the whole franchise family. So "NCIS"
+        matches "…SHOW-NCIS" but not "…SHOW-NCIS_Hawaii"; used for self-exclusion where we
+        must exclude the exact title only."""
+        m = self.resolve(show, region)
+        if not m.matched:
+            return m
+        kw = _dda_tokens(show)
+        recs = [r for r in m.records
+                if _dda_tokens(r.segment_name) == kw or _dda_tokens(r.segment_name).endswith(" " + kw)]
+        return SegmentMatch(show=show, matched=bool(recs), records=recs)
+
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]

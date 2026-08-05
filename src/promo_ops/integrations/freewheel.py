@@ -841,8 +841,14 @@ class FreeWheelClient:
         pplus = cfg.get("pplus_site_group", [])
         excl_sg = cfg.get("exclude_site_groups", [])
         excl_clips = cfg.get("exclude_video_groups", [])
-        rec_key = cfg.get("recommended_show_key", "recommended_show")
         rec_placeholder = cfg.get("recommended_show_placeholder", "TBD")
+        # Recommended Show argument:
+        #   P+ (and other non-Pluto adult): key "recommended_show", applied GLOBALLY.
+        #   Pluto TV: key "recommended_shows" (plural), applied DOMESTICALLY only (the
+        #             feature isn't rolled out for Pluto internationally).
+        is_pluto = bool(getattr(p, "is_pluto_brand", False))
+        rec_key = "recommended_shows" if is_pluto else cfg.get("recommended_show_key", "recommended_show")
+        add_rec_show = (not is_pluto) or bool(getattr(p, "region_is_domestic", False))
 
         t = p.targeting_ids or {}
         dda = sorted(set(t.get("dda", [])))
@@ -969,7 +975,8 @@ class FreeWheelClient:
             if genre_vgs:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
                     [{"site_group": pplus}, {"video_group": genre_vgs}], base_exclude())})
-            sets.append(rec_show_set(pplus))
+            if add_rec_show:   # guaranteed lines are P+ (non-Pluto) -> always add
+                sets.append(rec_show_set(pplus))
             return sets
 
         # Remnant video, per tier.
@@ -981,9 +988,11 @@ class FreeWheelClient:
             if c:
                 s.update(c)
             sets.append(s)
-            rs = rec_show_set(pplus)
-            if rs:
-                sets.append(rs)
+            # Recommended Show: P+ globally (pplus SG); Pluto domestically only (Pluto SG).
+            if add_rec_show:
+                rs = rec_show_set(main if is_pluto else pplus)
+                if rs:
+                    sets.append(rs)
         elif p.tier == 2:
             if series:
                 sets.append({"set_name": "Affinity Shows", **FreeWheelClient._content(

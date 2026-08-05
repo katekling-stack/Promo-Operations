@@ -44,6 +44,17 @@ def test_kids_have_no_audience_targeting():
             assert "audience_targeting" not in s, f"{p.name} should have no audience targeting"
 
 
+def test_exact_title_only_not_the_franchise_family():
+    # "NCIS" excludes only the exact NCIS segment, not NCIS: Hawaii / Sydney / etc.
+    order = _order(promoted_title="NCIS", region="USA", campaign={"name": "Paramount + - USA"},
+                   durations=[30], genres=["Drama"])
+    from promo_ops.audience_segments import AudienceSegmentResolver
+    family = {x.segment_id for x in AudienceSegmentResolver().load().resolve("NCIS", "USA").records
+              if x.segment_id}
+    assert len(family) > 1                              # the family is genuinely larger
+    assert order.promoted_audience_items == ["1437926"]  # only the exact NCIS segment
+
+
 def test_unresolved_title_has_no_audience_items():
     order = _order(promoted_title="Zzxq Nonexistent Title", region="USA",
                    campaign={"name": "Paramount + - USA"}, durations=[30])

@@ -263,6 +263,10 @@ class Placement:
     # Whether the region is Domestic (US). International regions use the fuller pause
     # custom-targeting key-value exclude list. Default True preserves existing behavior.
     region_is_domestic: bool = True
+    # Whether this is a Pluto TV brand placement. Drives the Recommended Show argument:
+    # Pluto uses the key "recommended_shows" (plural) and ONLY domestically (the feature
+    # isn't rolled out globally); P+/other adult brands use "recommended_show" globally.
+    is_pluto_brand: bool = False
     # Brand-constant relationship sets (targeting fixed per brand, not derived from the
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
     # {set_name, include: [subset,...], exclude: {site_group:[...]}}. Built verbatim.
