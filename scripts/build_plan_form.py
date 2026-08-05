@@ -28,6 +28,10 @@ OUT = REPO / "templates" / "campaign-plan" / "campaign-plan-form.html"
 # regenerate the form. (Interim intake — retires when the Salesforce integration lands.)
 SLACK_SUBMIT_URL = "https://paramountglobal.enterprise.slack.com/archives/C0BNBKZDV6W"
 
+# Where "Request a new audience segment" links (a Google Apps Script form). Shown next to
+# the Audience Segments field so a CM can request a not-yet-created segment at the same time.
+AUDIENCE_REQUEST_URL = "https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec"
+
 REGION_ORDER = ["USA", "CA", "UK", "IE", "AU", "LATAM", "BR", "FR", "IT", "GSA",
                 "FI", "DK", "NO", "SE", "ES"]
 REGION_NAME = {"USA": "United States", "CA": "Canada", "UK": "United Kingdom",
@@ -130,6 +134,7 @@ def _targeting_options() -> dict:
 
 def build(out: Path | None = None) -> Path:
     html = TEMPLATE.replace("/*APP_DATA*/", json.dumps(app_data(), ensure_ascii=False))
+    html = html.replace("AUDIENCE_REQUEST_URL_PLACEHOLDER", AUDIENCE_REQUEST_URL)
     out = out or OUT
     out.write_text(html, encoding="utf-8")
     return out
@@ -307,7 +312,10 @@ datalist{display:none}
       <div class="hint">Category / channel options are for the selected Region.</div></div>
     <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
     <div class="field"><span class="toggle-adv" id="advToggle">▸ Tier-1 audience segments (advanced)</span>
-      <div class="chips hidden" data-chips="audience_segments" data-source="audience" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved"></div></div>
+      <div class="chips hidden" data-chips="audience_segments" data-source="audience" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved"></div>
+      <div class="hint">Need an audience segment that isn't in the list yet?
+        <a href="AUDIENCE_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"><b>Request a new segment ↗</b></a>
+        — submit it now and it'll be applied once created.</div></div>
   </div>
 
   <div class="card">

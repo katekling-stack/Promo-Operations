@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ops Automation — Project One-Pager</title>
+<style>
+  :root{
+    --navy:#0a1f44; --blue:#1a56db; --ink:#1c2434; --muted:#5b6577; --line:#e4e8f0;
+    --bg:#f5f7fb; --card:#fff; --ok:#188a4e; --okbg:#e8f6ee; --warn:#9a6a00; --warnbg:#fdf3dc;
+    --edit:#b23;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.5;font-size:15px}
+  header{background:linear-gradient(135deg,var(--navy),#12306e);color:#fff;padding:30px 30px 26px}
+  header .wrap{max-width:960px;margin:0 auto}
+  .eyebrow{color:#9db6ec;font-size:12.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin:0 0 6px}
+  header h1{margin:0 0 8px;font-size:27px;letter-spacing:.2px}
+  header p{margin:0;color:#c9d6f3;font-size:15px;max-width:760px}
+  .meta{margin-top:14px;color:#9db6ec;font-size:12.5px}
+  main{max-width:960px;margin:0 auto;padding:24px 30px 56px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.8px;color:var(--blue);margin:26px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:10px 0;
+        box-shadow:0 1px 2px rgba(16,32,64,.04)}
+  p{margin:8px 0}
+  .lead{font-size:15.5px}
+  ul{margin:8px 0;padding-left:20px} li{margin:5px 0}
+  b{color:var(--ink)}
+  .tiles{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0}
+  .tile{flex:1 1 200px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+        box-shadow:0 1px 2px rgba(16,32,64,.04)}
+  .tile .big{font-size:30px;font-weight:800;color:var(--navy);line-height:1.1}
+  .tile .lbl{color:var(--muted);font-size:13px;margin-top:4px}
+  .tile.accent{background:linear-gradient(135deg,#eef3ff,#e7edff);border-color:#cfdcff}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:4px 0}
+  .flow .s{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+  .flow .s b{display:block;color:var(--navy);font-size:13px;margin-bottom:2px}
+  .flow .s span{color:var(--muted);font-size:12.5px}
+  .flow .a{align-self:center;color:var(--blue);font-weight:700}
+  .two{display:flex;gap:14px;flex-wrap:wrap}
+  .two .card{flex:1 1 300px;margin:0}
+  .badbox b,.goodbox b{display:block;margin-bottom:4px}
+  .badbox{border-left:4px solid #d98b8b} .goodbox{border-left:4px solid #7fce9f}
+  .callout{border-radius:12px;padding:13px 16px;margin:12px 0;border:1px solid}
+  .callout.warn{background:var(--warnbg);border-color:#f0dca6}
+  .callout.ok{background:var(--okbg);border-color:#bfe6cd}
+  a{color:var(--blue)}
+  .edit{color:var(--edit);font-style:italic;font-size:12px}
+  .res{list-style:none;padding-left:0;line-height:2}
+  .foot{color:var(--muted);font-size:12px;margin-top:26px}
+  @media print{body{background:#fff}.card,.tile{box-shadow:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <p class="eyebrow">Promo Digital Ad Operations · Project Brief</p>
+  <h1>Automating FreeWheel Order &amp; Placement Setup</h1>
+  <p>Turning a repetitive, manual, error-prone build process into a config-driven tool — so Campaign Managers
+     spend their time on strategy and targeting, not data entry.</p>
+  <div class="meta">Prepared by <b>[Your name]</b> · <b>[Date]</b> · For <b>[SVP name]</b> <span class="edit">— edit these</span></div>
+</div></header>
+
+<main>
+
+  <h2>The problem</h2>
+  <div class="card">
+    <p class="lead">Setting a promo campaign live in FreeWheel means hand-building an <b>Insertion Order plus
+       ~14 placements</b> — every tier, targeting set, frequency cap, geo, time zone, and self-exclusion typed in
+       by hand, for <b>every campaign, in every market</b>.</p>
+    <ul>
+      <li><b>It’s slow.</b> The team can set <b>20+ campaigns live per day</b>, each a lengthy manual build.</li>
+      <li><b>It’s error-prone.</b> Manual re-entry across dozens of fields invites typos, missed exclusions, and
+          inconsistent naming/targeting — plan to plan, order to order, market to market.</li>
+      <li><b>It’s the wrong use of expert time.</b> Skilled Campaign Managers spend hours on mechanical setup
+          instead of the work that actually moves the needle: building targeting, support plans, and thoughtful setup.</li>
+    </ul>
+  </div>
+
+  <h2>What we identified &amp; built</h2>
+  <div class="card">
+    <p>The build is <b>repetitive and rule-based</b> — the same tiering, naming, caps, geo/time-zone, and
+       self-exclusion logic applied over and over. That makes it a perfect fit for automation. We built
+       <b>Promo Ops</b>: a config-driven tool that turns a simple campaign form into a fully-built, review-ready
+       FreeWheel draft.</p>
+    <div class="flow">
+      <div class="s"><b>1 · Fill the form</b><span>Campaign, title, flight, targeting</span></div>
+      <div class="a">→</div>
+      <div class="s"><b>2 · One command</b><span>Builds the IO + all placements</span></div>
+      <div class="a">→</div>
+      <div class="s"><b>3 · Draft in FreeWheel</b><span>NOT_BOOKED, ready to review</span></div>
+      <div class="a">→</div>
+      <div class="s"><b>4 · CM books it</b><span>Human review + go-live</span></div>
+    </div>
+    <p style="margin-top:12px">Every draft is built from <b>one source of truth</b>, so tiering, naming,
+       frequency caps, geo, market time zone, and self-exclusions come out <b>identical and correct every time</b>.
+       It runs one campaign or a <b>whole batch</b> at once, and never creates duplicates.</p>
+  </div>
+
+  <h2>Expected impact</h2>
+  <div class="tiles">
+    <div class="tile accent"><div class="big">20+ hrs</div><div class="lbl">saved per Campaign Manager, per week <span class="edit">(est.)</span></div></div>
+    <div class="tile"><div class="big">~14 → 1</div><div class="lbl">placements built by hand vs. one command per campaign</div></div>
+    <div class="tile"><div class="big">Seconds</div><div class="lbl">to build a full order — vs. a lengthy manual setup</div></div>
+    <div class="tile"><div class="big">15 · 153</div><div class="lbl">regions and campaigns supported today</div></div>
+  </div>
+  <div class="two" style="margin-top:6px">
+    <div class="card badbox"><b>Before</b>
+      <ul style="margin:2px 0">
+        <li>Manual build of IO + ~14 placements per campaign</li>
+        <li>Repeated across 20+ campaigns/day, every market</li>
+        <li>Typos, missed exclusions, inconsistent naming/targeting</li>
+        <li>Experts stuck doing data entry</li>
+      </ul>
+    </div>
+    <div class="card goodbox"><b>After</b>
+      <ul style="margin:2px 0">
+        <li>Fill a form → one command → draft ready to review</li>
+        <li>Batch a full day’s campaigns in a single run</li>
+        <li>Consistent, accurate output plan-to-plan, order-to-order</li>
+        <li>CMs focus on targeting, support plans &amp; thoughtful setup</li>
+      </ul>
+    </div>
+  </div>
+  <p class="edit" style="margin-top:6px">Illustrative time-saved math (edit to your numbers): ~[100] campaigns/week
+     × ~[30] min saved each ≈ [50] hrs/week across the team → conservatively <b>20+ hrs/week per CM</b>.</p>
+
+  <h2>Proven — it’s working today</h2>
+  <div class="callout ok">
+    Promo Ops is <b>built, tested, and validated live against FreeWheel production</b>. It has created real
+    <b>NOT_BOOKED drafts end-to-end</b> (14 placements each) across domestic and international markets, with
+    frequency caps, market time zones, and self-exclusions all applied automatically. It’s in an <b>interim
+    self-serve rollout</b> now (a form + Slack submission), running by hand on an Ad Ops workstation.
+  </div>
+
+  <h2>What’s next</h2>
+  <div class="card">
+    <ul style="margin:2px 0">
+      <li><b>Roll out</b> to the Campaign Manager team for day-to-day use.</li>
+      <li><b>Salesforce integration (phase 2):</b> the pipeline is already built — once a Salesforce API user is
+          provisioned, drafts build <b>straight from the Case</b>, removing the form/Slack step entirely.</li>
+      <li><b>Expand</b> automatic add-ons (Video Domination, takeovers) and reporting/audit trail.</li>
+    </ul>
+  </div>
+
+  <h2>Resources</h2>
+  <div class="card">
+    <ul class="res">
+      <li>📋 <a href="https://drive.google.com/file/d/1MMLtsLysjor0PHgbSOPzz8mYW9dsG7jR/view" target="_blank" rel="noopener"><b>The Campaign Form</b></a> — what a CM fills out</li>
+      <li>📄 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/team-workflow.html" target="_blank" rel="noopener"><b>Team workflow guide</b></a> — the full process end-to-end</li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/BATCH_RUNBOOK.md" target="_blank" rel="noopener"><b>Batch runbook</b></a> — running a full day’s campaigns at once</li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/INSTALL_CHECKLIST.md" target="_blank" rel="noopener"><b>Install checklist</b></a> — how it’s set up</li>
+    </ul>
+    <p class="edit">Tip: once this work is merged to the main branch, update the GitHub links (or host these docs on the promo site).</p>
+  </div>
+
+  <p class="foot">Promo Ops · config-driven automation for FreeWheel Insertion Order &amp; Placement setup.
+     One-pager template — replace the bracketed <span class="edit">[…]</span> items and the estimated figures with your final numbers.</p>
+
+</main>
+</body>
+</html>
