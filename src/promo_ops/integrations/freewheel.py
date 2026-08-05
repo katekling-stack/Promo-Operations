@@ -711,6 +711,14 @@ class FreeWheelClient:
         FreeWheelClient._apply_geo_and_ad_units(body, p)
 
         sets = FreeWheelClient._relationship_sets(p)
+        # ADULT self-exclusion: exclude the promoted title's own audience segment(s) on
+        # EVERY set's audience_targeting (merging with a set's include, e.g. Tier 1's DDA).
+        aud_excl = sorted(set(getattr(p, "exclude_audience_items", []) or []))
+        if sets and aud_excl:
+            for s in sets:
+                at = s.setdefault("audience_targeting", {})
+                ex = at.setdefault("exclude", {})
+                ex["audience_item"] = sorted(set(ex.get("audience_item", []) or []) | set(aud_excl))
         if sets:
             body["relationship_targeting"] = {"set": sets}
         # Placement-level content exclude (separate from the relationship sets) —
@@ -918,7 +926,12 @@ class FreeWheelClient:
         if static_sets:
             out: list[dict[str, Any]] = []
             for sd in static_sets:
-                node = FreeWheelClient._content(sd.get("include", []), sd.get("exclude"))
+                # Fold the promoted show's own series into each static set's exclude too,
+                # so the self-exclusion holds on every argument here as well.
+                exclude = dict(sd.get("exclude") or {})
+                if excl_series:
+                    exclude["series"] = sorted(set(exclude.get("series", []) + excl_series))
+                node = FreeWheelClient._content(sd.get("include", []), exclude or None)
                 if node:
                     out.append({"set_name": sd.get("set_name"), **node})
             return out
@@ -978,6 +991,9 @@ class FreeWheelClient:
             if channels:
                 sets.append({"set_name": "Channels", **FreeWheelClient._content(
                     [{"site_group": channels}], base_exclude())})
+            if not sets:   # no showlist/channels -> platform-constrained, still excludes promoted
+                sets.append({"set_name": "Affinity Shows", **FreeWheelClient._content(
+                    [{"site_group": main}], base_exclude())})
         elif p.tier == 3:
             if genre_vgs:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
@@ -986,6 +1002,9 @@ class FreeWheelClient:
             if categories:
                 sets.append({"set_name": "Pluto Categories", **FreeWheelClient._content(
                     [{"site_group": categories}], base_exclude())})
+            if not sets:   # no genre/categories -> platform-constrained, still excludes promoted
+                sets.append({"set_name": "Genre", **FreeWheelClient._content(
+                    [{"site_group": main}], base_exclude(video_group=excl_clips))})
         else:  # tier 4 — platform-constrained RON
             sets.append({"set_name": "Genre", **FreeWheelClient._content(
                 [{"site_group": main}], base_exclude())})

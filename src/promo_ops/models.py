@@ -253,6 +253,10 @@ class Placement:
     # Self-exclusion: the promoted show's OWN Video Series IDs, excluded on every set so
     # it never promos against itself (its Channel SGs go in extra_exclude_site_groups).
     exclude_series: list[str] = field(default_factory=list)
+    # Self-exclusion (ADULT only): the promoted title's OWN audience-segment (DDA) item IDs,
+    # excluded on every set's audience_targeting so the promo doesn't chase its own audience.
+    # Empty on kids placements (no audience targeting on kids).
+    exclude_audience_items: list[str] = field(default_factory=list)
     # Whether the placement's region carries Pluto (regions.yaml has_pluto). Drives the
     # no-Pluto pause-ad main-SG drop (e.g. IE). Default True preserves existing behavior.
     region_has_pluto: bool = True
@@ -293,6 +297,11 @@ class Order:
     # resolved from config by kids/adult + region. The FreeWheel client encodes these
     # onto the IO's delivery.frequency_cap.
     frequency_caps: list[str] = field(default_factory=list)
+    # The promoted title's own resolved Video Series ids (the self-exclusion). EMPTY when
+    # the title didn't match a FreeWheel series — a flag for the CM to exclude it by hand.
+    promoted_series_ids: list[str] = field(default_factory=list)
+    # The promoted title's own resolved audience-segment (DDA) ids, excluded on adult IOs.
+    promoted_audience_items: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

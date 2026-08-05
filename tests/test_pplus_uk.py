@@ -23,9 +23,9 @@ def test_include_pluto_checkbox_gates_the_breakout():
     # Off by default: P+ lines + pause + guaranteed, no Pluto breakout.
     _, off = _order(include_pluto=False)
     assert not any("(Pluto)" in p.name for p in off.placements)
-    # Checkbox on: adds the Pluto breakout lines.
+    # Checkbox on: adds the Pluto breakout lines (tiers 1-4 x :15/:30 = 8, Tier 1 global).
     _, on = _order(include_pluto=True)
-    assert sum("(Pluto)" in p.name for p in on.placements) == 6
+    assert sum("(Pluto)" in p.name for p in on.placements) == 8
 
 
 def test_pplus_uk_split_and_naming():

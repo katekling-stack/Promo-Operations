@@ -124,6 +124,7 @@ class BatchResult:
     placements: int = 0
     problems: list[str] = field(default_factory=list)
     todos: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)   # non-fatal flags (e.g. no series match)
     error: Optional[str] = None
 
     @property
@@ -131,7 +132,8 @@ class BatchResult:
         return self.status in ("created", "reused", "dry-run")
 
     def to_record(self) -> dict[str, Any]:
-        note = self.error or ("; ".join(self.problems) if self.problems else "")
+        note = self.error or ("; ".join(self.problems) if self.problems
+                              else "; ".join(self.warnings) if self.warnings else "")
         return {
             "row": self.row, "salesforce_case": self.salesforce_case,
             "title": self.title, "region": self.region, "campaign": self.campaign,
@@ -175,6 +177,11 @@ def process_row(index: int, row: dict[str, str], *, fw, create: bool,
     res.io_name = order.name
     res.placements = len(order.placements)
     res.todos = cm_todos(order)
+    # Flag: promoted title didn't match a FreeWheel Video Series -> self-exclusion not
+    # applied automatically (CM must exclude it by hand). Non-fatal; the draft still builds.
+    if order.promoted_title and not order.promoted_series_ids:
+        res.warnings.append(f"promoted title {order.promoted_title!r} did not match a "
+                            "FreeWheel Video Series — exclude the promoted show manually")
     net = str(order.network_id or network_id or env("FREEWHEEL_NETWORK_ID") or "")
     # Campaign id for the IO link + idempotency check: the plan's resolved id if present,
     # else resolve the campaign by name (the same lookup create_order does live).
@@ -256,4 +263,6 @@ def render_batch_summary(results: list[BatchResult], create: bool) -> str:
             tail = r.error or "; ".join(r.problems)
         lines.append(f"  {icon.get(r.status, '?')} {who:<16} {r.region:<6} "
                      f"{r.placements or '':>2} pl  {r.status:<10} {tail}")
+        for w in r.warnings:
+            lines.append(f"       ⚠  {w}")
     return "\n".join(head + lines)

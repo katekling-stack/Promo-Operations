@@ -35,7 +35,9 @@ def test_resolver_reports_unmatched():
 
 # --- targeting engine ------------------------------------------------------- #
 
-def test_tier1_gated_by_region():
+def test_tier1_global_for_all_regions():
+    # Update 2026-08-05: Tier 1 is included GLOBALLY for adult orders — every region
+    # (incl. UK, previously ineligible) now builds tiers 1-4.
     engine = TargetingEngine()
     plan = support_plan_from_dict({
         "promoted_title": "X", "region": "UK", "brand": "paramount_network",
@@ -43,8 +45,7 @@ def test_tier1_gated_by_region():
     })
     targeting = engine.build(plan, "remnant_video")
     tier_ids = [t.id for t in targeting.tiers]
-    assert 1 not in tier_ids  # UK is not Tier-1 eligible
-    assert 3 in tier_ids
+    assert 1 in tier_ids and 3 in tier_ids
 
 
 def test_tier1_present_for_usa():

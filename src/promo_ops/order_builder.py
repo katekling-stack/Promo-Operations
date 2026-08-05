@@ -132,6 +132,21 @@ class OrderBuilder:
                 channel_sgs = [sg["id"] for sg in m.site_groups]
         return series, channel_sgs
 
+    def _self_audience_exclusions(self, plan: SupportPlan) -> list[str]:
+        """The promoted title's OWN audience-segment (DDA) item IDs — excluded on every
+        adult set alongside the series self-exclusion, so a promo never chases the audience
+        of the very title it's promoting. Resolved from the exclude show (defaults to the
+        promoted title) via the segment resolver; only segments with a FreeWheel id are
+        usable. Kids brands do no audience targeting, so callers skip this for kids."""
+        target = plan.exclude_show or plan.promoted_title
+        if not target:
+            return []
+        m = self.engine.resolver.resolve(target, region=plan.region)
+        if not m.matched:
+            return []
+        ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
+        return list(dict.fromkeys(ids))
+
     def _extra_exclusions(self, plan: SupportPlan) -> tuple[list, list]:
         """Planner-specified extra excludes: Video Series + Pluto channels (by name) to
         keep off EVERY placement, on top of the promoted-title self-exclusion. Series
@@ -333,6 +348,9 @@ class OrderBuilder:
         is_kids = bool(brand_cfg.get("kids") and tmpl.get("kids"))
         kids_vgs = kids_video_groups(plan.kids_audience) if is_kids else []
         kids_sg = kids_targeting_config().get("content_site_group") if is_kids else None
+        # ADULT self-exclusion: also exclude the promoted title's own audience segment on
+        # every set (combined with the series self-exclusion). Kids do no audience targeting.
+        self_audience = [] if is_kids else self._self_audience_exclusions(plan)
         # Brazil/LATAM Paramount Promo Blocks (SG 1258011): this SG is BR/LATAM inventory,
         # so it is excluded ONLY on adult Pluto placements in the BR + LATAM regions
         # (Pluto SG in its main SGs), across all tiers + standard lines. Skips every other
@@ -369,6 +387,7 @@ class OrderBuilder:
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 content_exclude_site_groups=list(content_excl_sgs),
                 exclude_series=list(self_series),
+                exclude_audience_items=list(self_audience),
                 region_has_pluto=bool(self._regions.get("regions", {})
                                       .get(plan.region, {}).get("has_pluto", True)),
                 region_is_domestic=bool(self._regions.get("regions", {})
@@ -529,6 +548,13 @@ class OrderBuilder:
         # plus 20/month for USA. Resolved from the campaign's brand (kids vs adult) + region.
         cap_cfg = self._brand_cfg(self._resolve_brand(plan)) or brand_cfg
         order.frequency_caps = self._order_frequency_caps(plan.region, bool(cap_cfg.get("kids")))
+        # Record the promoted title's own resolved Video Series (the self-exclusion). Empty
+        # => the title didn't match a FreeWheel series; the CM must exclude it manually.
+        order.promoted_series_ids = list(self._self_exclusions(plan)[0])
+        # Adult orders also record the promoted title's audience segments (excluded on every
+        # set). Kids do no audience targeting, so leave empty for kids brands.
+        order.promoted_audience_items = ([] if cap_cfg.get("kids")
+                                         else self._self_audience_exclusions(plan))
         # Kids brands only build when a Kids audience (Older/Younger) is selected in the
         # Salesforce targeting; no audience -> no Kids IOs.
         if brand_cfg.get("kids") and not plan.kids_audience:

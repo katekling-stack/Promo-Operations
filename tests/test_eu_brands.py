@@ -13,7 +13,7 @@ def _geo(p):
     return FreeWheelClient._placement_body(p).get("geography_targeting", {}).get("include", {})
 
 
-def test_pplus_fr_no_tier1_house_units():
+def test_pplus_fr_house_units_with_global_tier1():
     plan = support_plan_from_dict({
         "promoted_title": "Star Trek", "region": "FR",
         "campaign": {"name": "Paramount + - FR"}, "content_type": "show", "content_id": "1",
@@ -23,7 +23,7 @@ def test_pplus_fr_no_tier1_house_units():
     order = OrderBuilder().build(plan)
     assert plan.brand == "paramount_plus_fr"
     assert all(_geo(p) == {"country": ["54"]} for p in order.placements)   # France
-    assert {p.tier for p in order.placements if not p.guaranteed} == {2, 3, 4}   # no Tier 1
+    assert {p.tier for p in order.placements if not p.guaranteed} == {1, 2, 3, 4}   # Tier 1 global
     p15 = next(p for p in order.placements if p.tier == 2 and p.duration == 15)
     p30 = next(p for p in order.placements if p.tier == 2 and p.duration == 30)
     assert p15.ad_unit_ids == ["71999", "72000", "72001"]   # house, no INTL pre-roll

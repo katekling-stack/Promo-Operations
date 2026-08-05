@@ -33,6 +33,12 @@ def io_url(network_id: str, campaign_id: str, io_id: str) -> str:
 def cm_todos(order: Order) -> list[str]:
     """Manual steps the CM must finish before booking the IO."""
     todos = ["Map/create the Brand under the advertiser and set it on the IO."]
+    # Self-exclusion flag: the promoted title didn't match a FreeWheel Video Series, so the
+    # tool couldn't auto-exclude it. The CM must exclude the promoted show by hand.
+    if order.promoted_title and not order.promoted_series_ids:
+        todos.append(f"⚠️ Promoted title {order.promoted_title!r} did not match a FreeWheel "
+                     "Video Series — self-exclusion was NOT applied. Manually exclude the "
+                     "promoted show on every placement before booking.")
     placements = order.placements
     if any(p.recommended_show_value in (None, "") for p in placements
            if p.recommended_show_value is not None or getattr(p, "tier", None) == 1):

@@ -16,7 +16,7 @@ def _main_sgs(p, idx=0):
     return [set(s["site_group"]) for s in subs if s.get("site_group")]
 
 
-def test_pplus_ie_adult_no_tier1_no_pluto_pause():
+def test_pplus_ie_adult_tiers_and_no_pluto_pause():
     plan = support_plan_from_dict({
         "promoted_title": "Walker", "region": "IE",
         "campaign": {"name": "Paramount + - IE"}, "content_type": "show",
@@ -26,9 +26,9 @@ def test_pplus_ie_adult_no_tier1_no_pluto_pause():
     order = OrderBuilder().build(plan)
     assert plan.brand == "paramount_plus_ie"
     assert all(p.geo_country_ids == ["73"] for p in order.placements)   # Ireland
-    # No Tier 1 (UK/IE are not tier1-eligible); remnant is tiers 2/3/4.
+    # Tier 1 is global now (update 2026-08-05); remnant is tiers 1-4.
     tiers = {p.tier for p in order.placements if not p.guaranteed and "Pause" not in p.name}
-    assert tiers == {2, 3, 4}
+    assert tiers == {1, 2, 3, 4}
     # Remnant main SGs = P+/CBS Local/VCBS, no Pluto.
     t4 = next(p for p in order.placements if p.tier == 4 and "Pause" not in p.name)
     assert {"932583", "932591", "932592"} in _main_sgs(t4)

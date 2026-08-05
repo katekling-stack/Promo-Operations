@@ -1,12 +1,9 @@
 tiers:
 - id: 1
   name: Highest Priority
-  applies_to_regions:
-  - USA
-  - AU
-  - CA
-  - LATAM
-  - BR
+  # Tier 1 is included GLOBALLY for adult orders (update effective 2026-08-05): every
+  # region now builds tiers 1-4. (Previously limited to USA/AU/CA/LATAM/BR.)
+  applies_to_regions: global
   dimensions:
   - key: audience_segments
     label: Audience targeting to capture viewership (DDA / Adobe Audience Manager)

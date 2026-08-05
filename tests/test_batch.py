@@ -149,6 +149,28 @@ def test_cases_rows_from_values_matches_csv_shape():
     assert all(r.status == "dry-run" and r.placements > 0 for r in results)
 
 
+def test_unresolved_promoted_title_is_flagged_not_fatal():
+    fw = FakeFW()
+    good = _row(**{"Salesforce Case": "A1", "Promoted Title": "NCIS"})
+    bad = _row(**{"Salesforce Case": "A2", "Promoted Title": "Zzxq Nonexistent Title"})
+    good_res, bad_res = process_batch([good, bad], fw=fw, create=True)
+    assert good_res.status == "created" and not good_res.warnings   # resolved -> no flag
+    assert bad_res.status == "created"                              # still built (non-fatal)
+    assert any("did not match a FreeWheel Video Series" in w for w in bad_res.warnings)
+    assert "did not match" in bad_res.to_record()["note"]           # surfaced in the results CSV
+
+
+def test_cm_todos_flags_unresolved_promoted_series():
+    from promo_ops.casework import cm_todos
+    from promo_ops.order_builder import OrderBuilder
+    from promo_ops.plan_loader import support_plan_from_dict
+    order = OrderBuilder().build(support_plan_from_dict({
+        "promoted_title": "Zzxq Nonexistent Title", "region": "USA",
+        "campaign": {"name": "Paramount + - USA"}, "durations": [30]}))
+    assert order.promoted_series_ids == []
+    assert any("did not match a FreeWheel Video Series" in t for t in cm_todos(order))
+
+
 def test_render_summary_has_counts_and_per_case_lines():
     results = [BatchResult(row=1, salesforce_case="00100", region="USA", status="created",
                            placements=14, io_link="http://io/1"),

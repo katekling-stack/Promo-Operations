@@ -29,8 +29,7 @@ def test_pluto_uk_brand_and_geo():
 def test_pluto_uk_is_pluto_only_tiered():
     _, order = _order()
     tiers = sorted({p.tier for p in order.placements})
-    assert 1 not in tiers                    # Pluto has no Tier-1 DDA
-    assert set(tiers) == {2, 3, 4}
+    assert set(tiers) == {1, 2, 3, 4}        # Tier 1 global (update 2026-08-05), incl. Pluto
     # Tier 3 genre set uses the standard genre resolver (main SG = Pluto 929392 only)
     t3 = next(p for p in order.placements if p.tier == 3)
     body = FreeWheelClient._placement_body(t3)
