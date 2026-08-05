@@ -169,8 +169,9 @@ datalist{display:none}
     <div class="field"><label>Pluto categories</label><div class="chips" data-chips="pluto_categories" data-source="categories"><input type="text" placeholder="type to search a category…"></div>
       <div class="hint">Category / channel options are for the selected Region.</div></div>
     <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
-    <div class="field"><span class="toggle-adv" id="advToggle">▸ Tier-1 audience segments (advanced)</span>
-      <div class="chips hidden" data-chips="audience_segments" data-source="audience" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved"></div>
+    <div class="field"><label>Audience Segments (Tier 1)</label>
+      <div class="chips" data-chips="audience_segments" data-source="audience"><input type="text" placeholder="usually blank — auto-resolved from the showlist"></div>
+      <div class="hint">Tier 1 is standard across all markets. Usually left blank (auto-resolved from the showlist) — add specific DDA segments only if needed.</div>
       <div style="margin-top:11px">
         <a href="https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
@@ -318,12 +319,6 @@ $("#kidsSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",(
 // VD targeting show/hide
 $("#video_domination").addEventListener("change",()=>{
   $("#vdTargetWrap").classList.toggle("hidden", $("#video_domination").value!=="pluto");
-});
-// advanced toggle
-$("#advToggle").addEventListener("click",()=>{
-  const box=document.querySelector('[data-chips="audience_segments"]');
-  box.classList.toggle("hidden");
-  $("#advToggle").textContent = (box.classList.contains("hidden")?"▸":"▾")+" Tier-1 audience segments (advanced)";
 });
 
 // Region-aware source lists for the type-to-search pickers.
