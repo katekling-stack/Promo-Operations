@@ -45,6 +45,22 @@ BATCH_COLUMNS.update({
 
 _TRUE_VALUES = {"y", "yes", "true", "x", "1", "✓"}
 
+# The canonical batch-sheet column ORDER — the single source of truth shared by the CSV
+# template, the .xlsx dropdown template, and the form's "Copy row for Sheet" button (so a
+# pasted row lands in the right columns). The batch READER matches by header NAME (order
+# independent), but paste alignment depends on this order, so keep the three in sync here.
+SHEET_COLUMNS: list[str] = [
+    "Salesforce Case", "Region", "Campaign Name", "Promoted Title",
+    "Content Type", "Content ID", "Recommended Show ID", "Video Durations",
+    "Flight Start", "Flight End", "Language", "Season or Messaging",
+    "Genres", "Showlist", "Pluto Categories", "Pluto Channels", "Audience Segments",
+    "Exclude Series", "Exclude Channels", "Kids Audience",
+    "Video Domination", "Video Domination Targeting", "Takeover", "Rating Restrictions",
+    "Include Remnant Video", "Include Pause Ads", "Include Premium Pre-Roll",
+    "Include Essential Bumper", "Include CBS Pre-Roll", "Include After Mid-Roll Bumper",
+    "Include 1Z Lockdown", "Include 2Z Lockdown", "Include Pluto", "Include Network 10",
+]
+
 
 def _normalize_header(label: str) -> str:
     """Lower-case, trim, and drop a trailing parenthetical qualifier so

@@ -41,6 +41,11 @@ def test_build_writes_html_with_data_embedded(tmp_path):
     assert m, "APP data block not found"
     data = json.loads(m.group(1))
     assert data["regions"] and data["campaigns"]
+    # Batch bridge: the Salesforce Case field, the "Copy row for Sheet" button, and the
+    # canonical Sheet column order must all be embedded (the form feeds the batch Sheet).
+    from promo_ops.batch import SHEET_COLUMNS
+    assert 'id="sf_case"' in html and "Copy row for Sheet" in html
+    assert data["sheetColumns"] == SHEET_COLUMNS
 
 
 def test_exported_plan_shape_is_buildable():

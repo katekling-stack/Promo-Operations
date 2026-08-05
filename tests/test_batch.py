@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import csv
 
-from promo_ops.batch import (BatchResult, load_batch_csv, process_batch,
+from promo_ops.batch import (BATCH_COLUMNS, SHEET_COLUMNS, BatchResult,
+                             _normalize_header, load_batch_csv, process_batch,
                              render_batch_summary, row_to_plan_dict, write_results_csv)
 
 
@@ -123,6 +124,29 @@ def test_load_batch_csv_skips_blank_rows(tmp_path):
                  ",,,,,\n", encoding="utf-8")
     rows = load_batch_csv(p)
     assert len(rows) == 1 and rows[0]["Salesforce Case"] == "00100"
+
+
+def test_every_sheet_column_maps_to_a_batch_field():
+    # The form's "Copy row for Sheet" emits cells in SHEET_COLUMNS order; every one must be
+    # a header the batch reader understands, or a pasted row would silently drop data.
+    unmapped = [c for c in SHEET_COLUMNS if _normalize_header(c) not in BATCH_COLUMNS]
+    assert not unmapped, unmapped
+    assert SHEET_COLUMNS[0] == "Salesforce Case"      # case match column is first
+
+
+def test_cases_rows_from_values_matches_csv_shape():
+    from promo_ops.integrations.gsheets import cases_rows_from_values
+    values = [["Salesforce Case", "Region", "Campaign Name", "Promoted Title",
+               "Content ID", "Video Durations"],
+              ["00100", "USA", "Paramount + - USA", "Yellowstone", "1", "15;30"],
+              ["", "", "", "", "", ""],                # blank row dropped
+              ["00101", "USA", "Paramount + - USA", "Tulsa King"]]  # ragged row padded
+    rows = cases_rows_from_values(values)
+    assert [r["Salesforce Case"] for r in rows] == ["00100", "00101"]
+    assert rows[1]["Video Durations"] == ""           # padded missing cell
+    # Round-trips through the same builder as the CSV path.
+    results = process_batch(rows, fw=FakeFW(), create=False)
+    assert all(r.status == "dry-run" and r.placements > 0 for r in results)
 
 
 def test_render_summary_has_counts_and_per_case_lines():

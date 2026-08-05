@@ -24,10 +24,25 @@ and the results come back **matched to each Salesforce Case #**.
 You fill the sheet once, run once, and get a **results CSV that maps every Salesforce Case
 number to its FreeWheel IO link + status**. Paste that column straight back onto the cases.
 
+## How the rows get into the sheet (the form still does the heavy lifting)
+Two ways to add a case row — use whichever fits:
+
+1. **From the form (best for real targeting).** The planner fills the same
+   `campaign-plan-form.html` they already know — including the 188k-show / channel
+   type-to-search — enters the **Salesforce Case #**, then clicks **"Copy row for Sheet"**
+   and pastes into the next empty line of the Sheet. The form builds the row in the exact
+   column order; the paste drops it across the columns. The form is the row-builder; the
+   Sheet is the queue.
+2. **Straight into the Sheet (best for simple cases).** Type into the columns, using the
+   dropdown pick-lists on Region / Campaign / targeting. No form needed.
+
+Either way the Sheet ends up with one row per case, and the batch command reads them all.
+
 ## 1. Fill the sheet (one row per case)
-Start from **`templates/batch/cases-batch-template.csv`**. One row = one case. Columns are
-the same friendly fields as the form; list fields (durations, genres, showlist, Pluto
-channels, audience segments, excludes) hold **`;`-separated** values in a single cell.
+Start from **`templates/batch/cases-batch-template.csv`** (importable to Google Sheets).
+One row = one case. Columns are the same friendly fields as the form; list fields
+(durations, genres, showlist, Pluto channels, audience segments, excludes) hold
+**`;`-separated** values in a single cell.
 
 | Column | Example |
 |---|---|
@@ -50,7 +65,8 @@ channels, audience segments, excludes) hold **`;`-separated** values in a single
 
 ## 2. Dry-run the whole batch (nothing is created)
 ```bash
-promo-ops batch cases.csv --out results.csv
+promo-ops batch cases.csv --out results.csv                 # from a CSV export
+promo-ops batch --sheet <GOOGLE_SHEET_ID> --out results.csv  # straight from the live Sheet
 ```
 Prints one line per case — region, placement count, and the IO name it *would* create —
 plus a `results.csv`. **Nothing is written to FreeWheel.** Eyeball it like a hand-built order.
@@ -66,7 +82,8 @@ Batch DRY-RUN: 3 case(s)
 
 ## 3. Go live — create every draft
 ```bash
-promo-ops batch cases.csv --live --out results.csv
+promo-ops batch cases.csv --live --out results.csv                 # CSV
+promo-ops batch --sheet <GOOGLE_SHEET_ID> --live --out results.csv  # live Sheet
 ```
 Builds + creates every row's IO **NOT_BOOKED** (a draft — nothing serves) and writes the
 Case→IO map:

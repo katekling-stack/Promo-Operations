@@ -217,9 +217,18 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     default; --live creates the NOT_BOOKED drafts. Idempotent — re-running reuses IOs."""
     from .batch import (load_batch_csv, process_batch, render_batch_summary,
                         write_results_csv)
-    rows = load_batch_csv(args.cases_csv)
+    if args.sheet:
+        from .integrations.gsheets import read_cases_tab
+        rows = read_cases_tab(args.sheet, tab=args.tab)
+        source = f"sheet {args.sheet} (tab {args.tab!r})"
+    elif args.cases_csv:
+        rows = load_batch_csv(args.cases_csv)
+        source = args.cases_csv
+    else:
+        print("Provide a CSV path or --sheet <id>.", file=sys.stderr)
+        return 1
     if not rows:
-        print(f"No case rows found in {args.cases_csv}", file=sys.stderr)
+        print(f"No case rows found in {source}", file=sys.stderr)
         return 1
     # dry-run still builds each order's planned calls (no network); --live authenticates
     # and creates. Same pattern as `push`.
@@ -478,8 +487,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_ai.set_defaults(func=_cmd_sync_audience_items)
 
     p_batch = sub.add_parser("batch",
-                             help="Build+create many cases from ONE CSV (one row per Salesforce case)")
-    p_batch.add_argument("cases_csv", help="CSV with one row per case (Salesforce Case column + plan fields)")
+                             help="Build+create many cases from ONE sheet (one row per Salesforce case)")
+    p_batch.add_argument("cases_csv", nargs="?",
+                         help="CSV with one row per case (Salesforce Case column + plan fields)")
+    p_batch.add_argument("--sheet", help="Google Sheet ID to read case rows from (live, instead of a CSV)")
+    p_batch.add_argument("--tab", default="Cases", help="Sheet tab name with the case rows (default: Cases)")
     p_batch.add_argument("--live", action="store_true", help="Create the drafts (default dry-run)")
     p_batch.add_argument("--out", help="Write the per-case results CSV here (Case # → IO link/status)")
     p_batch.set_defaults(func=_cmd_batch)

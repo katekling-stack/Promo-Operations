@@ -293,3 +293,29 @@ def read_plan_template(sheet_id: str, plan_tab: str = "Plan",
         ).execute().get("values", [])
 
     return assemble_plan_template(_rows(plan_tab), _rows(targeting_tab))
+
+
+def cases_rows_from_values(values: list[list[str]]) -> list[dict[str, str]]:
+    """Turn a sheet's raw values (header row + rows) into header->cell dicts, matching the
+    CSV path's shape so batch.process_batch is source-agnostic. Ragged rows are padded;
+    fully blank rows are dropped."""
+    if not values:
+        return []
+    header = [h.strip() for h in values[0]]
+    rows: list[dict[str, str]] = []
+    for raw in values[1:]:
+        if not any((c or "").strip() for c in raw):
+            continue
+        rows.append({header[i]: (raw[i] if i < len(raw) else "")
+                     for i in range(len(header))})
+    return rows
+
+
+def read_cases_tab(sheet_id: str, tab: str = "Cases") -> list[dict[str, str]]:
+    """Read a live batch sheet's tab (one header row + one row per case) into header->cell
+    dicts. Thin live wrapper over cases_rows_from_values (which holds the parsing)."""
+    service = _sheets_service()
+    values = service.spreadsheets().values().get(
+        spreadsheetId=sheet_id, range=tab
+    ).execute().get("values", [])
+    return cases_rows_from_values(values)

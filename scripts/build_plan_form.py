@@ -82,10 +82,14 @@ def app_data() -> dict:
           for k, v in _yaml("video_dominations.yaml").get("options", {}).items()]
     tk = [{"key": k, "label": v.get("label", k)}
           for k, v in _yaml("operative_takeovers.yaml").get("types", {}).items()]
+    from promo_ops.batch import SHEET_COLUMNS
     return {
         "regions": [{"code": c, "name": REGION_NAME.get(c, c)} for c in REGION_ORDER],
         "campaigns": campaigns, "productLabels": PRODUCT_LABEL,
         "videoDominations": vd, "takeovers": tk,
+        # Canonical batch-Sheet column order (single source of truth in promo_ops.batch),
+        # so the "Copy row for Sheet" button emits cells in the Sheet's column order.
+        "sheetColumns": SHEET_COLUMNS,
         # Canonical targeting options for type-to-search (generated from FreeWheel).
         **_targeting_options(),
     }
@@ -224,6 +228,9 @@ datalist{display:none}
     <div class="field"><label>Campaign <span class="req">*</span></label>
       <select id="campaign"></select>
       <div id="brandChip"></div></div>
+    <div class="field"><label>Salesforce Case #</label>
+      <input type="text" id="sf_case" placeholder="e.g. 00123456">
+      <div class="hint">The case this campaign is for — carried through so the created FreeWheel draft maps back to it. Fill this to add the row to the batch Sheet.</div></div>
   </div>
 
   <div class="card">
@@ -312,7 +319,8 @@ datalist{display:none}
 <div class="bar"><div class="barw">
   <span class="status" id="status">Fill Region, Campaign and Promoted title to continue.</span>
   <button class="btn ghost" id="copyBtn">Copy JSON</button>
-  <button class="btn primary" id="dlBtn" disabled>Download plan file</button>
+  <button class="btn primary" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
+  <button class="btn ghost" id="dlBtn" disabled>Download plan file</button>
 </div></div>
 
 <script>
@@ -512,8 +520,8 @@ $("#region").addEventListener("change",()=>{
 
 function validate(){
   const ok = $("#region").value && $("#campaign").value && $("#title").value.trim();
-  $("#dlBtn").disabled = !ok;
-  $("#status").textContent = ok ? "Ready — download the plan file and hand it to Ad Ops."
+  $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok;
+  $("#status").textContent = ok ? "Ready — Copy row for Sheet (batch), or download the plan file."
     : "Fill Region, Campaign and Promoted title to continue.";
   return ok;
 }
@@ -527,6 +535,7 @@ function buildPlan(){
     promoted_title:$("#title").value.trim(), region:$("#region").value,
     campaign:{name:$("#campaign").value},
   };
+  if($("#sf_case").value) plan.salesforce_case=$("#sf_case").value.trim();
   if($("#language").value) plan.language=$("#language").value;
   if($("#season").value) plan.season_or_messaging=$("#season").value;
   plan.content_type=$("#content_type").value;
@@ -560,6 +569,61 @@ $("#dlBtn").addEventListener("click",()=>{
 $("#copyBtn").addEventListener("click",async()=>{
   await navigator.clipboard.writeText(JSON.stringify(buildPlan(),null,2));
   $("#copyBtn").textContent="Copied ✓"; setTimeout(()=>$("#copyBtn").textContent="Copy JSON",1400);
+});
+
+// --- Copy one row for the batch Google Sheet -------------------------------- //
+// Maps the plan into the canonical Sheet column order (APP.sheetColumns). List cells are
+// ";"-joined; product toggles become "Y"/""; the row is tab-separated so pasting drops it
+// across the Sheet's columns in one line.
+function cellFor(col, plan){
+  const list=v=>Array.isArray(v)?v.join("; "):"";
+  const pf=plan.product_overrides||{}; const fl=plan.flight||{}; const pl=plan.pluto||{};
+  switch(col){
+    case "Salesforce Case": return plan.salesforce_case||"";
+    case "Region": return plan.region||"";
+    case "Campaign Name": return (plan.campaign||{}).name||"";
+    case "Promoted Title": return plan.promoted_title||"";
+    case "Content Type": return plan.content_type||"";
+    case "Content ID": return plan.content_id||"";
+    case "Recommended Show ID": return plan.recommended_show_id||"";
+    case "Video Durations": return list(plan.durations);
+    case "Flight Start": return fl.start||"";
+    case "Flight End": return fl.end||"";
+    case "Language": return plan.language||"";
+    case "Season or Messaging": return plan.season_or_messaging||"";
+    case "Genres": return list(plan.genres);
+    case "Showlist": return list(plan.showlist);
+    case "Pluto Categories": return list(pl.categories);
+    case "Pluto Channels": return list(pl.channels);
+    case "Audience Segments": return list(plan.audience_segments);
+    case "Exclude Series": return list(plan.exclude_series);
+    case "Exclude Channels": return list(plan.exclude_channels);
+    case "Kids Audience": return list(plan.kids_audience);
+    case "Video Domination": return plan.video_domination||"";
+    case "Video Domination Targeting": return list(plan.video_domination_targeting);
+    case "Takeover": return plan.takeover||"";
+    case "Rating Restrictions": return list(plan.rating_restrictions);
+    // "Include X" product toggles -> Y / "" (only when explicitly set on/off).
+    case "Include Remnant Video": return pf.remnant_video?"Y":"";
+    case "Include Pause Ads": return pf.pause_ads?"Y":"";
+    case "Include Premium Pre-Roll": return pf.premium_preroll?"Y":"";
+    case "Include Essential Bumper": return pf.essential_bumper?"Y":"";
+    case "Include CBS Pre-Roll": return pf.cbs_preroll?"Y":"";
+    case "Include After Mid-Roll Bumper": return pf.after_midroll_bumper?"Y":"";
+    case "Include 1Z Lockdown": return pf.cbs_1z_lockdown?"Y":"";
+    case "Include 2Z Lockdown": return pf.cbs_2z_lockdown?"Y":"";
+    case "Include Pluto": return pf.pluto_breakout?"Y":"";
+    case "Include Network 10": return pf.network_10?"Y":"";
+    default: return "";
+  }
+}
+function sheetRow(){ const p=buildPlan();
+  return (APP.sheetColumns||[]).map(c=>String(cellFor(c,p)).replace(/\t/g," ")).join("\t"); }
+$("#rowBtn").addEventListener("click",async()=>{
+  if(!validate())return;
+  await navigator.clipboard.writeText(sheetRow());
+  const b=$("#rowBtn"); b.textContent="Row copied ✓ — paste into the Sheet";
+  setTimeout(()=>b.textContent="Copy row for Sheet",1800);
 });
 validate();
 </script>
