@@ -1,0 +1,15 @@
+{
+  "promoted_title": "Tulsa King",
+  "region": "USA",
+  "campaign": {"name": "Paramount + - USA"},
+  "salesforce_case": "00123456",
+  "content_type": "show",
+  "content_id": "634500157",
+  "recommended_show_id": "956479957",
+  "durations": [15, 30],
+  "flight": {"start": "2026-08-10", "end": "2026-09-10"},
+  "showlist": ["NCIS", "FBI"],
+  "genres": ["Drama"],
+  "pluto": {"categories": ["Comedy"], "channels": ["Comedy"]},
+  "product_overrides": {"pause_ads": true}
+}
