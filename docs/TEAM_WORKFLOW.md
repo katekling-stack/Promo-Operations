@@ -13,8 +13,8 @@ draft** appears in FreeWheel, and a **Campaign Manager reviews and books it**.
 ## Who does what
 | Role | Does |
 |---|---|
-| **Campaign Manager** | Fills out the campaign **form** (one per campaign), posts the plan file to Slack **#promo-order-automations-submissions**, and later **reviews + books** the draft in FreeWheel (the actual "go live") |
-| **Ad Ops (you)** | Picks the file up from Slack and runs `promo-ops` to **push the draft** into FreeWheel |
+| **Campaign Manager** | Fills out the campaign **form** (one per campaign), posts the plan file to Slack **#promo-order-automations-submissions**, sets the Salesforce case **Status → Ready for Automation**, and later **reviews + books** the draft in FreeWheel (the actual "go live") |
+| **Ad Ops (you)** | Picks the file up from Slack, runs `promo-ops` to **push the draft** into FreeWheel, and **comments on the Salesforce case** once the draft is ready |
 
 **What "push the draft" means:** the tool only ever creates a **NOT_BOOKED draft** — nothing
 serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
@@ -28,6 +28,7 @@ serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
 2. Fill it out.
 3. Click **Download plan file** → a file lands in Downloads, e.g. `tulsa-king-usa.plan.json`.
 4. Post that plan file to the Slack channel **#promo-order-automations-submissions**.
+5. In the linked **Salesforce case**, set **Status → Ready for Automation**. (Ad Ops comments on the case once the draft is ready.)
 
 **Ad Ops (you)** — grab the plan file from **#promo-order-automations-submissions** (download to your
 Downloads folder), then in Terminal:
