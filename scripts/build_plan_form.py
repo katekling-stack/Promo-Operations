@@ -313,9 +313,13 @@ datalist{display:none}
     <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
     <div class="field"><span class="toggle-adv" id="advToggle">▸ Tier-1 audience segments (advanced)</span>
       <div class="chips hidden" data-chips="audience_segments" data-source="audience" style="margin-top:8px"><input type="text" placeholder="usually blank — auto-resolved"></div>
-      <div class="hint">Need an audience segment that isn't in the list yet?
-        <a href="AUDIENCE_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"><b>Request a new segment ↗</b></a>
-        — submit it now and it'll be applied once created.</div></div>
+      <div style="margin-top:11px">
+        <a href="AUDIENCE_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
+                  border:1.5px solid var(--blue);border-radius:10px;padding:10px 16px;font-weight:700;
+                  font-size:14px;text-decoration:none">🎯 Request a new audience segment ↗</a>
+        <div class="hint" style="margin-top:6px">Not in the list yet? Submit it now — it'll be applied once created.</div>
+      </div></div>
   </div>
 
   <div class="card">
