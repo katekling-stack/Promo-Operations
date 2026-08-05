@@ -21,11 +21,16 @@ googleads.yaml
 /build/
 /out/
 
-# Live syncs are regenerated; only seed_*.csv is committed.
+# Live syncs are regenerated; only seed_*.csv is committed — EXCEPT the two snapshots the
+# shipped form's pickers depend on (series name->ID and DDA audience item IDs), which are
+# committed so a fresh download resolves everything the form offers without a sync step.
+# Refresh them anytime with `promo-ops sync-all` (or sync-series / sync-audience-items).
 data/audience_segments/synced_*.csv
+!data/audience_segments/synced_audience_items.csv
 data/standard_attributes/synced_*.csv
 data/geo/synced_*.csv
 data/ad_units/synced_*.csv
 data/site_groups/synced_*.csv
 data/series/synced_*.csv
+!data/series/synced_series.csv
 data/video_groups/synced_*.csv

@@ -393,6 +393,30 @@ def _cmd_sync_audience_items(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_sync_series(args: argparse.Namespace) -> int:
+    from .integrations.freewheel import FreeWheelClient
+    print("Syncing the full Video Series index (~229k) — this takes a few minutes…")
+    path = FreeWheelClient().sync_series()
+    print(f"Synced series -> {path}")
+    return 0
+
+
+def _cmd_sync_all(args: argparse.Namespace) -> int:
+    """Refresh every local FreeWheel data snapshot the form + engine rely on (series,
+    audience items, standard attributes, audience segments). Run once after install and
+    whenever FreeWheel adds new series/segments."""
+    from .integrations.freewheel import FreeWheelClient
+    fw = FreeWheelClient()
+    print("Refreshing all FreeWheel data snapshots…")
+    print("  1/3 series (~229k, a few minutes)…"); fw.sync_series()
+    print("  2/3 audience items…");                fw.sync_audience_items()
+    print("  3/3 standard attributes…");           fw.sync_standard_attributes()
+    print("Done. (Segments sync separately via `promo-ops sync-segments` if you use a sheet.)")
+    print("Tip: rebuild the form to match — python scripts/build_targeting_options.py && "
+          "python -c \"from scripts.build_plan_form import build; build()\"")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -485,6 +509,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_ai = sub.add_parser("sync-audience-items", help="Sync FreeWheel audience items (Tier 1 DDA)")
     p_ai.set_defaults(func=_cmd_sync_audience_items)
+
+    p_sser = sub.add_parser("sync-series", help="Sync the full Video Series index from FreeWheel (~229k)")
+    p_sser.set_defaults(func=_cmd_sync_series)
+
+    p_sall = sub.add_parser("sync-all",
+                            help="Refresh ALL FreeWheel data snapshots (series + audience + attributes)")
+    p_sall.set_defaults(func=_cmd_sync_all)
 
     p_batch = sub.add_parser("batch",
                              help="Build+create many cases from ONE sheet (one row per Salesforce case)")

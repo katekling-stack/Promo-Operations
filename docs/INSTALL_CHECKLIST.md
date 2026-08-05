@@ -138,6 +138,19 @@ The tool reads your credentials from a small file called `.env`.
 
 ---
 
+## Keeping the show/genre/audience lists fresh (optional)
+The download already includes a snapshot of FreeWheel's series + audience data, so the
+form's picks resolve out of the box. When FreeWheel adds new shows/segments, refresh the
+snapshot (needs your FreeWheel login in `.env`):
+```
+promo-ops sync-all       # series + audience items + standard attributes (~a few minutes)
+```
+Then rebuild the form so its dropdowns match:
+```
+python3 scripts/build_targeting_options.py
+python3 -c "from scripts.build_plan_form import build; build()"
+```
+
 ## If something goes wrong
 - **`command not found: promo-ops`** → re-run Part D from inside the folder. On Windows,
   close and reopen PowerShell after installing, then try again.

@@ -37,6 +37,10 @@ class TargetingEngine:
         self.attr_resolver = (attr_resolver or StandardAttributeResolver()).load()
         self.series_resolver = (series_resolver or SeriesResolver()).load()
         self.site_group_resolver = (site_group_resolver or SiteGroupResolver()).load()
+        # Genre TARGETS via VG:Genre video groups (not Standard Attributes), so genre
+        # validity is judged against this resolver.
+        from .video_groups import GenreVideoGroupResolver
+        self._genre_vg = GenreVideoGroupResolver().load()
 
     def _region_code(self, region: str) -> str:
         return self._regions_cfg.get("regions", {}).get(region, {}).get("code", region)
@@ -172,6 +176,11 @@ class TargetingEngine:
                 for m in matches if m.matched
             ]
             unmatched = [m.name for m in matches if not m.matched]
+            # Genre actually targets via VG:Genre video groups — so a genre that resolves
+            # as a video group is valid even if it has no Standard Attribute. Don't warn on
+            # those (prevents false alarms like "Mobster" that target fine).
+            if dim_cfg["key"] == "genre" and unmatched:
+                unmatched = [g for g in unmatched if not self._genre_vg.ids_for([g])]
             if unmatched:
                 dim.notes = (
                     f"{len(unmatched)} value(s) have no FreeWheel Standard Attribute "
