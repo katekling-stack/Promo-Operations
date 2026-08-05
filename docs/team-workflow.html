@@ -78,7 +78,7 @@
   <h2><span class="n">1</span> How it flows</h2>
   <div class="card">
     <div class="flow">
-      <div class="step"><b>1 · Campaign Mgr</b><span>Fills form, posts to Slack, marks case Ready for Automation</span></div>
+      <div class="step"><b>1 · Campaign Mgr</b><span>Fills form, posts to Slack, marks Case Status as Ready for Automation</span></div>
       <div class="arrow">→</div>
       <div class="step"><b>2 · Ad Ops</b><span>Runs one command to push the draft</span></div>
       <div class="arrow">→</div>
@@ -89,8 +89,8 @@
     <table class="who">
       <tr><th>Role</th><th>Does</th></tr>
       <tr><td>Campaign Manager</td><td>Fills out the campaign <b>form</b> (one per campaign), posts the plan file
-          to Slack <b>#promo-order-automations-submissions</b>, and sets the Salesforce case
-          <b>Status → Ready for Automation</b>; later <b>reviews + books</b> the draft in FreeWheel (the real “go live”)</td></tr>
+          to Slack <b>#promo-order-automations-submissions</b>, and marks the Salesforce
+          <b>Case Status as Ready for Automation</b>; later <b>reviews + books</b> the draft in FreeWheel (the real “go live”)</td></tr>
       <tr><td>Ad Ops</td><td>Picks the file up from Slack, runs <code>promo-ops</code> to <b>push the draft</b> into
           FreeWheel, and <b>comments on the Salesforce case</b> once the draft is ready</td></tr>
     </table>
@@ -111,7 +111,7 @@
       <li>Click <b>Download &amp; post to Slack</b> → it saves the <code>…plan.json</code> to Downloads and opens
           <b>#promo-order-automations-submissions</b>. Drag the just-downloaded file into the message and send.
           <span class="tip">(Or use <b>Download plan file</b> and post it to the channel manually.)</span></li>
-      <li>In the linked <b>Salesforce case</b>, set <b>Status → Ready for Automation</b>.
+      <li>In the linked <b>Salesforce case</b>, mark the <b>Case Status as Ready for Automation</b>.
           <span class="tip">Ad Ops comments on the case once the draft is built and ready to review.</span></li>
     </ol>
     <p><b>Ad Ops</b> — grab the plan file from <b>#promo-order-automations-submissions</b> (download it to your
@@ -138,7 +138,7 @@ promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --liv
       <li>Click <b>Copy row for Sheet</b> (copies one row).</li>
       <li>Open the <b>shared team Google Sheet</b> → next empty row → paste (<code>⌘V</code>).
           <span class="tip">(Simple campaigns can be typed straight into the sheet.)</span></li>
-      <li>In each linked <b>Salesforce case</b>, set <b>Status → Ready for Automation</b>.
+      <li>In each linked <b>Salesforce case</b>, mark the <b>Case Status as Ready for Automation</b>.
           <span class="tip">Ad Ops comments on each case once its draft is built.</span></li>
     </ol>
     <p><b>Ad Ops</b> — when it’s time to push the batch:</p>
