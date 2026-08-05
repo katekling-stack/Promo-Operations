@@ -26,7 +26,7 @@ OUT = REPO / "templates" / "campaign-plan" / "campaign-plan-form.html"
 # name-based deep link; if it doesn't land on the exact channel, replace it with the
 # channel's "Copy link" URL from Slack (right-click the channel -> Copy link), then
 # regenerate the form. (Interim intake — retires when the Salesforce integration lands.)
-SLACK_SUBMIT_URL = "https://slack.com/app_redirect?channel=promo-order-automations-submissions"
+SLACK_SUBMIT_URL = "https://paramountglobal.enterprise.slack.com/archives/C0BNBKZDV6W"
 
 REGION_ORDER = ["USA", "CA", "UK", "IE", "AU", "LATAM", "BR", "FR", "IT", "GSA",
                 "FI", "DK", "NO", "SE", "ES"]
