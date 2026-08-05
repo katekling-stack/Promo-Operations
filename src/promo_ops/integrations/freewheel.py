@@ -623,11 +623,41 @@ class FreeWheelClient:
         if io_caps:
             insertion_order_body["delivery"] = {"frequency_cap": io_caps}
         placement_bodies = [FreeWheelClient._placement_body(p) for p in order.placements]
+        # Placement flighting schedule in the TARGET MARKET's time zone (regions.yaml).
+        # FreeWheel takes the schedule at the placement level (the IO field is ignored).
+        schedule = FreeWheelClient._placement_schedule(order.region, order.flight)
+        if schedule:
+            for body in placement_bodies:
+                body.setdefault("schedule", dict(schedule))
         return {
             "parent": parent,
             "insertion_order_body": insertion_order_body,
             "placement_bodies": placement_bodies,
         }
+
+    @staticmethod
+    def _region_timezone(region: Optional[str]) -> Optional[str]:
+        from ..config import regions_config
+        return (regions_config().get("regions", {}).get(region or "", {}) or {}).get("timezone")
+
+    @staticmethod
+    def _placement_schedule(region: Optional[str], flight) -> Optional[dict[str, Any]]:
+        """Placement schedule {start_time, end_time, time_zone} in the market's time zone.
+        Times are FW's 'YYYY-MM-DDTHH:MM' — a bare date becomes T00:00 (start) / T23:59
+        (end). Returns None when there's no flight start (CM sets it) — never a partial."""
+        start, end = getattr(flight, "start", None), getattr(flight, "end", None)
+        tz = FreeWheelClient._region_timezone(region)
+        if not start or not tz:
+            return None
+
+        def stamp(d: str, end_of_day: bool) -> str:
+            d = str(d).strip()
+            return d if "T" in d else f"{d}T{'23:59' if end_of_day else '00:00'}"
+
+        sched = {"start_time": stamp(start, False), "time_zone": tz}
+        if end:
+            sched["end_time"] = stamp(end, True)
+        return sched
 
     @staticmethod
     def _parse_freq_cap(cap: Optional[str]) -> list[dict[str, Any]]:
@@ -1008,6 +1038,11 @@ class FreeWheelClient:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
                     [{"site_group": main}, {"video_group": genre_vgs}],
                     base_exclude(video_group=excl_clips))})
+            elif is_pluto:
+                # Pluto TV always carries a Genre argument in Tier 3 (globally), even when
+                # the plan names no genres — a platform-constrained genre set (CM fills VGs).
+                sets.append({"set_name": "Genre", **FreeWheelClient._content(
+                    [{"site_group": main}], base_exclude(video_group=excl_clips))})
             if categories:
                 sets.append({"set_name": "Pluto Categories", **FreeWheelClient._content(
                     [{"site_group": categories}], base_exclude())})

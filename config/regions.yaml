@@ -1,4 +1,10 @@
 regions:
+  # `timezone` is the FreeWheel placement-schedule time zone for the market. FreeWheel only
+  # accepts a curated set of representative-city strings (validated live via create-placement);
+  # where FW has no local city, the same-offset valid string is used (offset is what drives
+  # delivery). Confirmed-valid: America - New York, America - Chicago, Europe - London,
+  # Europe - Amsterdam (CET), Europe - Helsinki (EET), Australia - Melbourne (AEST),
+  # America - Buenos Aires, Argentina (GMT-3). (São Paulo/Sydney/Rome/Dublin are NOT in FW's list.)
   USA:
     name: United States
     code: US
@@ -7,6 +13,7 @@ regions:
     countries:
     - United States
     has_pluto: true
+    timezone: "(GMT-05:00) America - New York"          # Eastern
   CA:
     name: Canada
     code: CA
@@ -14,6 +21,7 @@ regions:
     countries:
     - Canada
     has_pluto: true
+    timezone: "(GMT-05:00) America - New York"          # Eastern (Toronto)
   AU:
     name: Australia
     code: AU
@@ -21,6 +29,7 @@ regions:
     countries:
     - Australia
     has_pluto: false
+    timezone: "(GMT+10:00) Australia - Melbourne"        # AEST
   LATAM:
     name: Latin America
     code: LATAM
@@ -35,6 +44,7 @@ regions:
     - Peru
     - Brazil
     has_pluto: true
+    timezone: "(GMT-03:00) America - Buenos Aires, Argentina"
   BR:
     name: Brazil
     code: BR
@@ -42,6 +52,7 @@ regions:
     countries:
     - Brazil
     has_pluto: true
+    timezone: "(GMT-03:00) America - Buenos Aires, Argentina"   # GMT-3 (FW has no São Paulo)
   UK:
     name: United Kingdom
     code: UK
@@ -49,6 +60,7 @@ regions:
     countries:
     - United Kingdom
     has_pluto: true
+    timezone: "(GMT+00:00) Europe - London"
   IE:
     name: Ireland
     code: IE
@@ -56,6 +68,7 @@ regions:
     has_pluto: false
     countries:
     - Ireland
+    timezone: "(GMT+00:00) Europe - London"             # GMT (FW has no Dublin)
 
   FR:
     name: France
@@ -64,6 +77,7 @@ regions:
     has_pluto: true
     countries:
     - France
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET
   IT:
     name: Italy
     code: IT
@@ -71,6 +85,7 @@ regions:
     has_pluto: true
     countries:
     - Italy
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET (FW has no Rome)
   GSA:
     name: Germany / Switzerland / Austria
     code: GSA
@@ -80,6 +95,7 @@ regions:
     - Germany
     - Switzerland
     - Austria
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET
   FI:
     name: Finland
     code: FI
@@ -87,6 +103,7 @@ regions:
     has_pluto: true
     countries:
     - Finland
+    timezone: "(GMT+02:00) Europe - Helsinki"           # EET
   DK:
     name: Denmark
     code: DK
@@ -94,6 +111,7 @@ regions:
     has_pluto: true
     countries:
     - Denmark
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET
   'NO':
     name: Norway
     code: 'NO'
@@ -101,6 +119,7 @@ regions:
     has_pluto: true
     countries:
     - Norway
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET
   SE:
     name: Sweden
     code: SE
@@ -108,6 +127,7 @@ regions:
     has_pluto: true
     countries:
     - Sweden
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET
   ES:
     name: Spain
     code: ES
@@ -115,3 +135,4 @@ regions:
     has_pluto: true
     countries:
     - Spain
+    timezone: "(GMT+01:00) Europe - Amsterdam"          # CET

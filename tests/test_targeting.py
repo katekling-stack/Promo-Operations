@@ -121,7 +121,7 @@ def test_priority_by_tier_and_duration():
 
     prem = next(p for p in order.placements if p.format == "premium_preroll")
     assert prem.priority_level == "SPONSORSHIP"
-    assert prem.frequency_cap == "1 per 21 days"   # mirrors Dutton (period 30240 min)
+    assert prem.frequency_cap == "1 per week"      # Premium Plan pre-rolls: 1/week (global)
 
 
 def test_order_carries_template_ref():

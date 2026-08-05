@@ -37,9 +37,12 @@ frequency_caps:
     2: "1 per 30 min"
     3: "1 per 30 min"
     4: "1 per hr"
-  by_format:                       # guaranteed overrides (mirrors Dutton Ranch)
-    premium_preroll: "1 per 21 days"   # FW frequency_cap period 30240 min
-    essential_bumper: "1 per 4 hrs"    # FW frequency_cap period 240 min
+  by_format:                       # guaranteed per-format caps (global)
+    # Premium Plan Pre-Rolls: 1 per week. Essential/Basic Plan Bumpers: 1 per 2 hours.
+    premium_preroll: "1 per week"           # FW period 10080 min
+    essential_bumper: "1 per 2 hrs"         # FW period 120 min
+    pplus_kids_premium_preroll: "1 per week"
+    pplus_kids_essential_bumper: "1 per 2 hrs"
   default: "1 per 30 min"
 
 # Creative duration priority order (deck): :30 > :45/:60 > :15 > :20/:10.
