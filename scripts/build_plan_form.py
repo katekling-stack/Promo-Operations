@@ -22,6 +22,12 @@ REPO = Path(__file__).resolve().parents[1]
 CONFIG = REPO / "config"
 OUT = REPO / "templates" / "campaign-plan" / "campaign-plan-form.html"
 
+# Where the form's "Download & post to Slack" button sends the Campaign Manager. This is a
+# name-based deep link; if it doesn't land on the exact channel, replace it with the
+# channel's "Copy link" URL from Slack (right-click the channel -> Copy link), then
+# regenerate the form. (Interim intake — retires when the Salesforce integration lands.)
+SLACK_SUBMIT_URL = "https://slack.com/app_redirect?channel=promo-order-automations-submissions"
+
 REGION_ORDER = ["USA", "CA", "UK", "IE", "AU", "LATAM", "BR", "FR", "IT", "GSA",
                 "FI", "DK", "NO", "SE", "ES"]
 REGION_NAME = {"USA": "United States", "CA": "Canada", "UK": "United Kingdom",
@@ -84,6 +90,10 @@ def app_data() -> dict:
           for k, v in _yaml("operative_takeovers.yaml").get("types", {}).items()]
     from promo_ops.batch import SHEET_COLUMNS
     return {
+        # Where the "Download & post to Slack" button opens. Swap for the channel's exact
+        # "Copy link" URL from Slack (right-click the channel -> Copy link) if this
+        # name-based deep link doesn't land on the right channel.
+        "slackSubmitUrl": SLACK_SUBMIT_URL,
         "regions": [{"code": c, "name": REGION_NAME.get(c, c)} for c in REGION_ORDER],
         "campaigns": campaigns, "productLabels": PRODUCT_LABEL,
         "videoDominations": vd, "takeovers": tk,
@@ -319,8 +329,9 @@ datalist{display:none}
 <div class="bar"><div class="barw">
   <span class="status" id="status">Fill Region, Campaign and Promoted title to continue.</span>
   <button class="btn ghost" id="copyBtn">Copy JSON</button>
-  <button class="btn primary" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
+  <button class="btn ghost" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
   <button class="btn ghost" id="dlBtn" disabled>Download plan file</button>
+  <button class="btn primary" id="slackBtn" disabled title="Download the plan file and open the #promo-order-automations-submissions Slack channel to post it">Download &amp; post to Slack</button>
 </div></div>
 
 <script>
@@ -520,8 +531,8 @@ $("#region").addEventListener("change",()=>{
 
 function validate(){
   const ok = $("#region").value && $("#campaign").value && $("#title").value.trim();
-  $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok;
-  $("#status").textContent = ok ? "Ready — Copy row for Sheet (batch), or download the plan file."
+  $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
+  $("#status").textContent = ok ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
     : "Fill Region, Campaign and Promoted title to continue.";
   return ok;
 }
@@ -562,9 +573,19 @@ function buildPlan(){
 }
 function fname(){ const p=buildPlan();
   return (p.promoted_title+"-"+p.region).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".plan.json"; }
-$("#dlBtn").addEventListener("click",()=>{
-  if(!validate())return; const blob=new Blob([JSON.stringify(buildPlan(),null,2)],{type:"application/json"});
+function downloadPlan(){
+  const blob=new Blob([JSON.stringify(buildPlan(),null,2)],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname(); a.click();
+}
+$("#dlBtn").addEventListener("click",()=>{ if(!validate())return; downloadPlan(); });
+// Download the plan file, then open the submissions Slack channel so the CM can drag the
+// just-downloaded file into the message. URL is APP.slackSubmitUrl (set in build_plan_form.py).
+$("#slackBtn").addEventListener("click",()=>{
+  if(!validate())return;
+  downloadPlan();
+  const b=$("#slackBtn"); b.textContent="Downloaded ✓ — attach it in Slack";
+  setTimeout(()=>window.open(APP.slackSubmitUrl,"_blank"), 500);
+  setTimeout(()=>b.textContent="Download & post to Slack", 2600);
 });
 $("#copyBtn").addEventListener("click",async()=>{
   await navigator.clipboard.writeText(JSON.stringify(buildPlan(),null,2));

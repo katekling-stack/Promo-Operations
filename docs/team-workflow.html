@@ -96,8 +96,9 @@
     <ol>
       <li>Open the form: <code>templates/campaign-plan/campaign-plan-form.html</code> (double-click it).</li>
       <li>Fill it in — Region, Campaign, Promoted Title, durations, flight, targeting.</li>
-      <li>Click <b>Download plan file</b> → a <code>…plan.json</code> saves to <b>Downloads</b>.</li>
-      <li>Post that plan file to the Slack channel <b>#promo-order-automations-submissions</b>.</li>
+      <li>Click <b>Download &amp; post to Slack</b> → it saves the <code>…plan.json</code> to Downloads and opens
+          <b>#promo-order-automations-submissions</b>. Drag the just-downloaded file into the message and send.
+          <span class="tip">(Or use <b>Download plan file</b> and post it to the channel manually.)</span></li>
     </ol>
     <p><b>Ad Ops</b> — grab the plan file from <b>#promo-order-automations-submissions</b> (download it to your
        Downloads folder), then in Terminal:</p>
@@ -207,7 +208,9 @@ open -e .env</pre>
   </div>
 
   <p class="foot">Promo Ops · turns a campaign form into a FreeWheel Insertion Order draft (NOT_BOOKED).
-     Full docs in the project’s <code>docs/</code> folder: TEAM_WORKFLOW, INSTALL_CHECKLIST, BATCH_RUNBOOK.</p>
+     Full docs in the project’s <code>docs/</code> folder: TEAM_WORKFLOW, INSTALL_CHECKLIST, BATCH_RUNBOOK.<br>
+     <em>Interim intake:</em> the form + Slack submission is a bridge until the Salesforce integration lands —
+     at which point drafts build straight from the Case with no form or Slack step.</p>
 
 </main>
 </body>
