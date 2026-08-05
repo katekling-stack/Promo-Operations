@@ -13,9 +13,8 @@ draft** appears in FreeWheel, and a **Campaign Manager reviews and books it**.
 ## Who does what
 | Role | Does |
 |---|---|
-| **Planner** | Fills out the campaign **form** (one per campaign) |
-| **Ad Ops (you)** | Runs `promo-ops` to **push the draft** into FreeWheel |
-| **Campaign Manager** | **Reviews + books** the draft in FreeWheel (the actual "go live") |
+| **Campaign Manager** | Fills out the campaign **form** (one per campaign), posts the plan file to Slack **#promo-order-automations-submissions**, and later **reviews + books** the draft in FreeWheel (the actual "go live") |
+| **Ad Ops (you)** | Picks the file up from Slack and runs `promo-ops` to **push the draft** into FreeWheel |
 
 **What "push the draft" means:** the tool only ever creates a **NOT_BOOKED draft** — nothing
 serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
@@ -24,13 +23,14 @@ serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
 
 ## Path A — one campaign at a time
 
-**Planner**
+**Campaign Manager**
 1. Open the form: `templates/campaign-plan/campaign-plan-form.html` (double-click it).
 2. Fill it out.
 3. Click **Download plan file** → a file lands in Downloads, e.g. `tulsa-king-usa.plan.json`.
-4. Send that file to Ad Ops (Slack/email/Drive).
+4. Post that plan file to the Slack channel **#promo-order-automations-submissions**.
 
-**Ad Ops (you), in Terminal**
+**Ad Ops (you)** — grab the plan file from **#promo-order-automations-submissions** (download to your
+Downloads folder), then in Terminal:
 ```
 cd /Users/klemley/Desktop/Promo-Operations          # be in the folder first
 promo-ops preview  ~/Downloads/tulsa-king-usa.plan.json                         # 1) eyeball it (creates nothing)
@@ -46,7 +46,7 @@ Then tell the CM the draft is in FreeWheel for review.
 
 ## Path B — many campaigns at once (the batch sheet)
 
-**Planner (for each campaign)**
+**Campaign Manager (for each campaign)**
 1. Fill the **form**.
 2. Click **Copy row for Sheet** (this copies one row to the clipboard).
 3. Open the **shared team Google Sheet** → click the next empty row → paste (**Cmd + V**).

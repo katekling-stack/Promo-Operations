@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ops — Creating FreeWheel Drafts (Team Guide)</title>
+<style>
+  :root{
+    --navy:#0a1f44; --blue:#1a56db; --blue2:#2f6bff; --ink:#1c2434; --muted:#5b6577;
+    --line:#e4e8f0; --bg:#f5f7fb; --card:#ffffff; --ok:#188a4e; --okbg:#e8f6ee;
+    --warn:#9a6a00; --warnbg:#fdf3dc; --code:#0d1b3e; --codeink:#e8eefc;
+    --chipA:#e8efff; --chipB:#eafbf1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.55;font-size:15.5px}
+  header{background:linear-gradient(135deg,var(--navy),#12306e);color:#fff;padding:34px 24px}
+  header .wrap{max-width:940px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px}
+  header p{margin:0;color:#c9d6f3;font-size:15px}
+  main{max-width:940px;margin:0 auto;padding:26px 24px 60px}
+  h2{font-size:19px;margin:34px 0 12px;color:var(--navy);display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+        background:var(--blue);color:#fff;font-size:14px;font-weight:700;flex:0 0 auto}
+  h3{font-size:15.5px;margin:18px 0 6px;color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;
+        box-shadow:0 1px 2px rgba(16,32,64,.04)}
+  p{margin:8px 0}
+  code{background:#eef1f7;padding:1.5px 6px;border-radius:6px;font-size:13px;
+       font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  pre{background:var(--code);color:var(--codeink);padding:14px 16px;border-radius:11px;overflow:auto;
+      font-size:13px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;margin:10px 0;line-height:1.5}
+  pre .c{color:#8aa0d6}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:6px 0 4px}
+  .flow .step{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;position:relative}
+  .flow .step b{display:block;color:var(--navy);font-size:13px;margin-bottom:2px}
+  .flow .step span{color:var(--muted);font-size:12.5px}
+  .flow .arrow{align-self:center;color:var(--blue);font-weight:700;font-size:18px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f0f4fb;color:var(--navy);font-size:13px;text-transform:uppercase;letter-spacing:.4px}
+  .callout{border-radius:12px;padding:14px 16px;margin:14px 0;border:1px solid}
+  .callout.ok{background:var(--okbg);border-color:#bfe6cd}
+  .callout.warn{background:var(--warnbg);border-color:#f0dca6}
+  .callout b{color:var(--ink)}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;vertical-align:middle}
+  .pill.a{background:var(--chipA);color:var(--blue)}
+  .pill.b{background:var(--chipB);color:var(--ok)}
+  .tip{font-size:13.5px;color:var(--muted);margin:6px 0}
+  .who td:first-child{white-space:nowrap;font-weight:600;color:var(--navy)}
+  hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:30px}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Promo Ops — Creating FreeWheel Drafts</h1>
+  <p>Team guide · Fill the form → build the draft in FreeWheel → a Campaign Manager reviews &amp; books it.</p>
+</div></header>
+
+<main>
+
+  <div class="callout ok">
+    <b>The one thing to remember:</b> this tool only ever creates a <b>NOT_BOOKED draft</b> — nothing goes
+    live/serves until a Campaign Manager <b>books</b> it in FreeWheel. You’re always just “sending the draft over.”
+  </div>
+
+  <h2><span class="n">1</span> How it flows</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form, posts to Slack</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>2 · Ad Ops</b><span>Runs one command to push the draft</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>3 · FreeWheel</b><span>NOT_BOOKED draft appears</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>4 · Campaign Mgr</b><span>Reviews &amp; books it (goes live)</span></div>
+    </div>
+    <table class="who">
+      <tr><th>Role</th><th>Does</th></tr>
+      <tr><td>Campaign Manager</td><td>Fills out the campaign <b>form</b> (one per campaign) and posts the plan file
+          to Slack <b>#promo-order-automations-submissions</b>; later <b>reviews + books</b> the draft in FreeWheel
+          (the real “go live”)</td></tr>
+      <tr><td>Ad Ops</td><td>Picks the file up from Slack and runs <code>promo-ops</code> to <b>push the draft</b> into FreeWheel</td></tr>
+    </table>
+  </div>
+
+  <h2><span class="n">2</span> Everyday use — pick a path</h2>
+  <p>Use <span class="pill a">Path A</span> for one campaign, <span class="pill b">Path B</span> for a batch of them.
+     Both create the same kind of draft — Path B just handles a whole list at once.</p>
+
+  <h3><span class="pill a">Path A</span> &nbsp;One campaign</h3>
+  <div class="card">
+    <p><b>Campaign Manager</b></p>
+    <ol>
+      <li>Open the form: <code>templates/campaign-plan/campaign-plan-form.html</code> (double-click it).</li>
+      <li>Fill it in — Region, Campaign, Promoted Title, durations, flight, targeting.</li>
+      <li>Click <b>Download plan file</b> → a <code>…plan.json</code> saves to <b>Downloads</b>.</li>
+      <li>Post that plan file to the Slack channel <b>#promo-order-automations-submissions</b>.</li>
+    </ol>
+    <p><b>Ad Ops</b> — grab the plan file from <b>#promo-order-automations-submissions</b> (download it to your
+       Downloads folder), then in Terminal:</p>
+<pre><span class="c"># be in the project folder first</span>
+cd ~/Desktop/Promo-Operations
+
+<span class="c"># 1) sanity-check (creates nothing)</span>
+promo-ops preview  ~/Downloads/tulsa-king-usa.plan.json
+
+<span class="c"># 2) push the NOT_BOOKED draft to FreeWheel</span>
+promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --live</pre>
+    <p class="tip">💡 Don’t type long file paths. Type <code>promo-ops push </code> (with a space), then
+       <b>drag the file from Finder onto the Terminal window</b> — it fills in the path — then add
+       <code> --target freewheel --live</code> and press Return.</p>
+    <p>Then tell the CM the draft is in FreeWheel for review.</p>
+  </div>
+
+  <h3><span class="pill b">Path B</span> &nbsp;Many at once (the batch sheet)</h3>
+  <div class="card">
+    <p><b>Campaign Manager</b> — for each campaign:</p>
+    <ol>
+      <li>Fill the <b>form</b>.</li>
+      <li>Click <b>Copy row for Sheet</b> (copies one row).</li>
+      <li>Open the <b>shared team Google Sheet</b> → next empty row → paste (<code>⌘V</code>).
+          <span class="tip">(Simple campaigns can be typed straight into the sheet.)</span></li>
+    </ol>
+    <p><b>Ad Ops</b> — when it’s time to push the batch:</p>
+    <ol>
+      <li>In the Google Sheet: <b>File → Download → Comma-separated values (.csv)</b> (saves to Downloads).</li>
+      <li>In Terminal:</li>
+    </ol>
+<pre>cd ~/Desktop/Promo-Operations
+
+<span class="c"># preview ALL rows (creates nothing)</span>
+promo-ops batch  ~/Downloads/promo-batch.csv --out results.csv
+
+<span class="c"># push ALL the drafts</span>
+promo-ops batch  ~/Downloads/promo-batch.csv --live --out results.csv</pre>
+    <p><code>results.csv</code> lists every case with its FreeWheel draft link + status — paste it back
+       onto the cases so the CM knows what to review.</p>
+    <p class="tip">💡 You give the tool <b>the file</b> (drag it onto Terminal). You never copy rows out of the
+       sheet into the terminal.</p>
+  </div>
+
+  <h2><span class="n">3</span> What you get back</h2>
+  <div class="card">
+    <p><b>Path A</b> prints a confirmation with the new <b>IO id</b> and 14 placement ids.</p>
+    <p><b>Path B</b> writes <code>results.csv</code>, one line per case:</p>
+    <table>
+      <tr><th>Salesforce Case</th><th>Title</th><th>Status</th><th>Draft link</th></tr>
+      <tr><td>123456</td><td>Yellowstone</td><td>created</td><td>https://mrm.freewheel.tv/…</td></tr>
+      <tr><td>123457</td><td>Tulsa King</td><td>created</td><td>https://mrm.freewheel.tv/…</td></tr>
+    </table>
+    <p>Open the link, confirm it looks right, and hand it to the CM to book.</p>
+  </div>
+
+  <h2><span class="n">4</span> Golden rules</h2>
+  <div class="callout warn">
+    <ul style="margin:2px 0 0;padding-left:18px">
+      <li><b>Always preview / dry-run first</b> (leave off <code>--live</code>) and eyeball the placements.</li>
+      <li><b><code>--live</code> = “push the real draft.”</b> It does <b>not</b> book or serve anything —
+          every draft is NOT_BOOKED until a CM books it in FreeWheel.</li>
+      <li><b>Re-running is safe.</b> Fix a couple rows and run again — existing drafts are <b>reused, never duplicated</b>.</li>
+      <li>If a command says <b>“does not exist,”</b> you’re probably not in the folder — run
+          <code>cd ~/Desktop/Promo-Operations</code> first. Your prompt shows
+          <code>Promo-Operations %</code> when you’re in the right place.</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">5</span> Quick reference</h2>
+  <div class="card">
+    <table>
+      <tr><th>I want to…</th><th>Command</th></tr>
+      <tr><td>Check one plan</td><td><code>promo-ops preview &lt;file&gt;.plan.json</code></td></tr>
+      <tr><td>Push one draft</td><td><code>promo-ops push &lt;file&gt;.plan.json --target freewheel --live</code></td></tr>
+      <tr><td>Preview a whole batch</td><td><code>promo-ops batch &lt;file&gt;.csv --out results.csv</code></td></tr>
+      <tr><td>Push a whole batch</td><td><code>promo-ops batch &lt;file&gt;.csv --live --out results.csv</code></td></tr>
+      <tr><td>Same title, other markets</td><td><code>promo-ops mirror &lt;file&gt;.plan.json --to GSA,IT,ES</code></td></tr>
+      <tr><td>Refresh show/genre/audience lists</td><td><code>promo-ops sync-all</code></td></tr>
+    </table>
+    <p class="tip"><code>&lt;file&gt;</code> = the real name of the file you downloaded — drag it onto Terminal instead of typing it.</p>
+  </div>
+
+  <h2><span class="n">6</span> If something looks off</h2>
+  <div class="card">
+    <table>
+      <tr><th>You see…</th><th>Do this</th></tr>
+      <tr><td><code>command not found: promo-ops</code></td><td>You’re not in the folder, or it isn’t installed — see the setup guide below.</td></tr>
+      <tr><td><code>… does not exist</code></td><td>Run <code>cd ~/Desktop/Promo-Operations</code> first, or drag the file onto Terminal.</td></tr>
+      <tr><td>A login / 401 error on push</td><td>Re-open <code>.env</code> and check the FreeWheel username/password.</td></tr>
+      <tr><td>“… matched no FreeWheel Video Series/Attribute”</td><td>That value isn’t in FreeWheel’s list — check the spelling, or the CM adds it by hand. The rest of the draft still builds.</td></tr>
+      <tr><td>Nothing seems to happen after a live push</td><td>It’s working quietly — give it up to a minute; it prints the result when done.</td></tr>
+    </table>
+  </div>
+
+  <hr>
+  <h2><span class="n">＋</span> First-time setup (once per computer)</h2>
+  <div class="card">
+    <p>New teammate getting set up? Full step-by-step (install Python, get the code, add the FreeWheel login)
+       is in <code>docs/INSTALL_CHECKLIST.md</code>. The short version:</p>
+<pre>cd ~/Desktop/Promo-Operations
+python3 -m pip install -e .          <span class="c"># install the promo-ops command</span>
+cp .env.example .env                 <span class="c"># then add FreeWheel username/password</span>
+open -e .env</pre>
+    <p class="tip">FreeWheel access uses a dedicated <b>API user</b> (e.g. <code>AdOps.api@520311</code>) — your
+       personal SSO login won’t work for the API. Ask your FreeWheel admin for it.</p>
+  </div>
+
+  <p class="foot">Promo Ops · turns a campaign form into a FreeWheel Insertion Order draft (NOT_BOOKED).
+     Full docs in the project’s <code>docs/</code> folder: TEAM_WORKFLOW, INSTALL_CHECKLIST, BATCH_RUNBOOK.</p>
+
+</main>
+</body>
+</html>
