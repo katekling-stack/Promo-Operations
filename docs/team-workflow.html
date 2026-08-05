@@ -223,8 +223,26 @@ open -e .env</pre>
        personal SSO login won’t work for the API. Ask your FreeWheel admin for it.</p>
   </div>
 
-  <p class="foot">Promo Ops · turns a campaign form into a FreeWheel Insertion Order draft (NOT_BOOKED).
-     Full docs in the project’s <code>docs/</code> folder: TEAM_WORKFLOW, INSTALL_CHECKLIST, BATCH_RUNBOOK.<br>
+  <hr>
+  <h2><span class="n">✦</span> Reference &amp; resources</h2>
+  <div class="card">
+    <ul style="margin:4px 0;padding-left:2px;list-style:none;line-height:2.1">
+      <li>📋 <a href="https://drive.google.com/file/d/1Sl8ZzCmZcjmaOmumc-So3JFgD49bMHnN/view" target="_blank" rel="noopener"><b>Campaign Form</b></a>
+          — the form itself <span class="tip">(Drive → Download → open the file)</span></li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/INSTALL_CHECKLIST.md" target="_blank" rel="noopener"><b>Install checklist</b></a>
+          — one-time Mac setup (install + FreeWheel login)</li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/TEAM_WORKFLOW.md" target="_blank" rel="noopener"><b>Team workflow</b></a>
+          — this guide, in plain text</li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/BATCH_RUNBOOK.md" target="_blank" rel="noopener"><b>Batch runbook</b></a>
+          — running many campaigns at once</li>
+      <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/SLACK_AUTOPOST_SPEC.md" target="_blank" rel="noopener"><b>Slack auto-post spec</b></a>
+          — for a Slack admin (fully hands-off submission)</li>
+    </ul>
+    <p class="tip">The <code>.md</code> pages render on GitHub. The Campaign Form is an HTML file, so open it
+       from Drive (Download → open) — GitHub/Drive can’t run it in the browser.</p>
+  </div>
+
+  <p class="foot">Promo Ops · turns a campaign form into a FreeWheel Insertion Order draft (NOT_BOOKED).<br>
      <em>Interim intake:</em> the form + Slack submission is a bridge until the Salesforce integration lands —
      at which point drafts build straight from the Case with no form or Slack step.</p>
 
