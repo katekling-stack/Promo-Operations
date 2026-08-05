@@ -1,0 +1,22 @@
+# Order (Insertion Order) level frequency caps — a general rule the tool applies to EVERY
+# IO it creates, on the IO's delivery.frequency_cap. Verified against live production USA
+# adult IOs (Zuffa Boxing - USA, Dana White's Contender Series - USA, The Challenge - USA),
+# which all carry [1 per 30 min, 20 per month].
+#
+#   adult, USA          -> 1 per 30 min  AND  20 per month
+#   adult, international -> 1 per 30 min
+#   kids, all regions    -> 1 per 15 min
+#
+# Period is minutes (FreeWheel stores it as a minutes string): 30 -> "30", 15 -> "15",
+# "20 per month" -> "43200" (30 days x 1440 min). Caps are per-IMPRESSION.
+order_level:
+  adult:
+    default:
+    - 1 per 30 min
+    by_region:
+      USA:
+      - 1 per 30 min
+      - 20 per month
+  kids:
+    default:
+    - 1 per 15 min

@@ -313,9 +313,13 @@ def cases_rows_from_values(values: list[list[str]]) -> list[dict[str, str]]:
 
 def read_cases_tab(sheet_id: str, tab: str = "Cases") -> list[dict[str, str]]:
     """Read a live batch sheet's tab (one header row + one row per case) into header->cell
-    dicts. Thin live wrapper over cases_rows_from_values (which holds the parsing)."""
+    dicts. If the named tab isn't present, fall back to the FIRST tab — so a CSV imported
+    to Google Sheets (which lands on a default-named tab) just works without renaming."""
     service = _sheets_service()
+    meta = service.spreadsheets().get(spreadsheetId=sheet_id).execute()
+    titles = [s["properties"]["title"] for s in meta.get("sheets", [])]
+    use = tab if tab in titles else (titles[0] if titles else tab)
     values = service.spreadsheets().values().get(
-        spreadsheetId=sheet_id, range=tab
+        spreadsheetId=sheet_id, range=use
     ).execute().get("values", [])
     return cases_rows_from_values(values)

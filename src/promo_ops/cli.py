@@ -491,7 +491,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_batch.add_argument("cases_csv", nargs="?",
                          help="CSV with one row per case (Salesforce Case column + plan fields)")
     p_batch.add_argument("--sheet", help="Google Sheet ID to read case rows from (live, instead of a CSV)")
-    p_batch.add_argument("--tab", default="Cases", help="Sheet tab name with the case rows (default: Cases)")
+    p_batch.add_argument("--tab", default="Cases",
+                         help="Sheet tab with the case rows (default: Cases; falls back to the first tab)")
     p_batch.add_argument("--live", action="store_true", help="Create the drafts (default dry-run)")
     p_batch.add_argument("--out", help="Write the per-case results CSV here (Case # → IO link/status)")
     p_batch.set_defaults(func=_cmd_batch)

@@ -166,6 +166,17 @@ class OrderBuilder:
         from .config import brand_for_campaign
         return brand_for_campaign(plan.campaign)
 
+    @staticmethod
+    def _order_frequency_caps(region: str, is_kids: bool) -> list[str]:
+        """Order-level frequency caps for this IO, from config/frequency_caps.yaml.
+        Kids -> the kids rule; adult -> the region override (USA adds 20/month) else the
+        adult default. Returns human strings ("1 per 30 min"); the FW client encodes them."""
+        from .config import frequency_caps_config
+        cfg = frequency_caps_config().get("order_level", {})
+        group = cfg.get("kids" if is_kids else "adult", {})
+        by_region = (group.get("by_region") or {}).get(region)
+        return list(by_region if by_region is not None else group.get("default", []))
+
     def _brand_cfg(self, brand: Optional[str]) -> dict:
         # `brand` selects the per-brand nuance block (ad units, extra excludes). The
         # exact Advertiser + Campaign in the plan remain authoritative. {} when absent.
@@ -514,6 +525,10 @@ class OrderBuilder:
                 "brand_id": plan.brand_id,
             },
         )
+        # Order-level frequency caps (general rule): kids IOs 1/15min; adult IOs 1/30min,
+        # plus 20/month for USA. Resolved from the campaign's brand (kids vs adult) + region.
+        cap_cfg = self._brand_cfg(self._resolve_brand(plan)) or brand_cfg
+        order.frequency_caps = self._order_frequency_caps(plan.region, bool(cap_cfg.get("kids")))
         # Kids brands only build when a Kids audience (Older/Younger) is selected in the
         # Salesforce targeting; no audience -> no Kids IOs.
         if brand_cfg.get("kids") and not plan.kids_audience:

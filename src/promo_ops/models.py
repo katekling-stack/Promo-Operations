@@ -289,6 +289,10 @@ class Order:
     flight: Flight = field(default_factory=Flight)
     placements: list[Placement] = field(default_factory=list)
     template_ref: dict[str, Any] = field(default_factory=dict)
+    # Order-level frequency caps as human strings ("1 per 30 min", "20 per month"),
+    # resolved from config by kids/adult + region. The FreeWheel client encodes these
+    # onto the IO's delivery.frequency_cap.
+    frequency_caps: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

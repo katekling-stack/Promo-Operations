@@ -77,6 +77,11 @@ def kids_targeting_config() -> dict[str, Any]:
     return load_yaml("relationship_targeting.yaml").get("kids", {})
 
 
+def frequency_caps_config() -> dict[str, Any]:
+    """Order-level frequency-cap rules (config/frequency_caps.yaml)."""
+    return load_yaml("frequency_caps.yaml")
+
+
 def kids_video_groups(audience: list[str] | None) -> list[str]:
     """Resolve a Kids audience selection to its Video Group IDs.
 

@@ -616,6 +616,12 @@ class FreeWheelClient:
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
+        # Order-level frequency caps (delivery.frequency_cap array). Resolved by the
+        # builder from kids/adult + region (kids 1/15min; adult 1/30min, +20/month USA).
+        io_caps = [c for c in (FreeWheelClient._freq_cap_entry(s)
+                               for s in (order.frequency_caps or [])) if c]
+        if io_caps:
+            insertion_order_body["delivery"] = {"frequency_cap": io_caps}
         placement_bodies = [FreeWheelClient._placement_body(p) for p in order.placements]
         return {
             "parent": parent,
@@ -635,18 +641,30 @@ class FreeWheelClient:
 
     # Minutes for a frequency-cap window ("1 per 30 min" -> 30). Mirrors the FW
     # delivery.frequency_cap.period (an integer number of minutes, as a string).
-    _FC_UNIT_MIN = {"min": 1, "minute": 1, "hr": 60, "hour": 60, "day": 1440, "week": 10080}
+    # A "month" is 30 days (43200 min) — matches the "20 per month" cap on production USA
+    # adult IOs (period "43200").
+    _FC_UNIT_MIN = {"min": 1, "minute": 1, "hr": 60, "hour": 60, "day": 1440,
+                    "week": 10080, "month": 43200, "mo": 43200}
 
     @staticmethod
     def _fc_period_minutes(cap: Optional[str]) -> Optional[str]:
-        # Handles "1 per 30 min", "1 per hr" (implicit 1), "1 per 21 days", "1 per 4 hrs".
+        # Handles "1 per 30 min", "1 per hr" (implicit 1), "1 per 21 days", "20 per month".
         if not cap:
             return None
-        m = re.search(r"per\s*(\d+)?\s*(minute|min|hour|hr|day|week)s?", cap, re.I)
+        m = re.search(r"per\s*(\d+)?\s*(minute|min|hour|hr|day|week|month|mo)s?", cap, re.I)
         if not m:
             return None
         qty = int(m.group(1)) if m.group(1) else 1
         return str(qty * FreeWheelClient._FC_UNIT_MIN[m.group(2).lower()])
+
+    @staticmethod
+    def _freq_cap_entry(cap: Optional[str]) -> Optional[dict[str, Any]]:
+        """One human cap string -> a FreeWheel frequency_cap dict {value,type,period},
+        matching the live format ({"value":"1","type":"IMPRESSION","period":"30"})."""
+        period = FreeWheelClient._fc_period_minutes(cap)
+        if not period:
+            return None
+        return {"value": FreeWheelClient._fc_value(cap), "type": "IMPRESSION", "period": period}
 
     @staticmethod
     def _fc_value(cap: Optional[str]) -> str:

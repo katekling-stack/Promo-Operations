@@ -109,6 +109,13 @@ today. The tool never books.
   off the cases (`promo-ops poll-cases`) with no sheet in the middle. The batch sheet is the
   bridge until then, not a throwaway.
 
+## Automatic rules applied to every IO
+- **Order-level frequency caps** (set on the IO, no input needed): **adult USA** = 1 per 30 min
+  **and** 20 per month; **adult international** = 1 per 30 min; **kids** = 1 per 15 min.
+  (Config: `config/frequency_caps.yaml`; verified against production USA adult IOs.)
+- **Self-exclusion:** the promoted title's own Video Series is excluded on its targeted
+  placements so a promo never runs against itself.
+
 ## Safety + re-runs
 - **Idempotent:** re-running the same sheet **reuses** each IO (status `reused`) instead of
   duplicating. Fix two rows and re-run the whole file safely — only genuinely new IOs are
