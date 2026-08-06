@@ -89,6 +89,20 @@ def _apply_defaults(plan: SupportPlan) -> None:
     if not plan.formats and plan.brand:
         plan.formats = list(cfg.get("formats") or [])
     _apply_product_overrides(plan, cfg)
+    _drop_non_domestic_only(plan)
+
+
+# After Mid-Roll Bumper is a Domestic (US) product only — its format members must never
+# build in any other market, whatever a brand config or Products toggle says.
+from .models import PRODUCT_FAMILIES as _PRODUCT_FAMILIES
+DOMESTIC_ONLY_FORMATS = set(_PRODUCT_FAMILIES["after_midroll_bumper"])
+
+
+def _drop_non_domestic_only(plan: SupportPlan) -> None:
+    from .config import regions_config
+    domestic = bool(regions_config().get("regions", {}).get(plan.region or "", {}).get("domestic"))
+    if not domestic and plan.formats:
+        plan.formats = [f for f in plan.formats if f not in DOMESTIC_ONLY_FORMATS]
 
 
 def _apply_product_overrides(plan: SupportPlan, brand_cfg: dict[str, Any]) -> None:

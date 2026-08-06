@@ -85,6 +85,10 @@ def app_data() -> dict:
                      | {"pause_ads"})
         prods = [fam for fam, members in PRODUCT_FAMILIES.items()
                  if set(members) & available and fam in PRODUCT_LABEL]
+        # After Mid-Roll Bumper is Domestic (US) only — never offer it in other markets,
+        # even if a brand config still lists the member format.
+        if _region_of(cname) != "USA":
+            prods = [f for f in prods if f != "after_midroll_bumper"]
         # A product is ON by default when any of its members is in the brand's required
         # `formats` set (vs. only in optional_formats). Drives the form's Yes/No preset so
         # the CM sees the real default and can flip it — no silent "included by default".
