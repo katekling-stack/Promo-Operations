@@ -82,6 +82,9 @@ class SupportPlan:
     # select-all, so "NCIS" excludes every NCIS series so the promo never runs in it).
     exclude_series: list[str] = field(default_factory=list)
     exclude_channels: list[str] = field(default_factory=list)
+    # Individual FreeWheel Video (asset) IDs to exclude on every placement — for MOVIES,
+    # which are single video assets rather than series. Applied as content exclude `video`.
+    exclude_videos: list[str] = field(default_factory=list)
     # Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
     season_or_messaging: Optional[str] = None
     # Primary Trafficker — the submitting CM's name; carried onto the IO.
@@ -259,6 +262,9 @@ class Placement:
     # Self-exclusion: the promoted show's OWN Video Series IDs, excluded on every set so
     # it never promos against itself (its Channel SGs go in extra_exclude_site_groups).
     exclude_series: list[str] = field(default_factory=list)
+    # Extra individual Video (asset) IDs to exclude on every set — for MOVIES (single
+    # video assets, not series). Added to content_targeting exclude as `video`.
+    exclude_videos: list[str] = field(default_factory=list)
     # Self-exclusion (ADULT only): the promoted title's OWN audience-segment (DDA) item IDs,
     # excluded on every set's audience_targeting so the promo doesn't chase its own audience.
     # Empty on kids placements (no audience targeting on kids).

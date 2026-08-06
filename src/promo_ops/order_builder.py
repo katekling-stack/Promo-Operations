@@ -389,6 +389,7 @@ class OrderBuilder:
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 content_exclude_site_groups=list(content_excl_sgs),
                 exclude_series=list(self_series),
+                exclude_videos=list(plan.exclude_videos),
                 exclude_audience_items=list(self_audience),
                 region_has_pluto=bool(self._regions.get("regions", {})
                                       .get(plan.region, {}).get("has_pluto", True)),

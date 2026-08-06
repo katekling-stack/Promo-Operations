@@ -349,6 +349,9 @@ datalist{display:none}
     <p class="sub">Keep the promo from running inside a title or channel. The promoted title is excluded automatically — add any extra series or Pluto channels here and they're excluded on <b>every</b> placement in the order.</p>
     <div class="field"><label>Series to exclude</label><div class="chips" data-chips="exclude_series" data-source="shows"><input type="text" placeholder="type to search a series to exclude…"></div></div>
     <div class="field"><label>Pluto channels to exclude</label><div class="chips" data-chips="exclude_channels" data-source="channels"><input type="text" placeholder="type to search a channel to exclude…"></div></div>
+    <div class="field"><label>Movie videos to exclude</label>
+      <div class="chips" data-chips="exclude_videos" data-numeric="1"><input type="text" placeholder="FreeWheel Video ID  ↵"></div>
+      <div class="hint">For <b>movies</b> (single video assets, not series). Paste the FreeWheel <b>Video ID</b> — excluded on every placement. Type the ID and press Enter.</div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
@@ -606,6 +609,7 @@ function buildPlan(){
   if(L.pluto_channels.length)pl.channels=L.pluto_channels; if(Object.keys(pl).length)plan.pluto=pl;
   if(L.exclude_series.length) plan.exclude_series=L.exclude_series;
   if(L.exclude_channels.length) plan.exclude_channels=L.exclude_channels;
+  if(L.exclude_videos.length) plan.exclude_videos=L.exclude_videos;
   return plan;
 }
 function fname(){ const p=buildPlan();
@@ -659,6 +663,7 @@ function cellFor(col, plan){
     case "Audience Segments": return list(plan.audience_segments);
     case "Exclude Series": return list(plan.exclude_series);
     case "Exclude Channels": return list(plan.exclude_channels);
+    case "Exclude Videos": return list(plan.exclude_videos);
     case "Kids Audience": return list(plan.kids_audience);
     case "Video Domination": return plan.video_domination||"";
     case "Video Domination Targeting": return list(plan.video_domination_targeting);

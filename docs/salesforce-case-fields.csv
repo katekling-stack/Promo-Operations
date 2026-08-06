@@ -18,6 +18,7 @@ Case,Optional,Video Domination Targeting,Video_Domination_Targeting__c,Long Text
 Case,Optional,Takeover,Takeover__c,Picklist,hpto; first_impression; arena_takeover; three_peat,No,Operative to GAM takeover type.
 Case,Optional,Series to Exclude,Exclude_Series__c,Lookup / Multi-Select,FreeWheel Video Series,No,"Extra series to keep the promo OUT of, on every placement (the promoted title is auto-excluded). Type-to-search real series; no free text."
 Case,Optional,Pluto Channels to Exclude,Exclude_Channels__c,Lookup / Multi-Select,Pluto Channels (Region-scoped),No,"Extra Pluto channels to keep the promo OUT of, on every placement. Type-to-search real channels for the Region; no free text."
+Case,Optional,Movie Videos to Exclude,Exclude_Videos__c,Long Text Area,255,No,"For MOVIES (single video assets, not series): FreeWheel Video (asset) IDs to keep the promo OUT of, on every placement; semicolon-separated."
 Case,Products,Include Remnant Video,Include_Remnant_Video__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
 Case,Products,Include Pause Ads,Include_Pause_Ads__c,Picklist,Yes; No,No,Products toggle; blank = brand default.
 Case,Products,Include Premium Pre-Roll,Include_Premium_Pre_Roll__c,Picklist,Yes; No,No,Products toggle; blank = brand default.

@@ -56,6 +56,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
     "Exclude_Series__c": "exclude_series",        # list: extra series to exclude everywhere
     "Exclude_Channels__c": "exclude_channels",    # list: Pluto channels to exclude everywhere
+    "Exclude_Videos__c": "exclude_videos",        # list: movie Video (asset) IDs to exclude everywhere
     # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
     "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
     "Include_Pause_Ads__c": ("product_overrides", "pause_ads"),
@@ -132,6 +133,10 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
          type="Lookup / Multi-Select", picklist="Pluto Channels (Region-scoped)", required="No",
          help="Extra Pluto channels to keep the promo OUT of, on every placement. "
               "Type-to-search real channels for the Region; no free text."),
+    dict(api="Exclude_Videos__c", section="Optional", label="Movie Videos to Exclude",
+         type="Long Text Area", picklist="255", required="No",
+         help="For MOVIES (single video assets, not series): FreeWheel Video (asset) IDs to "
+              "keep the promo OUT of, on every placement; semicolon-separated."),
     # Products — one Yes/No toggle each (blank = brand default).
     dict(api="Include_Remnant_Video__c", section="Products", label="Include Remnant Video"),
     dict(api="Include_Pause_Ads__c", section="Products", label="Include Pause Ads"),
@@ -209,7 +214,7 @@ def build_case_field_rows() -> list[dict[str, str]]:
 
 # Core fields that are semicolon/newline lists.
 _LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience",
-                "rating_restrictions", "exclude_series", "exclude_channels"}
+                "rating_restrictions", "exclude_series", "exclude_channels", "exclude_videos"}
 
 
 def _split(value: Any) -> Any:

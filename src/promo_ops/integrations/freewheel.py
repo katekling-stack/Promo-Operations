@@ -767,6 +767,7 @@ class FreeWheelClient:
                             | set(getattr(p, "content_exclude_site_groups", []) or []))
             ex_series = sorted(set(getattr(p, "exclude_series", []) or []))
             ex_vgs = sorted(set(getattr(p, "extra_exclude_video_groups", []) or []))
+            ex_videos = sorted(set(getattr(p, "exclude_videos", []) or []))
             excl: dict[str, Any] = {}
             if ex_sgs:
                 excl["site_group"] = ex_sgs
@@ -774,6 +775,8 @@ class FreeWheelClient:
                 excl["series"] = ex_series
             if ex_vgs:
                 excl["video_group"] = ex_vgs
+            if ex_videos:
+                excl["video"] = ex_videos
             include_sgs = list(getattr(p, "main_site_groups", []) or [])
             if excl and include_sgs:
                 body["content_targeting"] = {"include": {"site_group": include_sgs},
@@ -901,6 +904,7 @@ class FreeWheelClient:
         excl_sg_all = list(excl_sg) + list(getattr(p, "extra_exclude_site_groups", []))
         excl_vg_brand = list(getattr(p, "extra_exclude_video_groups", []))
         excl_series = list(getattr(p, "exclude_series", []))   # promoted show's own series
+        excl_videos = list(getattr(p, "exclude_videos", []))   # movie video-asset excludes
 
         def base_exclude(**extra):
             e = dict(extra)
@@ -910,6 +914,8 @@ class FreeWheelClient:
                 e["site_group"] = sorted(set(excl_sg_all))
             if excl_series:
                 e["series"] = sorted(set(e.get("series", []) + excl_series))
+            if excl_videos:
+                e["video"] = sorted(set(e.get("video", []) + excl_videos))
             return e or None
 
         def rec_show_set(platform_sg):

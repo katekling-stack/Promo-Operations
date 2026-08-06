@@ -41,6 +41,7 @@ BATCH_COLUMNS.update({
     "networks": {"path": ["networks"], "type": "list"},
     "exclude series": {"path": ["exclude_series"], "type": "list"},
     "exclude channels": {"path": ["exclude_channels"], "type": "list"},
+    "exclude videos": {"path": ["exclude_videos"], "type": "list"},
 })
 
 _TRUE_VALUES = {"y", "yes", "true", "x", "1", "✓"}
@@ -54,7 +55,7 @@ SHEET_COLUMNS: list[str] = [
     "Content Type", "Content ID", "Recommended Show ID", "Video Durations",
     "Flight Start", "Flight End", "Language", "Season or Messaging", "Primary Trafficker",
     "Genres", "Showlist", "Pluto Categories", "Pluto Channels", "Audience Segments",
-    "Exclude Series", "Exclude Channels", "Kids Audience",
+    "Exclude Series", "Exclude Channels", "Exclude Videos", "Kids Audience",
     "Video Domination", "Video Domination Targeting", "Takeover", "Rating Restrictions",
     "Include Remnant Video", "Include Pause Ads", "Include Premium Pre-Roll",
     "Include Essential Bumper", "Include CBS Pre-Roll", "Include After Mid-Roll Bumper",
