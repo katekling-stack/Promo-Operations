@@ -44,3 +44,26 @@ def test_pluto_uses_plural_recommended_shows_domestic_only():
     intl = _order(promoted_title="NCIS", region="LATAM", campaign={"name": "Pluto TV - LATAM"},
                   durations=[30], pluto={"channels": ["Comedy"]}, recommended_show_id="abc123")
     assert _rec_show_kv(intl) == []
+
+
+def test_movie_gets_no_recommended_show_argument():
+    """A Movie's id rides only in the placement name ([MovieID:…]) — never in the
+    Recommended Show custom-targeting (that key is Show-ID only)."""
+    show = _order(promoted_title="Frisco King", region="USA", campaign={"name": "Paramount + - USA"},
+                  durations=[30], showlist=["FBI"], content_type="show", content_id="956479957")
+    movie = _order(promoted_title="The Man In The White Van", region="USA",
+                   campaign={"name": "Paramount + - USA"}, durations=[30], showlist=["FBI"],
+                   content_type="movie", content_id="956479957")
+    assert _rec_show_kv(show), "a Show should carry the Recommended Show argument"
+    assert _rec_show_kv(movie) == [], "a Movie must NOT carry a Recommended Show argument"
+
+
+def test_primary_trafficker_lands_on_the_io():
+    order = _order(promoted_title="NCIS", region="USA", campaign={"name": "Paramount + - USA"},
+                   durations=[30], showlist=["FBI"], primary_trafficker="Kate Kling")
+    plan = FreeWheelClient.to_freewheel_plan(order)
+    assert plan["insertion_order_body"].get("primary_trafficker") == "Kate Kling"
+    # Absent when not provided (no empty field forced onto the IO).
+    order2 = _order(promoted_title="NCIS", region="USA", campaign={"name": "Paramount + - USA"},
+                    durations=[30], showlist=["FBI"])
+    assert "primary_trafficker" not in FreeWheelClient.to_freewheel_plan(order2)["insertion_order_body"]

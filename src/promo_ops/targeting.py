@@ -118,9 +118,11 @@ class TargetingEngine:
         elif value is not None:
             dim.values = [value]
 
-        # Tier 2 content-affinity showlist -> FreeWheel Video Series IDs (select-all).
+        # Tier 2 content-affinity showlist -> FreeWheel Video Series IDs. EXACT-name
+        # match only: picking "Scream" targets the "Scream" series, not the whole
+        # "Scream 2/3/4" family (what you select in the picklist is what you get).
         if dim_cfg["key"] == "content_affinity_showlist" and dim.values:
-            matches = self.series_resolver.resolve_all(dim.values)
+            matches = self.series_resolver.resolve_all_exact(dim.values)
             dim.resolved = [
                 {"show": m.show, "id": s["id"], "series_name": s["name"]}
                 for m in matches for s in m.series

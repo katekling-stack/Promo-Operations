@@ -166,6 +166,7 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "recommended show": {"path": ["recommended_show"]},
     "exclude show": {"path": ["exclude_show"]},
     "season or messaging": {"path": ["season_or_messaging"]},
+    "primary trafficker": {"path": ["primary_trafficker"]},
     "video durations": {"path": ["durations"], "type": "list"},
     "content type": {"path": ["content_type"]},          # show | movie
     "content id": {"path": ["content_id"]},               # ShowID / MovieID

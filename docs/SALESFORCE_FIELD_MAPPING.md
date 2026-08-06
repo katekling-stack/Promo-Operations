@@ -83,7 +83,7 @@ blank = "use the brand's standard set."
 | Content Type | `Content_Type__c` | Picklist | show; movie |
 | Content ID | `Content_ID__c` | Text | ShowID / MovieID |
 | Recommended Show ID | `Recommended_Show_ID__c` | Text | defaults to Content ID |
-| Flight Code | `Flight_Code__c` | Text | launch beat |
+| Primary Trafficker | `Primary_Trafficker__c` | Text | submitting CM → IO's Primary Trafficker |
 | Kids Audience | `Kids_Audience__c` | Multi-Select | older; younger *(Kids brands)* |
 | Rating Restrictions | `Rating_Restrictions__c` | Long Text | *(AU Network 10 only)* |
 | Video Domination | `Video_Domination__c` | Picklist | pluto; standard; aus_10_streaming; uk_my5 |

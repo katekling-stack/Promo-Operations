@@ -96,3 +96,9 @@ class SeriesResolver:
 
     def resolve_all(self, shows: list[str]) -> list[SeriesMatch]:
         return [self.resolve(s) for s in shows]
+
+    def resolve_all_exact(self, shows: list[str]) -> list[SeriesMatch]:
+        """Exact-name match for a whole showlist — used for Tier 2 content-affinity
+        TARGETING so picking 'Scream' selects only the 'Scream' series, not the whole
+        'Scream 2/3/4' family. Mirrors the picklist: what you select is what you get."""
+        return [self.resolve_exact(s) for s in shows]

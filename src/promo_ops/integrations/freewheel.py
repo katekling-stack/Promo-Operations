@@ -616,6 +616,9 @@ class FreeWheelClient:
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
+        # Primary Trafficker — the submitting CM owns the draft they requested.
+        if getattr(order, "primary_trafficker", None):
+            insertion_order_body["primary_trafficker"] = order.primary_trafficker
         # Order-level frequency caps (delivery.frequency_cap array). Resolved by the
         # builder from kids/adult + region (kids 1/15min; adult 1/30min, +20/month USA).
         io_caps = [c for c in (FreeWheelClient._freq_cap_entry(s)
@@ -878,7 +881,10 @@ class FreeWheelClient:
         #             feature isn't rolled out for Pluto internationally).
         is_pluto = bool(getattr(p, "is_pluto_brand", False))
         rec_key = "recommended_shows" if is_pluto else cfg.get("recommended_show_key", "recommended_show")
-        add_rec_show = (not is_pluto) or bool(getattr(p, "region_is_domestic", False))
+        # Movies never get a Recommended Show argument (Show-ID-only feature) — the id
+        # lives only in the placement name ([MovieID:…]).
+        add_rec_show = ((not is_pluto) or bool(getattr(p, "region_is_domestic", False))) \
+            and bool(getattr(p, "recommended_show_enabled", True))
 
         t = p.targeting_ids or {}
         dda = sorted(set(t.get("dda", [])))

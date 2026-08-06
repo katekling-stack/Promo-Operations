@@ -32,6 +32,11 @@ SLACK_SUBMIT_URL = "https://paramountglobal.enterprise.slack.com/archives/C0BNBK
 # the Audience Segments field so a CM can request a not-yet-created segment at the same time.
 AUDIENCE_REQUEST_URL = "https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec"
 
+# Where "Create a Brand in FreeWheel" links (a Google Form). Shown in the Products card so a
+# CM can request the advertiser's Brand be created — needed to map it to the IO + Placement
+# level under Custom Exclusivity — if it doesn't exist yet.
+BRAND_REQUEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLScWpfaBYYQah5tJjbxm0iSkE46m1bRqRjW5eCXj5S0iEe6TbA/viewform"
+
 REGION_ORDER = ["USA", "CA", "UK", "IE", "AU", "LATAM", "BR", "FR", "IT", "GSA",
                 "FI", "DK", "NO", "SE", "ES"]
 REGION_NAME = {"USA": "United States", "CA": "Canada", "UK": "United Kingdom",
@@ -80,11 +85,16 @@ def app_data() -> dict:
                      | {"pause_ads"})
         prods = [fam for fam, members in PRODUCT_FAMILIES.items()
                  if set(members) & available and fam in PRODUCT_LABEL]
+        # A product is ON by default when any of its members is in the brand's required
+        # `formats` set (vs. only in optional_formats). Drives the form's Yes/No preset so
+        # the CM sees the real default and can flip it — no silent "included by default".
+        default_on = set(b.get("formats") or [])
+        prod_default = {fam: bool(set(PRODUCT_FAMILIES.get(fam, [fam])) & default_on) for fam in prods}
         from promo_ops import brand_sync
         sig = brand_sync.brand_signature(cname)
         campaigns.append({"name": cname, "region": _region_of(cname),
                           "brand": b.get("display_name", key), "kids": bool(b.get("kids")),
-                          "products": prods,
+                          "products": prods, "product_defaults": prod_default,
                           # brand identity for cross-market mirroring (family|kids)
                           "sig": f"{sig[0]}|{int(sig[1])}" if sig else None})
     campaigns.sort(key=lambda c: (REGION_ORDER.index(c["region"]) if c["region"] in REGION_ORDER else 99, c["name"]))
@@ -135,6 +145,7 @@ def _targeting_options() -> dict:
 def build(out: Path | None = None) -> Path:
     html = TEMPLATE.replace("/*APP_DATA*/", json.dumps(app_data(), ensure_ascii=False))
     html = html.replace("AUDIENCE_REQUEST_URL_PLACEHOLDER", AUDIENCE_REQUEST_URL)
+    html = html.replace("BRAND_REQUEST_URL_PLACEHOLDER", BRAND_REQUEST_URL)
     out = out or OUT
     out.write_text(html, encoding="utf-8")
     return out
@@ -246,6 +257,9 @@ datalist{display:none}
     <div class="field"><label>Salesforce Case #</label>
       <input type="text" id="sf_case" placeholder="e.g. 00123456">
       <div class="hint">The case this campaign is for — carried through so the created FreeWheel draft maps back to it. Fill this to add the row to the batch Sheet.</div></div>
+    <div class="field"><label>Primary Trafficker</label>
+      <input type="text" id="primary_trafficker" placeholder="your name (the CM submitting)">
+      <div class="hint">Stamped onto the IO's <b>Primary Trafficker</b> field — the draft is owned by whoever submits it.</div></div>
   </div>
 
   <div class="card">
@@ -254,7 +268,8 @@ datalist{display:none}
       <input type="text" id="title" placeholder="e.g. Frisco King"></div>
     <div class="row">
       <div class="field"><label>Season or messaging</label>
-        <input type="text" id="season" placeholder="e.g. Season 1 / Now Streaming"></div>
+        <input type="text" id="season" placeholder="e.g. Season 1 / Now Streaming / Launch">
+        <div class="hint">The middle of every placement name — use it for the season, launch beat, or campaign messaging.</div></div>
       <div class="field"><label>Content type</label>
         <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option></select></div>
     </div>
@@ -279,7 +294,6 @@ datalist{display:none}
       <div class="field"><label>Flight end</label><input type="date" id="flight_end"></div>
     </div>
     <div class="row">
-      <div class="field"><label>Flight code</label><input type="text" id="flight_code" placeholder="e.g. L1"></div>
       <div class="field"><label>Video durations (seconds)</label>
         <div class="chips" data-chips="durations" data-numeric="1"><input type="text" placeholder="30, 15…  ↵"></div>
         <div class="hint">Type a number and press Enter. Common: 30, 15, 60.</div></div>
@@ -287,8 +301,15 @@ datalist{display:none}
   </div>
 
   <div class="card">
-    <h2>Products</h2><p class="sub">Leave on <b>Default</b> to keep the brand's standard set. Only the products this campaign can run are shown.</p>
+    <h2>Products</h2><p class="sub">Each toggle is preset to this brand's standard set — every product that gets built is shown as <b>Yes</b>. Switch any to <b>No</b> to leave it out. Only the products this campaign can run appear.</p>
     <div id="products"></div>
+    <div style="margin-top:14px">
+      <a href="BRAND_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
+                border:1.5px solid var(--blue);border-radius:10px;padding:10px 16px;font-weight:700;
+                font-size:14px;text-decoration:none">🏷️ Create a Brand in FreeWheel ↗</a>
+      <div class="hint" style="margin-top:6px">New advertiser/brand? Request it here first — it must exist to be mapped to the IO &amp; Placements (Custom Exclusivity).</div>
+    </div>
   </div>
 
   <div class="card" id="addonsCard">
@@ -378,7 +399,8 @@ function onCampaign(){
   $("#kidsWrap").classList.toggle("hidden", !(c && c.kids));
   // products
   const prods = c ? c.products : [];
-  $("#products").innerHTML = prods.length ? prods.map(p=>prodRow(p)).join("")
+  const defs = (c && c.product_defaults) || {};
+  $("#products").innerHTML = prods.length ? prods.map(p=>prodRow(p, defs[p])).join("")
      : '<p class="hint">Pick a campaign to see its products.</p>';
   bindProducts();
   const isAU = c && c.region==="AU";
@@ -432,12 +454,12 @@ $("#mirrorBtn").addEventListener("click",()=>{
     }, i*250);   // stagger so the browser allows the batch of downloads
   });
 });
-function prodRow(fam){
-  return `<div class="prod" data-fam="${fam}"><div class="pl">${APP.productLabels[fam]||fam}</div>
+function prodRow(fam, deflt){
+  const def = deflt ? "yes" : "no";   // preset to the brand's real default
+  return `<div class="prod" data-fam="${fam}" data-default="${def}"><div class="pl">${APP.productLabels[fam]||fam}</div>
     <div class="seg">
-      <button type="button" data-v="" class="on">Default</button>
-      <button type="button" data-v="yes">Yes</button>
-      <button type="button" data-v="no">No</button></div></div>`;
+      <button type="button" data-v="yes" class="${def==='yes'?'on':''}">Yes</button>
+      <button type="button" data-v="no" class="${def==='no'?'on':''}">No</button></div></div>`;
 }
 function bindProducts(){
   document.querySelectorAll(".prod .seg").forEach(seg=>{
@@ -522,7 +544,7 @@ document.querySelectorAll(".chips").forEach(box=>{
     else if(e.key==="Escape"){ closeMenu(); }
     else if(e.key==="Backspace"&&!input.value&&state.lists[key].length){ state.lists[key].pop(); render(); }
   });
-  input.addEventListener("blur",()=>{ setTimeout(closeMenu,150); box.classList.remove("focus"); });
+  input.addEventListener("blur",()=>{ if(input.value.trim()) add(input.value); setTimeout(closeMenu,150); box.classList.remove("focus"); });
   box.addEventListener("click",e=>{ if(e.target===box||e.target===input) input.focus(); });
   input.addEventListener("focus",()=>{ box.classList.add("focus"); showMenu(); });
 });
@@ -537,18 +559,25 @@ $("#region").addEventListener("change",()=>{
 ["title"].forEach(id=>$("#"+id).addEventListener("input",validate));
 
 function validate(){
-  const ok = $("#region").value && $("#campaign").value && $("#title").value.trim();
+  const core = $("#region").value && $("#campaign").value && $("#title").value.trim();
+  const hasDur = ((state.lists.durations||[]).length)>0;
+  const ok = core && hasDur;
   $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
-  $("#status").textContent = ok ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
-    : "Fill Region, Campaign and Promoted title to continue.";
+  $("#status").textContent = ok
+    ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
+    : (core && !hasDur
+        ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
+        : "Fill Region, Campaign, Promoted title and Video durations to continue.");
   return ok;
 }
 
 function buildPlan(){
   const c = currentCampaign();
+  // Emit a product override only when the CM changed it from the brand default, so an
+  // untouched form behaves exactly as before (default set), and an explicit flip is sent.
   const po={}; document.querySelectorAll(".prod").forEach(p=>{
     const v=p.querySelector(".seg button.on").dataset.v;
-    if(v==="yes") po[p.dataset.fam]=true; else if(v==="no") po[p.dataset.fam]=false; });
+    if(v!==p.dataset.default) po[p.dataset.fam]=(v==="yes"); });
   const L=state.lists; const plan={
     promoted_title:$("#title").value.trim(), region:$("#region").value,
     campaign:{name:$("#campaign").value},
@@ -556,12 +585,13 @@ function buildPlan(){
   if($("#sf_case").value) plan.salesforce_case=$("#sf_case").value.trim();
   if($("#language").value) plan.language=$("#language").value;
   if($("#season").value) plan.season_or_messaging=$("#season").value;
+  if($("#primary_trafficker").value) plan.primary_trafficker=$("#primary_trafficker").value.trim();
   plan.content_type=$("#content_type").value;
   if($("#content_id").value) plan.content_id=$("#content_id").value;
   if($("#rec_show_id").value) plan.recommended_show_id=$("#rec_show_id").value;
   if(L.durations.length) plan.durations=L.durations.map(Number);
   const fl={}; if($("#flight_start").value)fl.start=$("#flight_start").value;
-  if($("#flight_end").value)fl.end=$("#flight_end").value; if($("#flight_code").value)fl.code=$("#flight_code").value;
+  if($("#flight_end").value)fl.end=$("#flight_end").value;
   if(Object.keys(fl).length) plan.flight=fl;
   if(Object.keys(po).length) plan.product_overrides=po;
   if(c&&c.kids&&state.kids.size) plan.kids_audience=[...state.kids];
@@ -606,6 +636,8 @@ $("#copyBtn").addEventListener("click",async()=>{
 function cellFor(col, plan){
   const list=v=>Array.isArray(v)?v.join("; "):"";
   const pf=plan.product_overrides||{}; const fl=plan.flight||{}; const pl=plan.pluto||{};
+  // Product toggle -> "Y" (explicit on) / "N" (explicit off) / "" (brand default, untouched).
+  const tog=k=>(k in pf)?(pf[k]?"Y":"N"):"";
   switch(col){
     case "Salesforce Case": return plan.salesforce_case||"";
     case "Region": return plan.region||"";
@@ -619,6 +651,7 @@ function cellFor(col, plan){
     case "Flight End": return fl.end||"";
     case "Language": return plan.language||"";
     case "Season or Messaging": return plan.season_or_messaging||"";
+    case "Primary Trafficker": return plan.primary_trafficker||"";
     case "Genres": return list(plan.genres);
     case "Showlist": return list(plan.showlist);
     case "Pluto Categories": return list(pl.categories);
@@ -632,16 +665,16 @@ function cellFor(col, plan){
     case "Takeover": return plan.takeover||"";
     case "Rating Restrictions": return list(plan.rating_restrictions);
     // "Include X" product toggles -> Y / "" (only when explicitly set on/off).
-    case "Include Remnant Video": return pf.remnant_video?"Y":"";
-    case "Include Pause Ads": return pf.pause_ads?"Y":"";
-    case "Include Premium Pre-Roll": return pf.premium_preroll?"Y":"";
-    case "Include Essential Bumper": return pf.essential_bumper?"Y":"";
-    case "Include CBS Pre-Roll": return pf.cbs_preroll?"Y":"";
-    case "Include After Mid-Roll Bumper": return pf.after_midroll_bumper?"Y":"";
-    case "Include 1Z Lockdown": return pf.cbs_1z_lockdown?"Y":"";
-    case "Include 2Z Lockdown": return pf.cbs_2z_lockdown?"Y":"";
-    case "Include Pluto": return pf.pluto_breakout?"Y":"";
-    case "Include Network 10": return pf.network_10?"Y":"";
+    case "Include Remnant Video": return tog("remnant_video");
+    case "Include Pause Ads": return tog("pause_ads");
+    case "Include Premium Pre-Roll": return tog("premium_preroll");
+    case "Include Essential Bumper": return tog("essential_bumper");
+    case "Include CBS Pre-Roll": return tog("cbs_preroll");
+    case "Include After Mid-Roll Bumper": return tog("after_midroll_bumper");
+    case "Include 1Z Lockdown": return tog("cbs_1z_lockdown");
+    case "Include 2Z Lockdown": return tog("cbs_2z_lockdown");
+    case "Include Pluto": return tog("pluto_breakout");
+    case "Include Network 10": return tog("network_10");
     default: return "";
   }
 }

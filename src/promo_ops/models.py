@@ -84,6 +84,8 @@ class SupportPlan:
     exclude_channels: list[str] = field(default_factory=list)
     # Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
     season_or_messaging: Optional[str] = None
+    # Primary Trafficker — the submitting CM's name; carried onto the IO.
+    primary_trafficker: Optional[str] = None
     # Creative durations (seconds) that each video tier is split into (one placement
     # per tier x duration). Defaults applied if empty.
     durations: list[int] = field(default_factory=list)
@@ -229,6 +231,10 @@ class Placement:
     targeting_ids: dict[str, list] = field(default_factory=dict)
     # Recommended Show custom key-value value (a ShowID). Blank -> CM adds in the UI.
     recommended_show_value: Optional[str] = None
+    # Whether the Recommended Show argument may be added at all. FALSE for Movies:
+    # recommended_show(s) targeting only supports Show IDs, so a Movie's id rides only
+    # in the placement NAME ([MovieID:…]), never in this custom-targeting key-value.
+    recommended_show_enabled: bool = True
     # Brand-specific always-exclude IDs, layered onto the shared DNR exclude in every
     # relationship set (e.g. CBS News excludes the Pluto News category site groups).
     extra_exclude_site_groups: list[str] = field(default_factory=list)
@@ -306,6 +312,9 @@ class Order:
     promoted_series_ids: list[str] = field(default_factory=list)
     # The promoted title's own resolved audience-segment (DDA) ids, excluded on adult IOs.
     promoted_audience_items: list[str] = field(default_factory=list)
+    # Primary Trafficker — the submitting CM's name; stamped onto the IO's
+    # primary_trafficker field so the draft is owned by whoever requested it.
+    primary_trafficker: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

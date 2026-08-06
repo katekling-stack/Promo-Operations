@@ -21,6 +21,9 @@ class _FakeSeries:
     def resolve_all(self, shows):
         return [self.resolve(s) for s in shows]
 
+    def resolve_all_exact(self, shows):
+        return [self.resolve_exact(s) for s in shows]
+
 
 def test_self_exclusion_series_is_exact_not_substring():
     from promo_ops.series import SeriesResolver

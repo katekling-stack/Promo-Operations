@@ -42,12 +42,12 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Recommended_Show_ID__c": "recommended_show_id",
     "Exclude_Show__c": "exclude_show",
     "Season_or_Messaging__c": "season_or_messaging",
+    "Primary_Trafficker__c": "primary_trafficker",
     "Video_Durations__c": "durations",          # list
     "Content_Type__c": "content_type",           # show | movie
     "Content_ID__c": "content_id",
     "Flight_Start__c": ("flight", "start"),
     "Flight_End__c": ("flight", "end"),
-    "Flight_Code__c": ("flight", "code"),
     "Formats__c": "formats",                     # list
     "Video_Domination__c": "video_domination",   # option key (pluto / standard / ...)
     "Video_Domination_Targeting__c": "video_domination_targeting",  # list (Pluto cats)
@@ -100,14 +100,15 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
          help="Seconds; semicolon-separated (e.g. 30;15). One placement per tier per duration."),
     dict(api="Season_or_Messaging__c", section="Optional", label="Season or Messaging", type="Text",
          picklist="80", required="No", help="Middle segment of placement names."),
+    dict(api="Primary_Trafficker__c", section="Optional", label="Primary Trafficker", type="Text",
+         picklist="120", required="No",
+         help="The submitting CM — stamped onto the IO's Primary Trafficker field."),
     dict(api="Content_Type__c", section="Optional", label="Content Type", type="Picklist",
          picklist="show; movie", required="No", help="Selects guaranteed token [ShowID:] vs [MovieID:]."),
     dict(api="Content_ID__c", section="Optional", label="Content ID", type="Text",
          picklist="40", required="No", help="ShowID / MovieID for guaranteed placements."),
     dict(api="Recommended_Show_ID__c", section="Optional", label="Recommended Show ID", type="Text",
          picklist="40", required="No", help="recommended_show key-value; defaults to Content ID."),
-    dict(api="Flight_Code__c", section="Optional", label="Flight Code", type="Text",
-         picklist="20", required="No", help="Launch beat / flight code; used in placement names."),
     dict(api="Kids_Audience__c", section="Optional", label="Kids Audience", type="Multi-Select Picklist",
          picklist="older; younger", required="No",
          help="Kids brands only: which age group(s) to build. Empty = no Kids IOs."),

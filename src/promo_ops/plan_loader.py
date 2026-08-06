@@ -46,6 +46,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         exclude_series=list(raw.get("exclude_series") or []),
         exclude_channels=list(raw.get("exclude_channels") or []),
         season_or_messaging=raw.get("season_or_messaging"),
+        primary_trafficker=raw.get("primary_trafficker"),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),

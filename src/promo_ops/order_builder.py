@@ -395,6 +395,9 @@ class OrderBuilder:
                 region_is_domestic=bool(self._regions.get("regions", {})
                                         .get(plan.region, {}).get("domestic", False)),
                 is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
+                # Movies can't carry a Recommended Show argument (Show-ID-only feature);
+                # their id rides only in the placement name ([MovieID:…]).
+                recommended_show_enabled=(plan.content_type or "show").lower() != "movie",
                 nests_in=tmpl.get("nests_in", "new_insertion_order"), extra=extra, **kw)
 
         # Guaranteed formats.
@@ -539,6 +542,7 @@ class OrderBuilder:
             advertiser=dict(plan.advertiser),
             campaign=dict(plan.campaign),
             flight=plan.flight,
+            primary_trafficker=plan.primary_trafficker,
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
                 "advertiser_id": plan.advertiser.get("resolved_id"),

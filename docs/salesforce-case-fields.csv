@@ -7,10 +7,10 @@ Case,Required,Flight Start,Flight_Start__c,Date,,Yes,Campaign flight start.
 Case,Required,Flight End,Flight_End__c,Date,,Yes,Campaign flight end.
 Case,Required,Video Durations,Video_Durations__c,Text,50,Yes,Seconds; semicolon-separated (e.g. 30;15). One placement per tier per duration.
 Case,Optional,Season or Messaging,Season_or_Messaging__c,Text,80,No,Middle segment of placement names.
+Case,Optional,Primary Trafficker,Primary_Trafficker__c,Text,120,No,The submitting CM — stamped onto the IO's Primary Trafficker field.
 Case,Optional,Content Type,Content_Type__c,Picklist,show; movie,No,Selects guaranteed token [ShowID:] vs [MovieID:].
 Case,Optional,Content ID,Content_ID__c,Text,40,No,ShowID / MovieID for guaranteed placements.
 Case,Optional,Recommended Show ID,Recommended_Show_ID__c,Text,40,No,recommended_show key-value; defaults to Content ID.
-Case,Optional,Flight Code,Flight_Code__c,Text,20,No,Launch beat / flight code; used in placement names.
 Case,Optional,Kids Audience,Kids_Audience__c,Multi-Select Picklist,older; younger,No,Kids brands only: which age group(s) to build. Empty = no Kids IOs.
 Case,Optional,Rating Restrictions,Rating_Restrictions__c,Long Text Area,255,No,AU Network 10 only: VG rating-restriction values to exclude; semicolon-separated.
 Case,Optional,Video Domination,Video_Domination__c,Picklist,pluto; standard; aus_10_streaming; uk_my5,No,Video Domination product selector.
