@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.paramount.promoops.refresh</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/klemley/Desktop/Promo-Operations/scripts/refresh_data.sh</string>
+  </array>
+
+  <!-- Run every weekday at 7:00 AM. launchd runs a missed run once on the next wake,
+       so it still refreshes even if the Mac was asleep/off at 7. Edit Hour/Minute to
+       change the time; remove the Weekday keys to run all 7 days. -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+
+  <key>StandardOutPath</key>
+  <string>/Users/klemley/Desktop/Promo-Operations/logs/refresh.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/klemley/Desktop/Promo-Operations/logs/refresh.err.log</string>
+</dict>
+</plist>
