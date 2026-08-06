@@ -100,7 +100,14 @@ datalist{display:none}
     </div>
     <div class="field"><label>Campaign <span class="req">*</span></label>
       <select id="campaign"></select>
-      <div id="brandChip"></div></div>
+      <div id="brandChip"></div>
+      <div style="margin-top:11px">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScWpfaBYYQah5tJjbxm0iSkE46m1bRqRjW5eCXj5S0iEe6TbA/viewform" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
+                  border:1.5px solid var(--blue);border-radius:10px;padding:10px 16px;font-weight:700;
+                  font-size:14px;text-decoration:none">🏷️ Create a Brand in FreeWheel ↗</a>
+        <div class="hint" style="margin-top:6px">Brand not set up yet? Request it here — it must exist in FreeWheel to be mapped to the IO &amp; Placements (Custom Exclusivity).</div>
+      </div></div>
     <div class="field"><label>Salesforce Case #</label>
       <input type="text" id="sf_case" placeholder="e.g. 00123456">
       <div class="hint">The case this campaign is for — carried through so the created FreeWheel draft maps back to it. Fill this to add the row to the batch Sheet.</div></div>
@@ -150,13 +157,6 @@ datalist{display:none}
   <div class="card">
     <h2>Products</h2><p class="sub">Each toggle is preset to this brand's standard set — every product that gets built is shown as <b>Yes</b>. Switch any to <b>No</b> to leave it out. Only the products this campaign can run appear.</p>
     <div id="products"></div>
-    <div style="margin-top:14px">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLScWpfaBYYQah5tJjbxm0iSkE46m1bRqRjW5eCXj5S0iEe6TbA/viewform" target="_blank" rel="noopener"
-         style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
-                border:1.5px solid var(--blue);border-radius:10px;padding:10px 16px;font-weight:700;
-                font-size:14px;text-decoration:none">🏷️ Create a Brand in FreeWheel ↗</a>
-      <div class="hint" style="margin-top:6px">New advertiser/brand? Request it here first — it must exist to be mapped to the IO &amp; Placements (Custom Exclusivity).</div>
-    </div>
   </div>
 
   <div class="card" id="addonsCard">
