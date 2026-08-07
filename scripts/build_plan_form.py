@@ -578,6 +578,10 @@ function validate(){
   const hasDur = ((state.lists.durations||[]).length)>0;
   const ok = core && hasDur;
   $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
+  // Keep the mirror ("Download mirrored plan(s)") button in sync on EVERY field change,
+  // not just on market-chip clicks — enabled once the plan is valid AND a market is ticked.
+  const mb=$("#mirrorBtn");
+  if(mb) mb.disabled = !(ok && typeof mirrorTargets!=="undefined" && mirrorTargets.size);
   $("#status").textContent = ok
     ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
     : (core && !hasDur
