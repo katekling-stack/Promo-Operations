@@ -165,7 +165,7 @@ TEMPLATE = r"""<!doctype html>
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,#e9eef8,#eef2f9);color:var(--ink);
  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-.wrap{max-width:760px;margin:0 auto;padding:0 18px 120px}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 200px}
 header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;
  padding:16px 18px;box-shadow:0 4px 18px rgba(11,61,145,.28)}
 .hwrap{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
@@ -225,7 +225,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 /* footer bar */
 .bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
  box-shadow:0 -6px 22px rgba(20,40,90,.08);padding:14px 18px;z-index:30}
-.barw{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.barw{max-width:760px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px}
+/* Status stays on ONE line (ellipsis) so the bar never grows tall enough to cover the
+   last card's buttons; the buttons never wrap their own text. */
+.status{flex:1 1 200px;min-width:120px;color:var(--muted);font-size:13px;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .btn{white-space:nowrap;flex:0 0 auto}
 .btn{border:0;border-radius:11px;padding:12px 18px;font-size:14.5px;font-weight:700;cursor:pointer}
 .btn.primary{background:var(--blue);color:#fff}
 .btn.ghost{background:#eef2f9;color:var(--navy)}
