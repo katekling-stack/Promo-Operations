@@ -181,3 +181,16 @@ class AudienceSegmentResolver:
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]
+
+    def id_for_segment_name(self, name: str) -> list[str]:
+        """Resolve an EXISTING segment picked by its exact name (from the audience
+        picklist) to its FreeWheel audience-item id(s) — used to EXCLUDE a specific
+        segment on every placement. Exact, case-insensitive match on the segment name."""
+        if not self._loaded:
+            self.load()
+        want = (name or "").strip().lower()
+        if not want:
+            return []
+        ids = [r.segment_id for r in self._records
+               if r.segment_id and r.segment_name.strip().lower() == want]
+        return list(dict.fromkeys(ids))

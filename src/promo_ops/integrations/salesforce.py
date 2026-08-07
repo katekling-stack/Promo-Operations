@@ -57,6 +57,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Exclude_Series__c": "exclude_series",        # list: extra series to exclude everywhere
     "Exclude_Channels__c": "exclude_channels",    # list: Pluto channels to exclude everywhere
     "Exclude_Videos__c": "exclude_videos",        # list: movie Video (asset) IDs to exclude everywhere
+    "Exclude_Audience_Segments__c": "exclude_audience_segments",  # list: DDA segments to exclude everywhere
     # Products section — Yes/No/(blank) toggles; blank leaves the brand default.
     "Include_Remnant_Video__c": ("product_overrides", "remnant_video"),
     "Include_Pause_Ads__c": ("product_overrides", "pause_ads"),
@@ -137,6 +138,10 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
          type="Long Text Area", picklist="255", required="No",
          help="For MOVIES (single video assets, not series): FreeWheel Video (asset) IDs to "
               "keep the promo OUT of, on every placement; semicolon-separated."),
+    dict(api="Exclude_Audience_Segments__c", section="Optional", label="Audience Segments to Exclude",
+         type="Lookup / Multi-Select", picklist="Audience Segments", required="No",
+         help="Existing DDA audience segments to keep the promo OUT of, on every placement's "
+              "audience targeting. Type-to-search real segments; no free text."),
     # Products — one Yes/No toggle each (blank = brand default).
     dict(api="Include_Remnant_Video__c", section="Products", label="Include Remnant Video"),
     dict(api="Include_Pause_Ads__c", section="Products", label="Include Pause Ads"),
@@ -214,7 +219,8 @@ def build_case_field_rows() -> list[dict[str, str]]:
 
 # Core fields that are semicolon/newline lists.
 _LIST_FIELDS = {"durations", "formats", "video_domination_targeting", "kids_audience",
-                "rating_restrictions", "exclude_series", "exclude_channels", "exclude_videos"}
+                "rating_restrictions", "exclude_series", "exclude_channels", "exclude_videos",
+                "exclude_audience_segments"}
 
 
 def _split(value: Any) -> Any:

@@ -149,6 +149,15 @@ class OrderBuilder:
         ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
         return list(dict.fromkeys(ids))
 
+    def _extra_audience_exclusions(self, plan: SupportPlan) -> list[str]:
+        """Planner-specified audience segments (picked by name) to exclude on every
+        placement's audience_targeting — resolved to DDA audience-item IDs. On top of the
+        promoted-title self-exclusion; adult only (kids do no audience targeting)."""
+        ids: list[str] = []
+        for name in plan.exclude_audience_segments:
+            ids += self.engine.resolver.id_for_segment_name(name)
+        return list(dict.fromkeys(ids))
+
     def _extra_exclusions(self, plan: SupportPlan) -> tuple[list, list]:
         """Planner-specified extra excludes: Video Series + Pluto channels (by name) to
         keep off EVERY placement, on top of the promoted-title self-exclusion. Series
@@ -352,7 +361,8 @@ class OrderBuilder:
         kids_sg = kids_targeting_config().get("content_site_group") if is_kids else None
         # ADULT self-exclusion: also exclude the promoted title's own audience segment on
         # every set (combined with the series self-exclusion). Kids do no audience targeting.
-        self_audience = [] if is_kids else self._self_audience_exclusions(plan)
+        self_audience = ([] if is_kids
+                         else self._self_audience_exclusions(plan) + self._extra_audience_exclusions(plan))
         # Brazil/LATAM Paramount Promo Blocks (SG 1258011): this SG is BR/LATAM inventory,
         # so it is excluded ONLY on adult Pluto placements in the BR + LATAM regions
         # (Pluto SG in its main SGs), across all tiers + standard lines. Skips every other

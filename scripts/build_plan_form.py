@@ -356,6 +356,9 @@ datalist{display:none}
     <div class="field"><label>Movie videos to exclude</label>
       <div class="chips" data-chips="exclude_videos" data-numeric="1"><input type="text" placeholder="FreeWheel Video ID  ↵"></div>
       <div class="hint">For <b>movies</b> (single video assets, not series). Paste the FreeWheel <b>Video ID</b> — excluded on every placement. Type the ID and press Enter.</div></div>
+    <div class="field"><label>Audience segments to exclude</label>
+      <div class="chips" data-chips="exclude_audience_segments" data-source="audience"><input type="text" placeholder="type to search a segment to exclude…"></div>
+      <div class="hint">Keep the promo OUT of an existing DDA audience segment — excluded on <b>every</b> placement, in every relationship. Type-to-search the real segment.</div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
@@ -614,6 +617,7 @@ function buildPlan(){
   if(L.exclude_series.length) plan.exclude_series=L.exclude_series;
   if(L.exclude_channels.length) plan.exclude_channels=L.exclude_channels;
   if(L.exclude_videos.length) plan.exclude_videos=L.exclude_videos;
+  if(L.exclude_audience_segments.length) plan.exclude_audience_segments=L.exclude_audience_segments;
   return plan;
 }
 function fname(){ const p=buildPlan();
@@ -668,6 +672,7 @@ function cellFor(col, plan){
     case "Exclude Series": return list(plan.exclude_series);
     case "Exclude Channels": return list(plan.exclude_channels);
     case "Exclude Videos": return list(plan.exclude_videos);
+    case "Exclude Audience Segments": return list(plan.exclude_audience_segments);
     case "Kids Audience": return list(plan.kids_audience);
     case "Video Domination": return plan.video_domination||"";
     case "Video Domination Targeting": return list(plan.video_domination_targeting);

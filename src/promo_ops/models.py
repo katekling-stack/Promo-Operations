@@ -85,6 +85,9 @@ class SupportPlan:
     # Individual FreeWheel Video (asset) IDs to exclude on every placement — for MOVIES,
     # which are single video assets rather than series. Applied as content exclude `video`.
     exclude_videos: list[str] = field(default_factory=list)
+    # Existing audience segments (by name, from the picklist) to exclude on every
+    # placement's audience_targeting — resolved to DDA audience-item IDs by the builder.
+    exclude_audience_segments: list[str] = field(default_factory=list)
     # Placement naming: "{title} - {season_or_messaging} - {duration} - Tier N - {region}".
     season_or_messaging: Optional[str] = None
     # Primary Trafficker — the submitting CM's name; carried onto the IO.
