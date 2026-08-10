@@ -24,7 +24,13 @@ from typing import Any, Optional
 # doesn't have. "after_midroll_bumper" spans the three brand-specific bumper formats;
 # only the one in the brand's set is ever added.
 PRODUCT_FAMILIES: dict[str, list[str]] = {
-    "remnant_video": ["remnant_video"],
+    # Core Remnant Video across every brand/region (all RVID formats) — so ONE "Remnant
+    # Video" toggle shows for all campaigns. Excludes the separately-toggled UK Pluto
+    # breakout and Network 10 remnant, which have their own toggles below.
+    "remnant_video": ["remnant_video", "pluto_es_remnant", "pplus_kids_remnant",
+                      "pplus_kids_remnant_pplus", "pplus_kids_remnant_pluto",
+                      "pplus_uk_remnant_pplus", "pluto_ca_remnant", "nick_au_remnant",
+                      "pictures_remnant"],
     "pause_ads": ["pause_ads"],
     "premium_preroll": ["premium_preroll"],
     "essential_bumper": ["essential_bumper"],

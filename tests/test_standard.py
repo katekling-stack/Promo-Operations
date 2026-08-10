@@ -38,7 +38,7 @@ def test_standard_is_non_tiered_one_per_duration():
 def test_standard_adults_domestic_priorities():
     o = _order(region="USA", campaign={"name": "Pluto TV - USA"}, durations=[30, 15])
     by_dur = {p.duration: _ovr(p) for p in o.placements}
-    assert by_dur[30] == 7 and by_dur[15] == 8          # sheet: -7 (:30), -8 (:15)
+    assert by_dur[30] == -7 and by_dur[15] == -8       # sheet -7/-8 -> BELOW_PAYING_ADS -7/-8
 
 
 def test_standard_still_excludes_title_and_audience():
@@ -49,7 +49,7 @@ def test_standard_still_excludes_title_and_audience():
 
 def test_standard_international_pluto_priority():
     o = _order(region="UK", campaign={"name": "Pluto TV - UK"}, durations=[30])
-    assert _ovr(o.placements[0]) == 6                   # intl_pluto :30 -> -6
+    assert _ovr(o.placements[0]) == -6                  # intl_pluto :30 -> -6
 
 
 def test_standard_pause_placement_priority():
@@ -58,4 +58,4 @@ def test_standard_pause_placement_priority():
                product_overrides={"pause_ads": True})
     pause = [p for p in o.placements if p.format == "pause_ads"]
     assert pause, "expected a standard pause placement"
-    assert _ovr(pause[0]) == 7                          # adults_domestic pause -> -7
+    assert _ovr(pause[0]) == -7                         # adults_domestic pause -> -7
