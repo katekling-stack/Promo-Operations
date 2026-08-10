@@ -327,6 +327,13 @@ datalist{display:none}
       <div class="field"><label>Video Domination</label><select id="video_domination"></select></div>
       <div class="field"><label>Takeover</label><select id="takeover"></select></div>
     </div>
+    <div class="field"><label>Scene Lift</label>
+      <select id="scene_lift">
+        <option value="">No — normal promo</option>
+        <option value="ai">AI Scene Lift (Tier 3 only)</option>
+        <option value="standard">60s / Standard Scene Lift (Tiers 1–3)</option>
+      </select>
+      <div class="hint" id="sceneLiftHint">Pluto TV UK / CA / USA only. Placements are added into the existing <b>Scene Lifts – {Region}</b> IO under the Pluto campaign; the promoted title + its audience are still excluded.</div></div>
     <div class="field hidden" id="vdTargetWrap"><label>Video Domination targeting (Pluto categories)</label>
       <div class="chips" data-chips="vd_targeting" data-suggest="categories"><input type="text" placeholder="Comedy, Crime…  ↵"></div></div>
     <div class="field hidden" id="ratingWrap"><label>Rating restrictions (AU Network 10)</label>
@@ -614,6 +621,7 @@ function buildPlan(){
   if(Object.keys(fl).length) plan.flight=fl;
   if(Object.keys(po).length) plan.product_overrides=po;
   if(c&&c.kids&&state.kids.size) plan.kids_audience=[...state.kids];
+  if($("#scene_lift").value) plan.scene_lift=$("#scene_lift").value;
   if($("#video_domination").value) plan.video_domination=$("#video_domination").value;
   if(L.vd_targeting.length) plan.video_domination_targeting=L.vd_targeting;
   if($("#takeover").value) plan.takeover=$("#takeover").value;
@@ -686,6 +694,7 @@ function cellFor(col, plan){
     case "Video Domination": return plan.video_domination||"";
     case "Video Domination Targeting": return list(plan.video_domination_targeting);
     case "Takeover": return plan.takeover||"";
+    case "Scene Lift": return plan.scene_lift||"";
     case "Rating Restrictions": return list(plan.rating_restrictions);
     // "Include X" product toggles -> Y / "" (only when explicitly set on/off).
     case "Include Remnant Video": return tog("remnant_video");

@@ -52,6 +52,10 @@ def priorities_config() -> dict[str, Any]:
     return load_yaml("priorities.yaml")
 
 
+def scene_lifts_config() -> dict[str, Any]:
+    return load_yaml("scene_lifts.yaml")
+
+
 def pluto_config() -> dict[str, Any]:
     return load_yaml("pluto.yaml")
 

@@ -58,7 +58,7 @@ SHEET_COLUMNS: list[str] = [
     "Genres", "Showlist", "Pluto Categories", "Pluto Channels", "Audience Segments",
     "Exclude Series", "Exclude Channels", "Exclude Videos", "Exclude Audience Segments",
     "Kids Audience",
-    "Video Domination", "Video Domination Targeting", "Takeover", "Rating Restrictions",
+    "Video Domination", "Video Domination Targeting", "Takeover", "Scene Lift", "Rating Restrictions",
     "Include Remnant Video", "Include Pause Ads", "Include Premium Pre-Roll",
     "Include Essential Bumper", "Include CBS Pre-Roll", "Include After Mid-Roll Bumper",
     "Include 1Z Lockdown", "Include 2Z Lockdown", "Include Pluto", "Include Network 10",

@@ -1,0 +1,28 @@
+# Scene Lifts — Pluto-only promo lifts that live INSIDE existing, persistent Insertion
+# Orders (placements are ADDED into these IOs, not a new IO), under the associated
+# "Pluto TV - {Region}" campaign + advertiser. Only UK / CA / USA today.
+#
+#   AI Scene Lift        -> Tier 3 only
+#   60s / Standard Lift  -> Tiers 1-3 (no Tier 4)
+#
+# Every Scene Lift placement still excludes the promoted title (series/movie) + its
+# audience segment, exactly like a normal promo.
+#
+# `target_ios` is keyed by the Pluto campaign the CM selects; the value is the existing
+# Scene Lift IO to append into. Update the IDs here if a Scene Lift IO is rotated (e.g.
+# when one fills up — the placement-limit swap). Look them up in FreeWheel: IO name
+# "Scene Lifts - {Region}" under the "Pluto TV - {Region}" campaign.
+
+# Which tiers each Scene Lift type builds (Pluto tier stack).
+tiers_by_type:
+  ai: [3]
+  standard: [1, 2, 3]
+
+target_ios:
+  "Pluto TV - UK":                    {io_id: "95035745", io_name: "Scene Lifts - UK"}
+  "Pluto TV - USA":                   {io_id: "94434865", io_name: "Scene Lifts - USA"}          # 94434865 — NOT 81596479 (that IO hit the placement limit)
+  "Pluto TV - English - CA":          {io_id: "92873957", io_name: "Scene Lifts - CA"}
+  "Pluto TV - En Espanol - USA":      {io_id: "89777911", io_name: "Scene Lifts - Spanish - USA"}
+  "Pluto TV - Kids - USA":            {io_id: "88745228", io_name: "Scene Lifts - Kids - USA"}
+  "Pluto TV - Kids - English - CA":   {io_id: "93858984", io_name: "Scene Lifts - Kids - CA"}
+  "Pluto TV - Kids - En Espanol - USA": {io_id: "93071757", io_name: "Scene Lifts - Kids - Spanish - USA"}

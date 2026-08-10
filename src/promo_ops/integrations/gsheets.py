@@ -177,6 +177,7 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "video domination": {"path": ["video_domination"]},
     "video domination targeting": {"path": ["video_domination_targeting"], "type": "list"},
     "takeover": {"path": ["takeover"]},
+    "scene lift": {"path": ["scene_lift"]},          # ai | standard (Pluto UK/CA/USA)
     # Rating restrictions (AU Network 10) — VG values to exclude on the 10 Streaming
     # lines when Network 10 supplies them. Blank = none.
     "rating restrictions": {"path": ["rating_restrictions"], "type": "list"},

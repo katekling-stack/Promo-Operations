@@ -92,6 +92,10 @@ class SupportPlan:
     season_or_messaging: Optional[str] = None
     # Primary Trafficker — the submitting CM's name; carried onto the IO.
     primary_trafficker: Optional[str] = None
+    # Scene Lift type (Pluto UK/CA/USA only): "ai" -> Tier 3 only; "standard" (60s) ->
+    # Tiers 1-3. Placements are ADDED into the existing "Scene Lifts - {Region}" IO under
+    # the associated Pluto campaign (see config/scene_lifts.yaml). Blank = normal promo.
+    scene_lift: Optional[str] = None
     # Creative durations (seconds) that each video tier is split into (one placement
     # per tier x duration). Defaults applied if empty.
     durations: list[int] = field(default_factory=list)
@@ -324,6 +328,10 @@ class Order:
     # Primary Trafficker — the submitting CM's name; stamped onto the IO's
     # primary_trafficker field so the draft is owned by whoever requested it.
     primary_trafficker: Optional[str] = None
+    # Scene Lift routing: when set, placements are ADDED into this existing IO (no new IO
+    # is created). `scene_lift` records the type (ai | standard) for reference/naming.
+    scene_lift_io_id: Optional[str] = None
+    scene_lift: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

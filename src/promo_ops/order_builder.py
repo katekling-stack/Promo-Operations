@@ -149,6 +149,22 @@ class OrderBuilder:
         ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
         return list(dict.fromkeys(ids))
 
+    def _scene_lift_tiers(self, plan: SupportPlan) -> Optional[set]:
+        """Allowed tier ids for a Scene Lift (None = normal, build all tiers)."""
+        if not plan.scene_lift:
+            return None
+        from .config import scene_lifts_config
+        by_type = scene_lifts_config().get("tiers_by_type", {})
+        return set(by_type.get(str(plan.scene_lift).lower(), []))
+
+    def _scene_lift_target(self, plan: SupportPlan) -> Optional[dict]:
+        """The existing Scene Lift IO to append into, by the selected Pluto campaign."""
+        if not plan.scene_lift:
+            return None
+        from .config import scene_lifts_config
+        campaign = (plan.campaign or {}).get("name", "")
+        return scene_lifts_config().get("target_ios", {}).get(campaign)
+
     def _extra_audience_exclusions(self, plan: SupportPlan) -> list[str]:
         """Planner-specified audience segments (picked by name) to exclude on every
         placement's audience_targeting — resolved to DDA audience-item IDs. On top of the
@@ -511,7 +527,11 @@ class OrderBuilder:
         kinds = tmpl.get("targeting_kinds")
 
         placements: list[Placement] = []
+        # Scene Lift: build only the allowed tiers (AI -> [3]; standard -> [1,2,3]).
+        allowed_tiers = self._scene_lift_tiers(plan)
         for tier in targeting.tiers:
+            if allowed_tiers is not None and tier.id not in allowed_tiers:
+                continue
             tids = self._targeting_ids(plan, tier)
             if kinds is not None:
                 tids = {k: v for k, v in tids.items() if k in kinds}
@@ -543,6 +563,11 @@ class OrderBuilder:
     def build(self, plan: SupportPlan) -> Order:
         brand_cfg = self._brand_cfg(plan.brand)
         io_name = plan.insertion_order_name or f"{plan.promoted_title} - {plan.region}"
+        # Scene Lift: placements are added into the existing "Scene Lifts - {Region}" IO
+        # (no new IO). Use that IO's name for reference; routing id set below.
+        sl_target = self._scene_lift_target(plan)
+        if sl_target:
+            io_name = sl_target.get("io_name", io_name)
 
         order = Order(
             name=io_name,
@@ -554,6 +579,8 @@ class OrderBuilder:
             campaign=dict(plan.campaign),
             flight=plan.flight,
             primary_trafficker=plan.primary_trafficker,
+            scene_lift=plan.scene_lift,
+            scene_lift_io_id=(sl_target or {}).get("io_id"),
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
                 "advertiser_id": plan.advertiser.get("resolved_id"),

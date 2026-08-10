@@ -54,6 +54,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Kids_Audience__c": "kids_audience",          # list: older / younger (Kids brands)
     "Rating_Restrictions__c": "rating_restrictions",  # list: VG values (AU Network 10)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
+    "Scene_Lift__c": "scene_lift",                # ai | standard (Pluto UK/CA/USA)
     "Exclude_Series__c": "exclude_series",        # list: extra series to exclude everywhere
     "Exclude_Channels__c": "exclude_channels",    # list: Pluto channels to exclude everywhere
     "Exclude_Videos__c": "exclude_videos",        # list: movie Video (asset) IDs to exclude everywhere
@@ -126,6 +127,10 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
     dict(api="Takeover__c", section="Optional", label="Takeover", type="Picklist",
          picklist="hpto; first_impression; arena_takeover; three_peat", required="No",
          help="Operative to GAM takeover type."),
+    dict(api="Scene_Lift__c", section="Optional", label="Scene Lift", type="Picklist",
+         picklist="ai; standard", required="No",
+         help="Pluto UK/CA/USA only. 'ai' = Tier 3 only; 'standard' (60s) = Tiers 1-3. "
+              "Placements are added into the existing Scene Lifts - {Region} IO."),
     dict(api="Exclude_Series__c", section="Optional", label="Series to Exclude",
          type="Lookup / Multi-Select", picklist="FreeWheel Video Series", required="No",
          help="Extra series to keep the promo OUT of, on every placement (the promoted "

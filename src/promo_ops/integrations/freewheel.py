@@ -565,9 +565,15 @@ class FreeWheelClient:
                 f"Parent campaign {order.campaign.get('name')!r} not found. "
                 f"Confirm the exact Advertiser + Campaign names.")
 
-        io = self._invoke("sh_1_1_create-an-insertion-order",
-                          campaign_id=int(campaign_id), body=plan["insertion_order_body"])
-        io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
+        # Scene Lift: add placements INTO the existing "Scene Lifts - {Region}" IO — do
+        # NOT create a new IO. The target IO already lives under the Pluto campaign.
+        if getattr(order, "scene_lift_io_id", None):
+            io_id = order.scene_lift_io_id
+            io = {"scene_lift_io_id": io_id}
+        else:
+            io = self._invoke("sh_1_1_create-an-insertion-order",
+                              campaign_id=int(campaign_id), body=plan["insertion_order_body"])
+            io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
 
         placements = []
         for body in plan["placement_bodies"]:
@@ -632,11 +638,15 @@ class FreeWheelClient:
         if schedule:
             for body in placement_bodies:
                 body.setdefault("schedule", dict(schedule))
-        return {
+        out = {
             "parent": parent,
             "insertion_order_body": insertion_order_body,
             "placement_bodies": placement_bodies,
         }
+        # Scene Lift: flag that placements append into an existing IO (no new IO created).
+        if getattr(order, "scene_lift_io_id", None):
+            out["append_to_existing_io"] = order.scene_lift_io_id
+        return out
 
     @staticmethod
     def _region_timezone(region: Optional[str]) -> Optional[str]:

@@ -49,6 +49,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         exclude_audience_segments=list(raw.get("exclude_audience_segments") or []),
         season_or_messaging=raw.get("season_or_messaging"),
         primary_trafficker=raw.get("primary_trafficker"),
+        scene_lift=(raw.get("scene_lift") or None),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),
@@ -194,6 +195,19 @@ def validate_plan(plan: SupportPlan) -> list[str]:
         elif plan.video_domination == "pluto" and not plan.video_domination_targeting:
             problems.append("Pluto Video Domination selected but no Video Domination "
                             "Targeting (Pluto categories) provided.")
+
+    if plan.scene_lift:
+        from .config import scene_lifts_config
+        sl = scene_lifts_config()
+        sl_type = str(plan.scene_lift).lower()
+        if sl_type not in sl.get("tiers_by_type", {}):
+            problems.append(f"Unknown Scene Lift type {plan.scene_lift!r}. "
+                            f"Known: {', '.join(sl.get('tiers_by_type', {}))}.")
+        campaign = (plan.campaign or {}).get("name", "")
+        if campaign not in sl.get("target_ios", {}):
+            problems.append(
+                f"Scene Lift not set up for campaign {campaign!r}. Scene Lifts are Pluto "
+                f"UK/CA/USA only — pick one of: {', '.join(sl.get('target_ios', {}))}.")
 
     known_kids = {"older", "younger"}
     for a in plan.kids_audience:
