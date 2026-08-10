@@ -61,6 +61,8 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         primary_trafficker=raw.get("primary_trafficker"),
         scene_lift=(raw.get("scene_lift") or None),
         standard=_truthy(raw.get("standard")),
+        existing_io_id=(str(raw.get("existing_io_id")).strip() or None
+                        if raw.get("existing_io_id") else None),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),

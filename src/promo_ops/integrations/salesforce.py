@@ -43,6 +43,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Exclude_Show__c": "exclude_show",
     "Season_or_Messaging__c": "season_or_messaging",
     "Primary_Trafficker__c": "primary_trafficker",
+    "Existing_IO_ID__c": "existing_io_id",        # add placements into this existing IO (no new IO)
     "Video_Durations__c": "durations",          # list
     "Content_Type__c": "content_type",           # show | movie
     "Content_ID__c": "content_id",
@@ -107,6 +108,10 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
     dict(api="Primary_Trafficker__c", section="Optional", label="Primary Trafficker", type="Text",
          picklist="120", required="No",
          help="The submitting CM — stamped onto the IO's Primary Trafficker field."),
+    dict(api="Existing_IO_ID__c", section="Optional", label="Existing IO ID", type="Text",
+         picklist="40", required="No",
+         help="Add these placements INTO an existing IO (no new IO) — e.g. Season 2 lines "
+              "into the Season 1 IO. Paste that IO's FreeWheel id."),
     dict(api="Content_Type__c", section="Optional", label="Content Type", type="Picklist",
          picklist="show; movie", required="No", help="Selects guaranteed token [ShowID:] vs [MovieID:]."),
     dict(api="Content_ID__c", section="Optional", label="Content ID", type="Text",

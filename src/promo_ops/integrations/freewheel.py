@@ -565,11 +565,12 @@ class FreeWheelClient:
                 f"Parent campaign {order.campaign.get('name')!r} not found. "
                 f"Confirm the exact Advertiser + Campaign names.")
 
-        # Scene Lift: add placements INTO the existing "Scene Lifts - {Region}" IO — do
-        # NOT create a new IO. The target IO already lives under the Pluto campaign.
-        if getattr(order, "scene_lift_io_id", None):
-            io_id = order.scene_lift_io_id
-            io = {"scene_lift_io_id": io_id}
+        # Add placements INTO an existing IO (no new IO) when routed there: a Scene Lift
+        # target IO, or an explicit "add to existing IO" id (e.g. Season 2 -> Season 1 IO).
+        append_io = getattr(order, "scene_lift_io_id", None) or getattr(order, "existing_io_id", None)
+        if append_io:
+            io_id = append_io
+            io = {"append_to_existing_io": io_id}
         else:
             io = self._invoke("sh_1_1_create-an-insertion-order",
                               campaign_id=int(campaign_id), body=plan["insertion_order_body"])
@@ -643,9 +644,10 @@ class FreeWheelClient:
             "insertion_order_body": insertion_order_body,
             "placement_bodies": placement_bodies,
         }
-        # Scene Lift: flag that placements append into an existing IO (no new IO created).
-        if getattr(order, "scene_lift_io_id", None):
-            out["append_to_existing_io"] = order.scene_lift_io_id
+        # Flag when placements append into an existing IO (Scene Lift or explicit).
+        append_io = getattr(order, "scene_lift_io_id", None) or getattr(order, "existing_io_id", None)
+        if append_io:
+            out["append_to_existing_io"] = append_io
         return out
 
     @staticmethod

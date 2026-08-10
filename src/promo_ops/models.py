@@ -100,6 +100,10 @@ class SupportPlan:
     # using config/standard.yaml priorities/caps instead of the tier stack. Still excludes
     # the promoted title + audience. Applies to video AND pause. Blank/False = tiered.
     standard: bool = False
+    # Add to an EXISTING Insertion Order: when set, placements are created INTO this IO
+    # (by FreeWheel IO id) instead of a new one — e.g. adding Season 2 lines to the
+    # Season 1 IO that already exists. Blank = create a new IO as usual.
+    existing_io_id: Optional[str] = None
     # Creative durations (seconds) that each video tier is split into (one placement
     # per tier x duration). Defaults applied if empty.
     durations: list[int] = field(default_factory=list)
@@ -336,6 +340,9 @@ class Order:
     # is created). `scene_lift` records the type (ai | standard) for reference/naming.
     scene_lift_io_id: Optional[str] = None
     scene_lift: Optional[str] = None
+    # Add-to-existing-IO: when set, placements are created INTO this IO id (no new IO) —
+    # e.g. adding Season 2 lines to the existing Season 1 IO.
+    existing_io_id: Optional[str] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -54,7 +54,7 @@ _TRUE_VALUES = {"y", "yes", "true", "x", "1", "✓"}
 SHEET_COLUMNS: list[str] = [
     "Salesforce Case", "Region", "Campaign Name", "Promoted Title",
     "Content Type", "Content ID", "Recommended Show ID", "Video Durations",
-    "Flight Start", "Flight End", "Language", "Season or Messaging", "Primary Trafficker",
+    "Flight Start", "Flight End", "Language", "Season or Messaging", "Primary Trafficker", "Existing IO ID",
     "Genres", "Showlist", "Pluto Categories", "Pluto Channels", "Audience Segments",
     "Exclude Series", "Exclude Channels", "Exclude Videos", "Exclude Audience Segments",
     "Kids Audience",

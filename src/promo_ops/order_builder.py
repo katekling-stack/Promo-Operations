@@ -643,6 +643,7 @@ class OrderBuilder:
             primary_trafficker=plan.primary_trafficker,
             scene_lift=plan.scene_lift,
             scene_lift_io_id=(sl_target or {}).get("io_id"),
+            existing_io_id=plan.existing_io_id,
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
                 "advertiser_id": plan.advertiser.get("resolved_id"),

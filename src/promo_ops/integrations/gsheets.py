@@ -167,6 +167,7 @@ PLAN_TAB_FIELDS: dict[str, dict[str, Any]] = {
     "exclude show": {"path": ["exclude_show"]},
     "season or messaging": {"path": ["season_or_messaging"]},
     "primary trafficker": {"path": ["primary_trafficker"]},
+    "existing io id": {"path": ["existing_io_id"]},   # add placements into this IO (no new IO)
     "video durations": {"path": ["durations"], "type": "list"},
     "content type": {"path": ["content_type"]},          # show | movie
     "content id": {"path": ["content_id"]},               # ShowID / MovieID

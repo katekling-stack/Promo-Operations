@@ -276,6 +276,9 @@ datalist{display:none}
     <div class="field"><label>Primary Trafficker</label>
       <input type="text" id="primary_trafficker" placeholder="your name (the CM submitting)">
       <div class="hint">Stamped onto the IO's <b>Primary Trafficker</b> field — the draft is owned by whoever submits it.</div></div>
+    <div class="field"><label>Add to existing IO <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+      <input type="text" id="existing_io_id" placeholder="existing FreeWheel IO ID (e.g. for Season 2 → Season 1's IO)">
+      <div class="hint">Leave blank to create a <b>new</b> IO. To add these placements into an <b>existing</b> IO (e.g. new season lines into the IO that's already live), paste that IO's FreeWheel ID — no new IO is created.</div></div>
   </div>
 
   <div class="card">
@@ -616,6 +619,7 @@ function buildPlan(){
   if($("#language").value) plan.language=$("#language").value;
   if($("#season").value) plan.season_or_messaging=$("#season").value;
   if($("#primary_trafficker").value) plan.primary_trafficker=$("#primary_trafficker").value.trim();
+  if($("#existing_io_id").value) plan.existing_io_id=$("#existing_io_id").value.trim();
   plan.content_type=$("#content_type").value;
   if($("#content_id").value) plan.content_id=$("#content_id").value;
   if($("#rec_show_id").value) plan.recommended_show_id=$("#rec_show_id").value;
@@ -686,6 +690,7 @@ function cellFor(col, plan){
     case "Language": return plan.language||"";
     case "Season or Messaging": return plan.season_or_messaging||"";
     case "Primary Trafficker": return plan.primary_trafficker||"";
+    case "Existing IO ID": return plan.existing_io_id||"";
     case "Genres": return list(plan.genres);
     case "Showlist": return list(plan.showlist);
     case "Pluto Categories": return list(pl.categories);
