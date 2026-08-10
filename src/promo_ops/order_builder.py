@@ -149,6 +149,61 @@ class OrderBuilder:
         ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
         return list(dict.fromkeys(ids))
 
+    def _is_pause_format(self, fmt: str) -> bool:
+        tmpl = self._templates.get("formats", {}).get(fmt, {})
+        return tmpl.get("format_code") == "PAUSE"
+
+    def _standard_segment(self, plan: SupportPlan, brand_cfg: dict) -> str:
+        """Which Standard priority table applies (config/standard.yaml segments)."""
+        if brand_cfg.get("kids"):
+            return "kids"
+        domestic = bool(self._regions.get("regions", {})
+                        .get(plan.region, {}).get("domestic"))
+        if domestic:
+            return "adults_domestic"
+        return "intl_pluto" if brand_cfg.get("pluto_brand") else "intl_paramount"
+
+    def _standard_entry(self, segment: str, is_pause: bool, duration) -> tuple:
+        """(priority, cap) for a Standard placement from config/standard.yaml."""
+        from .config import standard_config
+        cfg = standard_config().get("segments", {}).get(segment, {})
+        if is_pause:
+            p = cfg.get("pause", {})
+            return p.get("priority"), p.get("cap")
+        for row in cfg.get("video", []):
+            if duration in (row.get("durations") or []):
+                return row.get("priority"), row.get("cap")
+        d = cfg.get("video_default", {})
+        return d.get("priority"), d.get("cap")
+
+    def _standard_placements(self, plan, fmt, tmpl, brand_cfg, base, durations,
+                             name_token, tier_infix, pplus_id_token) -> list:
+        """Non-tiered Standard build: one platform-wide placement per duration (video) or
+        one pause placement — main SGs + self-exclusions only (no tier includes), at the
+        Standard priority/cap. base() carries geo, ad units, main SGs and self-exclusions."""
+        segment = self._standard_segment(plan, brand_cfg)
+        is_pause = self._is_pause_format(fmt)
+        out: list = []
+        for dur in durations:
+            pri, cap = self._standard_entry(segment, is_pause, dur)
+            name = self._tier_name(plan.promoted_title, plan.season_or_messaging, dur,
+                                   None, plan.region, token=name_token,
+                                   infix=tier_infix) + pplus_id_token
+            names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
+            p = base(
+                name,
+                TieredTargeting(format=fmt),      # no tiers -> platform (main-SG) set only
+                duration=dur,
+                season_or_messaging=plan.season_or_messaging,
+                targeting_ids={},                  # no tier includes (broad platform reach)
+                priority_level=pri,
+                frequency_cap=cap,
+                creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
+            )
+            p.ad_unit_names, p.ad_unit_ids = names, ids
+            out.append(p)
+        return out
+
     def _scene_lift_tiers(self, plan: SupportPlan) -> Optional[set]:
         """Allowed tier ids for a Scene Lift (None = normal, build all tiers)."""
         if not plan.scene_lift:
@@ -526,6 +581,13 @@ class OrderBuilder:
         # (series), Pluto lines keep channels/categories. Empty => keep everything.
         kinds = tmpl.get("targeting_kinds")
 
+        # Standard (non-tiered): ONE platform-wide placement per duration (video) or one
+        # pause placement — main SGs + self-exclusions only, at the Standard priority/cap.
+        if plan.standard:
+            return self._standard_placements(
+                plan, fmt, tmpl, brand_cfg, base, durations, name_token,
+                tier_infix, pplus_id_token)
+
         placements: list[Placement] = []
         # Scene Lift: build only the allowed tiers (AI -> [3]; standard -> [1,2,3]).
         allowed_tiers = self._scene_lift_tiers(plan)
@@ -606,5 +668,8 @@ class OrderBuilder:
             return order
 
         for fmt in plan.formats:
+            # Scene Lifts are VIDEO ONLY — skip pause (and any non-video) formats.
+            if plan.scene_lift and self._is_pause_format(fmt):
+                continue
             order.placements.extend(self._placements_for_format(plan, fmt))
         return order

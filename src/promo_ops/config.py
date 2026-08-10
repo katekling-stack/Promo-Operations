@@ -56,6 +56,10 @@ def scene_lifts_config() -> dict[str, Any]:
     return load_yaml("scene_lifts.yaml")
 
 
+def standard_config() -> dict[str, Any]:
+    return load_yaml("standard.yaml")
+
+
 def pluto_config() -> dict[str, Any]:
     return load_yaml("pluto.yaml")
 

@@ -15,6 +15,16 @@ import yaml
 
 from .models import Flight, SupportPlan
 
+_TRUE_TEXT = {"true", "yes", "y", "1", "x", "✓"}
+
+
+def _truthy(value: Any) -> bool:
+    """Robust bool for a flag that can arrive as a real bool (form/JSON), a Y/N sheet
+    cell, or a 'Yes'/'No' Salesforce picklist. 'No'/'' -> False (not Python-truthy)."""
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in _TRUE_TEXT
+
 
 def _flatten_pluto(raw: dict[str, Any]) -> tuple[list[str], list[str]]:
     pluto = raw.get("pluto") or {}
@@ -50,6 +60,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         season_or_messaging=raw.get("season_or_messaging"),
         primary_trafficker=raw.get("primary_trafficker"),
         scene_lift=(raw.get("scene_lift") or None),
+        standard=_truthy(raw.get("standard")),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),

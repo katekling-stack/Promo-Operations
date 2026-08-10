@@ -53,3 +53,12 @@ def test_uk_scene_lift_routes_to_uk_io():
     order = _order("standard", region="UK", campaign="Pluto TV - UK")
     assert order.scene_lift_io_id == "95035745"
     assert _tiers(order) == {1, 2, 3}
+
+
+def test_scene_lift_is_video_only_no_pause():
+    # Even if pause is on, a Scene Lift builds video only.
+    order = OrderBuilder().build(support_plan_from_dict(dict(
+        promoted_title="NCIS", region="USA", campaign={"name": "Pluto TV - USA"},
+        durations=[30], showlist=["FBI"], scene_lift="standard",
+        product_overrides={"pause_ads": True})))
+    assert all(p.format != "pause_ads" for p in order.placements)

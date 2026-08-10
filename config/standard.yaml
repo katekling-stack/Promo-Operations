@@ -1,0 +1,45 @@
+# Standard (NON-TIERED) promo priorities + frequency caps — from the Promo Settings
+# workbook ("Standard – Global (Adults/Kids)" and "Standard – International" tabs).
+#
+# When a plan is marked Standard, the builder makes ONE placement per duration (video)
+# and one pause placement, targeting the platform broadly (main site groups) with the
+# promoted title + audience excluded — instead of the tiered stack. Priorities are the
+# negative values from the sheet; caps are the same human strings used elsewhere.
+#
+# Segment selection: kids brand -> kids; else USA (domestic) -> adults_domestic;
+# else international -> intl_pluto (Pluto brands) / intl_paramount (Paramount O&O).
+
+segments:
+  adults_domestic:                       # 🔵 Standard – Global (Adults)
+    video:
+      - {durations: [30, 45, 60, 90], priority: -7, cap: "1 per 30 min"}
+      - {durations: [15],             priority: -8, cap: "1 per hr"}
+      - {durations: [5, 6, 9, 10, 20], priority: -9, cap: "1 per 2 hrs"}
+    video_default: {priority: -9, cap: "1 per 2 hrs"}
+    pause: {priority: -7, cap: "1 per 30 min"}    # O&O pause (Pluto On-Air VOD pause is -4, handled by that brand)
+
+  kids:                                  # 👶 Standard – Global (Kids)
+    video:
+      - {durations: [25, 30, 35, 40, 45, 50, 55, 60], priority: -1, cap: "1 per 15 min"}
+      - {durations: [15],           priority: -2, cap: "1 per 15 min"}
+      - {durations: [20, 10],       priority: -3, cap: "1 per 15 min"}
+      - {durations: [5, 6, 9],      priority: -4, cap: "1 per 30 min"}
+    video_default: {priority: -1, cap: "1 per 15 min"}
+    pause: {priority: -1, cap: "1 per 15 min"}
+
+  intl_pluto:                            # 🔵 Standard – International (Pluto TV)
+    video:
+      - {durations: [30, 45, 60, 90], priority: -6, cap: "1 per 30 min"}
+      - {durations: [15, 25],         priority: -7, cap: "1 per hr"}
+      - {durations: [20, 10, 17, 18], priority: -9, cap: "1 per hr"}
+      - {durations: [5, 6, 9],        priority: -10, cap: "1 per 2 hrs"}
+    video_default: {priority: -9, cap: "1 per hr"}
+    pause: {priority: -6, cap: "1 per 30 min"}
+
+  intl_paramount:                        # 🔵 Standard – International (Paramount O&O)
+    video:
+      - {durations: [30, 45, 60, 90], priority: -6, cap: "1 per 30 min"}
+      - {durations: [15],             priority: -7, cap: "1 per 30 min"}
+      - {durations: [20, 10],         priority: -9, cap: "1 per hr"}
+    video_default: {priority: -9, cap: "1 per hr"}
+    pause: {priority: -6, cap: "1 per 30 min"}

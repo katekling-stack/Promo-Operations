@@ -96,6 +96,10 @@ class SupportPlan:
     # Tiers 1-3. Placements are ADDED into the existing "Scene Lifts - {Region}" IO under
     # the associated Pluto campaign (see config/scene_lifts.yaml). Blank = normal promo.
     scene_lift: Optional[str] = None
+    # Standard (NON-TIERED): build one platform-wide placement per duration (+ pause)
+    # using config/standard.yaml priorities/caps instead of the tier stack. Still excludes
+    # the promoted title + audience. Applies to video AND pause. Blank/False = tiered.
+    standard: bool = False
     # Creative durations (seconds) that each video tier is split into (one placement
     # per tier x duration). Defaults applied if empty.
     durations: list[int] = field(default_factory=list)

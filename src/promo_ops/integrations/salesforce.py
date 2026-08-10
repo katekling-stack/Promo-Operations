@@ -55,6 +55,7 @@ CASE_FIELD_MAP: dict[str, Any] = {
     "Rating_Restrictions__c": "rating_restrictions",  # list: VG values (AU Network 10)
     "Takeover__c": "takeover",                    # hpto / first_impression / ...
     "Scene_Lift__c": "scene_lift",                # ai | standard (Pluto UK/CA/USA)
+    "Standard_Non_Tiered__c": "standard",         # Yes/No -> build non-tiered Standard
     "Exclude_Series__c": "exclude_series",        # list: extra series to exclude everywhere
     "Exclude_Channels__c": "exclude_channels",    # list: Pluto channels to exclude everywhere
     "Exclude_Videos__c": "exclude_videos",        # list: movie Video (asset) IDs to exclude everywhere
@@ -131,6 +132,10 @@ CASE_FIELD_SPEC: list[dict[str, Any]] = [
          picklist="ai; standard", required="No",
          help="Pluto UK/CA/USA only. 'ai' = Tier 3 only; 'standard' (60s) = Tiers 1-3. "
               "Placements are added into the existing Scene Lifts - {Region} IO."),
+    dict(api="Standard_Non_Tiered__c", section="Optional", label="Standard (Non-Tiered)",
+         type="Picklist", picklist="Yes; No", required="No",
+         help="Yes = build one platform-wide placement per duration (+ pause) at the "
+              "Standard priorities instead of the tier stack; still excludes title + audience."),
     dict(api="Exclude_Series__c", section="Optional", label="Series to Exclude",
          type="Lookup / Multi-Select", picklist="FreeWheel Video Series", required="No",
          help="Extra series to keep the promo OUT of, on every placement (the promoted "

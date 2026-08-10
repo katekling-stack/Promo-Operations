@@ -334,6 +334,10 @@ datalist{display:none}
         <option value="standard">60s / Standard Scene Lift (Tiers 1–3)</option>
       </select>
       <div class="hint" id="sceneLiftHint">Pluto TV UK / CA / USA only. Placements are added into the existing <b>Scene Lifts – {Region}</b> IO under the Pluto campaign; the promoted title + its audience are still excluded.</div></div>
+    <div class="field"><label style="display:flex;align-items:center;gap:9px;cursor:pointer">
+        <input type="checkbox" id="standard" style="width:18px;height:18px">
+        <span><b>Standard (non-tiered)</b> — don't tier this</span></label>
+      <div class="hint">Builds <b>one platform-wide placement per duration</b> (video) + a pause placement at the Standard priorities, instead of the tier stack. Still excludes the promoted title + audience.</div></div>
     <div class="field hidden" id="vdTargetWrap"><label>Video Domination targeting (Pluto categories)</label>
       <div class="chips" data-chips="vd_targeting" data-suggest="categories"><input type="text" placeholder="Comedy, Crime…  ↵"></div></div>
     <div class="field hidden" id="ratingWrap"><label>Rating restrictions (AU Network 10)</label>
@@ -622,6 +626,7 @@ function buildPlan(){
   if(Object.keys(po).length) plan.product_overrides=po;
   if(c&&c.kids&&state.kids.size) plan.kids_audience=[...state.kids];
   if($("#scene_lift").value) plan.scene_lift=$("#scene_lift").value;
+  if($("#standard").checked) plan.standard=true;
   if($("#video_domination").value) plan.video_domination=$("#video_domination").value;
   if(L.vd_targeting.length) plan.video_domination_targeting=L.vd_targeting;
   if($("#takeover").value) plan.takeover=$("#takeover").value;
@@ -695,6 +700,7 @@ function cellFor(col, plan){
     case "Video Domination Targeting": return list(plan.video_domination_targeting);
     case "Takeover": return plan.takeover||"";
     case "Scene Lift": return plan.scene_lift||"";
+    case "Standard": return plan.standard?"Y":"";
     case "Rating Restrictions": return list(plan.rating_restrictions);
     // "Include X" product toggles -> Y / "" (only when explicitly set on/off).
     case "Include Remnant Video": return tog("remnant_video");
