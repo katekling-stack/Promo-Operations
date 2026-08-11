@@ -149,6 +149,12 @@ class OrderBuilder:
         ids = [s.get("segment_id") for s in m.to_dict()["segments"] if s.get("segment_id")]
         return list(dict.fromkeys(ids))
 
+    def _is_pplus(self, plan: SupportPlan) -> bool:
+        """Whether this is a Paramount+ brand (drives Recommended Show eligibility)."""
+        from .brand_sync import brand_signature
+        sig = brand_signature((plan.campaign or {}).get("name", "") or "")
+        return bool(sig and sig[0] == "paramount_plus") or str(plan.brand or "").startswith("paramount_plus")
+
     def _is_pause_format(self, fmt: str) -> bool:
         tmpl = self._templates.get("formats", {}).get(fmt, {})
         return tmpl.get("format_code") == "PAUSE"
@@ -477,6 +483,7 @@ class OrderBuilder:
                 region_is_domestic=bool(self._regions.get("regions", {})
                                         .get(plan.region, {}).get("domestic", False)),
                 is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
+                is_pplus_brand=self._is_pplus(plan),
                 # Movies can't carry a Recommended Show argument (Show-ID-only feature);
                 # their id rides only in the placement name ([MovieID:…]).
                 recommended_show_enabled=(plan.content_type or "show").lower() != "movie",
