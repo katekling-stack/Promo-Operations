@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paramount Promo — Creative Trafficking</title>
+<style>
+:root{--navy:#0B3D91;--blue:#1F6FEB;--bg:#eef2f9;--card:#fff;--ink:#1a2540;--muted:#6b7690;
+ --line:#e2e8f4;--ok:#1a9d63;--no:#d0453b;--chip:#e8eefb;--focus:rgba(31,111,235,.25);
+ --mkt:#0B3D91;--promo:#6b7690;}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#e9eef8,#eef2f9);color:var(--ink);
+ font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px 140px}
+header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;
+ padding:16px 18px;box-shadow:0 4px 18px rgba(11,61,145,.28)}
+.hwrap{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
+header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+ padding:20px 22px;margin:18px 0;box-shadow:0 6px 22px rgba(20,40,90,.06)}
+.card h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);
+ margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 16px}
+.field{margin:14px 0}
+.field label{display:block;font-weight:600;font-size:13.5px;margin:0 0 6px}
+.field label .req{color:var(--no);margin-left:3px}
+.hint{color:var(--muted);font-size:12px;margin-top:5px}
+input[type=text],input[type=date],input[type=url],select{width:100%;padding:10px 12px;font-size:14px;
+ border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
+ transition:border-color .15s, box-shadow .15s;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7690' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+ background-repeat:no-repeat;background-position:right 11px center;padding-right:32px;cursor:pointer}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--focus)}
+input:read-only,input.promo-ro{background:#f3f5fa;color:var(--muted);cursor:not-allowed}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.hidden{display:none!important}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+ border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.badge.mkt{background:#e8eefb;color:var(--mkt)}
+.badge.promo{background:#eef1f6;color:var(--promo)}
+.tabbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.tabbtn{border:1.5px solid var(--line);background:#fff;color:var(--muted);border-radius:10px;
+ padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.tabbtn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tabbtn .count{opacity:.75;font-weight:600}
+.line{border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0;position:relative;background:#fbfcfe}
+.line .lhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.line .lhead b{font-size:13px;color:var(--muted)}
+.rmBtn{border:0;background:#f3d9d7;color:var(--no);width:26px;height:26px;border-radius:50%;
+ cursor:pointer;font-size:14px;line-height:1;display:grid;place-items:center}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:760px){.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid3{grid-template-columns:1fr}}
+.netnew{border:1.5px dashed #c9d6f3;border-radius:12px;padding:10px 12px;margin-top:10px;background:#f6f9ff}
+.addBtn{border:1.5px dashed var(--blue);background:#fff;color:var(--blue);border-radius:12px;
+ padding:11px 16px;font-size:13.5px;font-weight:700;cursor:pointer;width:100%;margin-top:6px}
+.empty{color:var(--muted);font-size:13px;padding:10px 2px}
+.bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+ box-shadow:0 -6px 22px rgba(20,40,90,.08);padding:14px 18px;z-index:30}
+.barw{max-width:980px;margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px}
+.status{flex:1 1 200px;min-width:120px;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn{border:0;border-radius:11px;padding:12px 18px;font-size:14.5px;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.ghost{background:#eef2f9;color:var(--navy)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+</style></head>
+<body>
+<header><div class="hwrap">
+  <div><h1>Creative Trafficking</h1><p>Paramount Promo — one intake format for every team's creative delivery</p></div>
+</div></header>
+<div class="wrap">
+
+  <div class="card">
+    <h2>Case</h2><p class="sub">These carry through onto every creative line below.</p>
+    <div class="row">
+      <div class="field"><label>Salesforce Case #</label>
+        <input type="text" id="sf_case" placeholder="e.g. 00123456"></div>
+      <div class="field"><label>Creative / Marketing Manager</label>
+        <input type="text" id="creative_manager" placeholder="submitter's name"></div>
+    </div>
+    <div class="field"><label>Campaign Name</label>
+      <select id="campaign"><option value="">Select campaign…</option></select>
+      <div class="hint">Mirrors the Salesforce Campaign this creative is for.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Creative lines</h2>
+    <p class="sub">
+      <span class="badge mkt">Marketing</span> fields are filled by whoever's submitting the creative.
+      <span class="badge promo">Promo</span> fields are filled by Promo Ops after intake — left read-only here.
+      Every line also gets a <b>Net New Creative</b> flag so Promo Ops knows what actually needs to be
+      trafficked fresh vs. re-pointed at an existing flight's asset.
+    </p>
+    <div class="tabbar" id="tabbar"></div>
+    <div id="tabbody"></div>
+  </div>
+</div>
+
+<div class="bar"><div class="barw">
+  <span class="status" id="status">Add at least one creative line to continue.</span>
+  <button class="btn ghost" id="copyBtn">Copy JSON</button>
+  <button class="btn primary" id="dlBtn" disabled>Download plan file</button>
+</div></div>
+
+<script>
+const APP = {"campaigns": [{"name": "BET Media Group - USA", "region": "USA"}, {"name": "CBS Network - USA", "region": "USA"}, {"name": "CBS News - Spanish - USA", "region": "USA"}, {"name": "CBS News - USA", "region": "USA"}, {"name": "CBS Sports - Spanish - USA", "region": "USA"}, {"name": "CBS Sports - USA", "region": "USA"}, {"name": "MTVE - USA", "region": "USA"}, {"name": "Nick Jr. - Kids - USA", "region": "USA"}, {"name": "Nickelodeon - Kids - USA", "region": "USA"}, {"name": "Nickelodeon - USA", "region": "USA"}, {"name": "Paramount + - Kids - USA", "region": "USA"}, {"name": "Paramount + - USA", "region": "USA"}, {"name": "Paramount Pictures - Kids - USA", "region": "USA"}, {"name": "Paramount Pictures - USA", "region": "USA"}, {"name": "Pluto TV (Cross-Company) - USA", "region": "USA"}, {"name": "Pluto TV - En Espanol - USA", "region": "USA"}, {"name": "Pluto TV - Kids - En Espanol - USA", "region": "USA"}, {"name": "Pluto TV - Kids - USA", "region": "USA"}, {"name": "Pluto TV - USA", "region": "USA"}, {"name": "MTVE - CA", "region": "CA"}, {"name": "Nick - Kids - English - CA", "region": "CA"}, {"name": "Nick Jr. - Kids - CA", "region": "CA"}, {"name": "Paramount + - English - CA", "region": "CA"}, {"name": "Paramount + - Kids - English - CA", "region": "CA"}, {"name": "Paramount Pictures - English - CA", "region": "CA"}, {"name": "Paramount Pictures - French - CA", "region": "CA"}, {"name": "Paramount Pictures - Kids - English - CA", "region": "CA"}, {"name": "Paramount Pictures - Kids - French - CA", "region": "CA"}, {"name": "Pluto TV - English - CA", "region": "CA"}, {"name": "Pluto TV - French - CA", "region": "CA"}, {"name": "Pluto TV - Kids - English - CA", "region": "CA"}, {"name": "Pluto TV - Kids - French - CA", "region": "CA"}, {"name": "MTVE - UK", "region": "UK"}, {"name": "Nick - Kids - UK", "region": "UK"}, {"name": "Nick - UK", "region": "UK"}, {"name": "Nick Jr. - Kids - UK", "region": "UK"}, {"name": "Nick Jr. - UK", "region": "UK"}, {"name": "Paramount + - Kids - UK", "region": "UK"}, {"name": "Paramount + - UK", "region": "UK"}, {"name": "Paramount Pictures - Kids - UK", "region": "UK"}, {"name": "Paramount Pictures - UK", "region": "UK"}, {"name": "Pluto TV - Kids - UK", "region": "UK"}, {"name": "Pluto TV - UK", "region": "UK"}, {"name": "Paramount + - IE", "region": "IE"}, {"name": "Paramount + - Kids - IE", "region": "IE"}, {"name": "Pluto TV - IE", "region": "IE"}, {"name": "Nick - AU", "region": "AU"}, {"name": "Nick - Kids - AU", "region": "AU"}, {"name": "Nick Jr. - Kids - AU", "region": "AU"}, {"name": "Paramount + - AU", "region": "AU"}, {"name": "Paramount + - Kids - AU", "region": "AU"}, {"name": "Paramount Pictures - AU", "region": "AU"}, {"name": "Paramount Pictures - Kids - AU", "region": "AU"}, {"name": "MTVE - Kids - LATAM", "region": "LATAM"}, {"name": "MTVE - LATAM", "region": "LATAM"}, {"name": "Nick - Kids - LATAM", "region": "LATAM"}, {"name": "Nick - LATAM", "region": "LATAM"}, {"name": "Nick Jr. - Kids - LATAM", "region": "LATAM"}, {"name": "Paramount + - Kids - LATAM", "region": "LATAM"}, {"name": "Paramount + - LATAM", "region": "LATAM"}, {"name": "Paramount Pictures - Kids - LATAM", "region": "LATAM"}, {"name": "Paramount Pictures - LATAM", "region": "LATAM"}, {"name": "Pluto TV - Kids - LATAM", "region": "LATAM"}, {"name": "Pluto TV - LATAM", "region": "LATAM"}, {"name": "MTVE - BR", "region": "BR"}, {"name": "Nick - BR", "region": "BR"}, {"name": "Nick - Kids - BR", "region": "BR"}, {"name": "Nick Jr - Kids - BR", "region": "BR"}, {"name": "Paramount + - BR", "region": "BR"}, {"name": "Paramount + - Kids - BR", "region": "BR"}, {"name": "Paramount Consumer Products - Kids - BR", "region": "BR"}, {"name": "Paramount Pictures - BR", "region": "BR"}, {"name": "Paramount Pictures - Kids - BR", "region": "BR"}, {"name": "Pluto TV - BR", "region": "BR"}, {"name": "Pluto TV - Kids - BR", "region": "BR"}, {"name": "MTVE - FR", "region": "FR"}, {"name": "Nick - FR", "region": "FR"}, {"name": "Nick - Kids - FR", "region": "FR"}, {"name": "Nick Jr. - Kids - FR", "region": "FR"}, {"name": "Paramount + - FR", "region": "FR"}, {"name": "Paramount + - Kids - FR", "region": "FR"}, {"name": "Paramount Pictures - FR", "region": "FR"}, {"name": "Paramount Pictures - Kids - FR", "region": "FR"}, {"name": "Pluto TV - FR", "region": "FR"}, {"name": "Pluto TV - Kids - FR", "region": "FR"}, {"name": "MTVE - IT", "region": "IT"}, {"name": "Nick Jr. - Kids - IT", "region": "IT"}, {"name": "Nickelodeon - Kids - IT", "region": "IT"}, {"name": "Paramount + - IT", "region": "IT"}, {"name": "Paramount + - Kids  - IT", "region": "IT"}, {"name": "Paramount Pictures - IT", "region": "IT"}, {"name": "Paramount Pictures - Kids - IT", "region": "IT"}, {"name": "Pluto TV - IT", "region": "IT"}, {"name": "Pluto TV - Kids - IT", "region": "IT"}, {"name": "MTVE - GSA", "region": "GSA"}, {"name": "MTVE - Kids - GSA", "region": "GSA"}, {"name": "Nick - GSA", "region": "GSA"}, {"name": "Nick - Kids - GSA", "region": "GSA"}, {"name": "Nick Jr - Kids - GSA", "region": "GSA"}, {"name": "Paramount + - GSA", "region": "GSA"}, {"name": "Paramount + - Kids - GSA", "region": "GSA"}, {"name": "Paramount Consumer Products - GSA", "region": "GSA"}, {"name": "Paramount Consumer Products - Kids - GSA", "region": "GSA"}, {"name": "Paramount Pictures - GSA", "region": "GSA"}, {"name": "Paramount Pictures - Kids - GSA", "region": "GSA"}, {"name": "Pluto TV - GSA", "region": "GSA"}, {"name": "Pluto TV - Kids - GSA", "region": "GSA"}, {"name": "MTVE - FI", "region": "FI"}, {"name": "Nick - Kids - FI", "region": "FI"}, {"name": "Nick Jr. - Kids - FI", "region": "FI"}, {"name": "Paramount Pictures - FI", "region": "FI"}, {"name": "Paramount Pictures - Kids - FI", "region": "FI"}, {"name": "Pluto TV - FI", "region": "FI"}, {"name": "Pluto TV - Kids - FI", "region": "FI"}, {"name": "MTVE - DK", "region": "DK"}, {"name": "Nick - DK", "region": "DK"}, {"name": "Nick - Kids - DK", "region": "DK"}, {"name": "Nick Jr - Kids - DK", "region": "DK"}, {"name": "Paramount + - Kids - DK", "region": "DK"}, {"name": "Paramount Pictures - DK", "region": "DK"}, {"name": "Paramount Pictures - Kids - DK", "region": "DK"}, {"name": "Pluto TV - DK", "region": "DK"}, {"name": "Pluto TV - Kids - DK", "region": "DK"}, {"name": "MTVE - NO", "region": "NO"}, {"name": "Nick - Kids - NO", "region": "NO"}, {"name": "Nick Jr. - Kids - NO", "region": "NO"}, {"name": "Paramount Pictures - Kids - NO", "region": "NO"}, {"name": "Paramount Pictures - NO", "region": "NO"}, {"name": "Pluto TV - Kids - NO", "region": "NO"}, {"name": "Pluto TV - NO", "region": "NO"}, {"name": "MTVE - SE", "region": "SE"}, {"name": "Nick - Kids - SE", "region": "SE"}, {"name": "Nick - SE", "region": "SE"}, {"name": "Nick Jr - Kids - SE", "region": "SE"}, {"name": "Paramount Pictures - Kids - SE", "region": "SE"}, {"name": "Paramount Pictures - SE", "region": "SE"}, {"name": "Pluto TV - Kids - SE", "region": "SE"}, {"name": "Pluto TV - SE", "region": "SE"}, {"name": "MTVE - ES", "region": "ES"}, {"name": "MTVE - Kids - ES", "region": "ES"}, {"name": "Nick - ES", "region": "ES"}, {"name": "Nick - Kids - ES", "region": "ES"}, {"name": "Nick Jr. - ES", "region": "ES"}, {"name": "Nick Jr. - Kids - ES", "region": "ES"}, {"name": "Paramount Pictures - ES", "region": "ES"}, {"name": "Paramount Pictures - Kids - ES", "region": "ES"}, {"name": "Pluto TV - ES", "region": "ES"}, {"name": "Pluto TV - Kids - ES", "region": "ES"}], "tabs": [{"key": "video", "label": "Video", "fields": [{"key": "messaging", "label": "Messaging / Beat / Phase", "owner": "marketing", "type": "text"}, {"key": "flight_start", "label": "Flight Start", "owner": "marketing", "type": "date"}, {"key": "flight_end", "label": "Flight End", "owner": "marketing", "type": "date"}, {"key": "freewheel_order_link", "label": "FreeWheel Order Link", "owner": "promo", "type": "text"}, {"key": "duration", "label": "Duration (seconds)", "owner": "marketing", "type": "text", "placeholder": "e.g. 30"}, {"key": "creative_link", "label": "Creative Files - Links", "owner": "marketing", "type": "url"}, {"key": "exported_creative_name", "label": "Exported - Creative Name", "owner": "promo", "type": "text"}, {"key": "click_through_url", "label": "Click-Through URL", "owner": "marketing", "type": "url"}, {"key": "tracking_pixel", "label": "1x1 / Tracking Pixel", "owner": "promo", "type": "text"}, {"key": "targeting_requests", "label": "Targeting Requests", "owner": "marketing", "type": "text"}, {"key": "premium_preroll", "label": "Premium Pre-Roll", "owner": "promo", "type": "select", "options": ["", "CBS News", "Soccer Live", "Sports HQ", "MTVE TVE"]}, {"key": "essential_bumper", "label": "Essential Bumper", "owner": "promo", "type": "select", "options": ["", "Yes", "No"]}, {"key": "dedicated_promos", "label": "Dedicated Promos", "owner": "promo", "type": "text"}, {"key": "pitch_for_stb", "label": "Pitch for STB", "owner": "promo", "type": "text"}]}, {"key": "pause_ads", "label": "Pause Ads", "fields": [{"key": "messaging", "label": "Messaging / Beat / Phase", "owner": "marketing", "type": "text"}, {"key": "flight_start", "label": "Flight Start", "owner": "marketing", "type": "date"}, {"key": "flight_end", "label": "Flight End", "owner": "marketing", "type": "date"}, {"key": "freewheel_order_link", "label": "FreeWheel Order Link", "owner": "promo", "type": "text"}, {"key": "platform", "label": "Platform", "owner": "marketing", "type": "select", "options": ["", "CTV", "Desktop"]}, {"key": "creative_link", "label": "Creative Files - Links", "owner": "marketing", "type": "url"}, {"key": "creative_name", "label": "Creative Name", "owner": "marketing", "type": "text"}, {"key": "click_through_url", "label": "Click-Through URL", "owner": "marketing", "type": "url"}, {"key": "tracking_pixel", "label": "1x1 / Tracking Pixel", "owner": "promo", "type": "text"}, {"key": "targeting_requests", "label": "Targeting Requests", "owner": "marketing", "type": "text"}]}, {"key": "display", "label": "Display", "fields": [{"key": "messaging", "label": "Messaging / Beat / Phase", "owner": "marketing", "type": "text"}, {"key": "flight_start", "label": "Flight Start", "owner": "marketing", "type": "date"}, {"key": "flight_end", "label": "Flight End", "owner": "marketing", "type": "date"}, {"key": "platform", "label": "Platform", "owner": "marketing", "type": "select", "options": ["", "Standard Banners", "Apple News"]}, {"key": "gam_line_items", "label": "GAM Line Items", "owner": "promo", "type": "text"}, {"key": "creative_link", "label": "Creative Files - Links", "owner": "marketing", "type": "url"}, {"key": "creative_name", "label": "Creative Name", "owner": "marketing", "type": "text"}, {"key": "click_through_url", "label": "Click-Through URL", "owner": "marketing", "type": "url"}, {"key": "tracking_pixel", "label": "1x1 / Tracking Pixel", "owner": "promo", "type": "text"}, {"key": "targeting_requests", "label": "Targeting Requests", "owner": "marketing", "type": "text"}]}, {"key": "audio", "label": "Audio", "fields": [{"key": "messaging", "label": "Messaging / Beat / Phase", "owner": "marketing", "type": "text"}, {"key": "flight_start", "label": "Flight Start", "owner": "marketing", "type": "date"}, {"key": "flight_end", "label": "Flight End", "owner": "marketing", "type": "date"}, {"key": "duration", "label": "Duration (seconds)", "owner": "marketing", "type": "text", "placeholder": "e.g. 30"}, {"key": "creative_link", "label": "Creative Files - Links", "owner": "marketing", "type": "url"}, {"key": "megaphone_line_item", "label": "Megaphone Line Item Link(s)", "owner": "promo", "type": "text"}, {"key": "podcast_targets", "label": "Podcast Targets", "owner": "marketing", "type": "select", "options": ["", "MTVE", "CBS", "Sports", "News"]}]}, {"key": "hpto", "label": "HPTO", "fields": [{"key": "date_booked", "label": "Date Booked", "owner": "marketing", "type": "date"}, {"key": "creative_banners", "label": "Creative Files - Banners", "owner": "marketing", "type": "url"}, {"key": "creative_skybox_cid", "label": "Creative Files - Skybox CID", "owner": "marketing", "type": "text"}, {"key": "gam_order_name", "label": "GAM Order Name", "owner": "promo", "type": "text"}, {"key": "click_through_url", "label": "Click-Through URL", "owner": "marketing", "type": "url"}, {"key": "tracking_pixel", "label": "1x1 / Tracking Pixel", "owner": "promo", "type": "text"}]}, {"key": "video_domination", "label": "Video Domination", "fields": [{"key": "flight_start", "label": "Flight Start", "owner": "marketing", "type": "date"}, {"key": "flight_end", "label": "Flight End", "owner": "marketing", "type": "date"}, {"key": "freewheel_order_name", "label": "FreeWheel Order Name", "owner": "promo", "type": "text"}, {"key": "creative_link", "label": "Creative Files - Links", "owner": "marketing", "type": "url"}, {"key": "creative_name", "label": "Creative Name", "owner": "marketing", "type": "text"}, {"key": "click_through_url", "label": "Click-Through URL", "owner": "marketing", "type": "url"}, {"key": "targeting", "label": "Targeting", "owner": "marketing", "type": "text"}, {"key": "tracking_pixel", "label": "1x1 / Tracking Pixel", "owner": "promo", "type": "text"}]}], "netNewOptions": ["New", "Reused – Prior Flight", "Refresh of Existing"]};
+const $ = s => document.querySelector(s);
+const state = {tab: APP.tabs[0].key, lines: {}};
+APP.tabs.forEach(t => state.lines[t.key] = []);
+
+$("#campaign").innerHTML += APP.campaigns.map(c=>`<option value="${c.name}">${c.name}</option>`).join("");
+
+function tabOf(key){ return APP.tabs.find(t=>t.key===key); }
+
+function renderTabbar(){
+  $("#tabbar").innerHTML = APP.tabs.map(t=>{
+    const n = state.lines[t.key].length;
+    return `<button type="button" class="tabbtn ${t.key===state.tab?'on':''}" data-t="${t.key}">${t.label} <span class="count">(${n})</span></button>`;
+  }).join("");
+  $("#tabbar").querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>{
+    state.tab = b.dataset.t; render();
+  }));
+}
+
+function fieldInput(tabKey, idx, f, value){
+  const id = `f_${tabKey}_${idx}_${f.key}`;
+  const ro = f.owner === "promo";
+  const badge = `<span class="badge ${f.owner==='marketing'?'mkt':'promo'}">${f.owner==='marketing'?'Marketing':'Promo'}</span>`;
+  let input;
+  if(f.type === "select"){
+    input = `<select id="${id}" ${ro?"disabled":""} data-k="${f.key}">` +
+      (f.options||[]).map(o=>`<option value="${o}" ${o===value?"selected":""}>${o||"—"}</option>`).join("") + `</select>`;
+  } else {
+    const t = f.type === "date" ? "date" : (f.type === "url" ? "url" : "text");
+    input = `<input type="${t}" id="${id}" data-k="${f.key}" value="${(value||"").replace(/"/g,'&quot;')}" ` +
+      `${ro?'class="promo-ro" readonly placeholder="Filled by Promo Ops"':(f.placeholder?`placeholder="${f.placeholder}"`:"")}>`;
+  }
+  return `<div class="field"><label>${f.label}${badge}</label>${input}</div>`;
+}
+
+function renderLine(tabKey, idx, line){
+  const t = tabOf(tabKey);
+  const showRef = line.net_new && line.net_new !== "New";
+  return `<div class="line" data-idx="${idx}">
+    <div class="lhead"><b>${t.label} line ${idx+1}</b>
+      <button type="button" class="rmBtn" data-rm="${idx}" title="Remove line">×</button></div>
+    <div class="grid3">${t.fields.map(f=>fieldInput(tabKey, idx, f, line[f.key])).join("")}</div>
+    <div class="netnew">
+      <div class="field"><label>Net New Creative<span class="badge mkt">Marketing</span></label>
+        <select data-k="net_new">${APP.netNewOptions.map(o=>`<option ${o===(line.net_new||"New")?"selected":""}>${o}</option>`).join("")}</select>
+        <div class="hint">Is this a brand-new asset, or reused/refreshed from a prior flight?</div></div>
+      <div class="field ${showRef?"":"hidden"}" data-priorref>
+        <label>Prior Creative Reference</label>
+        <input type="text" data-k="prior_creative_ref" value="${(line.prior_creative_ref||"").replace(/"/g,'&quot;')}"
+          placeholder="prior Creative Name, Click-Through URL, or Case #">
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTabbody(){
+  const t = tabOf(state.tab);
+  const lines = state.lines[t.key];
+  $("#tabbody").innerHTML =
+    (lines.length ? lines.map((l,i)=>renderLine(t.key,i,l)).join("")
+                  : `<div class="empty">No ${t.label} lines yet — add one below.</div>`) +
+    `<button type="button" class="addBtn" id="addLineBtn">+ Add ${t.label} line</button>`;
+  $("#addLineBtn").addEventListener("click", ()=>{
+    state.lines[t.key].push({net_new: "New"});
+    render();
+  });
+  $("#tabbody").querySelectorAll(".line").forEach(el=>{
+    const idx = Number(el.dataset.idx);
+    el.querySelectorAll("[data-rm]").forEach(b=>b.addEventListener("click",()=>{
+      state.lines[t.key].splice(idx,1); render();
+    }));
+    el.querySelectorAll("[data-k]").forEach(inp=>{
+      inp.addEventListener("input", ()=>{
+        state.lines[t.key][idx][inp.dataset.k] = inp.value;
+        if(inp.dataset.k === "net_new"){
+          const ref = el.querySelector("[data-priorref]");
+          if(ref) ref.classList.toggle("hidden", inp.value === "New");
+        }
+        validate();
+      });
+      inp.addEventListener("change", ()=>{
+        state.lines[t.key][idx][inp.dataset.k] = inp.value;
+      });
+    });
+  });
+}
+
+function render(){ renderTabbar(); renderTabbody(); validate(); }
+
+function totalLines(){ return APP.tabs.reduce((n,t)=>n+state.lines[t.key].length, 0); }
+
+function validate(){
+  const ok = totalLines() > 0;
+  $("#dlBtn").disabled = !ok;
+  $("#status").textContent = ok
+    ? `${totalLines()} creative line(s) ready — Download plan file to attach to the Case.`
+    : "Add at least one creative line to continue.";
+  return ok;
+}
+
+function buildPlan(){
+  const plan = {
+    salesforce_case: $("#sf_case").value.trim(),
+    campaign_name: $("#campaign").value,
+    creative_manager: $("#creative_manager").value.trim(),
+  };
+  APP.tabs.forEach(t=>{ plan[t.key] = state.lines[t.key]; });
+  return plan;
+}
+function fname(){
+  const p = buildPlan();
+  const base = p.salesforce_case || p.campaign_name || "creative-trafficking";
+  return base.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".creative.json";
+}
+$("#dlBtn").addEventListener("click", ()=>{
+  if(!validate()) return;
+  const blob = new Blob([JSON.stringify(buildPlan(),null,2)],{type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fname(); a.click();
+});
+$("#copyBtn").addEventListener("click", async ()=>{
+  await navigator.clipboard.writeText(JSON.stringify(buildPlan(),null,2));
+  $("#copyBtn").textContent = "Copied ✓"; setTimeout(()=>$("#copyBtn").textContent="Copy JSON",1400);
+});
+
+render();
+</script>
+</body></html>
