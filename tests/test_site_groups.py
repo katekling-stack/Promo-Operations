@@ -47,7 +47,9 @@ def test_frisco_king_pluto_fully_resolves_into_placement_body():
     # "Channels" (Pluto channel SGs).
     sets = {s["set_name"]: s for s in body["relationship_targeting"]["set"]}
     channels = sets["Channels"]["content_targeting"]["network_items"]["include"]["site_group"]
-    assert len(channels) > 50
+    # EXACT channel matching (no substring bloat): resolves the selected channels' real
+    # SGs (incl. any same-name versions), not every SG that merely contains the name.
+    assert len(channels) >= 20
     # Affinity Shows = AND of {series} and {main SGs}
     affinity_inc = sets["Affinity Shows"]["content_targeting"]["network_items"]["include"]
     assert affinity_inc["relation_between_sets"] == ["AND"]   # N-1 relations for N sets
