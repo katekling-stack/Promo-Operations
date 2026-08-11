@@ -152,7 +152,11 @@ class TargetingEngine:
             for v in dim.values:
                 full = pattern.format(region_code=code, name=v)     # canonical SG name
                 prefix, _, suffix = pattern.format(region_code=code, name="\x00").partition("\x00")
-                m = self.site_group_resolver.select_all(v, prefix=prefix, suffix=suffix)
+                # EXACT NAME match — selecting "Top Gear" targets ONLY the "Top Gear"
+                # channel(s), not "Top Gear Challenge". A channel can have multiple real
+                # versions under the same name (e.g. two "Gunsmoke" SGs) — include ALL of
+                # them; we only drop the substring bloat, never same-name versions.
+                m = self.site_group_resolver.select_exact(v, prefix=prefix, suffix=suffix)
                 if m.matched:
                     for sg in m.site_groups:
                         resolved.append({"segment_name": sg["name"], "id": sg["id"],
