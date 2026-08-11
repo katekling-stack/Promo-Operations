@@ -1683,9 +1683,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1706,9 +1703,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1729,9 +1723,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1752,9 +1743,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1775,9 +1763,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1798,9 +1783,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1821,9 +1803,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1844,9 +1823,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1867,9 +1843,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1890,9 +1863,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1913,9 +1883,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1936,9 +1903,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1959,9 +1923,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -1982,9 +1943,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
@@ -2005,9 +1963,6 @@ brands:
     - '932591'
     include_video_groups:
     - '73408899'
-    extra_exclude_video_groups:
-    - '73408858'
-    - '73408859'
     ad_unit_groups:
       remnant_video: viacom_promo
       mtve_after_midroll_bumper: cbs_after_midroll_bumper
