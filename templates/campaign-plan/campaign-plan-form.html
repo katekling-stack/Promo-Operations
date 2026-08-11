@@ -398,7 +398,11 @@ document.querySelectorAll(".chips").forEach(box=>{
     if(q.length<2){ closeMenu(); return; }
     const list=sourceList(src)||[];
     if(!list.length){ menu.innerHTML='<div class="rnote">Pick a Region first</div>'; menu.classList.remove("hidden"); return; }
-    const raw=[]; for(let i=0;i<list.length && raw.length<250;i++){ if(list[i].toLowerCase().includes(q)) raw.push(list[i]); }
+    // Hide already-selected values so they can't be picked twice.
+    const chosen=new Set(state.lists[key].map(x=>x.toLowerCase()));
+    const raw=[]; for(let i=0;i<list.length && raw.length<250;i++){
+      if(chosen.has(list[i].toLowerCase())) continue;
+      if(list[i].toLowerCase().includes(q)) raw.push(list[i]); }
     // Rank: whole-word / start-of-name matches above mid-word substrings ("NCIS"
     // beats "Francisco"), then shorter names first.
     const rank=s=>{ s=s.toLowerCase(); return s.startsWith(q)?0 : (s.includes(" "+q)||s.includes("-"+q)||s.includes(":"+q))?1 : 2; };
