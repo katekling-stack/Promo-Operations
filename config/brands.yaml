@@ -1562,78 +1562,6 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: ''
-  cbs_news_au:
-    display_name: CBS News (AU)
-    advertiser_name_contains:
-    - VCBS
-    - CBS
-    template_campaign_id: '73870459'
-    campaign_name: CBS News - AU
-    ad_unit_groups:
-      remnant_video: cbs_house_mid_post
-    extra_exclude_site_groups:
-    - '1037683'
-    - '1038397'
-    - '1038398'
-    - '1038399'
-    - '1038400'
-    formats:
-    - remnant_video
-    _cloned_from: cbs_news
-  cbs_news_es:
-    display_name: CBS News (ES)
-    advertiser_name_contains:
-    - VCBS
-    - CBS
-    template_campaign_id: '73870650'
-    campaign_name: CBS News - ES
-    ad_unit_groups:
-      remnant_video: cbs_house_mid_post
-    extra_exclude_site_groups:
-    - '1037683'
-    - '1038397'
-    - '1038398'
-    - '1038399'
-    - '1038400'
-    formats:
-    - remnant_video
-    _cloned_from: cbs_news
-  cbs_news_gsa:
-    display_name: CBS News (GSA)
-    advertiser_name_contains:
-    - VCBS
-    - CBS
-    template_campaign_id: '73870698'
-    campaign_name: CBS News - GSA
-    ad_unit_groups:
-      remnant_video: cbs_house_mid_post
-    extra_exclude_site_groups:
-    - '1037683'
-    - '1038397'
-    - '1038398'
-    - '1038399'
-    - '1038400'
-    formats:
-    - remnant_video
-    _cloned_from: cbs_news_es
-  cbs_news_latam:
-    display_name: CBS News (LATAM)
-    advertiser_name_contains:
-    - VCBS
-    - CBS
-    template_campaign_id: '73870587'
-    campaign_name: CBS News - LATAM
-    ad_unit_groups:
-      remnant_video: cbs_house_mid_post
-    extra_exclude_site_groups:
-    - '1037683'
-    - '1038397'
-    - '1038398'
-    - '1038399'
-    - '1038400'
-    formats:
-    - remnant_video
-    _cloned_from: cbs_news
   cbs_news_spanish_usa:
     display_name: CBS News - Spanish (USA)
     advertiser_name_contains:
@@ -1652,24 +1580,6 @@ brands:
     formats:
     - remnant_video
     _cloned_from: cbs_news_latam
-  cbs_news_uk:
-    display_name: CBS News (UK)
-    advertiser_name_contains:
-    - VCBS
-    - CBS
-    template_campaign_id: '73870871'
-    campaign_name: CBS News - UK
-    ad_unit_groups:
-      remnant_video: cbs_house_mid_post
-    extra_exclude_site_groups:
-    - '1037683'
-    - '1038397'
-    - '1038398'
-    - '1038399'
-    - '1038400'
-    formats:
-    - remnant_video
-    _cloned_from: cbs_news_es
   mtve_br:
     display_name: MTVE (BR)
     advertiser_name_contains:

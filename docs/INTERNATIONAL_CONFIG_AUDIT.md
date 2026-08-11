@@ -2,26 +2,14 @@
 
 These brand families were **scaffolded by cloning the USA setup**, so international
 brands may carry USA-specific ad units / site groups / excludes. Each needs a real
-**reference IO** to validate/correct (ad units per format, main site groups, brand
-excludes, products). P+, Pluto, and Pictures already have real per-region variants.
+**reference IO** to validate/correct. P+, Pluto, and Pictures already have real
+per-region variants.
 
 **How to validate one:** send the reference IO id (or its ad units + main SGs +
-excludes) for that campaign; I match the config to it. Tick ✅ when done.
+excludes) for that campaign; I match the config to it. Tick when done.
 
 | Status | Campaign | Notes |
 |---|---|---|
-| ⬜ | CBS News - AU |  |
-| ⬜ | CBS News - ES |  |
-| ⬜ | CBS News - GSA |  |
-| ⬜ | CBS News - LATAM |  |
-| ✅ | CBS News - Spanish - USA | USA — source of truth |
-| ⬜ | CBS News - UK |  |
-| ✅ | CBS News - USA | USA — source of truth |
-| ✅ | CBS Sports - Spanish - USA | USA — source of truth |
-| ✅ | CBS Sports - USA | USA — source of truth |
-| ⬜ | Paramount Consumer Products - GSA |  |
-| ⬜ | Paramount Consumer Products - Kids - BR |  |
-| ⬜ | Paramount Consumer Products - Kids - GSA |  |
 | ⬜ | MTVE - BR |  |
 | ⬜ | MTVE - CA |  |
 | ⬜ | MTVE - DK |  |
@@ -78,3 +66,10 @@ excludes) for that campaign; I match the config to it. Tick ✅ when done.
 | ⬜ | Nick Jr. - Kids - UK |  |
 | ✅ | Nick Jr. - Kids - USA | USA — source of truth |
 | ⬜ | Nick Jr. - UK |  |
+| ✅ | CBS News - Spanish - USA | USA — source of truth |
+| ✅ | CBS News - USA | USA — source of truth |
+| ✅ | CBS Sports - Spanish - USA | USA — source of truth |
+| ✅ | CBS Sports - USA | USA — source of truth |
+| ⬜ | Paramount Consumer Products - GSA |  |
+| ⬜ | Paramount Consumer Products - Kids - BR |  |
+| ⬜ | Paramount Consumer Products - Kids - GSA |  |
