@@ -35,6 +35,28 @@ template: when a case owner comes back for the next flight of an already-process
 title, Promo Ops can see at a glance which lines are genuinely new assets to
 traffic vs. which can be re-pointed at what's already live.
 
+**Campaign Name is free text, not a FreeWheel dropdown.** Submitting teams aren't
+in FreeWheel and don't know its campaign naming — this field just mirrors
+whatever the Salesforce Case calls the campaign.
+
+**Brand is a separate dropdown**, and it *is* structured — sourced from the same
+`brand_signature()` parser the plan form's cross-market mirroring uses
+(`promo_ops.brand_sync`), collapsed to the ~18 region-independent brand families
+(Paramount+, Pluto TV, Nickelodeon, CBS Sports, etc., each with a `- Kids` variant
+where one exists) instead of the ~150 region-specific FreeWheel campaign names.
+That's the identity a creative team actually recognizes, and it's what lets Promo
+Ops map a Case back to the right FreeWheel brand even when the Case's free-text
+Campaign Name doesn't match FreeWheel at all. Picking a Brand:
+- shows a "typical formats for this brand" hint, derived from the union of
+  products that brand family runs anywhere (`config/brands.yaml`) — informational
+  only, it doesn't hide any of the six tabs, since which formats a given flight
+  actually needs is still Promo's call;
+- surfaces a Kids-safety note (COPPA / no personalized tracking) for Kids brands;
+- stamps `brand` and `kids_audience` onto the downloaded JSON.
+
+`FAMILY_LABEL` / `brands()` in `scripts/build_creative_trafficking_form.py` is
+where to adjust the brand list or its labels.
+
 ## How this fits the Case (near-term)
 
 This mirrors the pattern already built for **Targeting**: the Case carries core

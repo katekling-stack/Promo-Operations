@@ -33,31 +33,58 @@ REPO = Path(__file__).resolve().parents[1]
 CONFIG = REPO / "config"
 OUT = REPO / "templates" / "creative-trafficking" / "creative-trafficking-form.html"
 
-REGION_ORDER = ["USA", "CA", "UK", "IE", "AU", "LATAM", "BR", "FR", "IT", "GSA",
-                "FI", "DK", "NO", "SE", "ES"]
+# Human labels for the canonical brand families in promo_ops.brand_sync — this is
+# the region-independent "which brand is this" list a non-FreeWheel creative team
+# actually recognizes (vs. the ~150 region-specific FreeWheel campaign names).
+FAMILY_LABEL = {
+    "nick": "Nickelodeon", "nick_jr": "Nick Jr.", "paramount_plus": "Paramount+",
+    "pluto": "Pluto TV", "pictures": "Paramount Pictures",
+    "consumer_products": "Paramount Consumer Products", "cbs_news": "CBS News",
+    "cbs_sports": "CBS Sports", "cbs_network": "CBS Network",
+    "mtve": "MTV Entertainment Group (MTVE)", "bet": "BET",
+}
+PRODUCT_LABEL = {
+    "remnant_video": "Remnant Video", "pause_ads": "Pause Ads",
+    "premium_preroll": "Premium Pre-Roll", "essential_bumper": "Essential / Basic Bumper",
+    "cbs_preroll": "CBS Pre-Roll", "after_midroll_bumper": "After Mid-Roll Bumper",
+    "cbs_1z_lockdown": "1Z Lockdown", "cbs_2z_lockdown": "2Z Lockdown",
+    "pluto_breakout": "Include Pluto (UK P+)", "network_10": "Network 10 (10 Streaming)",
+}
 
 
 def _yaml(name):
     return yaml.safe_load((CONFIG / name).read_text()) or {}
 
 
-def _region_of(cname: str) -> str:
-    for code in REGION_ORDER:
-        if cname.endswith(f"- {code}") or cname.endswith(code):
-            return code
-    return "?"
+def brands() -> list[dict]:
+    """One entry per (brand family, kids) — the region-independent brand list —
+    with the union of products that family runs anywhere, so the form can show a
+    "typical formats for this brand" hint once one is picked. Derived from the
+    live config + the same brand_signature() FreeWheel-campaign parser the plan
+    form's cross-market mirroring uses, so this can't drift from the real catalog.
+    """
+    from promo_ops import brand_sync
+    from promo_ops.models import PRODUCT_FAMILIES
 
-
-def campaigns() -> list[dict]:
-    brands = _yaml("brands.yaml").get("brands", {})
-    seen, out = set(), []
-    for b in brands.values():
+    raw = _yaml("brands.yaml").get("brands", {})
+    groups: dict[tuple[str, bool], set[str]] = {}
+    for b in raw.values():
         cname = b.get("campaign_name")
-        if not cname or cname in seen:
+        sig = brand_sync.brand_signature(cname) if cname else None
+        if not sig:
             continue
-        seen.add(cname)
-        out.append({"name": cname, "region": _region_of(cname)})
-    out.sort(key=lambda c: (REGION_ORDER.index(c["region"]) if c["region"] in REGION_ORDER else 99, c["name"]))
+        available = (set(b.get("formats") or []) | set(b.get("optional_formats") or []) | {"pause_ads"})
+        prods = {p for p, members in PRODUCT_FAMILIES.items() if set(members) & available and p in PRODUCT_LABEL}
+        groups.setdefault(sig, set()).update(prods)
+
+    out = []
+    for (family, kids), prods in groups.items():
+        label = FAMILY_LABEL.get(family, family.replace("_", " ").title())
+        if kids:
+            label += " - Kids"
+        out.append({"key": f"{family}|{int(kids)}", "label": label, "kids": kids,
+                     "products": sorted(PRODUCT_LABEL[p] for p in prods)})
+    out.sort(key=lambda g: g["label"])
     return out
 
 
@@ -147,7 +174,7 @@ NET_NEW_OPTIONS = ["New", "Reused – Prior Flight", "Refresh of Existing"]
 
 
 def app_data() -> dict:
-    return {"campaigns": campaigns(), "tabs": TABS, "netNewOptions": NET_NEW_OPTIONS}
+    return {"brands": brands(), "tabs": TABS, "netNewOptions": NET_NEW_OPTIONS}
 
 
 def build(out: Path | None = None) -> Path:
@@ -184,6 +211,10 @@ header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
 .field label{display:block;font-weight:600;font-size:13.5px;margin:0 0 6px}
 .field label .req{color:var(--no);margin-left:3px}
 .hint{color:var(--muted);font-size:12px;margin-top:5px}
+.derived{display:inline-flex;align-items:center;gap:8px;background:var(--chip);color:var(--navy);
+ border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600;margin-top:8px}
+.note{background:#eef4ff;border:1px solid #cfe0ff;border-left:3px solid var(--blue);
+ color:#1a2540;border-radius:8px;padding:9px 12px;font-size:12.5px;margin-top:10px}
 input[type=text],input[type=date],input[type=url],select{width:100%;padding:10px 12px;font-size:14px;
  border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);
  transition:border-color .15s, box-shadow .15s;appearance:none}
@@ -238,9 +269,15 @@ input:read-only,input.promo-ro{background:#f3f5fa;color:var(--muted);cursor:not-
       <div class="field"><label>Creative / Marketing Manager</label>
         <input type="text" id="creative_manager" placeholder="submitter's name"></div>
     </div>
-    <div class="field"><label>Campaign Name</label>
-      <select id="campaign"><option value="">Select campaign…</option></select>
-      <div class="hint">Mirrors the Salesforce Campaign this creative is for.</div></div>
+    <div class="field"><label>Campaign Name<span class="req">*</span></label>
+      <input type="text" id="campaign" placeholder="type it exactly as it appears on the Salesforce Case">
+      <div class="hint">Mirrors the Salesforce <b>Case</b>'s Campaign Name — not a FreeWheel campaign, just what's on the Case.</div></div>
+    <div class="field"><label>Brand<span class="req">*</span></label>
+      <select id="brand"><option value="">Select brand…</option></select>
+      <div class="hint">Which brand this creative is for — helps Promo Ops map it to the right FreeWheel campaign even though the Case's Campaign Name above won't match FreeWheel's naming.</div>
+      <div class="derived hidden" id="brandHint"></div>
+      <div class="note hidden" id="kidsNote">This is a <b>Kids</b> brand — make sure creative is COPPA-safe (no personalized tracking/retargeting pixels, no third-party trackers that aren't kid-safe) before submitting.</div>
+    </div>
   </div>
 
   <div class="card">
@@ -268,7 +305,20 @@ const $ = s => document.querySelector(s);
 const state = {tab: APP.tabs[0].key, lines: {}};
 APP.tabs.forEach(t => state.lines[t.key] = []);
 
-$("#campaign").innerHTML += APP.campaigns.map(c=>`<option value="${c.name}">${c.name}</option>`).join("");
+$("#brand").innerHTML += APP.brands.map(b=>`<option value="${b.key}">${b.label}</option>`).join("");
+function currentBrand(){ return APP.brands.find(b=>b.key===$("#brand").value); }
+$("#brand").addEventListener("change", ()=>{
+  const b = currentBrand();
+  $("#kidsNote").classList.toggle("hidden", !(b && b.kids));
+  const hint = $("#brandHint");
+  if(b && b.products.length){
+    hint.textContent = `Typical formats for ${b.label}: ${b.products.join(", ")}`;
+    hint.classList.remove("hidden");
+  } else {
+    hint.classList.add("hidden");
+  }
+  validate();
+});
 
 function tabOf(key){ return APP.tabs.find(t=>t.key===key); }
 
@@ -355,19 +405,25 @@ function render(){ renderTabbar(); renderTabbody(); validate(); }
 function totalLines(){ return APP.tabs.reduce((n,t)=>n+state.lines[t.key].length, 0); }
 
 function validate(){
-  const ok = totalLines() > 0;
+  const core = $("#campaign").value.trim() && $("#brand").value;
+  const ok = core && totalLines() > 0;
   $("#dlBtn").disabled = !ok;
   $("#status").textContent = ok
     ? `${totalLines()} creative line(s) ready — Download plan file to attach to the Case.`
-    : "Add at least one creative line to continue.";
+    : (core ? "Add at least one creative line to continue."
+             : "Fill Campaign Name and Brand, then add a creative line to continue.");
   return ok;
 }
+["campaign"].forEach(id=>$("#"+id).addEventListener("input", validate));
 
 function buildPlan(){
+  const b = currentBrand();
   const plan = {
     salesforce_case: $("#sf_case").value.trim(),
-    campaign_name: $("#campaign").value,
+    campaign_name: $("#campaign").value.trim(),
     creative_manager: $("#creative_manager").value.trim(),
+    brand: b ? b.label : "",
+    kids_audience: !!(b && b.kids),
   };
   APP.tabs.forEach(t=>{ plan[t.key] = state.lines[t.key]; });
   return plan;
