@@ -1589,13 +1589,8 @@ brands:
     campaign_name: MTVE - BR
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1609,13 +1604,8 @@ brands:
     campaign_name: MTVE - CA
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1629,13 +1619,8 @@ brands:
     campaign_name: MTVE - DK
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1649,13 +1634,8 @@ brands:
     campaign_name: MTVE - ES
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1669,13 +1649,8 @@ brands:
     campaign_name: MTVE - FI
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1689,13 +1664,8 @@ brands:
     campaign_name: MTVE - FR
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1709,13 +1679,8 @@ brands:
     campaign_name: MTVE - GSA
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1729,13 +1694,8 @@ brands:
     campaign_name: MTVE - IT
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1749,13 +1709,8 @@ brands:
     campaign_name: MTVE - Kids - ES
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1769,13 +1724,8 @@ brands:
     campaign_name: MTVE - Kids - GSA
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1789,13 +1739,8 @@ brands:
     campaign_name: MTVE - Kids - LATAM
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1809,13 +1754,8 @@ brands:
     campaign_name: MTVE - LATAM
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1829,13 +1769,8 @@ brands:
     campaign_name: MTVE - NO
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1849,13 +1784,8 @@ brands:
     campaign_name: MTVE - SE
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
@@ -1869,13 +1799,8 @@ brands:
     campaign_name: MTVE - UK
     main_site_groups:
     - '929392'
-    - '932592'
-    - '932591'
     include_video_groups:
     - '73408899'
-    ad_unit_groups:
-      remnant_video: viacom_promo
-      mtve_after_midroll_bumper: cbs_after_midroll_bumper
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
