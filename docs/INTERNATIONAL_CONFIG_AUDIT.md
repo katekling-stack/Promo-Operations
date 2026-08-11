@@ -1,75 +1,24 @@
-# International Config Validation — pre-8/18 rollout
+# International Config — Validation Status (pre-8/18 rollout)
 
-These brand families were **scaffolded by cloning the USA setup**, so international
-brands may carry USA-specific ad units / site groups / excludes. Each needs a real
-**reference IO** to validate/correct. P+, Pluto, and Pictures already have real
-per-region variants.
+Result of validating the USA-cloned brand families against real setups (live FreeWheel
+lookups + per-family rules). **All families are now validated or fixed.**
 
-**How to validate one:** send the reference IO id (or its ad units + main SGs +
-excludes) for that campaign; I match the config to it. Tick when done.
+## ✅ Validated / fixed
 
-| Status | Campaign | Notes |
-|---|---|---|
-| ⬜ | MTVE - BR |  |
-| ⬜ | MTVE - CA |  |
-| ⬜ | MTVE - DK |  |
-| ⬜ | MTVE - ES |  |
-| ⬜ | MTVE - FI |  |
-| ⬜ | MTVE - FR |  |
-| ⬜ | MTVE - GSA |  |
-| ⬜ | MTVE - IT |  |
-| ⬜ | MTVE - Kids - ES |  |
-| ⬜ | MTVE - Kids - GSA |  |
-| ⬜ | MTVE - Kids - LATAM |  |
-| ⬜ | MTVE - LATAM |  |
-| ⬜ | MTVE - NO |  |
-| ⬜ | MTVE - SE |  |
-| ⬜ | MTVE - UK |  |
-| ✅ | MTVE - USA | USA — source of truth |
-| ⬜ | Nick - AU |  |
-| ⬜ | Nick - BR |  |
-| ⬜ | Nick - DK |  |
-| ⬜ | Nick - ES |  |
-| ⬜ | Nick - FR |  |
-| ⬜ | Nick - GSA |  |
-| ⬜ | Nick - Kids - AU |  |
-| ⬜ | Nick - Kids - BR |  |
-| ⬜ | Nick - Kids - DK |  |
-| ⬜ | Nick - Kids - ES |  |
-| ⬜ | Nick - Kids - English - CA |  |
-| ⬜ | Nick - Kids - FI |  |
-| ⬜ | Nick - Kids - FR |  |
-| ⬜ | Nick - Kids - GSA |  |
-| ⬜ | Nick - Kids - LATAM |  |
-| ⬜ | Nick - Kids - NO |  |
-| ⬜ | Nick - Kids - SE |  |
-| ⬜ | Nick - Kids - UK |  |
-| ⬜ | Nick - LATAM |  |
-| ⬜ | Nick - SE |  |
-| ⬜ | Nick - UK |  |
-| ⬜ | Nickelodeon - Kids - IT |  |
-| ✅ | Nickelodeon - Kids - USA | USA — source of truth |
-| ✅ | Nickelodeon - USA | USA — source of truth |
-| ⬜ | Nick Jr - Kids - BR |  |
-| ⬜ | Nick Jr - Kids - DK |  |
-| ⬜ | Nick Jr - Kids - GSA |  |
-| ⬜ | Nick Jr - Kids - SE |  |
-| ⬜ | Nick Jr. - ES |  |
-| ⬜ | Nick Jr. - Kids - AU |  |
-| ⬜ | Nick Jr. - Kids - CA |  |
-| ⬜ | Nick Jr. - Kids - ES |  |
-| ⬜ | Nick Jr. - Kids - FI |  |
-| ⬜ | Nick Jr. - Kids - FR |  |
-| ⬜ | Nick Jr. - Kids - IT |  |
-| ⬜ | Nick Jr. - Kids - LATAM |  |
-| ⬜ | Nick Jr. - Kids - NO |  |
-| ⬜ | Nick Jr. - Kids - UK |  |
-| ✅ | Nick Jr. - Kids - USA | USA — source of truth |
-| ⬜ | Nick Jr. - UK |  |
-| ✅ | CBS News - Spanish - USA | USA — source of truth |
-| ✅ | CBS News - USA | USA — source of truth |
-| ✅ | CBS Sports - Spanish - USA | USA — source of truth |
-| ✅ | CBS Sports - USA | USA — source of truth |
-| ⬜ | Paramount Consumer Products - GSA |  |
-| ⬜ | Paramount Consumer Products - Kids - BR |  |
-| ⬜ | Paramount Consumer Products - Kids - GSA |  |
+| Family | Status |
+|---|---|
+| **Paramount+** (all regions) | ✅ Already per-region correct (P+ + Pluto + Premium/Basic Plans as available per region; AU/IE = P+ only where no Pluto) |
+| **Pluto TV** (all regions) | ✅ Already per-region correct (Pluto-only platform, House ad units) |
+| **Pictures** | ✅ Already per-region variants |
+| **Kids** — Nick / Nick Jr / Consumer Products (Kids-net **and** Adult-net variants) | ✅ Verified: Set 1 (Nick `73408862` + Nick Jr `73408864` + Kids COPPA VG `86471529` + Kids COPPA SG `932400`) **AND** Set 2 = SG Platform PlutoTV `929392`; Older → exclude Nick Jr, Younger → exclude Nick. Advertiser separation via campaign name (Adult vs Kids net). |
+| **P+ Kids** | ✅ Pluto + P+ + Premium/Basic Plans per region (kept as-is per direction) |
+| **MTVE** (international) | ✅ **Fixed** — now mirrors Pluto internationally: MTVE content VG `73408899` on Pluto `929392`, House ad units (dropped Viacom pre-roll + VCBS/CBS-Local SGs). MTVE-USA unchanged. Rec-show removed (P+/Pluto only); After-Mid-Roll domestic-only; CBS-Entertainment excludes USA-only. |
+
+## 🗑️ Removed
+- **CBS News** international (AU/ES/GSA/LATAM/UK) — not real promo campaigns.
+
+## Region nuances (intentional, not bugs)
+- **AU & IE** have no Pluto TV (`has_pluto=False`), so kids/promos there target **P+** platform, not Pluto.
+
+## Notes
+- Live reads confirmed the kids VG/SG IDs; the `.env` used was deleted. **Rotate the shared FreeWheel password** since it passed through chat.
