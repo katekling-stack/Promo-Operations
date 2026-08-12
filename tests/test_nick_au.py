@@ -45,9 +45,10 @@ def test_nick_au_standard_kids_remnant():
     assert p15.ad_unit_ids == ["71999", "72000", "72001"]
     assert p30.ad_unit_ids == ["72000", "72001"]
     assert all(p.geo_country_ids == ["10"] for p in order.placements)
-    # Kids remnant runs at priority 1 (override -1) + kids cap, not tier 4.
+    # Kids remnant runs at the duration-based kids priority (:15 -> -2, :30 -> -1) + kids cap.
     body = FreeWheelClient._placement_body(p15)
-    assert body["override"] == {"mode": "BELOW_PAYING_ADS", "value": -1}
+    assert body["override"] == {"mode": "BELOW_PAYING_ADS", "value": -2}
+    assert FreeWheelClient._placement_body(p30)["override"] == {"mode": "BELOW_PAYING_ADS", "value": -1}
     assert body["delivery"]["frequency_cap"]["period"] == "15"
     # Kids VGs + COPPA AND the Paramount+ SG (932583); AU has no Pluto.
     sgs, vgs, _ = _kids_set(p15)

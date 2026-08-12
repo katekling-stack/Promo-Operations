@@ -1,5 +1,5 @@
-"""Paramount Pictures (movies) — distinct advertiser. Tiered remnant 2/3/4 (no Tier 1),
-main SGs [Pluto, CBS Local, VCBS] (NO P+), custom pause main (no P+), house units,
+"""Paramount Pictures (movies) — distinct advertiser. Tiered remnant 1/2/3/4 (adult -> all
+tiers), main SGs [Pluto, CBS Local, VCBS] (NO P+), custom pause main (no P+), house units,
 per-country geo. Plus the BR kids Pictures / Consumer Products Pluto lines."""
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ def _main(p, idx=0):
     return [set(s["site_group"]) for s in subs if s.get("site_group")]
 
 
-def test_pictures_uk_no_tier1_no_pplus_custom_pause():
+def test_pictures_uk_tiers_1_4_no_pplus_custom_pause():
     order = OrderBuilder().build(support_plan_from_dict({
         "promoted_title": "Marshals", "region": "UK",
         "campaign": {"name": "Paramount Pictures - UK"}, "content_id": "1",
@@ -24,7 +24,7 @@ def test_pictures_uk_no_tier1_no_pplus_custom_pause():
         "showlist": ["NCIS"], "genres": ["Drama"], "pluto": {"channels": ["Westerns"]}}))
     assert order.brand is None or True  # brand set on plan below
     remnant = [p for p in order.placements if "Pause" not in p.name]
-    assert {p.tier for p in remnant} == {2, 3, 4}     # no Tier 1
+    assert {p.tier for p in remnant} == {1, 2, 3, 4}   # Pictures is adult -> Tiers 1-4
     # main = Pluto + CBS Local + VCBS, no P+ (932583).
     t4 = next(p for p in remnant if p.tier == 4 and p.duration == 15)
     assert {"929392", "932591", "932592"} in _main(t4)

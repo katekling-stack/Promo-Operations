@@ -66,6 +66,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .seg button.on[data-v="yes"]{background:var(--ok);color:#fff}
 .seg button.on[data-v="no"]{background:var(--no);color:#fff}
 .seg button.on[data-k]{background:var(--blue);color:#fff}
+.ghostbtn{margin-top:8px;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--blue);cursor:pointer}
+.dpRow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0;padding:8px 10px;background:#f7f9fd;border:1px solid var(--line);border-radius:10px}
+.dpRow select,.dpRow input[type=time]{padding:5px 7px;border:1.5px solid var(--line);border-radius:8px;font-size:12.5px;background:#fff;color:var(--ink)}
+.dpsep{color:var(--muted);font-size:12px}
+.dpDel{margin-left:auto;background:none;border:0;color:var(--no);cursor:pointer;font-size:14px;font-weight:700}
 /* footer bar */
 .bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
  box-shadow:0 -6px 22px rgba(20,40,90,.08);padding:14px 18px;z-index:30}
@@ -161,6 +166,10 @@ datalist{display:none}
         <div class="chips" data-chips="durations" data-numeric="1"><input type="text" placeholder="30, 15…  ↵"></div>
         <div class="hint">Type a number and press Enter. Common: 30, 15, 60.</div></div>
     </div>
+    <div class="field"><label>Daypart (time restrictions)</label>
+      <div class="hint">Default <b>24/7</b> — leave empty to run all day. Add windows to restrict to specific times (in the market's time zone). Applies to every placement.</div>
+      <div id="daypartRows"></div>
+      <button type="button" id="addDaypart" class="ghostbtn">+ Add time window</button></div>
   </div>
 
   <div class="card">
@@ -369,6 +378,38 @@ $("#video_domination").addEventListener("change",()=>{
 });
 $("#takeover").addEventListener("change",syncManualPushReminder);
 
+// Daypart (time restrictions): repeatable day-range + time-range windows. Empty = 24/7.
+const DP_DAYS=["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"];
+function dpDaySelect(sel){
+  return '<select class="dpDay">'+DP_DAYS.map(d=>
+    `<option value="${d}"${d===sel?' selected':''}>${d[0]+d.slice(1).toLowerCase()}</option>`).join('')+'</select>';
+}
+function addDaypartRow(){
+  const row=document.createElement("div"); row.className="dpRow";
+  row.innerHTML=dpDaySelect("MONDAY")+' <span class="dpsep">to</span> '+dpDaySelect("FRIDAY")+
+    ' <input type="time" class="dpStart" value="18:00"> <span class="dpsep">–</span> '+
+    '<input type="time" class="dpEnd" value="23:00"> '+
+    '<button type="button" class="dpDel" title="Remove window">✕</button>';
+  row.querySelector(".dpDel").addEventListener("click",()=>row.remove());
+  $("#daypartRows").appendChild(row);
+}
+$("#addDaypart").addEventListener("click",addDaypartRow);
+function dpTo12h(t){
+  if(!t) return "";
+  let [h,m]=t.split(":").map(Number); const ap=h>=12?"PM":"AM";
+  h=h%12; if(h===0) h=12;
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+ap;
+}
+function collectDayparts(){
+  const out=[];
+  document.querySelectorAll("#daypartRows .dpRow").forEach(r=>{
+    const days=r.querySelectorAll(".dpDay");
+    const st=dpTo12h(r.querySelector(".dpStart").value), et=dpTo12h(r.querySelector(".dpEnd").value);
+    if(st&&et) out.push({start_day:days[0].value,end_day:days[1].value,start_time:st,end_time:et});
+  });
+  return out;
+}
+
 // Region-aware source lists for the type-to-search pickers.
 function sourceList(name){
   if(name==="shows") return APP.shows;
@@ -483,6 +524,7 @@ function buildPlan(){
   if($("#content_id").value) plan.content_id=$("#content_id").value;
   if($("#rec_show_id").value) plan.recommended_show_id=$("#rec_show_id").value;
   if(L.durations.length) plan.durations=L.durations.map(Number);
+  const dp=collectDayparts(); if(dp.length) plan.dayparts=dp;
   const fl={}; if($("#flight_start").value)fl.start=$("#flight_start").value;
   if($("#flight_end").value)fl.end=$("#flight_end").value;
   if(Object.keys(fl).length) plan.flight=fl;

@@ -14,6 +14,10 @@ regions:
     - United States
     has_pluto: true
     timezone: "(GMT-05:00) America - New York"          # Eastern
+    # Flight start clock time in the market TZ. USA starts at 3:00 AM ET (= 12:00 AM PT) so
+    # a campaign goes live from the West Coast eastward on the selected date, regardless of
+    # which coast. Other markets default to 00:00 (midnight local).
+    flight_start_time: "03:00"
   CA:
     name: Canada
     code: CA

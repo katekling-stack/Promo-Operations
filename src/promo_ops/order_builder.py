@@ -362,6 +362,18 @@ class OrderBuilder:
         offset = offsets.get(str(duration), self._priorities.get("default_duration_offset", 0))
         return base + offset
 
+    def _kids_priority(self, duration: Optional[int]):
+        """Kids remnant priority by duration (global): :30+ -> 1, :15 -> 2, shorter -> 3.
+        Returns None if kids_priority isn't configured (caller falls back)."""
+        cfg = self._priorities.get("kids_priority") or {}
+        if not cfg:
+            return None
+        if duration is None or duration >= cfg.get("long_min_duration", 30):
+            return cfg.get("long", 1)
+        if duration in set(cfg.get("mid_durations", [15])):
+            return cfg.get("mid", 2)
+        return cfg.get("short", 3)
+
     def _guaranteed_priority(self):
         return self._priorities.get("guaranteed_priority", "SPONSORSHIP")
 
@@ -576,12 +588,18 @@ class OrderBuilder:
                 if name_prefix:
                     parts = [name_prefix] + parts
                 names, ids = self._ad_units_for_duration(brand_cfg, fmt, tmpl, dur)
+                # Kids remnant lines run at the duration-based kids priority (:30+ -> 1,
+                # :15 -> 2, shorter -> 3), overriding the template's flat `priority`.
+                kids_prio = (self._kids_priority(dur)
+                             if (brand_cfg.get("kids") and fixed_priority is not None)
+                             else None)
                 placement = base(
                     " - ".join(p for p in parts if p) + pplus_id_token,
                     TieredTargeting(format=fmt),
                     tier=ptier, duration=dur, no_targeting=no_targeting,
                     static_relationship_sets=static_sets,
-                    priority_level=(fixed_priority if fixed_priority is not None
+                    priority_level=(kids_prio if kids_prio is not None
+                                    else fixed_priority if fixed_priority is not None
                                     else self._priority(ptier, dur,
                                                         pluto=bool(brand_cfg.get("pluto_brand")))),
                     frequency_cap=fixed_fc or self._freq_cap(ptier, fmt),
@@ -663,6 +681,7 @@ class OrderBuilder:
             scene_lift=plan.scene_lift,
             scene_lift_io_id=(sl_target or {}).get("io_id"),
             existing_io_id=plan.existing_io_id,
+            dayparts=list(plan.dayparts or []),
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
                 "advertiser_id": plan.advertiser.get("resolved_id"),

@@ -16,6 +16,16 @@ priority_base_by_tier:
   3: 7
 tier4_priority: 10
 
+# Kids remnant priority by duration (GLOBAL, all kids brands): :30-and-above -> 1,
+# :15 -> 2, shorter creatives (:5/:6/:10/:20) -> 3. Positive magnitudes; the engine
+# negates to BELOW_PAYING_ADS -1 / -2 / -3. Replaces the old flat kids priority of 1.
+kids_priority:
+  long: 1                     # :30 and above
+  mid: 2                      # :15
+  short: 3                    # :5, :6, :10, :20 (and any other short creative)
+  long_min_duration: 30
+  mid_durations: [15]
+
 # Pluto TV - {Region} campaigns run Tier 4 HOTTER for the main creative lengths: :15 and
 # :30-and-above get priority 8 (not 10); shorter creatives (:5/:6/:10/:20) stay at 10.
 # Non-Pluto campaigns keep the flat tier4_priority above. Verified against live

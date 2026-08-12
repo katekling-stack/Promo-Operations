@@ -26,6 +26,26 @@ def _truthy(value: Any) -> bool:
     return str(value or "").strip().lower() in _TRUE_TEXT
 
 
+_DAYPART_DAYS = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"}
+
+
+def _dayparts(raw: Any) -> list[dict]:
+    """Normalize daypart windows. Each window needs start_day/end_day/start_time/end_time.
+    Days are upper-cased and validated against the weekday enum; malformed windows are
+    dropped (never a partial). Empty -> [] (= 24/7, no daypart_targeting emitted)."""
+    out: list[dict] = []
+    for w in (raw or []):
+        if not isinstance(w, dict):
+            continue
+        sd = str(w.get("start_day") or "").strip().upper()
+        ed = str(w.get("end_day") or sd).strip().upper()
+        st = str(w.get("start_time") or "").strip()
+        et = str(w.get("end_time") or "").strip()
+        if sd in _DAYPART_DAYS and ed in _DAYPART_DAYS and st and et:
+            out.append({"start_day": sd, "end_day": ed, "start_time": st, "end_time": et})
+    return out
+
+
 def _flatten_pluto(raw: dict[str, Any]) -> tuple[list[str], list[str]]:
     pluto = raw.get("pluto") or {}
     return (
@@ -63,6 +83,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         standard=_truthy(raw.get("standard")),
         existing_io_id=(str(raw.get("existing_io_id")).strip() or None
                         if raw.get("existing_io_id") else None),
+        dayparts=_dayparts(raw.get("dayparts")),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",
         content_id=raw.get("content_id"),

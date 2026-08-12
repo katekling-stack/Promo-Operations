@@ -639,6 +639,12 @@ class FreeWheelClient:
         if schedule:
             for body in placement_bodies:
                 body.setdefault("schedule", dict(schedule))
+        # Daypart (time-of-day) targeting in the market's time zone. Empty dayparts = 24/7
+        # (no daypart_targeting emitted — the placement runs all day).
+        daypart = FreeWheelClient._daypart_targeting(order.region, getattr(order, "dayparts", None))
+        if daypart:
+            for body in placement_bodies:
+                body.setdefault("daypart_targeting", dict(daypart))
         out = {
             "parent": parent,
             "insertion_order_body": insertion_order_body,
@@ -664,15 +670,40 @@ class FreeWheelClient:
         tz = FreeWheelClient._region_timezone(region)
         if not start or not tz:
             return None
+        # Start clock time in the market TZ (regions.yaml). USA = 03:00 (3 AM ET = 12 AM PT,
+        # so it goes live West-to-East on the date); everywhere else defaults to midnight.
+        from ..config import regions_config
+        start_hm = ((regions_config().get("regions", {}).get(region or "", {}) or {})
+                    .get("flight_start_time") or "00:00")
 
         def stamp(d: str, end_of_day: bool) -> str:
             d = str(d).strip()
-            return d if "T" in d else f"{d}T{'23:59' if end_of_day else '00:00'}"
+            return d if "T" in d else f"{d}T{'23:59' if end_of_day else start_hm}"
 
         sched = {"start_time": stamp(start, False), "time_zone": tz}
         if end:
             sched["end_time"] = stamp(end, True)
         return sched
+
+    @staticmethod
+    def _daypart_targeting(region: Optional[str], dayparts) -> Optional[dict[str, Any]]:
+        """FreeWheel daypart_targeting {time_zone, part:[{start_day,end_day,start_time,
+        end_time}]} in the market's time zone. Empty/None dayparts -> None (= 24/7, field
+        omitted so the placement runs all day)."""
+        if not dayparts:
+            return None
+        tz = FreeWheelClient._region_timezone(region)
+        parts = [{"start_day": w["start_day"], "end_day": w["end_day"],
+                  "start_time": w["start_time"], "end_time": w["end_time"]}
+                 for w in dayparts
+                 if w.get("start_day") and w.get("end_day")
+                 and w.get("start_time") and w.get("end_time")]
+        if not parts:
+            return None
+        body: dict[str, Any] = {"part": parts}
+        if tz:
+            body["time_zone"] = tz
+        return body
 
     @staticmethod
     def _parse_freq_cap(cap: Optional[str]) -> list[dict[str, Any]]:

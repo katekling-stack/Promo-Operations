@@ -110,6 +110,11 @@ class SupportPlan:
     # (by FreeWheel IO id) instead of a new one — e.g. adding Season 2 lines to the
     # Season 1 IO that already exists. Blank = create a new IO as usual.
     existing_io_id: Optional[str] = None
+    # Daypart (time-of-day) restrictions. Empty list = 24/7 (no daypart_targeting emitted).
+    # Each window is {start_day, end_day, start_time, end_time}, e.g.
+    # {"start_day":"MONDAY","end_day":"FRIDAY","start_time":"06:00PM","end_time":"11:00PM"}.
+    # Applied to EVERY placement in the order, in the market's time zone (regions.yaml).
+    dayparts: list[dict] = field(default_factory=list)
     # Creative durations (seconds) that each video tier is split into (one placement
     # per tier x duration). Defaults applied if empty.
     durations: list[int] = field(default_factory=list)
@@ -353,6 +358,8 @@ class Order:
     # Add-to-existing-IO: when set, placements are created INTO this IO id (no new IO) —
     # e.g. adding Season 2 lines to the existing Season 1 IO.
     existing_io_id: Optional[str] = None
+    # Daypart (time-of-day) windows applied to every placement. Empty = 24/7.
+    dayparts: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
