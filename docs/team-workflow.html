@@ -71,8 +71,8 @@
        style="display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;
               padding:13px 24px;border-radius:12px;font-size:16px;box-shadow:0 2px 6px rgba(26,86,219,.28)">
       📋&nbsp; Open the Campaign Form &nbsp;↗</a>
-    <div class="tip" style="margin-top:9px">Opens in Google Drive → click <b>Download</b>, then open the downloaded
-      file to use the form. <span style="color:#9a6a00">(Drive can’t run the form in the browser — it must be downloaded first.)</span></div>
+    <div class="tip" style="margin-top:9px">Opens the Drive folder → open <b>campaign-plan-form.html</b> → click <b>Download</b>,
+      then open the downloaded file to use the form. <span style="color:#9a6a00">(Drive can’t run the form in the browser — it must be downloaded first.)</span></div>
   </div>
 
   <h2><span class="n">1</span> How it flows</h2>
@@ -105,7 +105,7 @@
     <p><b>Campaign Manager</b></p>
     <ol>
       <li><a href="https://drive.google.com/drive/u/0/folders/1dhz0MvGVkBoOdLK2j0jFnCylidlCIYG7" target="_blank" rel="noopener">Open the Campaign Form</a>
-          (Drive → <b>Download</b> → open the downloaded file).
+          (Drive folder → open <code>campaign-plan-form.html</code> → <b>Download</b> → open the downloaded file).
           <span class="tip">Or a local copy: <code>templates/campaign-plan/campaign-plan-form.html</code>.</span></li>
       <li>Fill it in — Region, Campaign, Promoted Title, durations, flight, targeting.
           <span class="tip">Need an audience segment that isn’t in the list yet?
@@ -163,7 +163,8 @@ promo-ops batch  ~/Downloads/promo-batch.csv --live --out results.csv</pre>
 
   <h2><span class="n">3</span> What you get back</h2>
   <div class="card">
-    <p><b>Path A</b> prints a confirmation with the new <b>IO id</b> and 14 placement ids.</p>
+    <p><b>Path A</b> prints a confirmation with the new <b>IO id</b> and all of its placement ids
+       (the count varies by campaign — tiers, durations, and any standard / scene-lift options).</p>
     <p><b>Path B</b> writes <code>results.csv</code>, one line per case:</p>
     <table>
       <tr><th>Salesforce Case</th><th>Title</th><th>Status</th><th>Draft link</th></tr>
@@ -230,7 +231,7 @@ open -e .env</pre>
   <div class="card">
     <ul style="margin:4px 0;padding-left:2px;list-style:none;line-height:2.1">
       <li>📋 <a href="https://drive.google.com/drive/u/0/folders/1dhz0MvGVkBoOdLK2j0jFnCylidlCIYG7" target="_blank" rel="noopener"><b>Campaign Form</b></a>
-          — the form itself <span class="tip">(Drive → Download → open the file)</span></li>
+          — the form itself <span class="tip">(Drive folder → open <code>campaign-plan-form.html</code> → Download → open)</span></li>
       <li>🎯 <a href="https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec" target="_blank" rel="noopener"><b>Request a new audience segment</b></a>
           — if a needed segment doesn’t exist yet</li>
       <li>📝 <a href="https://github.com/katekling-stack/Promo-Operations/blob/claude/freewheel-order-placement-templates-p2rjzd/docs/INSTALL_CHECKLIST.md" target="_blank" rel="noopener"><b>Install checklist</b></a>
@@ -243,7 +244,7 @@ open -e .env</pre>
           — for a Slack admin (fully hands-off submission)</li>
     </ul>
     <p class="tip">The <code>.md</code> pages render on GitHub. The Campaign Form is an HTML file, so open it
-       from Drive (Download → open) — GitHub/Drive can’t run it in the browser.</p>
+       from the Drive folder (open <code>campaign-plan-form.html</code> → Download → open) — GitHub/Drive can’t run it in the browser.</p>
   </div>
 
   <p class="foot">Promo Ops · turns a campaign form into a FreeWheel Insertion Order draft (NOT_BOOKED).<br>
