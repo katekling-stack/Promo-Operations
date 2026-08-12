@@ -137,10 +137,18 @@ def _targeting_options() -> dict:
             for r, ms in active.items()}
     chans = {r: sorted({c for m in ms for c in pluto.get(m, {}).get("channels", [])})
              for r, ms in active.items()}
+    # Content-rating restrictions per region (top-level ratings only), keyed by region
+    # VALUE (USA/GSA/…) so the region-aware picker can filter like categories/channels.
+    from promo_ops.ratings import RatingRestrictionResolver
+    from promo_ops.config import regions_config
+    rr = RatingRestrictionResolver().load()
+    ratings = {region: rr.ratings_for(cfg.get("code") or region)
+               for region, cfg in regions_config().get("regions", {}).items()}
     return {
         "genres": [v for v, _ in bto.genres()],
         "categoriesByRegion": cats,
         "channelsByRegion": chans,
+        "ratingsByRegion": {r: v for r, v in ratings.items() if v},
         "audienceSegments": [n for n, _ in bto.audience_segments()],
         "shows": [n for _, n in bto.shows()],
     }
@@ -357,8 +365,6 @@ datalist{display:none}
       <div class="hint">Builds <b>one platform-wide placement per duration</b> (video) + a pause placement at the Standard priorities, instead of the tier stack. Still excludes the promoted title + audience.</div></div>
     <div class="field hidden" id="vdTargetWrap"><label>Video Domination targeting (Pluto categories)</label>
       <div class="chips" data-chips="vd_targeting" data-suggest="categories"><input type="text" placeholder="Comedy, Crime…  ↵"></div></div>
-    <div class="field hidden" id="ratingWrap"><label>Rating restrictions (AU Network 10)</label>
-      <div class="chips" data-chips="rating_restrictions"><input type="text" placeholder="VG value  ↵"></div></div>
   </div>
 
   <div class="card">
@@ -392,6 +398,9 @@ datalist{display:none}
     <div class="field"><label>Audience segments to exclude</label>
       <div class="chips" data-chips="exclude_audience_segments" data-source="audience"><input type="text" placeholder="type to search a segment to exclude…"></div>
       <div class="hint">Keep the promo OUT of an existing DDA audience segment — excluded on <b>every</b> placement, in every relationship. Type-to-search the real segment.</div></div>
+    <div class="field"><label>Content rating restrictions (exclude)</label>
+      <div class="chips" data-chips="rating_restrictions" data-source="ratings"><input type="text" placeholder="type a rating to exclude (e.g. TV-MA, R)…"></div>
+      <div class="hint">Exclude content of the selected rating(s) — resolves to this market's <code>VG: Content Rating: {region}: {rating}</code> Video Groups and excludes them on <b>every</b> placement. Options are the ratings that exist for the selected Region.</div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
@@ -446,8 +455,6 @@ function onCampaign(){
   $("#products").innerHTML = prods.length ? prods.map(p=>prodRow(p, defs[p])).join("")
      : '<p class="hint">Pick a campaign to see its products.</p>';
   bindProducts();
-  const isAU = c && c.region==="AU";
-  $("#ratingWrap").classList.toggle("hidden", !(c && c.products.includes("network_10")));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
   $("#pplusIdNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("paramount_plus")));
   renderMirrorTargets();
@@ -575,6 +582,7 @@ function sourceList(name){
   const rc=$("#region").value;
   if(name==="categories") return (APP.categoriesByRegion||{})[rc]||[];
   if(name==="channels") return (APP.channelsByRegion||{})[rc]||[];
+  if(name==="ratings") return (APP.ratingsByRegion||{})[rc]||[];
   return null;
 }
 

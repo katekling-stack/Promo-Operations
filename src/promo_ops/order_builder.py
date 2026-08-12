@@ -42,6 +42,8 @@ class OrderBuilder:
         self.countries = (countries or CountryResolver()).load()
         self.ad_unit_resolver = (ad_unit_resolver or AdUnitResolver()).load()
         self.genre_resolver = (genre_resolver or GenreVideoGroupResolver()).load()
+        from .ratings import RatingRestrictionResolver
+        self.rating_resolver = RatingRestrictionResolver().load()
         self._brands = brands_config()
         self._templates = placement_templates_config()
         self._priorities = priorities_config()
@@ -414,11 +416,15 @@ class OrderBuilder:
         # VG Format: Clips (kids + adults, all regions).
         excl_sgs += list(tmpl.get("extra_exclude_site_groups", []))
         excl_vgs += list(tmpl.get("extra_exclude_video_groups", []))
-        # Rating restrictions (Network 10 AU): VG values supplied per-campaign, excluded
-        # on every set of the opted-in format. Passed through as VG IDs (Network 10
-        # supplies the values); resolved names would be layered here if ever needed.
-        if tmpl.get("applies_rating_restrictions") and plan.rating_restrictions:
-            excl_vgs += [vg for vg in plan.rating_restrictions if vg not in excl_vgs]
+        # Rating restrictions (ALL brands/regions): the CM selects content ratings to
+        # exclude; they resolve to the market's "VG: Content Rating: {region}: {rating}"
+        # Video Groups and are excluded on every set of every placement. Raw VG ids pass
+        # through (back-compat with the Network 10 AU flow, which supplied ids directly).
+        if plan.rating_restrictions:
+            region_code = region_cfg.get("code") or plan.region
+            for vg in self.rating_resolver.resolve(region_code, plan.rating_restrictions):
+                if vg not in excl_vgs:
+                    excl_vgs.append(vg)
         # US Pluto FREQUENT DNR: excluded on every US brand EXCEPT Pluto TV - USA.
         from .config import relationship_targeting_config
         dnr = relationship_targeting_config().get("us_pluto_dnr", {})
