@@ -165,11 +165,18 @@ class FreeWheelClient:
                 if all(f.lower() in str(a.get("name", "")).lower() for f in fragments)]
 
     def resolve_campaign_id(self, name: str) -> Optional[str]:
-        """Find an existing campaign id by exact name (the IO's parent)."""
-        payload = self._invoke("sh_1_1_list-campaigns", name=name.split(" - ")[0], per_page=50)
-        for c in self._rows(payload, "campaigns"):
-            if str(c.get("name", "")).strip() == name.strip():
-                return str(c.get("id"))
+        """Find an existing campaign id by exact name (the IO's parent).
+
+        Query with the FULL name first: the API's `name` filter narrows the result set,
+        so the exact campaign isn't truncated by the page cap. (The brand prefix alone —
+        e.g. "Paramount +" — overflows 50 rows, dropping later regions like GSA/IT/FR.)
+        Falls back to the brand-prefix sweep for older/edge naming."""
+        name = name.strip()
+        for query in (name, name.split(" - ")[0]):
+            payload = self._invoke("sh_1_1_list-campaigns", name=query, per_page=100)
+            for c in self._rows(payload, "campaigns"):
+                if str(c.get("name", "")).strip() == name:
+                    return str(c.get("id"))
         return None
 
     def list_campaigns_by_name(self, name_prefix: str, per_page: int = 100) -> list[dict[str, Any]]:
