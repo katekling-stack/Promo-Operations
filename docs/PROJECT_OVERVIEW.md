@@ -13,8 +13,11 @@ already set up.
 > NOT_BOOKED drafts that populate with the correct tiering, targeting, ad units, geo,
 > and exclusions. Coverage is **15 regions / 79 promo brands**, each reverse-engineered
 > from its live IOs and confirmed with production QA drafts. The end-to-end automation
-> (Case → drafts → write-back) is built, hardened, and tested. The one remaining
-> external dependency is the **Salesforce field/credential setup** (in progress).
+> (Case → drafts → write-back) is built, hardened, and tested. Recent additions —
+> **content-rating targeting (include & exclude), dayparting, duration-based kids
+> priority, and West-to-East flight timing** — are live-validated (a full order pushed
+> clean to FreeWheel production). The one remaining external dependency is the
+> **Salesforce field/credential setup** (in progress).
 
 ---
 
@@ -29,7 +32,7 @@ setup becomes a reviewed draft in seconds — consistent, rule-complete, and aud
 ## What it does (end to end)
 
 ```
-Salesforce Case (or planning sheet)
+Salesforce Case · self-service plan form · or planning sheet
         │   promoted title, region, campaign, flight, durations, products, targeting
         ▼
 Targeting engine  ──►  Tier 1–4 structure applied to the inputs
@@ -76,6 +79,10 @@ region vs BR/EU per-country geo, and the EU house-unit setup.
 - **Self-exclusion** — the promoted show's own Video Series (underscored + spaced spellings) excluded everywhere; its Pluto channel excluded on Pluto TV campaigns only.
 - **US Pluto DNR** (on all US brands except Pluto TV - USA); **LATAM/BR Promo Blocks** (on all adult Pluto placements except the Pluto TV - BR/LATAM campaigns).
 - **Pause-ad excludes** region-scoped (US vs international key-values; no-Pluto regions drop the Pluto SG).
+- **Content-rating targeting** — a CM can **exclude** a rating (drop that content everywhere) or **include** one (run *only* on it, AND-ed into every placement); resolves to the market's region-based `VG: Content Rating` Video Groups, and respects FreeWheel's 3-set targeting cap. *Live-validated in production.*
+- **Kids priority by duration** — remnant kids lines run `:30`+ = −1, `:15` = −2, shorter (`:5/:6/:10/:20`) = −3.
+- **Dayparting** — optional time-of-day windows applied to every placement in the market's time zone (default 24/7).
+- **Flight timing** — USA lines start **3 AM ET** on the selected date (so a campaign goes live West-to-East regardless of coast); other markets start midnight local.
 - **Products toggles** — Yes/No per product to add/drop it per campaign.
 
 ## The automation loop (built, hardened, tested)
@@ -95,13 +102,15 @@ not a code change, which is why 79 brands share one small engine.
 
 - `config/` — brands → campaigns, regions, the tiering framework, placement templates, targeting rules, ad units, Pluto naming, video dominations, takeovers.
 - `src/promo_ops/` — the targeting engine, order builder, resolvers (audience segments, series, site groups, ad units, geo), the add-on builder, the Case pipeline, and integration clients (FreeWheel live; Salesforce / GAM / Operative / Google Sheets).
-- **155 automated tests** across 32 files cover the tiering, naming, ad units, geo, every global rule, the add-ons, and the full automation loop — all runnable with no credentials (design-first).
+- **290 automated tests** across 58 files cover the tiering, naming, ad units, geo, every global rule (incl. content-rating include/exclude, dayparting, kids priority, flight timing), the add-ons, and the full automation loop — all runnable with no credentials (design-first).
 
 ## Where each piece stands
 
 | Area | Status |
 |---|---|
 | FreeWheel order/placement build | **Live** — verified in production across all regions |
+| Content-rating & daypart targeting | **Live** — include/exclude + dayparting, validated with a clean production push |
+| Self-service plan form | **Live** — CMs build a plan in a browser form (region-aware pickers) → drives the same engine |
 | Video Dominations (Pluto) | **Live** — built directly in FreeWheel |
 | Operative VDs + Takeovers | **Built** — emit booking specs for the manual Operative→GAM step |
 | Case → FreeWheel automation loop | **Built + tested** — idempotent, scheduled, retrying, logged |
@@ -114,7 +123,10 @@ not a code change, which is why 79 brands share one small engine.
    `salesforce-case-fields.csv`) + a sandbox/Connected App; `promo-ops salesforce-check`
    verifies, then real Cases flow through. *(In progress.)*
 2. **Pilot** — one brand, a handful of real Cases, human-reviewed; then roll out.
-3. **Operative/GAM API automation** — replace the manual takeover booking + GAM push.
+3. **IO Brand + placement Exclusivity automation** — set the IO's Brand and the standard
+   exclusivity per placement type. Write path is ready; the one dependency is a
+   REST-enabled FreeWheel API user to read the (frequently-changing) brand list.
+4. **Operative/GAM API automation** — replace the manual takeover booking + GAM push.
 
 ## Reference docs
 
