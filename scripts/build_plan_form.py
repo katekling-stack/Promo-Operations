@@ -372,6 +372,9 @@ datalist{display:none}
     <div class="note hidden" id="plutoNudge">This is a <b>Pluto</b> campaign — add the specific <b>Pluto channels / categories</b> below to target that inventory directly. Left blank, the lines run across the whole Pluto platform (broadest reach).</div>
     <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
     <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
+    <div class="field"><label>Content ratings to include (run ONLY on these)</label>
+      <div class="chips" data-chips="rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require (e.g. TV-14, PG)…"></div>
+      <div class="hint">Restrict the promo to <b>only</b> the selected rating(s) — the rating VG is added as an <b>AND</b> on <b>every</b> placement/argument, so it runs only where content matches. Region-based options, same as the Region's rating list.</div></div>
     <div class="field"><label>Pluto categories</label><div class="chips" data-chips="pluto_categories" data-source="categories"><input type="text" placeholder="type to search a category…"></div>
       <div class="hint">Category / channel options are for the selected Region.</div></div>
     <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
@@ -401,9 +404,6 @@ datalist{display:none}
     <div class="field"><label>Content rating restrictions (exclude)</label>
       <div class="chips" data-chips="rating_restrictions" data-source="ratings"><input type="text" placeholder="type a rating to exclude (e.g. TV-MA, R)…"></div>
       <div class="hint">Exclude content of the selected rating(s) — resolves to this market's <code>VG: Content Rating: {region}: {rating}</code> Video Groups and excludes them on <b>every</b> placement. Options are the ratings that exist for the selected Region.</div></div>
-    <div class="field"><label>Content ratings to include (run ONLY on these)</label>
-      <div class="chips" data-chips="rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require (e.g. TV-14, PG)…"></div>
-      <div class="hint">Restrict the promo to <b>only</b> the selected rating(s) — the rating VG is added as an <b>AND</b> on <b>every</b> placement/argument, so it runs only where content matches. Same region-based options as above.</div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
