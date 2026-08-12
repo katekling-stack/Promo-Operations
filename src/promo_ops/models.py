@@ -137,10 +137,13 @@ class SupportPlan:
     # placements for — values "older" / "younger". Empty => NO Kids IOs are built for a
     # Kids brand. Selects the Kids Video Groups layered into Kids targeting.
     kids_audience: list[str] = field(default_factory=list)
-    # Rating restrictions (VG values). Network 10 (AU) sometimes supplies rating-based
-    # Video Groups that must be excluded from its (10 Streaming) lines. Empty => none.
-    # Only applied to formats flagged `applies_rating_restrictions` in the template.
+    # Rating restrictions. The CM selects content rating(s) to EXCLUDE (rating_restrictions)
+    # and/or INCLUDE (rating_inclusions). Each resolves to the market's
+    # "VG: Content Rating: {region}: {rating}" Video Groups. Excludes drop that rating's
+    # content from every placement; includes AND that rating into every placement/argument
+    # (run ONLY on that rating's content). Raw VG ids pass through. Empty => none.
     rating_restrictions: list[str] = field(default_factory=list)
+    rating_inclusions: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None
@@ -273,6 +276,10 @@ class Placement:
     # content VGs AND-ed into the genre targeting (e.g. the MTV / BET brand VG).
     main_site_groups: list[str] = field(default_factory=list)
     include_video_groups: list[str] = field(default_factory=list)
+    # Content-rating INCLUDES: VG ids AND-ed into every relationship set's content
+    # targeting (run ONLY on that rating's content). Distinct from include_video_groups
+    # (which OR into genre) — these are their own AND-ed subset on every argument.
+    rating_include_video_groups: list[str] = field(default_factory=list)
     # Per-brand Pause Ad main-SG override (independent of remnant main). Empty -> the
     # shared pause config default. Paramount Pictures uses [Pluto, CBS Local, VCBS]
     # (no P+) instead of the standard [Pluto, P+, VCBS].

@@ -834,8 +834,37 @@ class FreeWheelClient:
         if p.recommended_show_value in (None, "") and sets:
             body["_cm_adds_in_ui"] = {
                 "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
+        # Rating INCLUDES: AND the market's rating VG(s) into every argument — each set's
+        # content targeting for set-having lines, or the placement-level content targeting
+        # for set-less flat lines. The promo then runs ONLY on that rating's content.
+        rating_inc = sorted(set(getattr(p, "rating_include_video_groups", []) or []))
+        if rating_inc:
+            if sets:
+                for st in sets:
+                    holder = st.setdefault("content_targeting", {}).setdefault("network_items", {})
+                    FreeWheelClient._and_rating_vgs(holder, rating_inc)
+            else:
+                FreeWheelClient._and_rating_vgs(body.setdefault("content_targeting", {}), rating_inc)
         FreeWheelClient._exclude_wins(body)
         return body
+
+    @staticmethod
+    def _and_rating_vgs(holder: dict[str, Any], vgs: list[str]) -> None:
+        """AND a required content video_group into an include holder (in place). `holder`
+        is whatever dict carries the "include" key — a set's network_items or a flat
+        placement's content_targeting. A bare single-subset include is promoted to the
+        multi-set AND form so the rating is a distinct AND-ed argument, not OR-ed in."""
+        subset = {"video_group": sorted(vgs), "relation_in_set": "OR"}
+        inc = holder.get("include")
+        if not isinstance(inc, dict) or not inc:
+            holder["include"] = {"video_group": sorted(vgs)}
+        elif isinstance(inc.get("set"), list):
+            inc["set"].append(subset)
+            inc["relation_between_sets"] = ["AND"] * (len(inc["set"]) - 1)
+        else:
+            existing = {k: v for k, v in inc.items() if k != "relation_in_set"}
+            holder["include"] = {"relation_between_sets": ["AND"],
+                                 "set": [{**existing, "relation_in_set": "OR"}, subset]}
 
     @staticmethod
     def _exclude_wins(body: dict) -> None:

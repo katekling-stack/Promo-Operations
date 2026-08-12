@@ -22,10 +22,36 @@ def _excluded_vgs(order):
     return vgs
 
 
-def _order(region, campaign, ratings):
+def _order(region, campaign, ratings=None, includes=None):
     return OrderBuilder().build(support_plan_from_dict(dict(
         promoted_title="NCIS", region=region, campaign={"name": campaign},
-        durations=[30], showlist=["FBI"], rating_restrictions=ratings)))
+        durations=[30], showlist=["FBI"], genres=["Drama"],
+        rating_restrictions=ratings or [], rating_inclusions=includes or [])))
+
+
+def _every_set_ands_vg(order, vg):
+    """True iff `vg` appears as an AND-ed content include subset in every targeting set
+    (and, for set-less flat lines, in the placement-level content include)."""
+    seen_any = False
+    for p in order.placements:
+        if not p.tier:
+            continue
+        b = FreeWheelClient._placement_body(p)
+        sets = b.get("relationship_targeting", {}).get("set", [])
+        if sets:
+            for s in sets:
+                inc = (s.get("content_targeting") or {}).get("network_items", {}).get("include", {})
+                subs = inc.get("set", [inc])
+                if not any(vg in (x.get("video_group") or []) for x in subs):
+                    return False
+                seen_any = True
+        else:
+            inc = (b.get("content_targeting") or {}).get("include", {})
+            subs = inc.get("set", [inc])
+            if not any(vg in (x.get("video_group") or []) for x in subs):
+                return False
+            seen_any = True
+    return seen_any
 
 
 def test_resolver_top_level_and_resolve():
@@ -56,3 +82,30 @@ def test_raw_vg_id_passes_through():
 def test_no_ratings_no_exclusion_change():
     order = _order("USA", "Paramount + - USA", [])
     assert "877330305" not in _excluded_vgs(order)
+
+
+def test_rating_include_anded_into_every_set():
+    # Include TV-14: the TV-14 VG (877330364) is AND-ed into every argument.
+    order = _order("USA", "Paramount + - USA", includes=["TV-14"])
+    assert _every_set_ands_vg(order, "877330364")
+
+
+def test_include_and_exclude_coexist():
+    order = _order("USA", "Paramount + - USA", ratings=["TV-MA"], includes=["TV-14"])
+    assert _every_set_ands_vg(order, "877330364")          # include AND-ed
+    assert "877330305" in _excluded_vgs(order)             # exclude still applied
+
+
+def test_include_region_aware():
+    # GSA include resolves to a GSA rating VG; a US label does not resolve under GSA.
+    r = RatingRestrictionResolver().load()
+    assert r.resolve("GSA", ["18"]) and not r.resolve("GSA", ["TV-14"])
+
+
+def test_no_include_no_extra_and_subset():
+    # Without an include, the genre set keeps its original 2-subset AND (SG + genre VG).
+    order = _order("USA", "Paramount + - USA")
+    p3 = next(p for p in order.placements if p.tier == 3 and not p.guaranteed)
+    inc = (FreeWheelClient._placement_body(p3)["relationship_targeting"]["set"][0]
+           ["content_targeting"]["network_items"]["include"])
+    assert len(inc.get("set", [])) == 2

@@ -420,11 +420,15 @@ class OrderBuilder:
         # exclude; they resolve to the market's "VG: Content Rating: {region}: {rating}"
         # Video Groups and are excluded on every set of every placement. Raw VG ids pass
         # through (back-compat with the Network 10 AU flow, which supplied ids directly).
+        region_code = region_cfg.get("code") or plan.region
         if plan.rating_restrictions:
-            region_code = region_cfg.get("code") or plan.region
             for vg in self.rating_resolver.resolve(region_code, plan.rating_restrictions):
                 if vg not in excl_vgs:
                     excl_vgs.append(vg)
+        # Rating INCLUDES: resolve to the market's rating VGs, AND-ed into every set (the
+        # placement runs ONLY on that rating's content). Carried per-placement, applied in
+        # _placement_body so it hits every relationship argument uniformly.
+        rating_include_vgs = self.rating_resolver.resolve(region_code, plan.rating_inclusions)
         # US Pluto FREQUENT DNR: excluded on every US brand EXCEPT Pluto TV - USA.
         from .config import relationship_targeting_config
         dnr = relationship_targeting_config().get("us_pluto_dnr", {})
@@ -500,6 +504,7 @@ class OrderBuilder:
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,
+                rating_include_video_groups=list(rating_include_vgs),
                 pause_main_site_groups=pause_main,
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,
                 content_exclude_site_groups=list(content_excl_sgs),

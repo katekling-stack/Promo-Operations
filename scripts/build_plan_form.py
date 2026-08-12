@@ -401,6 +401,9 @@ datalist{display:none}
     <div class="field"><label>Content rating restrictions (exclude)</label>
       <div class="chips" data-chips="rating_restrictions" data-source="ratings"><input type="text" placeholder="type a rating to exclude (e.g. TV-MA, R)…"></div>
       <div class="hint">Exclude content of the selected rating(s) — resolves to this market's <code>VG: Content Rating: {region}: {rating}</code> Video Groups and excludes them on <b>every</b> placement. Options are the ratings that exist for the selected Region.</div></div>
+    <div class="field"><label>Content ratings to include (run ONLY on these)</label>
+      <div class="chips" data-chips="rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require (e.g. TV-14, PG)…"></div>
+      <div class="hint">Restrict the promo to <b>only</b> the selected rating(s) — the rating VG is added as an <b>AND</b> on <b>every</b> placement/argument, so it runs only where content matches. Same region-based options as above.</div></div>
   </div>
 
   <div class="card hidden" id="mirrorCard">
@@ -701,6 +704,7 @@ function buildPlan(){
   if(L.vd_targeting.length) plan.video_domination_targeting=L.vd_targeting;
   if($("#takeover").value) plan.takeover=$("#takeover").value;
   if(L.rating_restrictions.length) plan.rating_restrictions=L.rating_restrictions;
+  if(L.rating_inclusions.length) plan.rating_inclusions=L.rating_inclusions;
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
@@ -773,6 +777,7 @@ function cellFor(col, plan){
     case "Scene Lift": return plan.scene_lift||"";
     case "Standard": return plan.standard?"Y":"";
     case "Rating Restrictions": return list(plan.rating_restrictions);
+    case "Rating Includes": case "Rating Inclusions": return list(plan.rating_inclusions);
     // "Include X" product toggles -> Y / "" (only when explicitly set on/off).
     case "Include Remnant Video": return tog("remnant_video");
     case "Include Pause Ads": return tog("pause_ads");
