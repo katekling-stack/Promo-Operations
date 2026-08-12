@@ -55,6 +55,21 @@ def test_mtve_viacom_preroll_kept_on_all_durations():
     assert any("Viacom_Promo_Pre_Roll" in n for n in long), long
 
 
+def test_pplus_intl_preroll_present_and_never_dropped():
+    # Every P+ INTL market carries Pplus_INTL_Promo_Pre_Roll on short creatives AND keeps
+    # it at :30+ (only the House Pre-Roll is duration-gated, never the INTL pre-roll).
+    INTL = "Pplus_INTL_Promo_Pre_Roll"
+    for campaign, region in [("Paramount + - UK", "UK"), ("Paramount + - LATAM", "LATAM"),
+                             ("Paramount + - AU", "AU"), ("Paramount + - IE", "IE"),
+                             ("Paramount + - FR", "FR"), ("Paramount + - GSA", "GSA"),
+                             ("Paramount + - IT", "IT")]:
+        short = _tier1_units(campaign, region, 15)
+        long = _tier1_units(campaign, region, 30)
+        assert INTL in short, (campaign, short)
+        assert INTL in long, (campaign, long)             # kept at :30+
+        assert PRE not in long, (campaign, long)          # House Pre-Roll still dropped
+
+
 def test_standard_placements_follow_the_rule():
     short = _tier1_units("Pluto TV - USA", "USA", 15, standard=True)
     long = _tier1_units("Pluto TV - USA", "USA", 30, standard=True)

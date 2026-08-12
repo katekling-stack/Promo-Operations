@@ -742,7 +742,7 @@ brands:
     - premium_preroll
     - essential_bumper
     ad_unit_groups:
-      remnant_video: pplus_cbs_pluto_vcbs
+      remnant_video: pplus_uk_house
       pause_ads: pause_ads
       premium_preroll: premium_preroll
       essential_bumper: essential_bumper
@@ -843,7 +843,7 @@ brands:
     - premium_preroll
     - essential_bumper
     ad_unit_groups:
-      remnant_video: pplus_cbs_pluto_vcbs
+      remnant_video: pplus_uk_house
       pause_ads: pause_ads
       premium_preroll: premium_preroll
       essential_bumper: essential_bumper
@@ -944,7 +944,7 @@ brands:
     - premium_preroll
     - essential_bumper
     ad_unit_groups:
-      remnant_video: pplus_cbs_pluto_vcbs
+      remnant_video: pplus_uk_house
       pause_ads: pause_ads
       premium_preroll: premium_preroll
       essential_bumper: essential_bumper

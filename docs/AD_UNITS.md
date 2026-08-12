@@ -27,6 +27,39 @@ list: `data/ad_units/seed_ad_units.csv`.
 | Paramount House Postroll | 72001 | Nick (kids) |
 | Pause_Ad | 63413 | pause_ads |
 
+## Duration-based rules (applied automatically by the engine)
+
+These are enforced on every push — CMs don't set them on the form; they follow from the
+selected durations. Verified against live IOs.
+
+**House Pre-Roll is a short-creative unit.** It runs on **:20 / :15 / :10 and below** and is
+**dropped at :30 and above** (which then run **House Mid-Roll + Post-Roll only**). Applies
+across the board — **tiered, standard, and kids**. Controlled by
+`default_drop_preroll_at_duration: 30` in `config/ad_units.yaml` (a template may pin its own).
+
+| Creative length | House units on the line |
+|---|---|
+| :20, :15, :10 (and shorter) | Pre-Roll + Mid-Roll + Post-Roll |
+| :30 and above | Mid-Roll + Post-Roll (no Pre-Roll) |
+
+**Brand-specific pre-rolls are NOT duration-gated** — only the *House* Pre-Roll drops. These
+ride on every duration per their brand config:
+- `Viacom_Promo_Pre_Roll` — MTVE / BET (kept on all durations, incl. :30+).
+- `Pplus_INTL_Promo_Pre_Roll` — **all P+ INTL markets: UK, IE, LATAM, AU, BR, and FR / GSA / IT**
+  (kept on all durations; the House Pre-Roll beside it still drops at :30+).
+- `CBS_Promo_Pre_Roll`, `Net10_Live_ Pre_Roll`, `Viacom_NickJR_Promo_Pre_Roll` — per their brands.
+
+**Brands corrected to the House-Pre-Roll-on-short rule:** Pluto TV - USA and
+CBS News - USA / - Spanish - USA previously ran Mid+Post only (no pre-roll on any length);
+they now carry the House Pre-Roll on short creatives like every other House-unit brand.
+
+## Priority rule — Pluto TV Tier 4 by duration
+
+Pluto TV - {Region} campaigns run **Tier 4 hotter** for the main creative lengths:
+**:15 and :30-and-above → priority 8** (override `-8`); shorter creatives
+(**:5 / :6 / :10 / :20 → priority 10**, override `-10`). **Non-Pluto brands keep the flat
+Tier 4 = 10.** Config: `pluto_tier4_priority` in `config/priorities.yaml`.
+
 ## Sponsored / bumper units (candidates for Premium Pre-Roll & Essential Bumper)
 
 These GUARANTEED formats aren't mapped yet — tell me which of these they use

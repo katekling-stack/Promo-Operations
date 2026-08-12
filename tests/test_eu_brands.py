@@ -1,6 +1,6 @@
 """EU markets (FR, IT, GSA, FI, DK, NO, SE, ES) — international P+/Pluto/Nick.
-Tiered 2/3/4 (no Tier 1), combined Pluto, house units (drop pre-roll at :30),
-per-country geo (GSA = Germany+Switzerland+Austria)."""
+Tiered 2/3/4 (no Tier 1), combined Pluto, INTL pre-roll + house units (House Pre-Roll
+drops at :30, INTL pre-roll retained), per-country geo (GSA = Germany+Switzerland+Austria)."""
 
 from __future__ import annotations
 
@@ -26,8 +26,10 @@ def test_pplus_fr_house_units_with_global_tier1():
     assert {p.tier for p in order.placements if not p.guaranteed} == {1, 2, 3, 4}   # Tier 1 global
     p15 = next(p for p in order.placements if p.tier == 2 and p.duration == 15)
     p30 = next(p for p in order.placements if p.tier == 2 and p.duration == 30)
-    assert p15.ad_unit_ids == ["71999", "72000", "72001"]   # house, no INTL pre-roll
-    assert p30.ad_unit_ids == ["72000", "72001"]            # pre-roll drops at :30
+    # INTL pre-roll + House Pre/Mid/Post on short; :30 drops the House Pre-Roll only
+    # (INTL pre-roll is retained). FR/GSA/IT now match the other P+ INTL markets.
+    assert p15.ad_unit_ids == ["69304", "71999", "72000", "72001"]
+    assert p30.ad_unit_ids == ["69304", "72000", "72001"]
     assert any("Pause Ad" in p.name for p in order.placements)
     assert any("Bumper - Basic Plan" in p.name for p in order.placements)
 

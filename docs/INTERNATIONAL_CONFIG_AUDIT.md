@@ -20,5 +20,14 @@ lookups + per-family rules). **All families are now validated or fixed.**
 ## Region nuances (intentional, not bugs)
 - **AU & IE** have no Pluto TV (`has_pluto=False`), so kids/promos there target **P+** platform, not Pluto.
 
+## Ad-unit + priority updates (2026-08-12)
+- **House Pre-Roll duration gating (all brands):** House Pre-Roll runs on :20/:15/:10-and-below
+  and drops at :30+ (Mid+Post only) — tiered, standard, and kids. See `docs/AD_UNITS.md`.
+- **P+ INTL pre-roll extended:** `Pplus_INTL_Promo_Pre_Roll` added to **FR, GSA, IT** on short
+  creatives (kept at :30+), matching UK/IE/LATAM/AU/BR.
+- **No-pre-roll brands corrected:** Pluto TV - USA and CBS News - USA / - Spanish - USA now
+  carry the House Pre-Roll on short creatives (were Mid+Post only).
+- **Pluto Tier 4 by duration:** :15 and :30+ → priority 8; :5/:6/:10/:20 → 10. Non-Pluto flat 10.
+
 ## Notes
 - Live reads confirmed the kids VG/SG IDs; the `.env` used was deleted. **Rotate the shared FreeWheel password** since it passed through chat.
