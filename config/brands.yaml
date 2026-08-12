@@ -41,7 +41,7 @@ brands:
     template_io_id: '94971594'
     campaign_name: CBS News - USA
     ad_unit_groups:
-      remnant_video: cbs_house_mid_post
+      remnant_video: cbs_house_all
     extra_exclude_site_groups:
     - '1037683'
     - '1038397'
@@ -135,7 +135,7 @@ brands:
     - '932411'
     - '932412'
     ad_unit_groups:
-      remnant_video: cbs_house_mid_post
+      remnant_video: cbs_house_all
       pluto_video_domination: pluto_video_domination
     formats:
     - remnant_video
@@ -1570,7 +1570,7 @@ brands:
     template_campaign_id: '81323508'
     campaign_name: CBS News - Spanish - USA
     ad_unit_groups:
-      remnant_video: cbs_house_mid_post
+      remnant_video: cbs_house_all
     extra_exclude_site_groups:
     - '1037683'
     - '1038397'

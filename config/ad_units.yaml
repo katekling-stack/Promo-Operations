@@ -1,3 +1,10 @@
+# House Pre-Roll is a SHORT-creative unit: it runs on :20/:15/:10-and-below and is dropped
+# at :30 and above (which then run House Mid-Roll + Post-Roll only). Applied globally to
+# every video placement — tiered, standard, and kids — unless a template sets its own
+# `drop_preroll_at_duration`. Brand-specific pre-rolls (Viacom / CBS / INTL / Net10 / NickJR)
+# are NOT dropped by this rule; only the House Pre-Roll drops (see drop_units for the rest).
+default_drop_preroll_at_duration: 30
+
 io_frequency_caps:
   adults:
   - 20 per 1 Month

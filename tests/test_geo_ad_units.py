@@ -41,6 +41,12 @@ def test_order_builder_populates_geo_and_ad_unit_ids():
     video = next(p for p in order.placements if p.format == "remnant_video")
     assert video.geo_country_names == ["United States"]
     assert video.geo_country_ids == ["165"]
-    assert video.ad_unit_ids == ["71999", "72000", "72001"]
+    # House Pre-Roll only on short creatives; :30+ is mid+post.
+    short = next(p for p in order.placements
+                 if p.format == "remnant_video" and p.duration and p.duration < 30)
+    assert short.ad_unit_ids == ["71999", "72000", "72001"]
+    long = next(p for p in order.placements
+                if p.format == "remnant_video" and p.duration and p.duration >= 30)
+    assert long.ad_unit_ids == ["72000", "72001"]
     pause = next(p for p in order.placements if p.format == "pause_ads")
     assert pause.ad_unit_ids == ["63413"]

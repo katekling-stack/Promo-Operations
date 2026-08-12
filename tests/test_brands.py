@@ -173,9 +173,10 @@ def test_video_domination_validation():
 
 def test_default_brand_falls_back_to_paramount_house_units():
     # No brand -> global default ad-unit group (Paramount house Pre/Mid/Post).
+    # Use a short creative so all three house units appear (:30+ drops the pre-roll).
     plan = support_plan_from_dict({
         "promoted_title": "X", "region": "USA", "formats": ["remnant_video"],
-        "durations": [30], "showlist": ["FBI"],
+        "durations": [15], "showlist": ["FBI"],
     })
     t1 = next(p for p in OrderBuilder().build(plan).placements if p.tier == 1)
     assert t1.ad_unit_ids == ["71999", "72000", "72001"]

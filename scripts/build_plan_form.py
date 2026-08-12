@@ -222,6 +222,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .seg button.on[data-v=""]{background:#eef2f9;color:var(--ink)}
 .seg button.on[data-v="yes"]{background:var(--ok);color:#fff}
 .seg button.on[data-v="no"]{background:var(--no);color:#fff}
+.seg button.on[data-k]{background:var(--blue);color:#fff}
 /* footer bar */
 .bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
  box-shadow:0 -6px 22px rgba(20,40,90,.08);padding:14px 18px;z-index:30}

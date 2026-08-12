@@ -100,7 +100,10 @@ class OrderBuilder:
         """Ad-unit (names, ids) for a duration. House Pre-Roll runs on short creatives
         only — it drops at `drop_preroll_at_duration` (e.g. 30s: mid+post only)."""
         names = self._ad_unit_names(brand_cfg, fmt)
-        drop_at = tmpl.get("drop_preroll_at_duration")
+        # House Pre-Roll runs on short creatives only; it drops at :30+ globally (the
+        # default) unless the template pins its own threshold.
+        drop_at = tmpl.get("drop_preroll_at_duration",
+                           self._ad_units.get("default_drop_preroll_at_duration"))
         if drop_at and duration and int(duration) >= int(drop_at):
             # `drop_units` (explicit names) drops only those; else drop by "preroll"
             # substring. UK P+ keeps the INTL pre-roll, dropping only the House Pre-Roll.
@@ -341,9 +344,16 @@ class OrderBuilder:
                 return per_tier
         return caps.get("default")
 
-    def _priority(self, tier_id: int, duration: Optional[int]):
-        """Priority number = tier base + duration offset (Tier 4 = flat)."""
+    def _priority(self, tier_id: int, duration: Optional[int], pluto: bool = False):
+        """Priority number = tier base + duration offset. Tier 4 is flat (10) except on
+        Pluto TV, where :15 and :30+ run at the reduced (hotter) priority."""
         if tier_id == 4:
+            ov = self._priorities.get("pluto_tier4_priority") or {}
+            if pluto and ov and duration is not None:
+                extra = set(ov.get("reduced_extra_durations", []))
+                if duration >= ov.get("reduced_min_duration", 30) or duration in extra:
+                    return ov.get("reduced", 8)
+                return ov.get("default", 10)
             return self._priorities.get("tier4_priority", 10)
         base = self._priorities.get("priority_base_by_tier", {}).get(tier_id)
         if base is None:
@@ -572,7 +582,8 @@ class OrderBuilder:
                     tier=ptier, duration=dur, no_targeting=no_targeting,
                     static_relationship_sets=static_sets,
                     priority_level=(fixed_priority if fixed_priority is not None
-                                    else self._priority(ptier, dur)),
+                                    else self._priority(ptier, dur,
+                                                        pluto=bool(brand_cfg.get("pluto_brand")))),
                     frequency_cap=fixed_fc or self._freq_cap(ptier, fmt),
                 )
                 placement.ad_unit_names, placement.ad_unit_ids = names, ids
@@ -621,7 +632,8 @@ class OrderBuilder:
                     # Recommended Show rides on Tier 1 (mirrors Dutton).
                     recommended_show_value=(plan.recommended_show_id or plan.content_id)
                                            if tier.id == 1 else None,
-                    priority_level=self._priority(tier.id, dur),
+                    priority_level=self._priority(tier.id, dur,
+                                                  pluto=bool(brand_cfg.get("pluto_brand"))),
                     frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
                 )

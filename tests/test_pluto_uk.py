@@ -22,8 +22,12 @@ def test_pluto_uk_brand_and_geo():
     assert plan.brand == "pluto_tv_uk"
     assert order.placements, "expected tiered placements"
     assert all(p.geo_country_ids == ["56"] for p in order.placements)          # UK
-    # Paramount House pre/mid/post, mirroring the reference IO
-    assert all(set(p.ad_unit_ids) == {"71999", "72000", "72001"} for p in order.placements)
+    # House pre/mid/post on short creatives; :30+ drops the House Pre-Roll (mid+post only).
+    for p in order.placements:
+        if p.duration and p.duration >= 30:
+            assert set(p.ad_unit_ids) == {"72000", "72001"}, p.name            # mid + post
+        else:
+            assert set(p.ad_unit_ids) == {"71999", "72000", "72001"}, p.name   # pre + mid + post
 
 
 def test_pluto_uk_is_pluto_only_tiered():

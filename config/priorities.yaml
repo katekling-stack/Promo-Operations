@@ -16,6 +16,16 @@ priority_base_by_tier:
   3: 7
 tier4_priority: 10
 
+# Pluto TV - {Region} campaigns run Tier 4 HOTTER for the main creative lengths: :15 and
+# :30-and-above get priority 8 (not 10); shorter creatives (:5/:6/:10/:20) stay at 10.
+# Non-Pluto campaigns keep the flat tier4_priority above. Verified against live
+# "Pluto TV - {Region}" IOs.
+pluto_tier4_priority:
+  reduced: 8                       # :15 and :30+ Tier 4 lines
+  default: 10                      # :5, :6, :10, :20 (and any other short creative)
+  reduced_min_duration: 30         # :30 and longer
+  reduced_extra_durations: [15]    # plus :15 specifically
+
 # Duration buckets -> offset added to the tier base.
 duration_offsets:
   "30": 0
