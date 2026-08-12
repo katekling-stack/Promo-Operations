@@ -59,7 +59,7 @@ def test_network_10_main_sgs_and_ad_units():
     assert "70313" in p30.ad_unit_ids and "71999" not in p30.ad_unit_ids
 
 
-def test_rating_restrictions_apply_only_to_network_10():
+def test_rating_restrictions_apply_to_all_lines():
     plan = support_plan_from_dict({
         "promoted_title": "Traitors Australia", "region": "AU",
         "campaign": {"name": "Paramount + - AU"}, "content_type": "show",
@@ -79,6 +79,8 @@ def test_rating_restrictions_apply_only_to_network_10():
         for s in body["relationship_targeting"]["set"]:
             exc = s["content_targeting"]["network_items"].get("exclude", {})
             assert set(["99001", "99002"]).issubset(set(exc.get("video_group", [])))
-    # ... and NOT on the standard P+ AU lines.
+    # ... and ALSO on the standard P+ AU lines (rating restrictions now apply order-wide,
+    # not just to Network 10). Raw VG ids pass through the resolver unchanged.
     for p in other:
-        assert "99001" not in p.extra_exclude_video_groups
+        if p.tier:
+            assert set(["99001", "99002"]).issubset(set(p.extra_exclude_video_groups))

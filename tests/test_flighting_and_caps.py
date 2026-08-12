@@ -56,7 +56,9 @@ def test_placement_schedule_uses_target_market_timezone():
         body = FreeWheelClient.to_freewheel_plan(order)["placement_bodies"][0]
         sch = body["schedule"]
         assert sch["time_zone"] == tz, region
-        assert sch["start_time"] == "2026-08-10T00:00" and sch["end_time"] == "2026-09-10T23:59"
+        # USA starts at 3 AM ET (West-to-East go-live); other markets at midnight local.
+        expected_start = "2026-08-10T03:00" if region == "USA" else "2026-08-10T00:00"
+        assert sch["start_time"] == expected_start and sch["end_time"] == "2026-09-10T23:59", region
 
 
 def test_no_schedule_when_no_flight():
