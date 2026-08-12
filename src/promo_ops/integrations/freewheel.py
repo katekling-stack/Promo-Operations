@@ -853,18 +853,36 @@ class FreeWheelClient:
         """AND a required content video_group into an include holder (in place). `holder`
         is whatever dict carries the "include" key — a set's network_items or a flat
         placement's content_targeting. A bare single-subset include is promoted to the
-        multi-set AND form so the rating is a distinct AND-ed argument, not OR-ed in."""
-        subset = {"video_group": sorted(vgs), "relation_in_set": "OR"}
+        multi-set AND form so the rating is a distinct AND-ed argument, not OR-ed in.
+
+        FreeWheel caps an advanced include at 3 AND-ed sets. When there's room the rating
+        goes in as its own subset (cleanest); at the cap it is merged into an existing
+        site-group-only subset (site_group AND video_group within one subset — a true AND,
+        same shape as the live Kids sets), so the set count never exceeds 3."""
+        vgs = sorted(vgs)
         inc = holder.get("include")
         if not isinstance(inc, dict) or not inc:
-            holder["include"] = {"video_group": sorted(vgs)}
-        elif isinstance(inc.get("set"), list):
-            inc["set"].append(subset)
-            inc["relation_between_sets"] = ["AND"] * (len(inc["set"]) - 1)
+            holder["include"] = {"video_group": vgs}
+            return
+        multi = isinstance(inc.get("set"), list)
+        subs = [{k: v for k, v in s.items() if k != "relation_in_set"}
+                for s in (inc["set"] if multi else [inc])]
+        if len(subs) < 3:
+            subs.append({"video_group": vgs})                      # dedicated AND subset
         else:
-            existing = {k: v for k, v in inc.items() if k != "relation_in_set"}
-            holder["include"] = {"relation_between_sets": ["AND"],
-                                 "set": [{**existing, "relation_in_set": "OR"}, subset]}
+            # At the 3-set cap: merge into a site-group-only subset (no new set). Fall back
+            # to any video-group-free subset; last resort OR into the first subset.
+            target = (next((s for s in subs if s.get("site_group") and not s.get("video_group")), None)
+                      or next((s for s in subs if not s.get("video_group")), None))
+            if target is not None:
+                target["video_group"] = vgs
+            else:
+                subs[0]["video_group"] = sorted(set((subs[0].get("video_group") or []) + vgs))
+        if len(subs) == 1:
+            holder["include"] = subs[0]
+        else:
+            holder["include"] = {"relation_between_sets": ["AND"] * (len(subs) - 1),
+                                 "set": [{**s, "relation_in_set": "OR"} for s in subs]}
 
     @staticmethod
     def _exclude_wins(body: dict) -> None:

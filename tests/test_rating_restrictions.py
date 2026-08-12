@@ -102,6 +102,23 @@ def test_include_region_aware():
     assert r.resolve("GSA", ["18"]) and not r.resolve("GSA", ["TV-14"])
 
 
+def test_include_respects_freewheel_3_set_cap():
+    # FreeWheel rejects an advanced include with >3 AND-ed sets. Even on placements that
+    # already have 3 sets (e.g. pause Tier 2 = series + 2 platform SGs), adding a rating
+    # include must merge in rather than create a 4th set.
+    order = _order("USA", "Paramount + - USA", ratings=["TV-MA"], includes=["TV-14"])
+    for p in order.placements:
+        if not p.tier:
+            continue
+        b = FreeWheelClient._placement_body(p)
+        for s in b.get("relationship_targeting", {}).get("set", []):
+            inc = (s.get("content_targeting") or {}).get("network_items", {}).get("include", {})
+            subs = inc.get("set", [inc])
+            assert len(subs) <= 3, (p.name, s.get("set_name"), len(subs))
+    # and the include is still present everywhere despite the merge
+    assert _every_set_ands_vg(order, "877330364")
+
+
 def test_no_include_no_extra_and_subset():
     # Without an include, the genre set keeps its original 2-subset AND (SG + genre VG).
     order = _order("USA", "Paramount + - USA")
