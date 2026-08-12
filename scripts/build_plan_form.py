@@ -327,9 +327,12 @@ datalist{display:none}
   <div class="card" id="addonsCard">
     <h2>Add-ons</h2><p class="sub">Optional Video Domination + takeover.</p>
     <div class="row">
-      <div class="field"><label>Video Domination</label><select id="video_domination"></select></div>
+      <div class="field"><label>Video Domination</label><select id="video_domination"></select>
+        <div class="hint"><b>Pluto</b> VD is built &amp; pushed to FreeWheel automatically (list the Pluto categories below). <b>Standard / 10 Streaming / My5</b> VDs run in <b>Operative</b> (no API) — they are <b>not</b> automated; you push them manually.</div></div>
       <div class="field"><label>Takeover</label><select id="takeover"></select></div>
     </div>
+    <div class="note hidden" id="manualPushReminder" style="border-left:4px solid #d97706;background:#fff7ed">
+      ⚠️ <b>Manual push required.</b> This add-on runs in <b>Operative</b>, not FreeWheel. Follow the push instructions in the Case (copy the referenced Operative order → rename → set flight dates → get the 2× approvals → <b>Push All to GAM</b>). The automation does <b>not</b> book or push this for you.</div>
     <div class="field"><label>Scene Lift</label>
       <select id="scene_lift">
         <option value="">No — normal promo</option>
@@ -509,10 +512,17 @@ $("#kidsSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",(
     x.classList.toggle("on", on);
   });
 }));
-// VD targeting show/hide
+// VD targeting show/hide + manual-push reminder (non-Pluto VD or any takeover)
+function syncManualPushReminder(){
+  const vd=$("#video_domination").value, tk=$("#takeover").value;
+  const manual=(vd&&vd!=="pluto")||!!tk;
+  $("#manualPushReminder").classList.toggle("hidden",!manual);
+}
 $("#video_domination").addEventListener("change",()=>{
   $("#vdTargetWrap").classList.toggle("hidden", $("#video_domination").value!=="pluto");
+  syncManualPushReminder();
 });
+$("#takeover").addEventListener("change",syncManualPushReminder);
 
 // Region-aware source lists for the type-to-search pickers.
 function sourceList(name){
