@@ -39,3 +39,15 @@ def test_previously_ineligible_regions_now_build_tier1(region, campaign):
     assert {"1", "2", "3", "4"} <= tiers, f"{region} missing tiers: {tiers}"
     # New Tier 1 uses the same site groups as the region's tiers 2-4.
     assert sgs["1"] and sgs["1"] == sgs["3"], f"{region} Tier 1 SGs {sgs['1']} != Tier 3 {sgs['3']}"
+
+
+def test_tier1_eligible_defaults_on_regardless_of_region():
+    # All adult campaigns support Tier 1-4 regardless of historical setup: eligibility
+    # defaults ON, so an unmapped/flagless region never silently drops Tier 1, and every
+    # configured region is eligible.
+    from promo_ops.config import regions_config
+    from promo_ops.targeting import TargetingEngine
+    eng = TargetingEngine()
+    assert eng._region_is_tier1_eligible("A_BRAND_NEW_REGION") is True   # default ON
+    for region in regions_config().get("regions", {}):
+        assert eng._region_is_tier1_eligible(region) is True, region

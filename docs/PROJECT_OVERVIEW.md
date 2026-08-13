@@ -66,13 +66,14 @@ live on its own.
 
 Every brand was reverse-engineered from its **live active IOs** and verified with
 `[QA TEST]` NOT_BOOKED drafts in FreeWheel production (network 520311). Region nuances
-are all handled — Canada language routing (EN tiered, FR/Kids not), UK/IE no-Tier-1
-split, AU no-Pluto + Network 10 (10 Streaming) + DWH Summit Tier-1 segments, LATAM geo
-region vs BR/EU per-country geo, and the EU house-unit setup.
+are all handled — Canada language routing (EN tiered, FR/Kids not), AU no-Pluto +
+Network 10 (10 Streaming) + DWH Summit Tier-1 segments, LATAM geo region vs BR/EU
+per-country geo, and the EU house-unit setup. Every adult campaign builds Tiers 1-4 in
+all markets (Tier 1 is on by default, regardless of a market's historical setup).
 
 ## Global targeting rules (encoded once, applied everywhere)
 
-- Tier label always in parentheses `(Tier N)`; per-region tier eligibility (no Tier 1 in UK/IE/EU).
+- Tier label always in parentheses `(Tier N)`; **every adult campaign builds Tiers 1-4 in all markets** (Tier 1 on by default, regardless of historical setup).
 - **Kids VG symmetry** — older-only excludes Nick Jr, younger-only excludes Nick, both include both; Kids COPPA always on.
 - **Guaranteed Plan excludes** — Premium Pre-Roll excludes Format: Clips; Basic/Essential Bumper excludes Stream Type: Live.
 - **Samsung TV Plus** excluded on all Pluto TV brand placements (US vs international SGs).

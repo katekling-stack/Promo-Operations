@@ -58,8 +58,11 @@ class TargetingEngine:
         return defaults.get(fmt, [1, 2, 3, 4])
 
     def _region_is_tier1_eligible(self, region: str) -> bool:
+        # All adult campaigns support Tier 1-4 REGARDLESS of a market's historical setup,
+        # so Tier 1 is on by default (every region in regions.yaml also sets it explicitly).
+        # A region must opt OUT with `tier1_eligible: false` to drop Tier 1.
         region_cfg = self._regions_cfg.get("regions", {}).get(region, {})
-        return bool(region_cfg.get("tier1_eligible", False))
+        return bool(region_cfg.get("tier1_eligible", True))
 
     def _tier_applies_in_region(self, tier_cfg: dict, region: str) -> bool:
         applies = tier_cfg.get("applies_to_regions", "global")
