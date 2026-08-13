@@ -36,10 +36,10 @@ def test_scope_by_line_type_and_brand_excluded():
         ex = body.get("exclusivity")
         assert ex, f"missing exclusivity on {p.name}"
         assert ex["level_of_exclusivity"] == "CUSTOM"
-        assert ex["custom_exclusivity_exemption"]["exclude"]["items"] == [
-            {"id": int(bid), "type": "BRAND"}]
+        assert ex["custom_exclusivity_exemption"]["exclude"]["item"] == {
+            "id": int(bid), "type": "BRAND"}
         if p.guaranteed:
-            assert ex["scope_of_exclusivity"] == "TARGETED_AD_UNITS_ONLY"
+            assert ex["scope_of_exclusivity"] == "TARGETED_AD_UNITS"
             saw_guar = True
         else:
             assert ex["scope_of_exclusivity"] == "ALL_AD_UNITS"

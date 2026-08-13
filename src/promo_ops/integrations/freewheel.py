@@ -882,15 +882,20 @@ class FreeWheelClient:
     @staticmethod
     def _exclusivity(brand_id: str, guaranteed: bool) -> dict[str, Any]:
         """Custom Exclusivity that excludes the IO-level Brand. Scope is ALL_AD_UNITS for
-        below-paying lines (standard + tiered remnant) and TARGETED_AD_UNITS_ONLY for
-        guaranteed lines (pre-roll / bumper / lockdown). Structure verified against a live
-        placement (custom_exclusivity_exemption.exclude, type BRAND)."""
-        scope = "TARGETED_AD_UNITS_ONLY" if guaranteed else "ALL_AD_UNITS"
+        below-paying lines (standard + tiered remnant) and TARGETED_AD_UNITS for guaranteed
+        lines (pre-roll / bumper / lockdown). Enum values + the singular `item` exclude
+        shape were confirmed by live create + read-back (the `items` array silently didn't
+        apply, and the scope is TARGETED_AD_UNITS — not ..._ONLY, which FreeWheel rejects)."""
+        scope = "TARGETED_AD_UNITS" if guaranteed else "ALL_AD_UNITS"
         return {
             "level_of_exclusivity": "CUSTOM",
             "scope_of_exclusivity": scope,
+            # "Let Content's Setting Dictate Sponsorship Exemptions". PROMO placements
+            # validate this against [CONTENT_SETTING_DICTATE, EXEMPT_FROM_UEX, NO_EXEMPT];
+            # required for the TARGETED scope (guaranteed lines).
+            "exemptions_uex": "CONTENT_SETTING_DICTATE",
             "custom_exclusivity_exemption": {
-                "exclude": {"items": [{"id": int(brand_id), "type": "BRAND"}]}},
+                "exclude": {"item": {"id": int(brand_id), "type": "BRAND"}}},
         }
 
     @staticmethod
