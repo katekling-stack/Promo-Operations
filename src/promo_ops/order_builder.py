@@ -612,7 +612,7 @@ class OrderBuilder:
                     priority_level=(kids_prio if kids_prio is not None
                                     else fixed_priority if fixed_priority is not None
                                     else self._priority(ptier, dur,
-                                                        pluto=bool(brand_cfg.get("pluto_brand")))),
+                                                        pluto=bool(brand_cfg.get("pluto_brand")) and bool(brand_cfg.get("hot_tier4", True)))),
                     frequency_cap=fixed_fc or self._freq_cap(ptier, fmt),
                 )
                 placement.ad_unit_names, placement.ad_unit_ids = names, ids
@@ -662,7 +662,7 @@ class OrderBuilder:
                     recommended_show_value=(plan.recommended_show_id or plan.content_id)
                                            if tier.id == 1 else None,
                     priority_level=self._priority(tier.id, dur,
-                                                  pluto=bool(brand_cfg.get("pluto_brand"))),
+                                                  pluto=bool(brand_cfg.get("pluto_brand")) and bool(brand_cfg.get("hot_tier4", True))),
                     frequency_cap=self._freq_cap(tier.id, fmt),
                     creative_durations_priority=list(tmpl.get("creative_durations_priority", [])),
                 )

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import pytest
 
+from promo_ops.integrations.freewheel import FreeWheelClient
 from promo_ops.order_builder import OrderBuilder
 from promo_ops.plan_loader import support_plan_from_dict
 
@@ -27,6 +28,18 @@ def test_partner_builds_tiers_1_4_pluto_only(region, campaign):
     assert sorted({p.tier for p in remnant}) == [1, 2, 3, 4]
     # Pluto TV only — every tier's main site group is the Pluto SG, nothing else.
     assert all(p.main_site_groups == ["929392"] for p in remnant)
+
+
+@pytest.mark.parametrize("region,campaign", [
+    ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE")])
+def test_partner_tier4_is_standard_minus_10(region, campaign):
+    # Partner runs on Pluto inventory but uses the STANDARD Tier 4 (-10), NOT the hotter
+    # Pluto TV Tier 4 (-8 on :15/:30+) that the Pluto TV brand runs.
+    order = _order(region, campaign, [15, 30])
+    t4 = [p for p in order.placements if p.tier == 4]
+    assert t4, "expected Tier 4 placements"
+    for p in t4:
+        assert FreeWheelClient._placement_body(p)["override"]["value"] == -10, (p.duration,)
 
 
 @pytest.mark.parametrize("region,campaign", [

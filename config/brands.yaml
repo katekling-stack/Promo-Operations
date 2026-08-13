@@ -1218,6 +1218,7 @@ brands:
     template_io_id: '96141616'
     campaign_name: Partner - DK
     display_name: Partner (DK)
+    hot_tier4: false            # standard Tier 4 (-10), not the hotter Pluto TV Tier 4 (-8)
     main_site_groups:
     - '929392'
     formats:
@@ -1236,6 +1237,7 @@ brands:
     template_campaign_id: '72910137'
     campaign_name: Partner - NO
     display_name: Partner (NO)
+    hot_tier4: false            # standard Tier 4 (-10), not the hotter Pluto TV Tier 4 (-8)
     main_site_groups:
     - '929392'
     formats:
@@ -1255,6 +1257,7 @@ brands:
     template_io_id: '81464925'
     campaign_name: Partner - SE
     display_name: Partner (SE)
+    hot_tier4: false            # standard Tier 4 (-10), not the hotter Pluto TV Tier 4 (-8)
     main_site_groups:
     - '929392'
     formats:
