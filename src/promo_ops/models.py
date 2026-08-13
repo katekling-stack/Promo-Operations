@@ -106,6 +106,11 @@ class SupportPlan:
     # using config/standard.yaml priorities/caps instead of the tier stack. Still excludes
     # the promoted title + audience. Applies to video AND pause. Blank/False = tiered.
     standard: bool = False
+    # IO-level Brand (competitive separation): the CM picks a Brand from the advertiser's
+    # synced list; `io_brand` is the picked name (or a raw brand_id). Resolved to the FW
+    # brand_id and stamped on the Insertion Order. Blank = leave the IO Brand unset.
+    # (Distinct from `brand` above, which is the internal brand-config key.)
+    io_brand: Optional[str] = None
     # Add to an EXISTING Insertion Order: when set, placements are created INTO this IO
     # (by FreeWheel IO id) instead of a new one — e.g. adding Season 2 lines to the
     # Season 1 IO that already exists. Blank = create a new IO as usual.
@@ -362,6 +367,9 @@ class Order:
     # is created). `scene_lift` records the type (ai | standard) for reference/naming.
     scene_lift_io_id: Optional[str] = None
     scene_lift: Optional[str] = None
+    # IO-level Brand: FreeWheel brand_id (resolved from the plan's picked Brand name),
+    # stamped on the Insertion Order. None = leave unset for the CM to map.
+    brand_id: Optional[str] = None
     # Add-to-existing-IO: when set, placements are created INTO this IO id (no new IO) —
     # e.g. adding Season 2 lines to the existing Season 1 IO.
     existing_io_id: Optional[str] = None

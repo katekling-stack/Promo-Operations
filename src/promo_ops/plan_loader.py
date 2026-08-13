@@ -83,6 +83,8 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         standard=_truthy(raw.get("standard")),
         existing_io_id=(str(raw.get("existing_io_id")).strip() or None
                         if raw.get("existing_io_id") else None),
+        io_brand=((str(raw.get("io_brand") or raw.get("brand_pick")).strip() or None)
+                  if (raw.get("io_brand") or raw.get("brand_pick")) else None),
         dayparts=_dayparts(raw.get("dayparts")),
         durations=[int(d) for d in (raw.get("durations") or [])],
         content_type=raw.get("content_type") or "show",

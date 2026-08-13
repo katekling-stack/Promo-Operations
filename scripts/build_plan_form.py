@@ -144,11 +144,16 @@ def _targeting_options() -> dict:
     rr = RatingRestrictionResolver().load()
     ratings = {region: rr.ratings_for(cfg.get("code") or region)
                for region, cfg in regions_config().get("regions", {}).items()}
+    # IO-level Brand list per region (synced from FreeWheel), for the Brand picker.
+    from promo_ops.brands_resolver import BrandResolver
+    br = BrandResolver().load()
+    brands = {region: br.brands_for(region) for region in br.regions()}
     return {
         "genres": [v for v, _ in bto.genres()],
         "categoriesByRegion": cats,
         "channelsByRegion": chans,
         "ratingsByRegion": {r: v for r, v in ratings.items() if v},
+        "brandsByRegion": {r: v for r, v in brands.items() if v},
         "audienceSegments": [n for n, _ in bto.audience_segments()],
         "shows": [n for _, n in bto.shows()],
     }
@@ -277,6 +282,9 @@ datalist{display:none}
     <div class="field"><label>Campaign <span class="req">*</span></label>
       <select id="campaign"></select>
       <div id="brandChip"></div>
+      <div class="field" style="margin-top:11px"><label>Brand (IO-level, for Custom Exclusivity)</label>
+        <div class="chips" data-chips="brand_pick" data-source="brands" data-single="1"><input type="text" placeholder="type to search the advertiser's Brand…"></div>
+        <div class="hint">Search the advertiser's FreeWheel Brands (filtered to the selected Region) and pick <b>one</b> — it's stamped on the IO. Not listed? Create it below, then it'll appear after the next sync.</div></div>
       <div style="margin-top:11px">
         <a href="BRAND_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
@@ -586,6 +594,7 @@ function sourceList(name){
   if(name==="categories") return (APP.categoriesByRegion||{})[rc]||[];
   if(name==="channels") return (APP.channelsByRegion||{})[rc]||[];
   if(name==="ratings") return (APP.ratingsByRegion||{})[rc]||[];
+  if(name==="brands") return (APP.brandsByRegion||{})[rc]||[];
   return null;
 }
 
@@ -610,7 +619,9 @@ document.querySelectorAll(".chips").forEach(box=>{
     if(box.dataset.numeric && !/^\d+$/.test(v)) return;
     if(src){ const list=sourceList(src)||[];               // strict: must be a real value
       const hit=list.find(x=>x.toLowerCase()===v.toLowerCase()); if(!hit) return; v=hit; }
-    if(!state.lists[key].includes(v)){ state.lists[key].push(v); render(); }
+    if(!state.lists[key].includes(v)){
+      if(box.dataset.single) state.lists[key]=[];         // single-select: replace
+      state.lists[key].push(v); render(); }
     input.value=""; closeMenu(); };
   const closeMenu=()=>{ menu.classList.add("hidden"); menu.innerHTML=""; };
   const showMenu=()=>{
@@ -705,6 +716,7 @@ function buildPlan(){
   if($("#takeover").value) plan.takeover=$("#takeover").value;
   if(L.rating_restrictions.length) plan.rating_restrictions=L.rating_restrictions;
   if(L.rating_inclusions.length) plan.rating_inclusions=L.rating_inclusions;
+  if(L.brand_pick && L.brand_pick.length) plan.io_brand=L.brand_pick[0];   // IO Brand (single)
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;

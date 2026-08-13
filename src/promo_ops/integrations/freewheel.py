@@ -644,13 +644,14 @@ class FreeWheelClient:
         }
         insertion_order_body = {   # confirmed IO fields (see docs/FREEWHEEL.md)
             "name": order.name,                       # e.g. "Frisco King - USA"
-            # Brand left BLANK by design: the assigned CM creates/maps the Brand under
-            # the advertiser and sets it before booking the IO. (brand_id available in
-            # order.template_ref for reference.)
-            # Left NOT_BOOKED (draft) on create — never auto-book/go-live.
+            # Brand: stamped when the plan picks one (resolved to the advertiser's FW
+            # brand_id from the synced Brand list). Left BLANK when unset, for the CM to
+            # map before booking. Left NOT_BOOKED (draft) on create — never auto-book.
             "currency": "USD",
             "schedule": {"start_time": order.flight.start, "end_time": order.flight.end},
         }
+        if getattr(order, "brand_id", None):
+            insertion_order_body["brand_id"] = str(order.brand_id)
         # Primary Trafficker — the submitting CM owns the draft they requested.
         if getattr(order, "primary_trafficker", None):
             insertion_order_body["primary_trafficker"] = order.primary_trafficker

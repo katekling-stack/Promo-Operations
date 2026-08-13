@@ -44,6 +44,8 @@ class OrderBuilder:
         self.genre_resolver = (genre_resolver or GenreVideoGroupResolver()).load()
         from .ratings import RatingRestrictionResolver
         self.rating_resolver = RatingRestrictionResolver().load()
+        from .brands_resolver import BrandResolver
+        self.brand_resolver = BrandResolver().load()
         self._brands = brands_config()
         self._templates = placement_templates_config()
         self._priorities = priorities_config()
@@ -692,6 +694,8 @@ class OrderBuilder:
             scene_lift=plan.scene_lift,
             scene_lift_io_id=(sl_target or {}).get("io_id"),
             existing_io_id=plan.existing_io_id,
+            brand_id=(self.brand_resolver.resolve(plan.region, plan.io_brand)
+                      if plan.io_brand else None),
             dayparts=list(plan.dayparts or []),
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.
