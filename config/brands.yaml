@@ -1207,6 +1207,66 @@ brands:
         drop_units:
         - Paramount House Preroll
     pluto_brand: true
+  # Partner - {NO/DK/SE}: Viaplay-style promo partner brand. Pluto TV ONLY (SG 929392),
+  # tiered remnant 1-4 (Tier 1 audience included), House ad units with Pre-roll on :20 and
+  # under (dropped at :30+, leaving Mid/Post-roll). Mirrors the live Partner IOs
+  # (e.g. DK IO 96141616, SE IO 81464925). No pause ads in the reference IOs.
+  partner_dk:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72910141'
+    template_io_id: '96141616'
+    campaign_name: Partner - DK
+    display_name: Partner (DK)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  partner_no:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72910137'
+    campaign_name: Partner - NO
+    display_name: Partner (NO)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
+  partner_se:
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '72910060'
+    template_io_id: '81464925'
+    campaign_name: Partner - SE
+    display_name: Partner (SE)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
   pluto_tv_kids_se:
     advertiser_name_contains:
     - VCBS
