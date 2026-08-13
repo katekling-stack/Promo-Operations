@@ -662,6 +662,15 @@ class FreeWheelClient:
         if io_caps:
             insertion_order_body["delivery"] = {"frequency_cap": io_caps}
         placement_bodies = [FreeWheelClient._placement_body(p) for p in order.placements]
+        # Custom Exclusivity: when the IO carries a Brand, every placement excludes that
+        # Brand — Scope ALL_AD_UNITS for below-paying lines (standard + tiered remnant),
+        # TARGETED_AD_UNITS_ONLY for guaranteed lines (pre-roll / bumper / lockdown / etc).
+        # This also replaces FreeWheel's default (so the kids-only "Rating: G" industry
+        # exclude is never carried through).
+        if getattr(order, "brand_id", None):
+            for p, body in zip(order.placements, placement_bodies):
+                body["exclusivity"] = FreeWheelClient._exclusivity(
+                    order.brand_id, bool(getattr(p, "guaranteed", False)))
         # Placement flighting schedule in the TARGET MARKET's time zone (regions.yaml).
         # FreeWheel takes the schedule at the placement level (the IO field is ignored).
         schedule = FreeWheelClient._placement_schedule(order.region, order.flight)
@@ -869,6 +878,20 @@ class FreeWheelClient:
                 FreeWheelClient._and_rating_vgs(body.setdefault("content_targeting", {}), rating_inc)
         FreeWheelClient._exclude_wins(body)
         return body
+
+    @staticmethod
+    def _exclusivity(brand_id: str, guaranteed: bool) -> dict[str, Any]:
+        """Custom Exclusivity that excludes the IO-level Brand. Scope is ALL_AD_UNITS for
+        below-paying lines (standard + tiered remnant) and TARGETED_AD_UNITS_ONLY for
+        guaranteed lines (pre-roll / bumper / lockdown). Structure verified against a live
+        placement (custom_exclusivity_exemption.exclude, type BRAND)."""
+        scope = "TARGETED_AD_UNITS_ONLY" if guaranteed else "ALL_AD_UNITS"
+        return {
+            "level_of_exclusivity": "CUSTOM",
+            "scope_of_exclusivity": scope,
+            "custom_exclusivity_exemption": {
+                "exclude": {"items": [{"id": int(brand_id), "type": "BRAND"}]}},
+        }
 
     @staticmethod
     def _and_rating_vgs(holder: dict[str, Any], vgs: list[str]) -> None:
