@@ -57,15 +57,32 @@ class FreeWheelClient:
 
     # --- auth (OAuth 2.1 PKCE) ------------------------------------------ #
 
+    @staticmethod
+    def _auth_json(resp: "requests.Response", step: str) -> dict:
+        """Parse an auth-step response as JSON with a clear error on failure. A transient
+        gateway status (429/5xx — e.g. FreeWheel's hub returning a 502 'Bad Gateway' HTML
+        page during an outage) becomes a retryable TransientAPIError so with_retries backs
+        off, instead of a raw JSONDecodeError on the HTML body."""
+        if is_transient_status(resp.status_code):
+            raise TransientAPIError(
+                resp.status_code,
+                f"FreeWheel login service is temporarily unavailable at {step} "
+                f"(HTTP {resp.status_code}) — try again shortly")
+        try:
+            return resp.json()
+        except ValueError:
+            raise RuntimeError(
+                f"FreeWheel {step} returned an unexpected non-JSON response "
+                f"(HTTP {resp.status_code}): {resp.text[:120]!r}")
+
     def authenticate(self) -> str:
         s = self._session
-        client_id = s.post(
+        client_id = self._auth_json(s.post(
             f"{self.hub_url}/oauth/register",
             json={"client_name": "promo-ops", "redirect_uris": [REDIRECT_URI],
                   "grant_types": ["authorization_code", "refresh_token"],
                   "response_types": ["code"], "token_endpoint_auth_method": "none"},
-            timeout=30,
-        ).json()["client_id"]
+            timeout=30), "register")["client_id"]
 
         verifier = _b64url(secrets.token_bytes(48))
         challenge = _b64url(hashlib.sha256(verifier.encode()).digest())
@@ -81,6 +98,10 @@ class FreeWheelClient:
             "username": self._username, "password": self._password,
             "environment": self.environment, "csrf_token": csrf},
             allow_redirects=False, timeout=30)
+        if is_transient_status(r.status_code):
+            raise TransientAPIError(
+                r.status_code, f"FreeWheel login service is temporarily unavailable "
+                f"(HTTP {r.status_code}) — try again shortly")
         code, loc, hops = None, r.headers.get("Location"), 0
         while loc and hops < 5:
             if "code=" in loc:
@@ -91,9 +112,9 @@ class FreeWheelClient:
         if not code:
             raise RuntimeError("FreeWheel login failed (no auth code). Check credentials/environment.")
 
-        tok = s.post(f"{self.hub_url}/oauth/token", data={
+        tok = self._auth_json(s.post(f"{self.hub_url}/oauth/token", data={
             "grant_type": "authorization_code", "code": code, "redirect_uri": REDIRECT_URI,
-            "client_id": client_id, "code_verifier": verifier}, timeout=30).json()
+            "client_id": client_id, "code_verifier": verifier}, timeout=30), "token")
         self._token = tok.get("access_token")
         if not self._token:
             raise RuntimeError(f"FreeWheel token exchange failed: {tok}")

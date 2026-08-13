@@ -25,6 +25,7 @@ from typing import Any
 from .models import Order
 from .order_builder import OrderBuilder
 from .plan_loader import load_plan, support_plan_from_dict
+from .retry import TransientAPIError
 
 
 def _order_to_json(order: Order) -> str:
@@ -137,7 +138,17 @@ def _push_target(order: Order, target: str, live: bool) -> dict[str, Any]:
 def _cmd_push(args: argparse.Namespace) -> int:
     plan = load_plan(args.plan)
     order = OrderBuilder().build(plan)
-    result = _push_target(order, args.target, args.live)
+    try:
+        result = _push_target(order, args.target, args.live)
+    except TransientAPIError as e:
+        # FreeWheel gateway hiccup (e.g. a 502 outage) — a clear message, not a traceback.
+        code = getattr(e, "status", None)
+        print(f"\n⚠️  FreeWheel's service is temporarily unavailable"
+              f"{f' (HTTP {code})' if code else ''} — nothing was created.\n\n"
+              "This is a FreeWheel-side hiccup, not a problem with your plan, your login, "
+              "or the tool. Wait a few minutes and re-run the exact same command.",
+              file=sys.stderr)
+        return 2
     print(json.dumps(result, indent=2, ensure_ascii=False))
     if not args.live:
         print("\n(dry-run — pass --live to actually create)", file=sys.stderr)
