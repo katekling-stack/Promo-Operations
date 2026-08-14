@@ -370,6 +370,11 @@ class Order:
     # IO-level Brand: FreeWheel brand_id (resolved from the plan's picked Brand name),
     # stamped on the Insertion Order. None = leave unset for the CM to map.
     brand_id: Optional[str] = None
+    # The picked/typed Brand name + whether this is a kids campaign — used on a --live
+    # push to find-or-create the Brand under the advertiser when brand_id is unresolved
+    # (kids brands get Industry Rating: G). None = no Brand chosen.
+    io_brand: Optional[str] = None
+    io_brand_kids: bool = False
     # Add-to-existing-IO: when set, placements are created INTO this IO id (no new IO) —
     # e.g. adding Season 2 lines to the existing Season 1 IO.
     existing_io_id: Optional[str] = None

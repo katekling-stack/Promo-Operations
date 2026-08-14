@@ -696,6 +696,8 @@ class OrderBuilder:
             existing_io_id=plan.existing_io_id,
             brand_id=(self.brand_resolver.resolve(plan.region, plan.io_brand)
                       if plan.io_brand else None),
+            io_brand=(plan.io_brand or None),
+            io_brand_kids=bool(brand_cfg.get("kids")),
             dayparts=list(plan.dayparts or []),
             template_ref={
                 # Exact advertiser/campaign come from the plan; brand_cfg is fallback.

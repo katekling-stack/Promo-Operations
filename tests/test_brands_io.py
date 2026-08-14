@@ -45,3 +45,22 @@ def test_region_scoped_names():
     # A name is resolved within its region; an unknown name -> None (not cross-region).
     r = BrandResolver().load()
     assert r.resolve("SE", "definitely not a brand name") is None
+
+
+def test_advertiser_lookup_for_region_and_kids():
+    # find-or-create needs the (region, kids) -> advertiser mapping from the synced data.
+    r = BrandResolver().load()
+    assert r.advertiser_for("SE", False) and r.advertiser_for("SE", True)
+    assert r.advertiser_for("SE", False) != r.advertiser_for("SE", True)   # adult vs kids
+    assert r.advertiser_for("USA", False)
+
+
+def test_new_brand_name_carries_to_order_for_create():
+    # A typed name not in the synced list -> io_brand set, brand_id None (create on push),
+    # kids flag from the campaign.
+    from promo_ops.order_builder import OrderBuilder
+    o = OrderBuilder().build(support_plan_from_dict(dict(
+        promoted_title="ZZ", region="SE", campaign={"name": "Nick - SE"},
+        durations=[15], io_brand="ZZ Brand New Title - Kids (Promo) (SE)")))
+    assert o.io_brand == "ZZ Brand New Title - Kids (Promo) (SE)"
+    assert o.io_brand_kids is True and o.brand_id is None

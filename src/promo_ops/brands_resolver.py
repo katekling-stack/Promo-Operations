@@ -25,6 +25,8 @@ class BrandResolver:
         # region -> list[(brand_name, brand_id)]  and  region -> {norm_name: brand_id}
         self._by_region: dict[str, list[tuple[str, str]]] = {}
         self._index: dict[str, dict[str, str]] = {}
+        # (region, kids) -> advertiser_id, for find-or-create of a new brand
+        self._advertiser: dict[tuple[str, bool], str] = {}
         self._loaded = False
 
     def load(self) -> "BrandResolver":
@@ -36,10 +38,19 @@ class BrandResolver:
                     bid = (row.get("brand_id") or "").strip()
                     if not region or not name or not bid:
                         continue
+                    kids = str(row.get("kids") or "0").strip() in ("1", "true", "True")
+                    adv = (row.get("advertiser_id") or "").strip()
                     self._by_region.setdefault(region, []).append((name, bid))
                     self._index.setdefault(region, {})[_norm(name)] = bid
+                    if adv:
+                        self._advertiser.setdefault((region, kids), adv)
         self._loaded = True
         return self
+
+    def advertiser_for(self, region: str, kids: bool) -> str | None:
+        """The VCBS (Promo) advertiser id for a region + kids/adult, from the synced data."""
+        self._ensure()
+        return self._advertiser.get((region, bool(kids)))
 
     def _ensure(self):
         if not self._loaded:

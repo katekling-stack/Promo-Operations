@@ -283,8 +283,8 @@ datalist{display:none}
       <select id="campaign"></select>
       <div id="brandChip"></div>
       <div class="field" style="margin-top:11px"><label>Brand (IO-level, for Custom Exclusivity)</label>
-        <div class="chips" data-chips="brand_pick" data-source="brands" data-single="1"><input type="text" placeholder="type to search the advertiser's Brand…"></div>
-        <div class="hint">Search the advertiser's FreeWheel Brands (filtered to the selected Region) and pick <b>one</b> — it's stamped on the IO. Not listed? Create it below, then it'll appear after the next sync.</div></div>
+        <div class="chips" data-chips="brand_pick" data-source="brands" data-single="1" data-allow-new="1"><input type="text" placeholder="type to search — or type a new name to create it…"></div>
+        <div class="hint">Pick <b>one</b> existing Brand (region-filtered) — or <b>type a new name</b> (e.g. <code>{Title} (Promo) ({CC})</code>, or <code>… - Kids (Promo) (CC)</code>) and it'll be <b>created on the live push</b> under the advertiser (kids get Industry <b>Rating: G</b>). New adult titles may also need a Global Brand created via the button below.</div></div>
       <div style="margin-top:11px">
         <a href="BRAND_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
@@ -617,8 +617,9 @@ document.querySelectorAll(".chips").forEach(box=>{
   };
   const add=v=>{ v=(v||"").trim(); if(!v) return;
     if(box.dataset.numeric && !/^\d+$/.test(v)) return;
-    if(src){ const list=sourceList(src)||[];               // strict: must be a real value
-      const hit=list.find(x=>x.toLowerCase()===v.toLowerCase()); if(!hit) return; v=hit; }
+    if(src){ const list=sourceList(src)||[];               // strict: must be a real value…
+      const hit=list.find(x=>x.toLowerCase()===v.toLowerCase());
+      if(hit){ v=hit; } else if(!box.dataset.allowNew){ return; } }  // …unless data-allow-new (create-on-push)
     if(!state.lists[key].includes(v)){
       if(box.dataset.single) state.lists[key]=[];         // single-select: replace
       state.lists[key].push(v); render(); }

@@ -123,3 +123,68 @@ class FreeWheelMRMClient:
             out.append({"id": self._text(b, "id"), "name": self._text(b, "name"),
                         "status": self._text(b, "status")})
         return out
+
+    # --- writes ---------------------------------------------------------- #
+
+    def _post_xml(self, path: str, body: str) -> ET.Element:
+        def call() -> ET.Element:
+            self._ensure_token()
+            r = self._session.post(
+                f"{self.base}{path}", data=body,
+                headers={"Authorization": f"Bearer {self._token}",
+                         "Content-Type": "application/xml", "accept": "application/xml"},
+                timeout=60)
+            if is_transient_status(r.status_code):
+                raise TransientAPIError(r.status_code, f"MRM {path} temporarily unavailable")
+            if r.status_code not in (200, 201):
+                raise RuntimeError(f"MRM POST {path} -> HTTP {r.status_code}: {r.text[:200]!r}")
+            return ET.fromstring(r.text)
+        return with_retries(
+            call, attempts=self._retry_attempts, base_delay=self._retry_base_delay,
+            retry_on=lambda e: isinstance(e, (TransientAPIError, requests.exceptions.RequestException)),
+            sleep=self._sleep)
+
+    def find_brand(self, advertiser_id: str, name: str) -> Optional[str]:
+        """Exact-name (case-insensitive) ACTIVE brand id under an advertiser, or None.
+        Scans the live list so it sees brands created since the last sync."""
+        want = " ".join(str(name or "").strip().lower().split())
+        for b in self.list_brands(advertiser_id):
+            if (b["status"] or "").upper() == "ACTIVE" \
+                    and " ".join(b["name"].strip().lower().split()) == want:
+                return b["id"]
+        return None
+
+    def create_brand(self, advertiser_id: str, name: str,
+                     industry_id: Optional[str] = None) -> str:
+        """Create a Brand under an advertiser and return its id. Only `name` is required;
+        pass industry_id to set the Custom Industry (kids brands = Rating: G, id 5289)."""
+        from xml.sax.saxutils import escape
+        ind = (f"<industry><industry_id>{int(industry_id)}</industry_id></industry>"
+               if industry_id else "")
+        root = self._post_xml(f"/services/v3/advertisers/{advertiser_id}/brands",
+                              f"<brand><name>{escape(name)}</name>{ind}</brand>")
+        bid = self._text(root, "id")
+        if not bid:
+            raise RuntimeError(f"MRM create-brand returned no id: {ET.tostring(root)[:160]!r}")
+        return bid
+
+    def find_or_create_brand(self, advertiser_id: str, name: str,
+                             industry_id: Optional[str] = None) -> tuple[str, bool]:
+        """Return (brand_id, created?). Finds the brand by exact name, else creates it
+        (with the given industry_id, e.g. kids -> Rating: G)."""
+        existing = self.find_brand(advertiser_id, name)
+        if existing:
+            return existing, False
+        return self.create_brand(advertiser_id, name, industry_id), True
+
+    def brand_global_mapping(self, advertiser_id: str, brand_id: str) -> Optional[str]:
+        """The GLOBAL_BRAND entity_id a brand is mapped to, or None. Empty means the
+        matching global brand doesn't exist yet (must be created via 'Create a Brand in
+        FW' so FreeWheel auto-maps it by name)."""
+        root = self._get_xml(f"/services/v3/advertisers/{advertiser_id}/brands/{brand_id}")
+        gm = root.find("global_mapping")
+        if gm is None:
+            return None
+        eid = gm.find("entity_id")
+        return (eid.text or "").strip() if eid is not None and eid.text else None
+

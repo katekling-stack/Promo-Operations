@@ -150,6 +150,16 @@ def _cmd_push(args: argparse.Namespace) -> int:
               file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2, ensure_ascii=False))
+    brand = isinstance(result, dict) and result.get("brand")
+    if brand:
+        if brand.get("warning"):
+            print(f"\n⚠️  Brand: {brand['warning']}", file=sys.stderr)
+        elif brand.get("created"):
+            extra = f" (Industry {brand['industry']})" if brand.get("industry") else ""
+            print(f"\n🏷️  Created Brand {brand['name']!r} (id {brand['brand_id']}){extra} and "
+                  "mapped it to the IO.", file=sys.stderr)
+        if brand.get("global_mapping_missing"):
+            print(f"❗ {brand.get('action')}", file=sys.stderr)
     if not args.live:
         print("\n(dry-run — pass --live to actually create)", file=sys.stderr)
     return 0

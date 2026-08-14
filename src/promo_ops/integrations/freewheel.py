@@ -582,6 +582,9 @@ class FreeWheelClient:
         Validated on the test network (520310): create-IO and create-placement accept
         JSON object bodies via the gateway; IO is created NOT_BOOKED (draft).
         """
+        # On a live push, find-or-create the IO Brand (if the CM picked/typed one that
+        # isn't already resolved) BEFORE building the plan, so exclusivity carries it.
+        brand_note = None if dry_run else self._ensure_io_brand(order)
         plan = self.to_freewheel_plan(order)
         if dry_run:
             return {"dry_run": True, "planned_calls": plan}
@@ -609,7 +612,38 @@ class FreeWheelClient:
             b = {k: v for k, v in body.items() if not k.startswith("_")}  # drop reference-only keys
             b["insertion_order_id"] = io_id
             placements.append(self._invoke("sh_1_0_create-a-placement", body=b))
-        return {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
+        out = {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
+        if brand_note:
+            out["brand"] = brand_note
+        return out
+
+    def _ensure_io_brand(self, order: Order) -> Optional[dict[str, Any]]:
+        """Live find-or-create of the IO Brand when the CM picked/typed one that isn't
+        already resolved to a synced brand_id. Sets order.brand_id and returns a note
+        (created?, and whether the Global Mapping is missing so the team must create the
+        global brand via 'Create a Brand in FW'). Returns None when there's nothing to do."""
+        if not getattr(order, "io_brand", None) or order.brand_id:
+            return None
+        from .freewheel_mrm import FreeWheelMRMClient
+        from ..brands_resolver import BrandResolver
+        adv = BrandResolver().load().advertiser_for(order.region, bool(order.io_brand_kids))
+        if not adv:
+            return {"name": order.io_brand,
+                    "warning": f"No (Promo) advertiser mapping for {order.region} "
+                               f"(kids={order.io_brand_kids}); IO Brand left unset."}
+        mrm = FreeWheelMRMClient()
+        industry_id = "5289" if order.io_brand_kids else None   # kids -> Industry Rating: G
+        brand_id, created = mrm.find_or_create_brand(adv, order.io_brand, industry_id=industry_id)
+        order.brand_id = brand_id
+        note: dict[str, Any] = {"name": order.io_brand, "brand_id": brand_id,
+                                "created": created, "advertiser_id": adv}
+        if order.io_brand_kids:
+            note["industry"] = "Rating: G"
+        if not mrm.brand_global_mapping(adv, brand_id):
+            note["global_mapping_missing"] = True
+            note["action"] = (f"Global brand for {order.io_brand!r} not found — create it via "
+                              f"'Create a Brand in FW' so FreeWheel auto-maps it by name.")
+        return note
 
     def create_addon_order(self, campaign_id: str, io_name: str,
                            placement_bodies: list[dict], flight: Optional[dict] = None,
