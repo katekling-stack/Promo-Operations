@@ -96,6 +96,8 @@ The tool reads your credentials from a small file called `.env`.
    FREEWHEEL_NETWORK_ID=520311        # 520311 = production (520310 is the test network)
    FREEWHEEL_USERNAME=<your FreeWheel API username>
    FREEWHEEL_PASSWORD=<your FreeWheel API password>
+   FREEWHEEL_MRM_CLIENT_ID=<PromoAdOps API INTERNAL client id>
+   FREEWHEEL_MRM_CLIENT_SECRET=<PromoAdOps API INTERNAL client secret>
    ```
    Leave everything else as-is. **Never share or email this file** — it has your password.
    *(Salesforce lines can stay blank; that part isn't turned on yet.)*
