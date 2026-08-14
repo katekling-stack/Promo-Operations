@@ -1254,10 +1254,21 @@ class FreeWheelClient:
         # Geo: API writes COUNTRY IDs (int64). Names ("United States") are what the
         # team searches in the UI and are resolved to IDs via the country table. Some
         # regions target a geography REGION grouping instead (e.g. LATAM = region 1069).
+        include: dict[str, Any] = {}
         if getattr(p, "geo_region_ids", None):
-            body["geography_targeting"] = {"include": {"region": p.geo_region_ids}}
+            include["region"] = p.geo_region_ids
         elif p.geo_country_ids:
-            body["geography_targeting"] = {"include": {"country": p.geo_country_ids}}
+            include["country"] = p.geo_country_ids
+        # Optional sub-country overlay — additive to the country/region base. FreeWheel's
+        # include object holds each level under its own key (state/dma/city as FW ID sets).
+        if getattr(p, "geo_state_ids", None):
+            include["state"] = list(p.geo_state_ids)
+        if getattr(p, "geo_dma_ids", None):
+            include["dma"] = list(p.geo_dma_ids)
+        if getattr(p, "geo_city_ids", None):
+            include["city"] = list(p.geo_city_ids)
+        if include:
+            body["geography_targeting"] = {"include": include}
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
         # Ad units: link_method NOT_LINKED (mirrors Dutton — creatives linked later by

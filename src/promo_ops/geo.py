@@ -73,3 +73,187 @@ class CountryResolver:
     def ids_for(self, names: list[str]) -> list[str]:
         """Resolved FW country IDs for a list of names (unmatched dropped)."""
         return [m.id for m in self.resolve_all(names) if m.id]
+
+
+# Country NAME -> ISO code. regions.yaml lists country NAMES; FreeWheel's state/dma/city
+# tables key geography by ISO country code, so we bridge the two to scope sub-country geo
+# resolution to a region's footprint. Keep in sync with scripts/sync_geo.py.
+NAME_TO_ISO = {
+    "United States": "US", "Canada": "CA", "Australia": "AU", "Mexico": "MX",
+    "Argentina": "AR", "Chile": "CL", "Colombia": "CO", "Peru": "PE", "Brazil": "BR",
+    "United Kingdom": "GB", "Ireland": "IE", "France": "FR", "Italy": "IT",
+    "Germany": "DE", "Switzerland": "CH", "Austria": "AT", "Finland": "FI",
+    "Denmark": "DK", "Norway": "NO", "Sweden": "SE", "Spain": "ES",
+}
+
+
+@dataclass
+class GeoMatch:
+    query: str
+    id: Optional[str]
+    label: str = ""
+
+    @property
+    def matched(self) -> bool:
+        return self.id is not None
+
+
+class GeoResolver:
+    """Resolve state / DMA / city NAMES a CM enters -> FreeWheel geo IDs.
+
+    Sub-country geo is written on a placement as
+    ``geography_targeting.include.{state,dma,city}`` using the numeric FreewheelID from
+    FreeWheel's Geography Dataset (see scripts/sync_geo.py). Names never reach the API.
+
+    - **State** is scoped by ISO country (a region maps to its countries' ISO codes) — the
+      same 2-letter code ("CA") means California under US and a province under CA, so we
+      never resolve a state without a country scope.
+    - **DMA** is a US-only Nielsen concept; matched by DMA number ("501") or name.
+    - **City** names are wildly ambiguous ("Springfield" is in 30+ states), so a city is
+      entered as ``"City, ST"`` and resolved within the region's ISO set + that state.
+
+    Raw numeric IDs always pass through unchanged (back-compat / power users).
+    """
+
+    def __init__(self, data_dir: Path = DATA_DIR):
+        self.data_dir = Path(data_dir)
+        # state: (iso, key) -> id, where key is the normalized code or name
+        self._state: dict[tuple[str, str], str] = {}
+        # (iso, state_id) -> state code, for building "City, ST" scopes and form labels
+        self._state_code_by_id: dict[tuple[str, str], str] = {}
+        self._states_by_iso: dict[str, list[dict]] = {}
+        self._dma: dict[str, str] = {}         # normalized code/name -> id
+        self._dmas: list[dict] = []            # ordered [{id, code, name}] for the form
+        self._city_loaded = False
+        self._city: dict[tuple[str, str, str], str] = {}   # (iso, state_id, name) -> id
+        self._loaded = False
+
+    # -- loading -----------------------------------------------------------------
+    def load(self) -> "GeoResolver":
+        self._load_states()
+        self._load_dmas()
+        self._loaded = True
+        return self
+
+    def _load_states(self) -> None:
+        path = self.data_dir / "state.csv"
+        if not path.exists():
+            return
+        with path.open(encoding="utf-8", newline="") as fh:
+            for r in csv.DictReader(fh):
+                iso, fid = r["country_iso"].strip(), r["fw_id"].strip()
+                code, name = r["code"].strip(), r["name"].strip()
+                if not (iso and fid):
+                    continue
+                if code:
+                    self._state[(iso, normalize_title(code))] = fid
+                if name:
+                    self._state[(iso, normalize_title(name))] = fid
+                self._state_code_by_id[(iso, fid)] = code
+                self._states_by_iso.setdefault(iso, []).append(
+                    {"id": fid, "code": code, "name": name})
+
+    def _load_dmas(self) -> None:
+        path = self.data_dir / "dma.csv"
+        if not path.exists():
+            return
+        with path.open(encoding="utf-8", newline="") as fh:
+            for r in csv.DictReader(fh):
+                fid, code, name = r["fw_id"].strip(), r["dma_code"].strip(), r["name"].strip()
+                if not fid:
+                    continue
+                if code:
+                    self._dma[normalize_title(code)] = fid
+                if name:
+                    self._dma[normalize_title(name)] = fid
+                    # also index the city part before the ", ST" suffix ("New York")
+                    head = name.rsplit(",", 1)[0].strip()
+                    self._dma.setdefault(normalize_title(head), fid)
+                self._dmas.append({"id": fid, "code": code, "name": name})
+
+    def _load_cities(self) -> None:
+        """City is big (200k+ rows) — load lazily, only when a plan targets cities."""
+        if self._city_loaded:
+            return
+        path = self.data_dir / "city.csv"
+        if path.exists():
+            with path.open(encoding="utf-8", newline="") as fh:
+                for r in csv.DictReader(fh):
+                    self._city[(r["country_iso"].strip(), r["state_fw_id"].strip(),
+                                normalize_title(r["name"].strip()))] = r["fw_id"].strip()
+        self._city_loaded = True
+
+    # -- region helpers ----------------------------------------------------------
+    @staticmethod
+    def isos_for_countries(country_names: list[str]) -> list[str]:
+        return [iso for iso in (NAME_TO_ISO.get(n) for n in country_names) if iso]
+
+    def states_for(self, isos: list[str]) -> list[dict]:
+        """Form picker options: [{id, code, name}] for the given ISO countries."""
+        if not self._loaded:
+            self.load()
+        out: list[dict] = []
+        for iso in isos:
+            for s in self._states_by_iso.get(iso, []):
+                out.append({**s, "iso": iso})
+        return out
+
+    def dmas(self) -> list[dict]:
+        if not self._loaded:
+            self.load()
+        return list(self._dmas)
+
+    # -- resolution --------------------------------------------------------------
+    def resolve_states(self, isos: list[str], values: list[str]) -> list[GeoMatch]:
+        if not self._loaded:
+            self.load()
+        out: list[GeoMatch] = []
+        for v in values:
+            q = str(v).strip()
+            if q.isdigit():
+                out.append(GeoMatch(q, q, q))
+                continue
+            fid = next((self._state[(iso, normalize_title(q))]
+                        for iso in isos if (iso, normalize_title(q)) in self._state), None)
+            out.append(GeoMatch(q, fid, q))
+        return out
+
+    def resolve_dmas(self, values: list[str]) -> list[GeoMatch]:
+        if not self._loaded:
+            self.load()
+        out: list[GeoMatch] = []
+        for v in values:
+            q = str(v).strip()
+            if q.isdigit() and q not in self._dma:  # a raw FW id, not a DMA number
+                # DMA numbers ARE digits too; treat 3-digit 5xx as a DMA code first.
+                pass
+            key = normalize_title(q)
+            fid = self._dma.get(key)
+            if fid is None and q.isdigit():
+                fid = q  # raw FW geo id passthrough
+            out.append(GeoMatch(q, fid, q))
+        return out
+
+    def resolve_cities(self, isos: list[str], values: list[str]) -> list[GeoMatch]:
+        """Each value is "City, ST" (or a raw FW city id). ST scopes the ambiguity."""
+        self._load_cities()
+        out: list[GeoMatch] = []
+        for v in values:
+            q = str(v).strip()
+            if q.isdigit():
+                out.append(GeoMatch(q, q, q))
+                continue
+            if "," not in q:
+                out.append(GeoMatch(q, None, q))   # need a state qualifier
+                continue
+            city_part, st = (p.strip() for p in q.rsplit(",", 1))
+            fid = None
+            for iso in isos:
+                sid = self._state.get((iso, normalize_title(st)))
+                if not sid:
+                    continue
+                fid = self._city.get((iso, sid, normalize_title(city_part)))
+                if fid:
+                    break
+            out.append(GeoMatch(q, fid, q))
+        return out

@@ -149,6 +149,13 @@ class SupportPlan:
     # (run ONLY on that rating's content). Raw VG ids pass through. Empty => none.
     rating_restrictions: list[str] = field(default_factory=list)
     rating_inclusions: list[str] = field(default_factory=list)
+    # Sub-country geo overlay (optional). The CM narrows the buy to specific states,
+    # Nielsen DMAs, and/or cities on top of the region's country targeting. States/cities
+    # are scoped to the region's countries; DMA is US-only. Cities are entered "City, ST".
+    # Names resolve to FW IDs via data/geo; raw FW IDs pass through. Empty => country-only.
+    geo_states: list[str] = field(default_factory=list)
+    geo_dmas: list[str] = field(default_factory=list)
+    geo_cities: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None
@@ -257,6 +264,12 @@ class Placement:
     # individual countries — e.g. LATAM = region 1069. When set, it takes precedence
     # over geo_country_ids in the geography_targeting body.
     geo_region_ids: list[str] = field(default_factory=list)
+    # Sub-country geo (optional CM overlay): resolved FW IDs for states / Nielsen DMAs /
+    # cities, written into geography_targeting.include alongside country. Names are
+    # resolved to these IDs via the geo tables (data/geo/{state,dma,city}.csv).
+    geo_state_ids: list[str] = field(default_factory=list)
+    geo_dma_ids: list[str] = field(default_factory=list)
+    geo_city_ids: list[str] = field(default_factory=list)
     # Ad unit names/IDs — names mirror past setups + the priority doc; IDs resolve
     # once the ad-unit table is synced.
     ad_unit_names: list[str] = field(default_factory=list)

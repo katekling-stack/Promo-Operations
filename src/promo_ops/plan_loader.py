@@ -97,6 +97,9 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         kids_audience=list(raw.get("kids_audience") or []),
         rating_restrictions=list(raw.get("rating_restrictions") or []),
         rating_inclusions=list(raw.get("rating_inclusions") or []),
+        geo_states=list(raw.get("geo_states") or []),
+        geo_dmas=list(raw.get("geo_dmas") or []),
+        geo_cities=list(raw.get("geo_cities") or []),
         demographics=raw.get("demographics"),
         flight=Flight(
             start=flight_raw.get("start"),

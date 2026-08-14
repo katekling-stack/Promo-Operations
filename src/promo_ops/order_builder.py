@@ -26,7 +26,7 @@ from .config import (ad_units_config, brands_config, kids_targeting_config,
                      kids_video_groups, placement_templates_config,
                      priorities_config, regions_config)
 from .ad_units import AdUnitResolver
-from .geo import CountryResolver
+from .geo import CountryResolver, GeoResolver
 from .models import Order, Placement, SupportPlan, TieredTargeting
 from .series import SeriesResolver
 from .targeting import TargetingEngine
@@ -40,6 +40,7 @@ class OrderBuilder:
                  genre_resolver: Optional[GenreVideoGroupResolver] = None):
         self.engine = engine or TargetingEngine()
         self.countries = (countries or CountryResolver()).load()
+        self.geo = GeoResolver().load()
         self.ad_unit_resolver = (ad_unit_resolver or AdUnitResolver()).load()
         self.genre_resolver = (genre_resolver or GenreVideoGroupResolver()).load()
         from .ratings import RatingRestrictionResolver
@@ -85,6 +86,28 @@ class OrderBuilder:
     def _geo_country_ids(self, names: list) -> list:
         """Resolve country names -> FW country IDs (via data/geo table)."""
         return self.countries.ids_for(names)
+
+    def _sub_geo_ids(self, plan: SupportPlan, country_names: list) -> tuple:
+        """Resolve the optional state / DMA / city overlay to FW IDs (scoped to region).
+
+        Unmatched names are surfaced (never guessed) — a wrong geo ID would mis-target a
+        live placement. DMA is US-only; states/cities are scoped to the region's ISOs.
+        """
+        if not (plan.geo_states or plan.geo_dmas or plan.geo_cities):
+            return [], [], []
+        isos = GeoResolver.isos_for_countries(country_names)
+        states = self.geo.resolve_states(isos, plan.geo_states)
+        dmas = self.geo.resolve_dmas(plan.geo_dmas)
+        cities = self.geo.resolve_cities(isos, plan.geo_cities)
+        unmatched = [m.query for m in (*states, *dmas, *cities) if not m.matched]
+        if unmatched:
+            raise ValueError(
+                f"Geo targeting: could not resolve {unmatched} for region {plan.region}. "
+                "States/cities must belong to the region's countries; cities are 'City, ST'; "
+                "DMAs are a Nielsen number or name.")
+        return ([m.id for m in states if m.matched],
+                [m.id for m in dmas if m.matched],
+                [m.id for m in cities if m.matched])
 
     def _ad_unit_group(self, brand_cfg: dict, fmt: str) -> Optional[str]:
         # Per-brand ad-unit group override wins over the global default.
@@ -409,6 +432,9 @@ class OrderBuilder:
         region_cfg = self._regions.get("regions", {}).get(plan.region, {})
         geo_region_ids = ([str(region_cfg["geo_region"])]
                           if region_cfg.get("geo_region") else [])
+        # Optional sub-country overlay (states / Nielsen DMAs / cities). Scoped to the
+        # region's ISO countries; resolved once per plan and stamped on every placement.
+        geo_state_ids, geo_dma_ids, geo_city_ids = self._sub_geo_ids(plan, geo_names)
         ad_unit_names = self._ad_unit_names(brand_cfg, fmt)
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
@@ -503,6 +529,8 @@ class OrderBuilder:
                 platforms=list(tmpl.get("platforms", [])), exclusions=[exclude],
                 geo_country_names=geo_names, geo_country_ids=geo_ids,
                 geo_region_ids=list(geo_region_ids),
+                geo_state_ids=list(geo_state_ids), geo_dma_ids=list(geo_dma_ids),
+                geo_city_ids=list(geo_city_ids),
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,

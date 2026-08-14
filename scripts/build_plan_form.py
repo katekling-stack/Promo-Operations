@@ -156,7 +156,33 @@ def _targeting_options() -> dict:
         "brandsByRegion": {r: v for r, v in brands.items() if v},
         "audienceSegments": [n for n, _ in bto.audience_segments()],
         "shows": [n for _, n in bto.shows()],
+        **_geo_options(),
     }
+
+
+def _geo_options() -> dict:
+    """Region-aware sub-country geo picker lists (states / Nielsen DMAs), from data/geo.
+
+    States are scoped to each region's countries (a region maps to its countries' ISO
+    codes); a region that spans multiple countries prefixes the country when a plain
+    state name would be ambiguous. DMAs are a US-only Nielsen concept.
+    """
+    from promo_ops.geo import GeoResolver
+    from promo_ops.config import regions_config
+    g = GeoResolver().load()
+    # Plain state NAMES (no country suffix) so the picked value resolves as-is — the engine
+    # scopes resolution to the region's ISO set, so it maps "Bavaria" -> the DE state itself.
+    states_by_region: dict[str, list[str]] = {}
+    for region, cfg in regions_config().get("regions", {}).items():
+        isos = GeoResolver.isos_for_countries(cfg.get("countries") or [])
+        names = sorted({s["name"] for s in g.states_for(isos) if s["name"]})
+        if names:
+            states_by_region[region] = names
+    # DMAs: US-only. Offer under any domestic (US) region.
+    dmas = sorted({d["name"] for d in g.dmas() if d["name"]})
+    dmas_by_region = {r: dmas for r, cfg in regions_config().get("regions", {}).items()
+                      if "United States" in (cfg.get("countries") or [])}
+    return {"statesByRegion": states_by_region, "dmasByRegion": dmas_by_region}
 
 
 def build(out: Path | None = None) -> Path:
@@ -396,6 +422,17 @@ datalist{display:none}
                   font-size:14px;text-decoration:none">🎯 Request a new audience segment ↗</a>
         <div class="hint" style="margin-top:6px">Not in the list yet? Submit it now — it'll be applied once created.</div>
       </div></div>
+    <div class="field" style="border-top:1px dashed var(--line);padding-top:14px;margin-top:4px">
+      <label>Geo — narrow to states / DMAs / cities <span style="font-weight:400;color:#888">(optional)</span></label>
+      <div class="hint">Leave blank to run across the whole region. Anything added here is layered <b>on top</b> of the region's country targeting (added to <code>include</code>) on every placement.</div>
+      <label style="margin-top:10px">States</label>
+      <div class="chips" data-chips="geo_states" data-source="states"><input type="text" placeholder="type a state (e.g. California)…"></div>
+      <label style="margin-top:10px">DMAs <span style="font-weight:400;color:#888">(US only)</span></label>
+      <div class="chips" data-chips="geo_dmas" data-source="dmas"><input type="text" placeholder="type a Nielsen DMA (e.g. New York, NY)…"></div>
+      <label style="margin-top:10px">Cities</label>
+      <div class="chips" data-chips="geo_cities"><input type="text" placeholder="City, ST — e.g. New York, NY (press Enter)"></div>
+      <div class="hint">City names are ambiguous, so include the state: <code>Chicago, IL</code>. Must belong to the region.</div>
+    </div>
   </div>
 
   <div class="card">
@@ -595,6 +632,8 @@ function sourceList(name){
   if(name==="channels") return (APP.channelsByRegion||{})[rc]||[];
   if(name==="ratings") return (APP.ratingsByRegion||{})[rc]||[];
   if(name==="brands") return (APP.brandsByRegion||{})[rc]||[];
+  if(name==="states") return (APP.statesByRegion||{})[rc]||[];
+  if(name==="dmas") return (APP.dmasByRegion||{})[rc]||[];
   return null;
 }
 
@@ -718,6 +757,9 @@ function buildPlan(){
   if(L.rating_restrictions.length) plan.rating_restrictions=L.rating_restrictions;
   if(L.rating_inclusions.length) plan.rating_inclusions=L.rating_inclusions;
   if(L.brand_pick && L.brand_pick.length) plan.io_brand=L.brand_pick[0];   // IO Brand (single)
+  if(L.geo_states.length) plan.geo_states=L.geo_states;
+  if(L.geo_dmas.length) plan.geo_dmas=L.geo_dmas;
+  if(L.geo_cities.length) plan.geo_cities=L.geo_cities;
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
