@@ -156,6 +156,12 @@ class SupportPlan:
     geo_states: list[str] = field(default_factory=list)
     geo_dmas: list[str] = field(default_factory=list)
     geo_cities: list[str] = field(default_factory=list)
+    # Geo EXCLUDES — the inverse overlay ("run everywhere EXCEPT these"). Same resolution
+    # (region-scoped names -> FW IDs), written into geography_targeting.exclude. Include and
+    # exclude can coexist (e.g. include a set of states, exclude a city within them).
+    geo_states_exclude: list[str] = field(default_factory=list)
+    geo_dmas_exclude: list[str] = field(default_factory=list)
+    geo_cities_exclude: list[str] = field(default_factory=list)
     # Recommended Show custom key-value ("recommended_show=<id>") on Tier 1 + the
     # guaranteed Plan placements. Falls back to content_id; blank -> CM adds in the UI.
     recommended_show_id: Optional[str] = None
@@ -270,6 +276,10 @@ class Placement:
     geo_state_ids: list[str] = field(default_factory=list)
     geo_dma_ids: list[str] = field(default_factory=list)
     geo_city_ids: list[str] = field(default_factory=list)
+    # Resolved FW IDs for the EXCLUDE overlay (geography_targeting.exclude).
+    geo_exclude_state_ids: list[str] = field(default_factory=list)
+    geo_exclude_dma_ids: list[str] = field(default_factory=list)
+    geo_exclude_city_ids: list[str] = field(default_factory=list)
     # Ad unit names/IDs — names mirror past setups + the priority doc; IDs resolve
     # once the ad-unit table is synced.
     ad_unit_names: list[str] = field(default_factory=list)

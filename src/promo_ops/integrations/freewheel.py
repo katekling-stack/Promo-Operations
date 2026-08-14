@@ -1267,8 +1267,22 @@ class FreeWheelClient:
             include["dma"] = list(p.geo_dma_ids)
         if getattr(p, "geo_city_ids", None):
             include["city"] = list(p.geo_city_ids)
+        # Geo EXCLUDE overlay ("run everywhere except …") — its own exclude object, same
+        # per-level keys (state/dma/city). Coexists with include.
+        exclude: dict[str, Any] = {}
+        if getattr(p, "geo_exclude_state_ids", None):
+            exclude["state"] = list(p.geo_exclude_state_ids)
+        if getattr(p, "geo_exclude_dma_ids", None):
+            exclude["dma"] = list(p.geo_exclude_dma_ids)
+        if getattr(p, "geo_exclude_city_ids", None):
+            exclude["city"] = list(p.geo_exclude_city_ids)
+        geo_body: dict[str, Any] = {}
         if include:
-            body["geography_targeting"] = {"include": include}
+            geo_body["include"] = include
+        if exclude:
+            geo_body["exclude"] = exclude
+        if geo_body:
+            body["geography_targeting"] = geo_body
         if p.geo_country_names:
             body["_geo_country_names"] = list(p.geo_country_names)  # UI reference
         # Ad units: link_method NOT_LINKED (mirrors Dutton — creatives linked later by

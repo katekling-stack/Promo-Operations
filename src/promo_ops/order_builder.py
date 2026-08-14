@@ -87,27 +87,37 @@ class OrderBuilder:
         """Resolve country names -> FW country IDs (via data/geo table)."""
         return self.countries.ids_for(names)
 
-    def _sub_geo_ids(self, plan: SupportPlan, country_names: list) -> tuple:
-        """Resolve the optional state / DMA / city overlay to FW IDs (scoped to region).
+    def _resolve_geo(self, region: str, isos: list, states: list, dmas: list,
+                     cities: list) -> tuple:
+        """Resolve a state / DMA / city set to FW IDs (scoped to the region's ISOs).
 
         Unmatched names are surfaced (never guessed) — a wrong geo ID would mis-target a
         live placement. DMA is US-only; states/cities are scoped to the region's ISOs.
         """
-        if not (plan.geo_states or plan.geo_dmas or plan.geo_cities):
+        if not (states or dmas or cities):
             return [], [], []
-        isos = GeoResolver.isos_for_countries(country_names)
-        states = self.geo.resolve_states(isos, plan.geo_states)
-        dmas = self.geo.resolve_dmas(plan.geo_dmas)
-        cities = self.geo.resolve_cities(isos, plan.geo_cities)
-        unmatched = [m.query for m in (*states, *dmas, *cities) if not m.matched]
+        rs = self.geo.resolve_states(isos, states)
+        rd = self.geo.resolve_dmas(dmas)
+        rc = self.geo.resolve_cities(isos, cities)
+        unmatched = [m.query for m in (*rs, *rd, *rc) if not m.matched]
         if unmatched:
             raise ValueError(
-                f"Geo targeting: could not resolve {unmatched} for region {plan.region}. "
+                f"Geo targeting: could not resolve {unmatched} for region {region}. "
                 "States/cities must belong to the region's countries; cities are 'City, ST'; "
                 "DMAs are a Nielsen number or name.")
-        return ([m.id for m in states if m.matched],
-                [m.id for m in dmas if m.matched],
-                [m.id for m in cities if m.matched])
+        return ([m.id for m in rs if m.matched],
+                [m.id for m in rd if m.matched],
+                [m.id for m in rc if m.matched])
+
+    def _sub_geo_ids(self, plan: SupportPlan, country_names: list) -> tuple:
+        """Resolve the optional include + exclude geo overlays to (include, exclude) FW-ID
+        triples. Each triple is (state_ids, dma_ids, city_ids)."""
+        isos = GeoResolver.isos_for_countries(country_names)
+        include = self._resolve_geo(plan.region, isos, plan.geo_states, plan.geo_dmas,
+                                    plan.geo_cities)
+        exclude = self._resolve_geo(plan.region, isos, plan.geo_states_exclude,
+                                    plan.geo_dmas_exclude, plan.geo_cities_exclude)
+        return include, exclude
 
     def _ad_unit_group(self, brand_cfg: dict, fmt: str) -> Optional[str]:
         # Per-brand ad-unit group override wins over the global default.
@@ -432,9 +442,11 @@ class OrderBuilder:
         region_cfg = self._regions.get("regions", {}).get(plan.region, {})
         geo_region_ids = ([str(region_cfg["geo_region"])]
                           if region_cfg.get("geo_region") else [])
-        # Optional sub-country overlay (states / Nielsen DMAs / cities). Scoped to the
-        # region's ISO countries; resolved once per plan and stamped on every placement.
-        geo_state_ids, geo_dma_ids, geo_city_ids = self._sub_geo_ids(plan, geo_names)
+        # Optional sub-country overlay (states / Nielsen DMAs / cities), include + exclude.
+        # Scoped to the region's ISO countries; resolved once per plan, stamped on every
+        # placement.
+        (geo_state_ids, geo_dma_ids, geo_city_ids), \
+            (geo_x_state_ids, geo_x_dma_ids, geo_x_city_ids) = self._sub_geo_ids(plan, geo_names)
         ad_unit_names = self._ad_unit_names(brand_cfg, fmt)
         ad_unit_ids = self._ad_unit_ids(brand_cfg, fmt)
         excl_sgs = list(brand_cfg.get("extra_exclude_site_groups", []))
@@ -531,6 +543,9 @@ class OrderBuilder:
                 geo_region_ids=list(geo_region_ids),
                 geo_state_ids=list(geo_state_ids), geo_dma_ids=list(geo_dma_ids),
                 geo_city_ids=list(geo_city_ids),
+                geo_exclude_state_ids=list(geo_x_state_ids),
+                geo_exclude_dma_ids=list(geo_x_dma_ids),
+                geo_exclude_city_ids=list(geo_x_city_ids),
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
                 main_site_groups=main_sgs, include_video_groups=include_vgs,

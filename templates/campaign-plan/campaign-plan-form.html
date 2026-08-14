@@ -236,6 +236,13 @@ datalist{display:none}
       <label style="margin-top:10px">Cities</label>
       <div class="chips" data-chips="geo_cities"><input type="text" placeholder="City, ST — e.g. New York, NY (press Enter)"></div>
       <div class="hint">City names are ambiguous, so include the state: <code>Chicago, IL</code>. Must belong to the region.</div>
+      <div class="hint" style="margin-top:12px"><b>Exclude</b> instead — run everywhere <b>except</b> the geos below (can combine with the includes above).</div>
+      <label style="margin-top:6px">Exclude states</label>
+      <div class="chips" data-chips="geo_states_exclude" data-source="states"><input type="text" placeholder="type a state to exclude…"></div>
+      <label style="margin-top:10px">Exclude DMAs <span style="font-weight:400;color:#888">(US only)</span></label>
+      <div class="chips" data-chips="geo_dmas_exclude" data-source="dmas"><input type="text" placeholder="type a DMA to exclude…"></div>
+      <label style="margin-top:10px">Exclude cities</label>
+      <div class="chips" data-chips="geo_cities_exclude"><input type="text" placeholder="City, ST to exclude — e.g. Chicago, IL"></div>
     </div>
   </div>
 
@@ -586,6 +593,9 @@ function buildPlan(){
   if(L.geo_states.length) plan.geo_states=L.geo_states;
   if(L.geo_dmas.length) plan.geo_dmas=L.geo_dmas;
   if(L.geo_cities.length) plan.geo_cities=L.geo_cities;
+  if(L.geo_states_exclude.length) plan.geo_states_exclude=L.geo_states_exclude;
+  if(L.geo_dmas_exclude.length) plan.geo_dmas_exclude=L.geo_dmas_exclude;
+  if(L.geo_cities_exclude.length) plan.geo_cities_exclude=L.geo_cities_exclude;
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;

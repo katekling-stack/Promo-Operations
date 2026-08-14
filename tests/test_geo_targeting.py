@@ -18,14 +18,18 @@ def _order(region="USA", campaign="Paramount + - USA", **geo):
         durations=[30], showlist=["FBI"], genres=["Drama"], **geo)))
 
 
-def _geo_include(order):
-    """Merge geography_targeting.include across all placements."""
-    inc: dict = {}
+def _geo_side(order, side):
+    """Merge geography_targeting.<side> ('include'/'exclude') across all placements."""
+    out: dict = {}
     for p in order.placements:
-        g = FreeWheelClient._placement_body(p).get("geography_targeting", {}).get("include", {})
+        g = FreeWheelClient._placement_body(p).get("geography_targeting", {}).get(side, {})
         for k, v in g.items():
-            inc.setdefault(k, set()).update(v if isinstance(v, list) else [v])
-    return inc
+            out.setdefault(k, set()).update(v if isinstance(v, list) else [v])
+    return out
+
+
+def _geo_include(order):
+    return _geo_side(order, "include")
 
 
 # -- resolver ---------------------------------------------------------------------
@@ -93,3 +97,31 @@ def test_no_overlay_is_country_only():
 def test_unresolvable_geo_raises():
     with pytest.raises(ValueError):
         _order(geo_states=["Nowhereland"])
+
+
+# -- exclude overlay --------------------------------------------------------------
+
+def test_state_exclude_on_every_placement():
+    order = _order(geo_states_exclude=["California"])
+    exc = _geo_side(order, "exclude")
+    ca = GeoResolver().load().resolve_states(["US"], ["California"])[0].id
+    assert ca in exc.get("state", set())
+    # country base still lives under include; exclude carries only the excluded state
+    assert _geo_include(order).get("country") == {"165"}
+
+
+def test_include_and_exclude_coexist():
+    order = _order(geo_states=["California", "New York"], geo_cities_exclude=["Los Angeles, CA"])
+    inc, exc = _geo_include(order), _geo_side(order, "exclude")
+    assert inc.get("state") and exc.get("city")
+
+
+def test_dma_and_city_exclude():
+    order = _order(geo_dmas_exclude=["501"], geo_cities_exclude=["Chicago, IL"])
+    exc = _geo_side(order, "exclude")
+    assert exc.get("dma") and exc.get("city")
+
+
+def test_unresolvable_exclude_raises():
+    with pytest.raises(ValueError):
+        _order(geo_states_exclude=["Nowhereland"])
