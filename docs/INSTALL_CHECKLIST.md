@@ -174,3 +174,11 @@ python3 -c "from scripts.build_plan_form import build; build()"
 | Create the draft | `promo-ops push <plan>.json --target freewheel --live` |
 | Many cases at once | `promo-ops batch cases.csv --live --out results.csv` |
 | Same title, other markets | `promo-ops mirror <plan>.json --to GSA,IT,ES` |
+
+## Before every push: `promo-ops doctor`
+
+Run `promo-ops doctor` first. It confirms your data files are present and that your
+FreeWheel **and** MRM logins actually work — printing a ✅/❌ per check. If it's all
+green, your push will go through cleanly (including auto-creating the IO Brand). If
+anything is ❌, it tells you exactly what to fix. This catches missing data files and
+bad/missing credentials *before* a live push instead of mid-push.

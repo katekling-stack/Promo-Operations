@@ -302,6 +302,66 @@ def _cmd_salesforce_check(args: argparse.Namespace) -> int:
     return 0 if report.ok else 1
 
 
+def _cmd_doctor(args: argparse.Namespace) -> int:
+    """One-shot health check: confirm the data files are present and every credential
+    actually logs in, BEFORE a live push — so a missing file or bad cred surfaces here
+    instead of mid-push. Prints a ✅/❌ line per check and exits non-zero on any failure."""
+    from .config import REPO_ROOT
+    checks: list[tuple[bool, str]] = []
+
+    def _rows(rel: str) -> int:
+        p = REPO_ROOT / rel
+        if not p.exists():
+            return -1
+        with p.open() as fh:
+            return max(0, sum(1 for _ in fh) - 1)  # minus header
+
+    # 1) Data snapshots the engine reads (empty/missing => Tier 1 / brands silently blank).
+    seg = _rows("data/audience_segments/synced_audience_items.csv")
+    checks.append((seg > 0,
+                   f"Audience-segment data: {seg} rows" if seg > 0 else
+                   "Audience-segment data MISSING/empty "
+                   "(data/audience_segments/synced_audience_items.csv) — Tier 1 won't populate. "
+                   "Run: promo-ops sync-audience-items, or re-pull the repo."))
+    brands = _rows("data/brands/synced_brands.csv")
+    checks.append((brands > 0,
+                   f"Brand data: {brands} rows" if brands > 0 else
+                   "Brand data MISSING/empty (data/brands/synced_brands.csv) — known brands "
+                   "won't resolve. Re-pull the repo or run the brand sync."))
+
+    # 2) FreeWheel login (username/password) — the core push connection.
+    try:
+        from .integrations.freewheel import FreeWheelClient
+        FreeWheelClient().authenticate()
+        checks.append((True, "FreeWheel login: OK"))
+    except Exception as exc:
+        checks.append((False, f"FreeWheel login FAILED: {exc}. "
+                              "Check FREEWHEEL_USERNAME / FREEWHEEL_PASSWORD / "
+                              "FREEWHEEL_NETWORK_ID in .env."))
+
+    # 3) MRM login (client-credentials) — needed to auto-create/map the IO Brand on push.
+    from .config import env
+    if not (env("FREEWHEEL_MRM_CLIENT_ID") and env("FREEWHEEL_MRM_CLIENT_SECRET")):
+        checks.append((False, "MRM creds not set — the IO Brand won't be auto-created on push "
+                              "(you'd set it by hand). Add FREEWHEEL_MRM_CLIENT_ID / "
+                              "FREEWHEEL_MRM_CLIENT_SECRET to .env."))
+    else:
+        try:
+            from .integrations.freewheel_mrm import FreeWheelMRMClient
+            FreeWheelMRMClient()._authenticate()
+            checks.append((True, "MRM login: OK (IO Brand will auto-create/map on push)"))
+        except Exception as exc:
+            checks.append((False, f"MRM login FAILED: {exc}. Re-check the MRM client id/secret "
+                                  "in .env — paste only the value, no 'Client ID:' label, no quotes."))
+
+    for ok, msg in checks:
+        print(f"{'✅' if ok else '❌'} {msg}")
+    all_ok = all(ok for ok, _ in checks)
+    print("\n" + ("✅ All checks passed — you're clear to push." if all_ok
+                  else "❌ Fix the ❌ items above before pushing."), file=sys.stderr)
+    return 0 if all_ok else 1
+
+
 def _cmd_from_case(args: argparse.Namespace) -> int:
     """Process one Case: validate -> build -> create draft (--live) -> comment back."""
     from .casework import process_case
@@ -490,6 +550,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_sfck = sub.add_parser("salesforce-check",
                             help="Preflight: verify SF login + Case fields/picklists")
     p_sfck.set_defaults(func=_cmd_salesforce_check)
+
+    p_doc = sub.add_parser("doctor",
+                           help="Health check: data files + FreeWheel/MRM logins before a push")
+    p_doc.set_defaults(func=_cmd_doctor)
 
     p_case = sub.add_parser("from-case", help="Validate+build+create from a Salesforce Case")
     p_case.add_argument("case_id")
