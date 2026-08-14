@@ -631,6 +631,16 @@ class FreeWheelClient:
             return {"name": order.io_brand,
                     "warning": f"No (Promo) advertiser mapping for {order.region} "
                                f"(kids={order.io_brand_kids}); IO Brand left unset."}
+        # IO-Brand mapping needs the MRM API (client-credentials). It's an enhancement, not
+        # a requirement — if those creds aren't configured, skip the auto-map with a clear
+        # note (the CM sets the Brand by hand in FW) rather than crashing the whole push.
+        from ..config import env
+        if not (env("FREEWHEEL_MRM_CLIENT_ID") and env("FREEWHEEL_MRM_CLIENT_SECRET")):
+            return {"name": order.io_brand,
+                    "warning": "MRM API credentials not set (FREEWHEEL_MRM_CLIENT_ID / "
+                               "FREEWHEEL_MRM_CLIENT_SECRET); IO Brand left unset. Set the "
+                               "Brand manually in FreeWheel, or add the creds to .env to "
+                               "auto-map it."}
         mrm = FreeWheelMRMClient()
         industry_id = "5289" if order.io_brand_kids else None   # kids -> Industry Rating: G
         brand_id, created = mrm.find_or_create_brand(adv, order.io_brand, industry_id=industry_id)
