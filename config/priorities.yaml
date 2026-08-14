@@ -36,6 +36,15 @@ pluto_tier4_priority:
   reduced_min_duration: 30         # :30 and longer
   reduced_extra_durations: [15]    # plus :15 specifically
 
+# Short-duration tier gate (GLOBAL). We don't build the premium Tiers 1-2 for short
+# creatives (:10/:20) when a "premium" length (:15/:30/:45/:60/:90) is ALSO in the plan —
+# those premium lengths carry Tiers 1-4 and the short lengths only get Tiers 3-4. If ONLY
+# short lengths are present (no premium length), the short lengths get the full stack.
+short_duration_tier_gate:
+  short_durations: [10, 20]
+  premium_durations: [15, 30, 45, 60, 90]
+  short_only_tiers: [3, 4]          # tiers a short length keeps when a premium length exists
+
 # Duration buckets -> offset added to the tier base.
 duration_offsets:
   "30": 0

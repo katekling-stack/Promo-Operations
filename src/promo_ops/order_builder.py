@@ -417,6 +417,27 @@ class OrderBuilder:
     def _durations(self, plan: SupportPlan) -> list[int]:
         return plan.durations or list(self._priorities.get("default_durations", [30]))
 
+    def _short_only_tiers(self, durations: list) -> Optional[set]:
+        """Tiers a SHORT creative (:10/:20) may keep, or None if the gate doesn't apply.
+
+        Short lengths only get Tiers 3-4 when a premium length (:15/:30/:45/:60/:90) is also
+        present; if only short lengths are in the plan, they get the full stack (None)."""
+        gate = self._priorities.get("short_duration_tier_gate", {}) or {}
+        premium = {int(d) for d in gate.get("premium_durations", [])}
+        present = {int(d) for d in durations if d is not None}
+        if not (present & premium):                    # no premium length -> no gate
+            return None
+        return {int(t) for t in gate.get("short_only_tiers", [])}
+
+    def _tier_allowed_for_duration(self, tier_id: int, duration, durations: list) -> bool:
+        """Apply the short-duration tier gate to one (tier, duration) combo."""
+        gate = self._priorities.get("short_duration_tier_gate", {}) or {}
+        short = {int(d) for d in gate.get("short_durations", [])}
+        if duration is None or int(duration) not in short:
+            return True                                # only short lengths are gated
+        allowed = self._short_only_tiers(durations)
+        return allowed is None or tier_id in allowed
+
     # --- placement building ---------------------------------------------- #
 
     def _placements_for_format(self, plan: SupportPlan, fmt: str) -> list[Placement]:
@@ -690,6 +711,10 @@ class OrderBuilder:
             if kinds is not None:
                 tids = {k: v for k, v in tids.items() if k in kinds}
             for dur in durations:
+                # Short-duration tier gate: skip Tiers 1-2 for :10/:20 when a premium
+                # length (:15/:30/…) is also in the plan (those keep the full stack).
+                if not self._tier_allowed_for_duration(tier.id, dur, durations):
+                    continue
                 # CA (and other non-tiered markets) suppress the "(Tier N)" label.
                 label_tier = None if tmpl.get("no_tier_label") else tier.id
                 name = self._tier_name(plan.promoted_title, plan.season_or_messaging,
