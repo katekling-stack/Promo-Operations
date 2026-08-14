@@ -57,3 +57,10 @@ def test_ca_moonies_repro():
 def test_premium_only_unchanged():
     by = _tiers_by_duration(_order([30, 15]))
     assert by.get(30) == {1, 2, 3, 4} and by.get(15) == {1, 2, 3, 4}
+
+
+def test_five_and_six_also_gated():
+    # :5 and :6 follow the same rule as :10/:20 — only Tiers 3-4 when a premium is present.
+    by = _tiers_by_duration(_order([30, 6, 5]))
+    assert by.get(30) == {1, 2, 3, 4}
+    assert by.get(5) == {3, 4} and by.get(6) == {3, 4}
