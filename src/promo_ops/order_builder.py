@@ -702,6 +702,14 @@ class OrderBuilder:
 
     def build(self, plan: SupportPlan) -> Order:
         brand_cfg = self._brand_cfg(plan.brand)
+        # "Add to existing IO" must be a numeric FreeWheel IO ID. A name (e.g. the show
+        # title) would reach FreeWheel as insertion_order_id and fail with a cryptic
+        # "fail to convert <title> to Int" — catch it here with an actionable message.
+        if plan.existing_io_id and not str(plan.existing_io_id).strip().isdigit():
+            raise ValueError(
+                f"'Add to existing IO' must be a numeric FreeWheel IO ID, got "
+                f"{plan.existing_io_id!r}. Leave it blank to create a NEW IO, or paste the "
+                f"existing IO's numeric FreeWheel ID (e.g. 93584432).")
         io_name = plan.insertion_order_name or f"{plan.promoted_title} - {plan.region}"
         # Scene Lift: placements are added into the existing "Scene Lifts - {Region}" IO
         # (no new IO). Use that IO's name for reference; routing id set below.

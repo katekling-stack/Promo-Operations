@@ -537,6 +537,15 @@ function equivalentCampaign(region, sig){
   const m = APP.campaigns.find(x=>x.region===region && x.sig===sig);
   return m ? m.name : null;
 }
+// Re-point a brand's trailing "(MARKET)" suffix to the target market, e.g.
+// "Caught In The Act: Unfaithful (Promo) (UK)" -> "… (Promo) (IE)". The market token is
+// the region key (USA/UK/IE/GSA/…), same as the synced brand naming. Leaves a brand with
+// no recognisable suffix untouched.
+function reregionBrand(brand, toRegion){
+  if(!brand) return brand;
+  const known = new Set((APP.regions||[]).map(r=>r.code));
+  return brand.replace(/\(([A-Za-z]+)\)\s*$/, (m,tok)=> known.has(tok) ? `(${toRegion})` : m);
+}
 $("#mirrorBtn").addEventListener("click",()=>{
   if(!validate() || !mirrorTargets.size) return;
   const c = currentCampaign(); const base = buildPlan();
@@ -544,6 +553,13 @@ $("#mirrorBtn").addEventListener("click",()=>{
     const equ = equivalentCampaign(region, c.sig); if(!equ) return;
     const plan = JSON.parse(JSON.stringify(base));
     plan.region = region; plan.campaign = {name:equ};
+    // Market-specific fields must NOT ride along from the source plan:
+    //  - io_brand's "(MARKET)" suffix is re-pointed to the target market (a UK brand
+    //    name can't be created under the IE advertiser — brand names are network-unique).
+    //  - existing_io_id (a FreeWheel IO id) belongs to the source market's IO; drop it so
+    //    the mirrored plan creates its own new IO.
+    if(plan.io_brand) plan.io_brand = reregionBrand(plan.io_brand, region);
+    delete plan.existing_io_id;
     const name = (plan.promoted_title+"-"+region).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+".plan.json";
     setTimeout(()=>{
       const a=document.createElement("a");
@@ -704,12 +720,16 @@ $("#region").addEventListener("change",()=>{
       if(box) box.querySelectorAll(".chip").forEach(c=>c.remove()); }
   });
 });
-["title"].forEach(id=>$("#"+id).addEventListener("input",validate));
+["title","existing_io_id"].forEach(id=>$("#"+id).addEventListener("input",validate));
 
 function validate(){
   const core = $("#region").value && $("#campaign").value && $("#title").value.trim();
   const hasDur = ((state.lists.durations||[]).length)>0;
-  const ok = core && hasDur;
+  // "Add to existing IO" (optional) must be a numeric FreeWheel IO ID when filled — a name
+  // there reaches FreeWheel as insertion_order_id and fails ("fail to convert … to Int").
+  const ioRaw = ($("#existing_io_id").value||"").trim();
+  const ioBad = ioRaw && !/^\d+$/.test(ioRaw);
+  const ok = core && hasDur && !ioBad;
   $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
   // Keep the mirror ("Download mirrored plan(s)") button in sync on EVERY field change,
   // not just on market-chip clicks — enabled once the plan is valid AND a market is ticked.
@@ -717,9 +737,11 @@ function validate(){
   if(mb) mb.disabled = !(ok && typeof mirrorTargets!=="undefined" && mirrorTargets.size);
   $("#status").textContent = ok
     ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
-    : (core && !hasDur
-        ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
-        : "Fill Region, Campaign, Promoted title and Video durations to continue.");
+    : (ioBad
+        ? "‘Add to existing IO’ must be a numeric FreeWheel IO ID (or blank for a new IO)."
+        : (core && !hasDur
+          ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
+          : "Fill Region, Campaign, Promoted title and Video durations to continue."));
   return ok;
 }
 
