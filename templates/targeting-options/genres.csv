@@ -9,29 +9,38 @@ Action Sci-Fi & Fantasy,Genre
 Action Thrillers,Genre
 Adventure,Genre
 Adventures,Genre
+Aerial,Genre
 Aerial Series,Franchise
 Africa Series,Franchise
+African American,Genre
+African Music,Genre
 African-American Action,Genre
 African-American Comedies,Genre
 African-American Documentaries,Genre
 African-American Romance,Genre
+Air and Space,Genre
 Alien Sci-Fi,Genre
 Animal Tales,Genre
 Animals,Genre
 Animation,Genre
+Animation - Cartoons,Genre
 Anime,Genre
 Anime Action & Adventure,Genre
 Anime Comedy,Genre
 Anime Drama,Genre
 Anime Fantasy,Genre
 Anime Feature Films,Genre
+Anime Features Films,Genre
 Anime Horror,Genre
 Anime Sci-Fi,Genre
 Anime Series,Genre
 Anime for Mature Audiences,Genre
 Art & Design,Genre
 Arts,Genre
+Arts & Design,Genre
 Asian Horror,Genre
+Automotive,Genre
+Awards Show,Genre
 B-Movie Horror,Genre
 Ballet,Genre
 Barclay's Super League,Franchise
@@ -41,23 +50,29 @@ Bellator,Franchise
 Best of British Humor,Genre
 Big Brother,Franchise
 Biographical Documentaries,Genre
+Biographical Drama,Genre
+Biography,Genre
 Black Ink Crew,Franchise
 Blaxploitation,Genre
+Blockbusters,Genre
 Blue's Clues,Franchise
 Blues,Genre
 Bob the Builder,Franchise
 Book Characters,Genre
+Business/Financial,Genre
 CSI,Franchise
 Car Culture,Genre
 Career & Finance,Genre
 Cartoons,Genre
 Celebrity & Gossip,Genre
+Celebrity Reality,Genre
 Challenge,Franchise
 Childrens Television,Genre
 Christian & Gospel,Genre
 Classic Comedies,Genre
 Classic Dramas,Genre
 Classic Movie Musicals,Genre
+Classic R&B/Soul,Genre
 Classic Rock,Genre
 Classic Sci-Fi & Fantasy,Genre
 Classic Stage Musicals,Genre
@@ -70,24 +85,39 @@ Comedies,Genre
 Comedy,Genre
 Comedy Central Roasts,Franchise
 Comedy Specials,Franchise
+Comic Books and Subscriptions,Genre
 Comic Books and Superheroes,Genre
+Comic book,Genre
 Coming of Age,Genre
+Commercials,Genre
 Competition,Genre
+Competition Reality,Genre
+Computer Animation,Genre
 Concacaf,Franchise
+Concert,Genre
 Consumer Products & Software,Genre
 Contemporary Movie Musicals,Genre
 Contemporary R&B,Genre
+Contemporary Stage Musicals,Genre
+Cooking,Genre
 Cooking Instruction,Genre
 Country,Genre
+Courtroom Drama,Genre
+Courtroom Reality,Genre
 Creature Features,Genre
 Crime,Genre
 Crime Action,Genre
 Crime Documentaries,Genre
+Crime Drama,Genre
 Crime Thrillers,Genre
 Cult Comedies,Genre
 Cult Horror,Genre
 DIY & How To,Genre
+Dance,Genre
+Dance & Electronica,Genre
+Dance & Party,Genre
 Dark Humor & Black Comedies,Genre
+Dating Show,Genre
 Daypart: CMV,Daypart
 Daypart: Cable,Daypart
 Daypart: Classic (All),Daypart
@@ -101,28 +131,38 @@ Daypart: Primetime,Daypart
 Daypart: Specials,Daypart
 Daypart: Sports,Daypart
 Deadly Disasters,Genre
+Digital Content-VDS,Genre
 Dinosaurs,Genre
 Disco,Genre
 Documentary,Genre
 Docuseries,Genre
 Dora The Explorer,Franchise
 Drama,Genre
+Drama - Historical,Genre
 Dramas,Genre
+Dramedy,Genre
 Drunk History,Franchise
+Education,Genre
 Education & Guidance,Genre
 Educational,Genre
+Electronic,Genre
 Entertaining,Genre
 Entertainment,Genre
 Epic Documentaries,Franchise
 Epics,Genre
+Erotic,Genre
 Erotic Thrillers,Genre
 Espionage Action,Genre
 Espionage Thrillers,Genre
 Esportes,Genre
+Event,Genre
+Events & Specials,Genre
 Experimental,Genre
 FBI Files,Franchise
 FBI Scripted,Franchise
+FOOD,Genre
 Fails & Pranks,Genre
+Faith & Spirituality,Genre
 Faith & Spirituality Documentaries,Genre
 Faith & Spirituality Feature Films,Genre
 Family,Genre
@@ -130,16 +170,20 @@ Family Adventures,Genre
 Family Animation,Genre
 Family Classics,Genre
 Family Comedies,Genre
+Family Drama,Genre
 Family Dramas,Genre
 Family Sci-Fi & Fantasy,Genre
+Family Viewing,Genre
 Fantasy,Genre
 Fashion,Genre
 Fight,Genre
 Fighting & Self Defense,Genre
 Film Noir,Genre
 Fishing,Genre
+Food & Cooking,Genre
 Food & Wine,Genre
 Food Stories,Genre
+Foreign,Genre
 Foreign Action & Adventure,Genre
 Foreign Art House,Genre
 Foreign Classic Comedies,Genre
@@ -147,6 +191,7 @@ Foreign Classic Dramas,Genre
 Foreign Classics,Genre
 Foreign Comedies,Genre
 Foreign Documentaries,Genre
+Foreign Drama,Genre
 Foreign Gay & Lesbian,Genre
 Foreign Horror,Genre
 Foreign Musicals,Genre
@@ -155,34 +200,45 @@ Foreign Sci-Fi & Fantasy,Genre
 Foreign Steamy Romance,Genre
 Foreign Thrillers,Genre
 Frankenstein,Genre
+Freestyle,Genre
 GLBT,Genre
+Game Show,Genre
 Gardening,Genre
 Gay,Genre
 Gay & Lesbian Comedies,Genre
 Gay & Lesbian Dramas,Genre
 Gay & Lesbian Romance,Genre
+Gay Sensibility,Genre
 General Indie Film & Short Films,Genre
 General News,Genre
 Gospel,Genre
+Gospel Music,Genre
 Hard Rock & Heavy Metal,Genre
+Health & Fitness,Genre
 Heist Films,Genre
 Hip-Hop,Genre
 Hip-Hop/Rap,Genre
 Historical Documentaries,Genre
+Historical Drama,Genre
+History,Genre
 History & Social Studies,Genre
 Hobbies & Games,Genre
 Holiday,Genre
 Home & Garden,Genre
+Home & Lifestyle,Genre
 Home Improvement,Genre
 Horror,Genre
 Horror Classics,Genre
 HowTo,Genre
+Human Interest,Genre
 Hunting,Genre
 Independent,Genre
+Independent Drama,Genre
 Indie,Genre
 Indie Action,Genre
 Indie Classics,Genre
 Indie Comedies,Genre
+Indie Comedy,Genre
 Indie Documentaries,Genre
 Indie Dramas,Genre
 Indie Gay & Lesbian,Genre
@@ -191,21 +247,30 @@ Indie Suspense & Thriller,Genre
 Ink Master,Franchise
 Inspector Gadget,Franchise
 Inspirational Biographies,Genre
+Inspirational Drama,Genre
 Inspirational Stories,Genre
 Inspirational Stories for Kids,Genre
+Interview,Genre
 Investigative Journalism,Genre
 Italian Horror,Genre
+Jazz,Genre
 Jersey Shore,Franchise
 JoJo Siwa,Franchise
+KIDVID,Genre
 Kids,Genre
+Kids & Family,Genre
+Kids and Family,Genre
 Kids' Anime,Genre
 Kids' Inspirational,Genre
 Kids' Music,Genre
 Kids' TV,Genre
+Kids’ Anime,Genre
+Kids’ Inspirational,Genre
 Late Night,Genre
 Late Night Comedies,Genre
 Late Night TV,Genre
 Late Night including Daily Show,Franchise
+Latin & Ballroom Dance,Genre
 Latino,Genre
 Latino Comedies,Genre
 Lego,Franchise
@@ -217,6 +282,9 @@ Madeline,Franchise
 Magic & Illusion,Genre
 Makeover,Genre
 Martial Arts,Genre
+Math,Genre
+Medical Reality,Genre
+Meditation & Relaxation,Genre
 Men's Interest,Genre
 Military & War Action,Genre
 Military Documentaries,Genre
@@ -227,16 +295,27 @@ Mobster,Genre
 Mockumentaries,Genre
 Modern & Contemporary,Genre
 Monsters,Genre
+Movie,Genre
 Music,Genre
 Music Documentaries,Genre
+Music News,Genre
+Music Video,Genre
+Music Videos,Genre
 Musical,Genre
 Must-See Concerts,Genre
 Must-See Musicals,Genre
 Mystery,Genre
 NCIS,Franchise
 News,Genre
+News & Information,Genre
+News Special,Genre
+News and Information,Genre
 None,Genre
+Occupational Reality,Genre
+Originals,Genre
 PGA Tour,Franchise
+Paranormal,Genre
+Parody,Genre
 Paw Patrol,Franchise
 Pets,Genre
 Poker & Gambling,Genre
@@ -246,6 +325,7 @@ Political Documentaries,Genre
 Political Thrillers,Genre
 Politics,Genre
 Pop,Genre
+Prayer & Spiritual Growth,Genre
 Preschool,Genre
 Psychological Thrillers,Genre
 Punk Rock,Genre
@@ -253,40 +333,55 @@ R&B/Soul,Genre
 Rap & Hip-Hop,Genre
 Real World,Franchise
 Reality,Genre
+Reality Drama,Genre
+Reality Show,Genre
 Reality TV,Genre
 RealityShow,Genre
 Reggae,Genre
+Religion,Genre
 Religion & Mythology Documentaries,Genre
+Religious & Mythic Epics,Genre
 Religious & Spiritual Dramas,Genre
+Religious Comedies & Satires,Genre
 Reno 911,Franchise
 Retro,Genre
 Rock,Genre
+Rock & Pop,Genre
 Rock & Roll Oldies,Genre
 Romance,Genre
 Romance Classics,Genre
 Romantic Comedies,Genre
+Romantic Drama,Genre
 Romantic Dramas,Genre
 RuPaul's Drag Race,Franchise
 Satanic Stories,Genre
+Sci Fi,Genre
 Sci-Fi Adventure,Genre
 Sci-Fi Cult Classics,Genre
 Sci-Fi Dramas,Genre
 Sci-Fi Horror,Genre
 Sci-Fi Thrillers,Genre
 Science,Genre
+Science Fiction,Genre
 Science and Nature Documentaries,Genre
+Science education,Genre
+Scifi,Genre
 Screwball,Genre
 Scripted,Genre
 Sculpture,Genre
 Secret Life Documentaries,Franchise
+Show Tunes,Genre
 Showbiz Comedies,Genre
+Silent Films,Genre
 Singer-Songwriters,Genre
 Singer/Songwriter,Genre
 Sitcom,Genre
 Sketch Comedies,Genre
+Sketch Comedy,Genre
 Slapstick,Genre
 Slashers and Serial Killers,Genre
 Social & Cultural Documentaries,Genre
+Soundtrack,Genre
 South Park,Franchise
 Spiritual Mysteries,Genre
 Spongebob,Franchise
@@ -297,6 +392,7 @@ Sports Comedies,Genre
 Sports Documentaries,Genre
 Stand-Up,Genre
 Star Trek,Franchise
+Steamy Romance,Genre
 Strawberry Shortcake,Franchise
 Sub: Action & Adventure,Genre
 Sub: Adult,Genre
@@ -342,24 +438,43 @@ Supernatural Sci-Fi,Genre
 Supernatural Thrillers,Genre
 Survivor,Franchise
 Suspense,Genre
+Suspense Thrillers,Genre
+Talk & Variety,Genre
+Talk Show,Genre
+Talk Show & Variety,Genre
+Technology,Genre
 Teen,Genre
 Teen Comedies,Genre
 Teen Dramas,Genre
 Teen Mom,Franchise
 Teen Romance,Genre
 Teen Screams,Genre
+Teen comedy,Genre
+Telenovela,Genre
+Thriller,Genre
 Tony Awards,Franchise
 Travel,Genre
 Travel & Adventure Documentaries,Genre
+Travel & Adventures Documentaries,Genre
+True Crime,Genre
 UEFA,Franchise
 UFC,Franchise
+Underground & Discovery,Genre
 Urban & Dance,Genre
 Vampires,Genre
 Variety,Genre
+Variety Show,Genre
+Video Gameplay & Walkthroughs,Genre
 Video Games,Genre
+Vocal,Genre
 War,Genre
+War Drama,Genre
 Werewolves,Genre
 Western,Genre
 Westerns,Genre
+Wine & Beverage Appreciation,Genre
+Women,Genre
 Women's Interest,Genre
+World,Genre
+Young Adult,Genre
 Zombies,Genre
