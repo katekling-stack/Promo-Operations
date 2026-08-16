@@ -22,6 +22,10 @@ from .config import REPO_ROOT
 
 DATA_DIR = REPO_ROOT / "data" / "video_groups"
 PREFIX = "VG: Genre: "
+SUB_PREFIX = "VG: Genre-Sub: "
+# Sub-genres are surfaced in the picklist tagged "Sub: <name>" so they never collide
+# with a same-named top-level genre; the resolver keys them under that same tag.
+SUB_LABEL = "Sub: "
 
 
 @dataclass
@@ -54,11 +58,18 @@ class GenreVideoGroupResolver:
             for row in csv.DictReader(fh):
                 _id = (row.get("id") or "").strip()
                 name = (row.get("name") or "").strip()
-                if not (_id and name) or _id in seen or not name.startswith(PREFIX):
+                if not (_id and name) or _id in seen:
+                    continue
+                # Top-level "VG: Genre: X" keys under X; sub "VG: Genre-Sub: X" keys under
+                # "Sub: X" (matching the picklist tag), so both resolve to their own VG id.
+                if name.startswith(SUB_PREFIX):
+                    key = normalize_title(SUB_LABEL + name[len(SUB_PREFIX):])
+                elif name.startswith(PREFIX):
+                    key = normalize_title(name[len(PREFIX):])
+                else:
                     continue
                 seen.add(_id)
-                genre = normalize_title(name[len(PREFIX):])
-                self._by_genre.setdefault(genre, []).append({"id": _id, "name": name})
+                self._by_genre.setdefault(key, []).append({"id": _id, "name": name})
 
     def resolve(self, genre: str) -> GenreMatch:
         if not self._loaded:

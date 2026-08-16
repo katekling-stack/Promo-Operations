@@ -68,28 +68,52 @@ def _pluto_regions() -> set[str]:
     return {r for r, cfg in regions.items() if cfg.get("has_pluto")}
 
 
+def _vg_rows(*candidates: str):
+    """Active rows from the first existing file in `candidates` (synced preferred, seed
+    as the offline fallback) — so the picklist reflects the full FreeWheel list when
+    synced, and still works from the committed seed otherwise."""
+    for fname in candidates:
+        path = DATA / "video_groups" / fname
+        if path.exists():
+            yield from _active(path)
+            return
+
+
 def genres() -> list[tuple[str, str]]:
-    """(value, type) rows: content Genres + Franchise values + Daypart options."""
+    """(value, type) rows: content Genres + Sub-genres + Franchise values + Daypart options."""
     out: list[tuple[str, str]] = []
     seen: set[str] = set()
-    for r in _active(DATA / "video_groups" / "seed_genre_video_groups.csv"):
+    # Top-level genres. "VG: Genre-Sub:" does NOT start with "VG: Genre:" (the '-' breaks
+    # the match), so this loop is genres only.
+    for r in _vg_rows("synced_genre_video_groups.csv", "seed_genre_video_groups.csv"):
         if r["name"].startswith("VG: Genre:"):
             label = r["name"].split("VG: Genre:", 1)[1].strip()
             if label and label not in REMOVE_GENRES and label not in seen:
                 seen.add(label); out.append((label, "Genre"))
+    # Sub-genres: tagged "Sub: X" so they read unambiguously and never collide with a
+    # same-named top-level genre. Same picker (type "Genre"); the resolver keys them under
+    # the same "Sub: X" tag.
+    for r in _vg_rows("synced_genre_sub_video_groups.csv"):
+        if r["name"].startswith("VG: Genre-Sub:"):
+            sub = r["name"].split("VG: Genre-Sub:", 1)[1].strip()
+            label = "Sub: " + sub
+            if sub and label not in seen:
+                seen.add(label); out.append((label, "Genre"))
     # Franchise values keep their bare name; Daypart values are prefixed "Daypart: X"
     # so they read unambiguously and never collide with a same-named genre (Sports,
     # News, Movies…), which are DIFFERENT FreeWheel video groups.
-    for fname, split_on, kind, label_prefix in (
-        ("seed_franchise_video_groups.csv", "VG: Franchise:", "Franchise", ""),
-        ("seed_daypart_video_groups.csv", "VG: Daypart:", "Daypart", "Daypart: "),
+    for cands, split_on, kind, label_prefix in (
+        (("synced_franchise_video_groups.csv", "seed_franchise_video_groups.csv"),
+         "VG: Franchise:", "Franchise", ""),
+        (("synced_daypart_video_groups.csv", "seed_daypart_video_groups.csv"),
+         "VG: Daypart:", "Daypart", "Daypart: "),
     ):
-        path = DATA / "video_groups" / fname
-        if path.exists():
-            for r in _active(path):
-                label = label_prefix + r["name"].split(split_on, 1)[-1].strip()
-                if label and label not in seen:
-                    seen.add(label); out.append((label, kind))
+        for r in _vg_rows(*cands):
+            if not r["name"].startswith(split_on):
+                continue
+            label = label_prefix + r["name"].split(split_on, 1)[-1].strip()
+            if label and label not in seen:
+                seen.add(label); out.append((label, kind))
     return sorted(out)
 
 
