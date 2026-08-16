@@ -38,3 +38,5 @@ data/video_groups/synced_*.csv
 !data/video_groups/synced_content_rating_video_groups.csv
 # committed: the sub-genre picker + resolver depend on this snapshot
 !data/video_groups/synced_genre_sub_video_groups.csv
+# committed: the daypart picker + resolver depend on this snapshot
+!data/video_groups/synced_daypart_video_groups.csv

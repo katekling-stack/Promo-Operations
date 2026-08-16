@@ -26,6 +26,11 @@ SUB_PREFIX = "VG: Genre-Sub: "
 # Sub-genres are surfaced in the picklist tagged "Sub: <name>" so they never collide
 # with a same-named top-level genre; the resolver keys them under that same tag.
 SUB_LABEL = "Sub: "
+# Daypart Video Groups ("VG: Daypart: <name>") are offered in the same Genre picker
+# tagged "Daypart: <name>" and resolved the same way (a content Video Group include) —
+# distinct from plan.dayparts, which are time-of-day windows.
+DAYPART_PREFIX = "VG: Daypart: "
+DAYPART_LABEL = "Daypart: "
 
 
 @dataclass
@@ -64,6 +69,8 @@ class GenreVideoGroupResolver:
                 # "Sub: X" (matching the picklist tag), so both resolve to their own VG id.
                 if name.startswith(SUB_PREFIX):
                     key = normalize_title(SUB_LABEL + name[len(SUB_PREFIX):])
+                elif name.startswith(DAYPART_PREFIX):
+                    key = normalize_title(DAYPART_LABEL + name[len(DAYPART_PREFIX):])
                 elif name.startswith(PREFIX):
                     key = normalize_title(name[len(PREFIX):])
                 else:
