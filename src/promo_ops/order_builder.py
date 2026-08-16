@@ -22,9 +22,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .config import (ad_units_config, brands_config, kids_targeting_config,
-                     kids_video_groups, placement_templates_config,
-                     priorities_config, regions_config)
+from .config import (ad_units_config, brands_config, campaign_defaults_config,
+                     kids_targeting_config, kids_video_groups,
+                     placement_templates_config, priorities_config, regions_config)
 from .ad_units import AdUnitResolver
 from .geo import CountryResolver, GeoResolver
 from .models import Order, Placement, SupportPlan, TieredTargeting
@@ -52,6 +52,7 @@ class OrderBuilder:
         self._priorities = priorities_config()
         self._regions = regions_config()
         self._ad_units = ad_units_config()
+        self._campaign_defaults = campaign_defaults_config()
 
     @staticmethod
     def _ids_from_tier(tier) -> dict:
@@ -477,6 +478,13 @@ class OrderBuilder:
         # VG Format: Clips (kids + adults, all regions).
         excl_sgs += list(tmpl.get("extra_exclude_site_groups", []))
         excl_vgs += list(tmpl.get("extra_exclude_video_groups", []))
+        # Per-campaign default VG excludes (config/campaign_defaults.yaml): e.g. exclude
+        # "VG: Franchise: UFC" on every placement of any IO under a given parent campaign,
+        # keyed by the exact campaign name. One standing entry, applied everywhere.
+        camp_name = (plan.campaign or {}).get("name", "")
+        for vg in self._campaign_defaults.get("exclude_video_groups", {}).get(camp_name, []):
+            if str(vg) not in excl_vgs:
+                excl_vgs.append(str(vg))
         # Rating restrictions (ALL brands/regions): the CM selects content ratings to
         # exclude; they resolve to the market's "VG: Content Rating: {region}: {rating}"
         # Video Groups and are excluded on every set of every placement. Raw VG ids pass

@@ -1,0 +1,19 @@
+# Per-campaign default targeting overrides, keyed by the EXACT parent campaign name
+# (matched against plan.campaign.name). Anything here is applied to EVERY remnant/tiered
+# placement of any Insertion Order built under that campaign — a standing default, no
+# per-plan input.
+#
+# exclude_video_groups: Video Group IDs excluded on every set of every placement (same
+# mechanism as the content-rating VG exclusions). Use the numeric VG id; the trailing
+# comment records which VG it is.
+exclude_video_groups:
+  "The Free Press - USA":
+    - "1625229912"                 # VG: Franchise: UFC
+  "BET Media Group - USA":
+    - "1625229912"                 # VG: Franchise: UFC
+  "MTVE - USA":
+    - "1625229912"                 # VG: Franchise: UFC
+  "Snow Commerce - USA":
+    - "1625229912"                 # VG: Franchise: UFC
+  "Pluto TV (Cross-Company) - USA":
+    - "1625229912"                 # VG: Franchise: UFC
