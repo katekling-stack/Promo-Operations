@@ -8,6 +8,7 @@ integrations/gsheets.py and integrations/salesforce.py.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -28,11 +29,46 @@ def _truthy(value: Any) -> bool:
 
 _DAYPART_DAYS = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"}
 
+# FreeWheel daypart times are WHOLE HOURS only, with two special tokens. Human inputs like
+# "8:30PM" (not on the hour) are rejected; "12:00AM"/"12:00PM" normalize to the tokens.
+_VALID_DAYPART_TIMES = (
+    "12 MIDNIGHT, 01:00AM–11:00AM, 12 NOON, 01:00PM–11:00PM")
+
+
+def _norm_daypart_time(t: str) -> str:
+    """Normalize a daypart time to FreeWheel's exact token, or raise a clear ValueError.
+
+    Accepts "H:MMAM/PM" (whole hours only). "12:00AM" -> "12 MIDNIGHT", "12:00PM" ->
+    "12 NOON". Anything not on the hour (e.g. "08:30PM", "11:59PM") is rejected up front —
+    FreeWheel would otherwise 422 the placement AFTER the IO is already created."""
+    s = str(t).strip().upper().replace(" ", "")
+    if s in ("12MIDNIGHT", "MIDNIGHT", "00:00", "0:00"):
+        return "12 MIDNIGHT"
+    if s in ("12NOON", "NOON"):
+        return "12 NOON"
+    m = re.fullmatch(r"(\d{1,2}):(\d{2})(AM|PM)", s)
+    if not m:
+        raise ValueError(
+            f"Daypart time {t!r} isn't a recognized time. Use whole hours like "
+            f"'08:00PM' or '12:00AM'. Valid: {_VALID_DAYPART_TIMES}.")
+    hh, mm, ap = int(m.group(1)), m.group(2), m.group(3)
+    if mm != "00":
+        raise ValueError(
+            f"Daypart time {t!r} must be on the hour — FreeWheel only accepts whole hours "
+            f"({_VALID_DAYPART_TIMES}). Change ':{mm}' to ':00' (round to the nearest hour).")
+    if hh == 12:
+        return "12 MIDNIGHT" if ap == "AM" else "12 NOON"
+    if not 1 <= hh <= 11:
+        raise ValueError(f"Daypart time {t!r} has an invalid hour. Valid: {_VALID_DAYPART_TIMES}.")
+    return f"{hh:02d}:00{ap}"
+
 
 def _dayparts(raw: Any) -> list[dict]:
     """Normalize daypart windows. Each window needs start_day/end_day/start_time/end_time.
     Days are upper-cased and validated against the weekday enum; malformed windows are
-    dropped (never a partial). Empty -> [] (= 24/7, no daypart_targeting emitted)."""
+    dropped (never a partial). Times are validated/normalized to FreeWheel's whole-hour
+    tokens — an off-the-hour time (e.g. '08:30PM') raises a clear error at build time,
+    BEFORE a live push creates the IO. Empty -> [] (= 24/7, no daypart_targeting emitted)."""
     out: list[dict] = []
     for w in (raw or []):
         if not isinstance(w, dict):
@@ -42,7 +78,8 @@ def _dayparts(raw: Any) -> list[dict]:
         st = str(w.get("start_time") or "").strip()
         et = str(w.get("end_time") or "").strip()
         if sd in _DAYPART_DAYS and ed in _DAYPART_DAYS and st and et:
-            out.append({"start_day": sd, "end_day": ed, "start_time": st, "end_time": et})
+            out.append({"start_day": sd, "end_day": ed,
+                        "start_time": _norm_daypart_time(st), "end_time": _norm_daypart_time(et)})
     return out
 
 
