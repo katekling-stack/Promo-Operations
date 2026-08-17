@@ -29,37 +29,43 @@ def _truthy(value: Any) -> bool:
 
 _DAYPART_DAYS = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"}
 
-# FreeWheel daypart times are WHOLE HOURS only, with two special tokens. Human inputs like
-# "8:30PM" (not on the hour) are rejected; "12:00AM"/"12:00PM" normalize to the tokens.
-_VALID_DAYPART_TIMES = (
-    "12 MIDNIGHT, 01:00AM–11:00AM, 12 NOON, 01:00PM–11:00PM")
+# FreeWheel daypart times are WHOLE HOURS only, and START and END have DIFFERENT valid
+# lists (verified live): a START may be "12 MIDNIGHT", but there is NO midnight END — the
+# latest end is "11:00PM", which runs THROUGH the end of the day. Off-the-hour inputs (e.g.
+# "8:30PM") are rejected; "12:00AM"/"12:00PM" normalize to the tokens.
+_VALID_START_TIMES = "12 MIDNIGHT, 01:00AM–11:00AM, 12 NOON, 01:00PM–11:00PM"
+_VALID_END_TIMES = "01:00AM–11:00AM, 12 NOON, 01:00PM–11:00PM (no midnight end — use 11:00PM)"
 
 
-def _norm_daypart_time(t: str) -> str:
+def _norm_daypart_time(t: str, is_end: bool = False) -> str:
     """Normalize a daypart time to FreeWheel's exact token, or raise a clear ValueError.
 
-    Accepts "H:MMAM/PM" (whole hours only). "12:00AM" -> "12 MIDNIGHT", "12:00PM" ->
-    "12 NOON". Anything not on the hour (e.g. "08:30PM", "11:59PM") is rejected up front —
-    FreeWheel would otherwise 422 the placement AFTER the IO is already created."""
+    Whole hours only. "12:00AM"->"12 MIDNIGHT" (start only), "12:00PM"->"12 NOON". A midnight
+    END is rejected (FreeWheel has none) — the caller should use "11:00PM" to run through the
+    end of the day. All validated up front, BEFORE a live push can create a partial IO."""
+    valid = _VALID_END_TIMES if is_end else _VALID_START_TIMES
     s = str(t).strip().upper().replace(" ", "")
-    if s in ("12MIDNIGHT", "MIDNIGHT", "00:00", "0:00"):
+    if s in ("12MIDNIGHT", "MIDNIGHT", "00:00", "0:00", "12:00AM"):
+        if is_end:
+            raise ValueError(
+                f"Daypart end time {t!r} can't be midnight — FreeWheel dayparts have no "
+                "midnight end. Use '11:00PM' to run through the end of the day, and put any "
+                "after-midnight hours in a SEPARATE window that starts at '12:00AM'.")
         return "12 MIDNIGHT"
-    if s in ("12NOON", "NOON"):
+    if s in ("12NOON", "NOON", "12:00PM"):
         return "12 NOON"
     m = re.fullmatch(r"(\d{1,2}):(\d{2})(AM|PM)", s)
     if not m:
         raise ValueError(
             f"Daypart time {t!r} isn't a recognized time. Use whole hours like "
-            f"'08:00PM' or '12:00AM'. Valid: {_VALID_DAYPART_TIMES}.")
+            f"'08:00PM'. Valid: {valid}.")
     hh, mm, ap = int(m.group(1)), m.group(2), m.group(3)
     if mm != "00":
         raise ValueError(
             f"Daypart time {t!r} must be on the hour — FreeWheel only accepts whole hours "
-            f"({_VALID_DAYPART_TIMES}). Change ':{mm}' to ':00' (round to the nearest hour).")
-    if hh == 12:
-        return "12 MIDNIGHT" if ap == "AM" else "12 NOON"
+            f"({valid}). Change ':{mm}' to ':00' (round to the nearest hour).")
     if not 1 <= hh <= 11:
-        raise ValueError(f"Daypart time {t!r} has an invalid hour. Valid: {_VALID_DAYPART_TIMES}.")
+        raise ValueError(f"Daypart time {t!r} has an invalid hour. Valid: {valid}.")
     return f"{hh:02d}:00{ap}"
 
 
@@ -79,7 +85,8 @@ def _dayparts(raw: Any) -> list[dict]:
         et = str(w.get("end_time") or "").strip()
         if sd in _DAYPART_DAYS and ed in _DAYPART_DAYS and st and et:
             out.append({"start_day": sd, "end_day": ed,
-                        "start_time": _norm_daypart_time(st), "end_time": _norm_daypart_time(et)})
+                        "start_time": _norm_daypart_time(st, is_end=False),
+                        "end_time": _norm_daypart_time(et, is_end=True)})
     return out
 
 

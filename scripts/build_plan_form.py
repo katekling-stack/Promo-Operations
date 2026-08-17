@@ -619,14 +619,17 @@ function dpDaySelect(sel){
   return '<select class="dpDay">'+DP_DAYS.map(d=>
     `<option value="${d}"${d===sel?' selected':''}>${d[0]+d.slice(1).toLowerCase()}</option>`).join('')+'</select>';
 }
-function dpHourSelect(cls,selVal){
+function dpHourSelect(cls,selVal,isEnd){
   // Whole hours only — FreeWheel dayparts reject anything off the hour (e.g. 8:30PM).
-  let opts="";
-  for(let h=0;h<24;h++){
+  // END has no midnight: the latest end is 11:00PM, which runs THROUGH the end of the day.
+  // So the End dropdown starts at 1:00 AM (skip hour 0) and labels 11:00 PM accordingly.
+  let opts=""; const start=isEnd?1:0;
+  for(let h=start;h<24;h++){
     const v=String(h).padStart(2,"0")+":00";
     const ap=h>=12?"PM":"AM"; let h12=h%12; if(h12===0) h12=12;
     let label=h12+":00 "+ap;
     if(h===0) label="12:00 AM (midnight)"; if(h===12) label="12:00 PM (noon)";
+    if(isEnd&&h===23) label="11:00 PM (through midnight)";
     opts+=`<option value="${v}"${v===selVal?' selected':''}>${label}</option>`;
   }
   return `<select class="${cls}">${opts}</select>`;
@@ -634,8 +637,8 @@ function dpHourSelect(cls,selVal){
 function addDaypartRow(){
   const row=document.createElement("div"); row.className="dpRow";
   row.innerHTML=dpDaySelect("MONDAY")+' <span class="dpsep">to</span> '+dpDaySelect("FRIDAY")+
-    ' '+dpHourSelect("dpStart","18:00")+' <span class="dpsep">–</span> '+
-    dpHourSelect("dpEnd","23:00")+' '+
+    ' '+dpHourSelect("dpStart","18:00",false)+' <span class="dpsep">–</span> '+
+    dpHourSelect("dpEnd","23:00",true)+' '+
     '<button type="button" class="dpDel" title="Remove window">✕</button>';
   row.querySelector(".dpDel").addEventListener("click",()=>row.remove());
   $("#daypartRows").appendChild(row);
