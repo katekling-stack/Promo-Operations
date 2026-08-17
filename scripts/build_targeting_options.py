@@ -122,9 +122,13 @@ _CHAN = re.compile(r"SG: PlutoTV Channels:\s*([A-Z]{2}):\s*(.*)")
 
 
 def _pluto():
-    """Return {market: {'categories': set, 'channels': set}} from site groups."""
+    """Return {market: {'categories': set, 'channels': set}} from site groups. Prefers the
+    freshly-synced list (refresh-form / sync-site-groups), falls back to the committed seed."""
     out: dict[str, dict[str, set]] = {}
-    for r in _active(DATA / "site_groups" / "seed_site_groups.csv"):
+    sg_dir = DATA / "site_groups"
+    sg_file = next((sg_dir / f for f in ("synced_site_groups.csv", "seed_site_groups.csv")
+                    if (sg_dir / f).exists()), sg_dir / "seed_site_groups.csv")
+    for r in _active(sg_file):
         n = r["name"]
         if "Channels:" in n:
             m = _CHAN.match(n)

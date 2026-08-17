@@ -498,6 +498,46 @@ def _cmd_sync_all(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_refresh_form(args: argparse.Namespace) -> int:
+    """Weekly one-shot: refresh EVERY FreeWheel data snapshot the picker depends on, then
+    rebuild the option lists + the plan form — so the team's dropdowns show the latest
+    series / site groups / audiences / attributes. Upload the printed HTML to Drive after."""
+    import subprocess
+    from .config import REPO_ROOT
+    from .integrations.freewheel import FreeWheelClient
+    fw = FreeWheelClient()
+    print("Refreshing FreeWheel data snapshots (a few minutes — series is the slow one)…")
+    # Each step is isolated: one source failing (e.g. a transient API hiccup) still lets
+    # the rest refresh and the form rebuild from whatever is freshest.
+    steps = [
+        ("series (~229k)",        fw.sync_series),
+        ("audience items",        fw.sync_audience_items),
+        ("standard attributes",   fw.sync_standard_attributes),
+        ("Pluto site groups",     fw.sync_site_groups),
+    ]
+    ok = 0
+    for i, (label, fn) in enumerate(steps, 1):
+        print(f"  [{i}/{len(steps)}] {label}…")
+        try:
+            fn(); ok += 1
+        except Exception as exc:  # noqa: BLE001 - report and continue
+            print(f"      ⚠️  skipped {label}: {exc}", file=sys.stderr)
+    # Optional: audience-segment sheet (needs Google creds); never blocks the refresh.
+    try:
+        from .integrations.gsheets import sync_audience_segments
+        sync_audience_segments()
+        print("  [+] audience segments (sheet)…")
+    except Exception:
+        pass
+    print("Rebuilding option lists + form…")
+    for script in ("build_targeting_options.py", "build_plan_form.py"):
+        subprocess.run([sys.executable, str(REPO_ROOT / "scripts" / script)], check=True)
+    form = REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html"
+    print(f"\n✅ Done ({ok}/{len(steps)} sources refreshed). Upload this to Drive as a NEW "
+          f"VERSION (keeps the team's link):\n   {form}")
+    return 0 if ok else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -601,6 +641,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_sall = sub.add_parser("sync-all",
                             help="Refresh ALL FreeWheel data snapshots (series + audience + attributes)")
     p_sall.set_defaults(func=_cmd_sync_all)
+
+    p_refresh = sub.add_parser("refresh-form",
+                               help="Weekly: sync every FreeWheel snapshot + rebuild the plan form")
+    p_refresh.set_defaults(func=_cmd_refresh_form)
 
     p_batch = sub.add_parser("batch",
                              help="Build+create many cases from ONE sheet (one row per Salesforce case)")
