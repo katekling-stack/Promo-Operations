@@ -510,9 +510,11 @@ document.querySelectorAll(".chips").forEach(box=>{
   const showMenu=()=>{
     if(!src){ closeMenu(); return; }
     const q=input.value.trim().toLowerCase();
-    if(q.length<2){ closeMenu(); return; }
     const list=sourceList(src)||[];
-    if(!list.length){ menu.innerHTML='<div class="rnote">Pick a Region first</div>'; menu.classList.remove("hidden"); return; }
+    if(!list.length){ if(q.length){ menu.innerHTML='<div class="rnote">Pick a Region first</div>'; menu.classList.remove("hidden"); } else closeMenu(); return; }
+    // Small enumerated lists (ratings, geo, …) search from the FIRST character so single-
+    // char values like the BR "6" rating are findable; big lists need 2 chars to stay useful.
+    if(q.length < (list.length<=60 ? 1 : 2)){ closeMenu(); return; }
     // Hide already-selected values so they can't be picked twice.
     const chosen=new Set(state.lists[key].map(x=>x.toLowerCase()));
     const raw=[]; for(let i=0;i<list.length && raw.length<250;i++){
