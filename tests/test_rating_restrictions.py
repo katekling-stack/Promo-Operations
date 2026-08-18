@@ -58,8 +58,12 @@ def test_resolver_top_level_and_resolve():
     r = RatingRestrictionResolver().load()
     us = r.ratings_for("US")
     assert "TV-MA" in us and "R" in us
-    assert all(":" not in label for label in us)          # sub-variants hidden
-    assert r.resolve("US", ["TV-MA", "TV-14"]) == ["877330305", "877330364"]
+    assert all(":" not in label for label in us)          # sub-variants hidden from the picker
+    # Excluding a rating expands to its whole family (base + descriptor variants), so the
+    # base VGs are always included; picking TV-MA also pulls in TV-MA: V, TV-MA: L, etc.
+    resolved = r.resolve("US", ["TV-MA", "TV-14"])
+    assert {"877330305", "877330364"}.issubset(set(resolved))
+    assert len(resolved) >= 2
 
 
 def test_us_tv_ma_excluded_on_every_placement():

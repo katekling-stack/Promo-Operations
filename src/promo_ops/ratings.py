@@ -14,6 +14,7 @@ FreeWheel -> data/video_groups/synced_content_rating_video_groups.csv.
 from __future__ import annotations
 
 import csv
+import re
 from pathlib import Path
 
 from .config import REPO_ROOT
@@ -25,6 +26,15 @@ _FILE = "synced_content_rating_video_groups.csv"
 
 def _norm(s: str) -> str:
     return " ".join(str(s or "").strip().lower().split())
+
+
+def _family_key(rating: str) -> tuple:
+    """Group a rating with its age-family: '6', '6: AS', 'A6', 'A6: VD' all share
+    ('age','6'), so excluding '6' pulls in every 6-level variant. Non-numeric ratings key
+    by their base name, so 'L'/'L: NA' group together but stay distinct from 'AL'."""
+    base = str(rating).split(":", 1)[0].strip()
+    m = re.fullmatch(r"A?(\d+)", base)
+    return ("age", m.group(1)) if m else ("name", _norm(base))
 
 
 class RatingRestrictionResolver:
@@ -66,21 +76,35 @@ class RatingRestrictionResolver:
         return sorted(labels, key=str.lower)
 
     def resolve(self, region_code: str, ratings: list[str]) -> list[str]:
-        """Selected rating labels -> VG ids for the region (exact, normalized match).
-        Numeric entries are treated as raw VG ids and passed through (back-compat)."""
+        """Selected rating labels -> the region's VG ids, EXPANDED to the full age-family
+        (e.g. '6' -> 6, 6: AS, A6: VD, …) so one pick excludes every variant of that rating.
+        A LONG all-digit value passes through as a raw VG id (back-compat with the AU flow
+        that supplies ids directly); a short numeric like '6' is a rating and is resolved."""
         self._ensure()
         table = self._by_region.get(region_code, {})
+        labels = self._labels.get(region_code, [])
         out: list[str] = []
+        seen: set[str] = set()
+
+        def add(vg: str | None) -> None:
+            if vg and vg not in seen:
+                seen.add(vg)
+                out.append(vg)
+
         for r in ratings or []:
             r = str(r).strip()
             if not r:
                 continue
-            if r.isdigit():                       # already a VG id
-                out.append(r)
-                continue
-            vg = table.get(_norm(r))
-            if vg and vg not in out:
-                out.append(vg)
+            key = _family_key(r)
+            matched = False
+            for lab in labels:                    # expand to the whole age-family
+                if _family_key(lab) == key:
+                    vg = table.get(_norm(lab))
+                    if vg:
+                        add(vg)
+                        matched = True
+            if not matched and r.isdigit():        # numeric that isn't a known rating ->
+                add(r)                              # treat as a raw VG id (AU supplies ids)
         return out
 
     def regions(self) -> list[str]:
