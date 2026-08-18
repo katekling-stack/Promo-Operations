@@ -167,16 +167,32 @@ class AudienceSegmentResolver:
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_exact(self, show: str, region: Optional[str] = None) -> SegmentMatch:
-        """Only the segment(s) that ARE exactly this title — the title tokens are the
-        TRAILING tokens of the segment name — not the whole franchise family. So "NCIS"
-        matches "…SHOW-NCIS" but not "…SHOW-NCIS_Hawaii"; used for self-exclusion where we
-        must exclude the exact title only."""
+        """Only the segment(s) that ARE exactly this title — the SHOW-name portion of the
+        segment (after the convention prefix + an optional "SHOW" token) must equal the
+        query exactly. So "CSI Miami" matches "…SHOW-CSI_Miami" but NOT "…SHOW-NCIS_Hawaii"
+        (suffix extra) or "…SHOW-The_Real_CSI_Miami" (prefix extra). Used for self-exclusion,
+        where we must exclude the exact title only — never the wider franchise family."""
         m = self.resolve(show, region)
         if not m.matched:
             return m
         kw = _dda_tokens(show)
-        recs = [r for r in m.records
-                if _dda_tokens(r.segment_name) == kw or _dda_tokens(r.segment_name).endswith(" " + kw)]
+        want_conv = _convention_for_region(region)
+
+        def show_portion(seg_name: str) -> str:
+            n = _dda_tokens(seg_name)
+            if n.startswith(want_conv):
+                parts = n[len(want_conv):].split()
+                if parts and parts[0] == "show":       # drop the optional "SHOW" token
+                    parts = parts[1:]
+                return " ".join(parts)
+            return n
+
+        if want_conv == DEFAULT_TIER1_CONVENTION:
+            recs = [r for r in m.records if show_portion(r.segment_name) == kw]
+        else:  # non-default (AU DWH) naming isn't "<conv> SHOW <title>" — keep trailing match
+            recs = [r for r in m.records
+                    if _dda_tokens(r.segment_name) == kw
+                    or _dda_tokens(r.segment_name).endswith(" " + kw)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
