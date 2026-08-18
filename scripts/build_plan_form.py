@@ -315,8 +315,8 @@ datalist{display:none}
         <a href="BRAND_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
                   border:1.5px solid var(--blue);border-radius:10px;padding:10px 16px;font-weight:700;
-                  font-size:14px;text-decoration:none">🏷️ Create a Brand in FreeWheel ↗</a>
-        <div class="hint" style="margin-top:6px">Brand not set up yet? Request it here — it must exist in FreeWheel to be mapped to the IO &amp; Placements (Custom Exclusivity).</div>
+                  font-size:14px;text-decoration:none">🏷️ Submit a Brand for Global Brand Mapping ↗</a>
+        <div class="hint" style="margin-top:6px">Global Brand Mapping not set up yet? Request it here and Kelly Malloy will submit and build in FreeWheel once ready.</div>
       </div></div>
     <div class="field"><label>Salesforce Case #</label>
       <input type="text" id="sf_case" placeholder="e.g. 00123456">
@@ -338,7 +338,8 @@ datalist{display:none}
         <input type="text" id="season" placeholder="e.g. Season 1 / Now Streaming / Launch">
         <div class="hint">The middle of every placement name — use it for the season, launch beat, or campaign messaging.</div></div>
       <div class="field"><label>Content type</label>
-        <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option></select></div>
+        <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option></select>
+        <div class="hint">Select when you need to note a Show or Movie ID for Paramount+ campaigns.</div></div>
     </div>
     <div class="row">
       <div class="field"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">
