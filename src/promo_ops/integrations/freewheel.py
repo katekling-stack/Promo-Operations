@@ -831,6 +831,34 @@ class FreeWheelClient:
         return m.group(1) if m else "1"
 
     @staticmethod
+    def _deconflict_set(s: dict) -> None:
+        """Drop any item present in BOTH include and exclude of a relationship set (exclude
+        wins). FreeWheel rejects the same id in include+exclude — which happens when the
+        promoted show is in its own affinity list (targeted) AND self-excluded."""
+        for blk, sub in ((s.get("audience_targeting"), None),
+                         (s.get("content_targeting"), "network_items")):
+            if not isinstance(blk, dict):
+                continue
+            node = blk.get(sub) if sub else blk
+            if not isinstance(node, dict):
+                continue
+            inc, exc = node.get("include"), node.get("exclude")
+            if not isinstance(inc, dict) or not isinstance(exc, dict):
+                continue
+            for dim, exvals in exc.items():
+                if dim not in inc:
+                    continue
+                exset = set(exvals if isinstance(exvals, list) else [exvals])
+                incvals = inc[dim] if isinstance(inc[dim], list) else [inc[dim]]
+                kept = [v for v in incvals if v not in exset]
+                if kept:
+                    inc[dim] = kept
+                else:
+                    del inc[dim]
+            if not inc:
+                node.pop("include", None)
+
+    @staticmethod
     def _placement_body(p) -> dict[str, Any]:
         """Assemble the FreeWheel create-placement body, mirroring the Dutton Ranch IO.
 
@@ -877,6 +905,11 @@ class FreeWheelClient:
                 at = s.setdefault("audience_targeting", {})
                 ex = at.setdefault("exclude", {})
                 ex["audience_item"] = sorted(set(ex.get("audience_item", []) or []) | set(aud_excl))
+        # FreeWheel 422s if the SAME item is in a set's include AND exclude (e.g. the
+        # promoted show in its own affinity list AND self-excluded). Exclude wins — drop
+        # the overlap from the include so a self-contradicting plan never blocks the push.
+        for _s in sets:
+            FreeWheelClient._deconflict_set(_s)
         if sets:
             body["relationship_targeting"] = {"set": sets}
         # Placement-level content exclude (separate from the relationship sets) —
