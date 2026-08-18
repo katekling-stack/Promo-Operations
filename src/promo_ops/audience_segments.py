@@ -198,6 +198,11 @@ class AudienceSegmentResolver:
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]
 
+    def resolve_all_exact(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
+        """Exact per show — each showlist entry resolves to ONLY its own segment(s), never
+        the wider franchise family (so 'CSI Miami' does not pull in 'The Real CSI Miami')."""
+        return [self.resolve_exact(s, region) for s in shows]
+
     def id_for_segment_name(self, name: str) -> list[str]:
         """Resolve an EXISTING segment picked by its exact name (from the audience
         picklist) to its FreeWheel audience-item id(s) — used to EXCLUDE a specific
