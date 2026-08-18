@@ -227,9 +227,9 @@ datalist{display:none}
                   font-size:14px;text-decoration:none">🎯 Request a new audience segment ↗</a>
         <div class="hint" style="margin-top:6px">Not in the list yet? Submit it now — it'll be applied once created.</div>
       </div></div>
-    <div class="field" style="border-top:1px dashed var(--line);padding-top:14px;margin-top:4px">
-      <label>Geo — narrow to states / DMAs / cities <span style="font-weight:400;color:#888">(optional)</span></label>
-      <div class="hint">Leave blank to run across the whole region. Anything added here is layered <b>on top</b> of the region's country targeting (added to <code>include</code>) on every placement.</div>
+    <details class="field" style="border-top:1px dashed var(--line);padding-top:14px;margin-top:4px">
+      <summary style="cursor:pointer;font-weight:600;list-style:revert">Geo — narrow to states / DMAs / cities <span style="font-weight:400;color:#888">(optional — click to expand; rarely used)</span></summary>
+      <div class="hint" style="margin-top:10px">Leave blank to run across the whole region. Anything added here is layered <b>on top</b> of the region's country targeting (added to <code>include</code>) on every placement.</div>
       <label style="margin-top:10px">States</label>
       <div class="chips" data-chips="geo_states" data-source="states"><input type="text" placeholder="type a state (e.g. California)…"></div>
       <label style="margin-top:10px">DMAs <span style="font-weight:400;color:#888">(US only)</span></label>
@@ -244,7 +244,7 @@ datalist{display:none}
       <div class="chips" data-chips="geo_dmas_exclude" data-source="dmas"><input type="text" placeholder="type a DMA to exclude…"></div>
       <label style="margin-top:10px">Exclude cities</label>
       <div class="chips" data-chips="geo_cities_exclude"><input type="text" placeholder="City, ST to exclude — e.g. Chicago, IL"></div>
-    </div>
+    </details>
   </div>
 
   <div class="card">
