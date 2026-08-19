@@ -338,8 +338,8 @@ datalist{display:none}
         <input type="text" id="season" placeholder="e.g. Season 1 / Now Streaming / Launch">
         <div class="hint">The middle of every placement name — use it for the season, launch beat, or campaign messaging.</div></div>
       <div class="field"><label>Content type</label>
-        <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option></select>
-        <div class="hint">Select when you need to note a Show or Movie ID for Paramount+ campaigns.</div></div>
+        <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option><option value="na">N/A</option></select>
+        <div class="hint">Select when you need to note a Show or Movie ID for Paramount+ campaigns. Leave as <b>N/A</b> for campaigns that don't need a Show/Movie ID.</div></div>
     </div>
     <div class="row">
       <div class="field"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">

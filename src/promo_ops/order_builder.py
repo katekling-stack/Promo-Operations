@@ -366,7 +366,10 @@ class OrderBuilder:
                     or str(brand_key or "").startswith("paramount_plus"))
         if not is_pplus:
             return ""
-        label = "MovieID" if (plan.content_type or "show").lower() == "movie" else "ShowID"
+        ctype = (plan.content_type or "show").lower()
+        if ctype in ("na", "n/a", "none"):     # campaign doesn't need a Show/Movie ID
+            return ""
+        label = "MovieID" if ctype == "movie" else "ShowID"
         return f" - [{label}:{plan.content_id or ''}]"
 
     # --- caps / priority ------------------------------------------------- #
