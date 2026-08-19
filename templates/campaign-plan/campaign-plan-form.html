@@ -100,6 +100,16 @@ datalist{display:none}
 </div></header>
 <div class="wrap">
 
+  <div class="card hidden" id="draftBanner" style="border-color:var(--blue);background:#eef4ff">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="font-weight:700;color:var(--blue)">💾 We saved your last draft on this browser</span>
+      <span class="hint" id="draftMeta" style="margin:0"></span>
+      <span style="flex:1"></span>
+      <button class="btn primary" type="button" id="draftRestore">Restore draft</button>
+      <button class="btn ghost" type="button" id="draftDiscard">Discard</button>
+    </div>
+  </div>
+
   <div class="card">
     <h2>Campaign</h2><p class="sub">Pick the region, then the campaign — that sets the brand, advertiser and default products for you.</p>
     <div class="row">
@@ -274,6 +284,8 @@ datalist{display:none}
 
 <div class="bar"><div class="barw">
   <span class="status" id="status">Fill Region, Campaign and Promoted title to continue.</span>
+  <input type="file" id="loadFile" accept=".json,application/json" class="hidden">
+  <button class="btn ghost" id="loadBtn" type="button" title="Upload a plan file you downloaded earlier to keep editing it">Load a saved plan</button>
   <button class="btn ghost" id="copyBtn">Copy JSON</button>
   <button class="btn ghost" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
   <button class="btn ghost" id="dlBtn" disabled>Download plan file</button>
@@ -497,7 +509,8 @@ document.querySelectorAll(".chips").forEach(box=>{
       el.appendChild(x); box.insertBefore(el,input);
     }); validate();
   };
-  const add=v=>{ v=(v||"").trim(); if(!v) return;
+  box._render = render;   // exposed so loadPlan() can repopulate this field
+  const add=(v,keepOpen)=>{ v=(v||"").trim(); if(!v) return;
     if(box.dataset.numeric && !/^\d+$/.test(v)) return;
     if(src){ const list=sourceList(src)||[];               // strict: must be a real value…
       const hit=list.find(x=>x.toLowerCase()===v.toLowerCase());
@@ -505,7 +518,9 @@ document.querySelectorAll(".chips").forEach(box=>{
     if(!state.lists[key].includes(v)){
       if(box.dataset.single) state.lists[key]=[];         // single-select: replace
       state.lists[key].push(v); render(); }
-    input.value=""; closeMenu(); };
+    // Multi-select: after clicking a match keep the menu open (the just-added item drops
+    // out of the list) so several values can be picked in a row without re-typing.
+    if(keepOpen && !box.dataset.single){ input.focus(); showMenu(); } else { input.value=""; closeMenu(); } };
   const closeMenu=()=>{ menu.classList.add("hidden"); menu.innerHTML=""; };
   const showMenu=()=>{
     if(!src){ closeMenu(); return; }
@@ -527,7 +542,7 @@ document.querySelectorAll(".chips").forEach(box=>{
     const hits=raw.slice(0,40);
     if(!hits.length){ menu.innerHTML='<div class="rnote">No match</div>'; menu.classList.remove("hidden"); return; }
     menu.innerHTML=hits.map(h=>`<div class="ritem"></div>`).join("");
-    [...menu.children].forEach((el,i)=>{ el.textContent=hits[i]; el.onmousedown=e=>{e.preventDefault(); add(hits[i]);}; });
+    [...menu.children].forEach((el,i)=>{ el.textContent=hits[i]; el.onmousedown=e=>{e.preventDefault(); add(hits[i],true);}; });
     menu.classList.remove("hidden");
   };
   input.addEventListener("input",showMenu);
@@ -736,6 +751,101 @@ $("#rowBtn").addEventListener("click",async()=>{
   const b=$("#rowBtn"); b.textContent="Row copied ✓ — paste into the Sheet";
   setTimeout(()=>b.textContent="Copy row for Sheet",1800);
 });
+
+// --- Save progress / reload a plan ---------------------------------------- //
+// Everything the CM types is auto-saved to THIS browser (localStorage) so a refresh or
+// accidental close doesn't lose the form; and any plan file downloaded earlier can be
+// uploaded to keep editing. loadPlan() is the inverse of buildPlan().
+const DRAFT_KEY="promoPlanDraft";
+function setV(id,v){ const e=$("#"+id); if(e&&v!=null) e.value=v; }
+function setChips(key,arr){ state.lists[key]=(arr||[]).slice();
+  const box=document.querySelector(`[data-chips="${key}"]`); if(box&&box._render) box._render(); }
+function dpTo24h(t){ if(!t) return "";                       // "06:00PM" -> "18:00"
+  const ap=t.slice(-2).toUpperCase(); let [h,m]=t.slice(0,-2).split(":").map(Number);
+  if(ap==="PM"&&h!==12) h+=12; if(ap==="AM"&&h===12) h=0;
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
+function loadDayparts(dps){ $("#daypartRows").innerHTML="";
+  (dps||[]).forEach(d=>{ addDaypartRow(); const r=$("#daypartRows").lastElementChild;
+    const days=r.querySelectorAll(".dpDay");
+    if(d.start_day) days[0].value=d.start_day; if(d.end_day) days[1].value=d.end_day;
+    r.querySelector(".dpStart").value=dpTo24h(d.start_time);
+    r.querySelector(".dpEnd").value=dpTo24h(d.end_time); }); }
+function loadPlan(plan){
+  if(!plan||typeof plan!=="object") return;
+  // 1) region first (rebuilds the campaign dropdown + clears region-scoped chips)…
+  if(plan.region){ $("#region").value=plan.region; $("#region").dispatchEvent(new Event("change")); }
+  // 2) …then campaign (renders that campaign's products, kids, nudges)
+  const cname=(plan.campaign||{}).name||"";
+  if(cname){ $("#campaign").value=cname; $("#campaign").dispatchEvent(new Event("change")); }
+  // 3) simple fields
+  setV("title",plan.promoted_title); setV("sf_case",plan.salesforce_case);
+  setV("language",plan.language); setV("season",plan.season_or_messaging);
+  setV("primary_trafficker",plan.primary_trafficker); setV("existing_io_id",plan.existing_io_id);
+  setV("content_type",plan.content_type||"show"); setV("content_id",plan.content_id);
+  setV("rec_show_id",plan.recommended_show_id); setV("scene_lift",plan.scene_lift);
+  setV("video_domination",plan.video_domination); setV("takeover",plan.takeover);
+  setV("flight_start",(plan.flight||{}).start); setV("flight_end",(plan.flight||{}).end);
+  $("#video_domination").dispatchEvent(new Event("change"));
+  $("#takeover").dispatchEvent(new Event("change"));
+  $("#standard").checked=!!plan.standard;
+  // 4) product overrides (segmented Yes/No)
+  Object.entries(plan.product_overrides||{}).forEach(([fam,on])=>{
+    const p=document.querySelector(`.prod[data-fam="${fam}"]`); if(!p) return;
+    const want=on?"yes":"no";
+    p.querySelectorAll(".seg button").forEach(x=>x.classList.toggle("on", x.dataset.v===want)); });
+  // 5) kids audience
+  state.kids=new Set(plan.kids_audience||[]);
+  $("#kidsSeg").querySelectorAll("button").forEach(x=>{
+    const on=x.dataset.k==="both" ? (state.kids.has("older")&&state.kids.has("younger")) : state.kids.has(x.dataset.k);
+    x.classList.toggle("on", on); });
+  // 6) chip lists
+  setChips("durations",(plan.durations||[]).map(String));
+  setChips("vd_targeting",plan.video_domination_targeting);
+  setChips("rating_restrictions",plan.rating_restrictions);
+  setChips("rating_inclusions",plan.rating_inclusions);
+  setChips("genres",plan.genres); setChips("showlist",plan.showlist);
+  setChips("audience_segments",plan.audience_segments);
+  setChips("pluto_categories",(plan.pluto||{}).categories);
+  setChips("pluto_channels",(plan.pluto||{}).channels);
+  setChips("exclude_series",plan.exclude_series);
+  setChips("exclude_channels",plan.exclude_channels);
+  setChips("exclude_videos",plan.exclude_videos);
+  setChips("exclude_audience_segments",plan.exclude_audience_segments);
+  // 7) dayparts
+  loadDayparts(plan.dayparts);
+  validate();
+}
+// Auto-save the whole form to this browser on any change (debounced).
+let _saveT=null;
+function saveDraft(){ try{ localStorage.setItem(DRAFT_KEY,
+  JSON.stringify({t:Date.now(), plan:buildPlan()})); }catch(e){} }
+document.addEventListener("input",()=>{ clearTimeout(_saveT); _saveT=setTimeout(saveDraft,600); });
+document.addEventListener("change",()=>{ clearTimeout(_saveT); _saveT=setTimeout(saveDraft,600); });
+// Upload a saved plan file to keep editing it.
+$("#loadBtn").addEventListener("click",()=>$("#loadFile").click());
+$("#loadFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{ loadPlan(JSON.parse(rd.result)); saveDraft();
+      const b=$("#loadBtn"); b.textContent="Plan loaded ✓"; setTimeout(()=>b.textContent="Load a saved plan",1800); }
+    catch(err){ alert("Couldn't read that file — is it a .plan.json downloaded from this form?\n\n"+err); } };
+  rd.readAsText(f); $("#loadFile").value="";
+});
+// On open, offer to restore the last draft saved on this browser.
+(function(){ let raw; try{ raw=localStorage.getItem(DRAFT_KEY); }catch(e){ return; }
+  if(!raw) return; let d; try{ d=JSON.parse(raw); }catch(e){ return; }
+  const p=(d&&d.plan)||{}; const has=p.region||((p.campaign||{}).name)||p.promoted_title;
+  if(!has) return;
+  const when=d.t?new Date(d.t):null;
+  $("#draftMeta").textContent=(p.promoted_title? '"'+p.promoted_title+'" ':"")+
+    ((p.campaign||{}).name? "· "+p.campaign.name+" ":"")+
+    (when? "· saved "+when.toLocaleString():"");
+  $("#draftBanner").classList.remove("hidden");
+  $("#draftRestore").addEventListener("click",()=>{ loadPlan(p); $("#draftBanner").classList.add("hidden"); });
+  $("#draftDiscard").addEventListener("click",()=>{ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+    $("#draftBanner").classList.add("hidden"); });
+})();
+
 validate();
 </script>
 </body></html>
