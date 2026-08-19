@@ -31,6 +31,12 @@ SUB_LABEL = "Sub: "
 # distinct from plan.dayparts, which are time-of-day windows.
 DAYPART_PREFIX = "VG: Daypart: "
 DAYPART_LABEL = "Daypart: "
+# Brand Video Groups ("VG: Biz Div-Brand: <path>", e.g. "VG: Biz Div-Brand: VCBS:
+# Cable Adults: BET") are offered in the same Genre picker tagged "Brand: <path>" so a CM
+# can target a network/brand's inventory. Resolved the same way (a content Video Group
+# include). The bare tail keeps its own colons (e.g. "Brand: VCBS: Cable Adults: BET").
+BRAND_PREFIX = "VG: Biz Div-Brand: "
+BRAND_LABEL = "Brand: "
 
 
 @dataclass
@@ -71,6 +77,8 @@ class GenreVideoGroupResolver:
                     key = normalize_title(SUB_LABEL + name[len(SUB_PREFIX):])
                 elif name.startswith(DAYPART_PREFIX):
                     key = normalize_title(DAYPART_LABEL + name[len(DAYPART_PREFIX):])
+                elif name.startswith(BRAND_PREFIX):
+                    key = normalize_title(BRAND_LABEL + name[len(BRAND_PREFIX):])
                 elif name.startswith(PREFIX):
                     key = normalize_title(name[len(PREFIX):])
                 else:

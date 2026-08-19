@@ -107,6 +107,11 @@ def genres() -> list[tuple[str, str]]:
          "VG: Franchise:", "Franchise", ""),
         (("synced_daypart_video_groups.csv", "seed_daypart_video_groups.csv"),
          "VG: Daypart:", "Daypart", "Daypart: "),
+        # Brand / business-division Video Groups (e.g. "VG: Biz Div-Brand: VCBS: Cable
+        # Adults: BET") -> picker label "Brand: VCBS: Cable Adults: BET" (searchable by
+        # "BET"); the resolver keys them the same way so they target their VG id.
+        (("synced_brand_video_groups.csv", "seed_brand_video_groups.csv"),
+         "VG: Biz Div-Brand:", "Brand", "Brand: "),
     ):
         for r in _vg_rows(*cands):
             if not r["name"].startswith(split_on):

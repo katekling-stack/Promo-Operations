@@ -555,6 +555,48 @@ class FreeWheelClient:
                 page += 1
         return str(path)
 
+    def sync_brand_video_groups(self, out_dir: Optional[str] = None, per_page: int = 500,
+                                max_pages: int = 40, stop_after_empty: int = 8) -> str:
+        """Export the brand / business-division Video Groups ("VG: Biz Div-Brand: ...")
+        offered under the Genre picker for network/brand targeting (e.g. "VG: Biz Div-Brand:
+        VCBS: Cable Adults: BET").
+
+        Same source + oldest-first strategy as sync_genre_video_groups — this curated set
+        was created early, so it lands in the first pages. Feeds GenreVideoGroupResolver
+        (the "Brand: ..." keys). Writes data/video_groups/synced_brand_video_groups.csv.
+        """
+        import csv as _csv
+        from pathlib import Path as _Path
+        from ..video_groups import BRAND_PREFIX, DATA_DIR
+
+        out = _Path(out_dir) if out_dir else DATA_DIR
+        out.mkdir(parents=True, exist_ok=True)
+        path = out / "synced_brand_video_groups.csv"
+        with path.open("w", encoding="utf-8", newline="") as fh:
+            w = _csv.writer(fh)
+            w.writerow(["id", "name", "status"])
+            page, empty_streak = 1, 0
+            while page <= max_pages and empty_streak < stop_after_empty:
+                try:
+                    r = self._invoke("sh_1_0_list-video-groups", per_page=per_page,
+                                     page=page, sort="created_at")
+                except Exception:
+                    self.authenticate()
+                    continue
+                vg = (r or {}).get("data", {}).get("video_groups", {}).get("video_group", [])
+                if isinstance(vg, dict):
+                    vg = [vg]
+                if not vg:
+                    break
+                found = 0
+                for g in vg:
+                    if str(g.get("name", "")).startswith(BRAND_PREFIX) and g.get("id"):
+                        w.writerow([g["id"], g["name"], g.get("status", "")])
+                        found += 1
+                empty_streak = empty_streak + 1 if found == 0 else 0
+                page += 1
+        return str(path)
+
     def get_campaign_template(self, campaign_id: str, io_id: Optional[str] = None) -> dict[str, Any]:
         out: dict[str, Any] = {"campaign_id": campaign_id}
         if io_id:

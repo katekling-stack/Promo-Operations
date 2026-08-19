@@ -514,6 +514,8 @@ def _cmd_refresh_form(args: argparse.Namespace) -> int:
         ("audience items",        fw.sync_audience_items),
         ("standard attributes",   fw.sync_standard_attributes),
         ("Pluto site groups",     fw.sync_site_groups),
+        ("genre Video Groups",    fw.sync_genre_video_groups),
+        ("brand Video Groups",    fw.sync_brand_video_groups),
     ]
     ok = 0
     for i, (label, fn) in enumerate(steps, 1):
