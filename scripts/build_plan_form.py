@@ -736,6 +736,33 @@ document.querySelectorAll(".chips").forEach(box=>{
   input.addEventListener("blur",()=>{ if(input.value.trim()) add(input.value); setTimeout(closeMenu,150); box.classList.remove("focus"); });
   box.addEventListener("click",e=>{ if(e.target===box||e.target===input) input.focus(); });
   input.addEventListener("focus",()=>{ box.classList.add("focus"); showMenu(); });
+  // Bulk paste: drop a copied list (one per line, or comma-separated) and auto-add every
+  // EXACT match to this field's real FreeWheel options; anything unmatched is reported so
+  // the CM can fix spelling or add it manually.
+  const matchOne=it=>{ it=(it||"").trim(); if(!it) return {ok:false,v:it};
+    if(box.dataset.numeric) return {ok:/^\d+$/.test(it), v:it};
+    if(!src) return {ok:true, v:it};                       // free-text field: keep as typed
+    const list=sourceList(src)||[]; const hit=list.find(x=>x.toLowerCase()===it.toLowerCase());
+    return {ok:!!hit, v:hit||it}; };
+  const bulkAdd=text=>{
+    const rows=text.split(/[\n\r\t;]+/).map(s=>s.trim()).filter(Boolean);
+    const items=[];                                        // expand comma-lists only when the
+    rows.forEach(it=>{                                     // whole line isn't itself a value
+      if(matchOne(it).ok || !it.includes(",")) items.push(it);
+      else it.split(",").forEach(p=>{ if(p.trim()) items.push(p.trim()); }); });
+    const added=[], missed=[];
+    items.forEach(it=>{ const r=matchOne(it);
+      if(r.ok){ if(!state.lists[key].includes(r.v)) state.lists[key].push(r.v); added.push(r.v); }
+      else missed.push(it); });
+    render(); input.value=""; closeMenu();
+    if(added.length||missed.length) alert(added.length+" matched & added"+
+      (missed.length ? "\n\n"+missed.length+" NOT found (check spelling or add manually):\n• "+missed.join("\n• ") : " ✅"));
+  };
+  input.addEventListener("paste",e=>{
+    const text=(e.clipboardData||window.clipboardData).getData("text"); if(!text) return;
+    if(/[\n\r\t;]/.test(text) || (text.includes(",") && !matchOne(text).ok)){
+      e.preventDefault(); bulkAdd(text); }
+  });
 });
 // Region change -> the region-scoped pickers (categories/channels) reset their options.
 $("#region").addEventListener("change",()=>{
