@@ -85,6 +85,12 @@ def _convention_for_region(region: Optional[str]) -> str:
     return TIER1_CONVENTIONS.get((region or "").upper(), DEFAULT_TIER1_CONVENTION)
 
 
+def dda_request_name(show: str) -> str:
+    """Canonical DDA segment name to request for a show (matches the GL-DDA-1P-SHOW
+    convention, spaces -> underscores): 'Tulsa King' -> 'GL-DDA-1P-SHOW-Tulsa_King'."""
+    return "GL-DDA-1P-SHOW-" + re.sub(r"\s+", "_", (show or "").strip())
+
+
 def _dda_tokens(text: str) -> str:
     """Normalize a DDA segment name / show to space-separated alphanumeric tokens.
 
@@ -202,6 +208,30 @@ class AudienceSegmentResolver:
         """Exact per show — each showlist entry resolves to ONLY its own segment(s), never
         the wider franchise family (so 'CSI Miami' does not pull in 'The Real CSI Miami')."""
         return [self.resolve_exact(s, region) for s in shows]
+
+    def missing_dda(self, shows: list[str], region: Optional[str] = None
+                    ) -> tuple[list[dict], list[dict]]:
+        """Split a showlist into (have_dda, needs_request). A show HAS a DDA segment when an
+        exact-match segment with a real FreeWheel id exists; otherwise it needs a new segment
+        requested. Returns request-ready rows: {'show', 'request_name'} for the missing ones
+        (canonical GL-DDA-1P name), and {'show', 'segment_id'} for the ones we already have."""
+        if not self._loaded:
+            self.load()
+        have: list[dict] = []
+        need: list[dict] = []
+        seen: set[str] = set()
+        for s in shows:
+            key = (s or "").strip().lower()
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            m = self.resolve_exact(s, region)
+            sid = next((r.segment_id for r in m.records if r.segment_id), None)
+            if sid:
+                have.append({"show": s, "segment_id": sid})
+            else:
+                need.append({"show": s, "request_name": dda_request_name(s)})
+        return have, need
 
     def id_for_segment_name(self, name: str) -> list[str]:
         """Resolve an EXISTING segment picked by its exact name (from the audience

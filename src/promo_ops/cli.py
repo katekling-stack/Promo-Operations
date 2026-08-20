@@ -645,6 +645,35 @@ def _cmd_sync_history(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_dda_requests(args: argparse.Namespace) -> int:
+    """List the DDA audience segments to REQUEST for a plan's affinity shows that don't have
+    one yet — the exact GL-DDA-1P names, ready to submit to the segment-request tool. Also
+    writes a CSV (show, request_name, region, requested_by)."""
+    import csv as _csv
+    from .audience_segments import AudienceSegmentResolver
+    if args.plan:
+        plan = load_plan(args.plan)
+        shows, region, who = plan.showlist, plan.region, plan.primary_trafficker or ""
+    else:
+        shows = [s.strip() for s in (args.shows or "").split(";") if s.strip()]
+        region, who = args.region, ""
+    have, need = AudienceSegmentResolver().load().missing_dda(shows, region)
+    print(f"Region {region} — {len(have)} show(s) already have a DDA segment; "
+          f"{len(need)} need one requested.\n")
+    if need:
+        print("REQUEST THESE (paste into the segment-request tool):")
+        for r in need:
+            print(f"  • {r['request_name']}   ({r['show']})")
+    out = Path(args.out) if args.out else (Path(args.plan).with_suffix(".dda-requests.csv")
+                                           if args.plan else Path("dda-requests.csv"))
+    with out.open("w", newline="", encoding="utf-8") as fh:
+        w = _csv.writer(fh); w.writerow(["show", "request_name", "region", "requested_by"])
+        for r in need:
+            w.writerow([r["show"], r["request_name"], region, who])
+    print(f"\nWrote {out} ({len(need)} requests)")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -782,6 +811,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_hist.add_argument("--max-ios", type=int, default=40, help="Max IOs per campaign to harvest")
     p_hist.add_argument("--out", help="Corpus output path (default data/history/corpus.jsonl)")
     p_hist.set_defaults(func=_cmd_sync_history)
+
+    p_dda = sub.add_parser("dda-requests",
+                           help="List DDA segments to request for a plan's shows that lack one")
+    p_dda.add_argument("plan", nargs="?", help="Plan .json (uses its showlist + region)")
+    p_dda.add_argument("--shows", help="';'-separated show names (instead of a plan)")
+    p_dda.add_argument("--region", default="USA")
+    p_dda.add_argument("--out", help="CSV output path")
+    p_dda.set_defaults(func=_cmd_dda_requests)
 
     p_refresh = sub.add_parser("refresh-form",
                                help="Weekly: sync every FreeWheel snapshot + rebuild the plan form")
