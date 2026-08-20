@@ -47,6 +47,23 @@ def test_guess_genre_tab():
     assert guess_genre_tab(["Nonsense"]) == ""
 
 
+def test_resolver_recognizes_new_and_legacy_conventions():
+    from promo_ops.audience_segments import AudienceSegmentResolver, SegmentRecord, _dda_tokens
+    r = AudienceSegmentResolver()
+    r._records = [
+        SegmentRecord(show="", segment_name="EU/UK-DDA-1P-SERIES-Ben_Fogle", segment_id="999"),
+        SegmentRecord(show="", segment_name="GL-DDA-1P-SHOW-NCIS", segment_id="111"),
+        SegmentRecord(show="", segment_name="US-DDA-1P-MOVIE-Some_Film", segment_id="222"),
+    ]
+    r._norm = [_dda_tokens(x.segment_name) for x in r._records]
+    r._conv = ["eu uk dda 1p", "gl dda 1p", "us dda 1p"]
+    r._loaded = True
+    assert [x.segment_id for x in r.resolve_exact("Ben Fogle", "UK").records] == ["999"]
+    assert [x.segment_id for x in r.resolve_exact("NCIS", "USA").records] == ["111"]   # legacy still works
+    assert [x.segment_id for x in r.resolve_exact("Some Film", "USA").records] == ["222"]
+    assert r.resolve_exact("Some Film", "UK").records == []   # region isolation (US bucket not in UK)
+
+
 def test_submit_all_reports_per_item(monkeypatch):
     from promo_ops.integrations import segment_requests as sr
     calls = {"n": 0}

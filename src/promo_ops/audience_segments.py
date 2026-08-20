@@ -80,9 +80,28 @@ TIER1_CONVENTIONS: dict[str, str] = {
     "AU": "au dwh",
 }
 
+# The Audience Segment Request tool (v3) stamps NEW segments with a region-bucketed prefix
+# (US-/EU/UK-/APAC-DDA-1P-SERIES|MOVIE-<Title>), rolling out alongside the legacy GL-DDA-1P
+# SHOW set. So each region matches BOTH its legacy convention AND its new bucket convention.
+REGION_BUCKET_CONVENTION: dict[str, str] = {
+    "USA": "us dda 1p", "CA": "us dda 1p", "BR": "us dda 1p", "LATAM": "us dda 1p",
+    "AU": "apac dda 1p",
+    "UK": "eu uk dda 1p", "IE": "eu uk dda 1p", "FR": "eu uk dda 1p", "IT": "eu uk dda 1p",
+    "GSA": "eu uk dda 1p", "ES": "eu uk dda 1p", "FI": "eu uk dda 1p", "DK": "eu uk dda 1p",
+    "NO": "eu uk dda 1p", "SE": "eu uk dda 1p",
+}
+ALL_BUCKET_CONVENTIONS = ["us dda 1p", "eu uk dda 1p", "apac dda 1p"]
 
-def _convention_for_region(region: Optional[str]) -> str:
-    return TIER1_CONVENTIONS.get((region or "").upper(), DEFAULT_TIER1_CONVENTION)
+
+def _conventions_for_region(region: Optional[str]) -> list[str]:
+    """Conventions a region's Tier 1 segments may use: its legacy convention (GL, or AU DWH)
+    PLUS its new request-tool bucket convention, so old and new segments both resolve."""
+    r = (region or "").upper()
+    out = [TIER1_CONVENTIONS.get(r, DEFAULT_TIER1_CONVENTION)]
+    b = REGION_BUCKET_CONVENTION.get(r)
+    if b and b not in out:
+        out.append(b)
+    return out
 
 
 def dda_request_name(show: str) -> str:
@@ -168,7 +187,7 @@ class AudienceSegmentResolver:
         self._loaded = False
 
     def _conventions(self) -> list[str]:
-        return [DEFAULT_TIER1_CONVENTION, *TIER1_CONVENTIONS.values()]
+        return [DEFAULT_TIER1_CONVENTION, *TIER1_CONVENTIONS.values(), *ALL_BUCKET_CONVENTIONS]
 
     def load(self) -> "AudienceSegmentResolver":
         self._records, self._norm, self._conv = [], [], []
@@ -213,11 +232,11 @@ class AudienceSegmentResolver:
         kw = _dda_tokens(show)
         if not kw:
             return SegmentMatch(show=show, matched=False)
-        want_conv = _convention_for_region(region)
+        want_conv = _conventions_for_region(region)
         # word-boundary token match so "FBI" doesn't hit inside another word
         pat = re.compile(rf"(?:^| ){re.escape(kw)}(?: |$)")
         recs = [r for r, n, c in zip(self._records, self._norm, self._conv)
-                if c == want_conv and pat.search(n)]
+                if c in want_conv and pat.search(n)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_exact(self, show: str, region: Optional[str] = None) -> SegmentMatch:
@@ -230,23 +249,28 @@ class AudienceSegmentResolver:
         if not m.matched:
             return m
         kw = _dda_tokens(show)
-        want_conv = _convention_for_region(region)
+        want = _conventions_for_region(region)
+        drop = {"show", "series", "movie"}   # the type token after the convention prefix
 
         def show_portion(seg_name: str) -> str:
             n = _dda_tokens(seg_name)
-            if n.startswith(want_conv):
-                parts = n[len(want_conv):].split()
-                if parts and parts[0] == "show":       # drop the optional "SHOW" token
-                    parts = parts[1:]
-                return " ".join(parts)
+            for conv in want:
+                if n.startswith(conv):
+                    parts = n[len(conv):].split()
+                    while parts and parts[0] in drop:
+                        parts = parts[1:]
+                    return " ".join(parts)
             return n
 
-        if want_conv == DEFAULT_TIER1_CONVENTION:
-            recs = [r for r in m.records if show_portion(r.segment_name) == kw]
-        else:  # non-default (AU DWH) naming isn't "<conv> SHOW <title>" — keep trailing match
-            recs = [r for r in m.records
-                    if _dda_tokens(r.segment_name) == kw
-                    or _dda_tokens(r.segment_name).endswith(" " + kw)]
+        recs = []
+        for r in m.records:
+            n = _dda_tokens(r.segment_name)
+            # AU DWH naming isn't "<conv> <type> <title>", so keep the trailing-title match.
+            if n.startswith("au dwh"):
+                if n == kw or n.endswith(" " + kw):
+                    recs.append(r)
+            elif show_portion(r.segment_name) == kw:
+                recs.append(r)
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
