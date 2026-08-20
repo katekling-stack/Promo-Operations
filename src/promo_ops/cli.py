@@ -626,9 +626,15 @@ def _cmd_sync_history(args: argparse.Namespace) -> int:
     Re-run on a cadence to stay current with recently-launched titles."""
     from .integrations.freewheel import FreeWheelClient
     from .history import build_corpus
-    from .config import REPO_ROOT
+    from .config import REPO_ROOT, brands_config
     fw = FreeWheelClient()
-    names = [n.strip() for n in (args.campaigns.split(";") if args.campaigns else DEFAULT_HISTORY_CAMPAIGNS) if n.strip()]
+    if getattr(args, "all", False):
+        # Every promo campaign across all regions (from brands.yaml) — localized history per
+        # region, so a UK promo learns from UK, USA from USA, etc.
+        names = sorted({b["campaign_name"] for b in brands_config().get("brands", {}).values()
+                        if b.get("campaign_name")})
+    else:
+        names = [n.strip() for n in (args.campaigns.split(";") if args.campaigns else DEFAULT_HISTORY_CAMPAIGNS) if n.strip()]
     print(f"Resolving {len(names)} campaign(s)…")
     ids = []
     for n in names:
@@ -808,6 +814,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_hist = sub.add_parser("sync-history",
                             help="Harvest past IOs into the affinity historicals corpus (per region)")
     p_hist.add_argument("--campaigns", help="';'-separated campaign names (default: CBS Network / P+ / Pluto TV - USA)")
+    p_hist.add_argument("--all", action="store_true",
+                        help="Harvest EVERY promo campaign across all regions (from brands.yaml)")
     p_hist.add_argument("--max-ios", type=int, default=40, help="Max IOs per campaign to harvest")
     p_hist.add_argument("--out", help="Corpus output path (default data/history/corpus.jsonl)")
     p_hist.set_defaults(func=_cmd_sync_history)
