@@ -211,8 +211,10 @@ class TargetingEngine:
     # --- public API ------------------------------------------------------ #
 
     def build(self, plan: SupportPlan, fmt: str,
-              tier_override: Optional[list[int]] = None) -> TieredTargeting:
+              tier_override: Optional[list[int]] = None,
+              skip_dimensions: Optional[set] = None) -> TieredTargeting:
         selected = set(self.tiers_for_format(plan, fmt, tier_override))
+        skip = skip_dimensions or set()
         result = TieredTargeting(format=fmt)
 
         for tier_cfg in self._tiers_cfg.get("tiers", []):
@@ -227,6 +229,8 @@ class TargetingEngine:
 
             tier = Tier(id=tid, name=tier_cfg["name"])
             for dim_cfg in tier_cfg.get("dimensions", []):
+                if dim_cfg["key"] in skip:            # e.g. My5 drops pplus_user_state
+                    continue
                 dim = self._build_dimension(plan, dim_cfg)
                 # Keep audience_segments even when empty so its "needs to be added"
                 # note always surfaces — that surfacing is the point of Tier 1.

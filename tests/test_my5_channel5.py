@@ -55,6 +55,33 @@ def test_adult_pre_mid_post_on_every_duration():
         assert "preroll" in names and "midroll" in names and "postroll" in names
 
 
+def _tier1_keys(order):
+    for p in order.placements:
+        if p.tier == 1:
+            return {d.key for t in p.targeting.tiers for d in t.dimensions}
+    return set()
+
+
+def test_my5_tier1_drops_pplus_user_state_but_keeps_the_rest():
+    keys = _tier1_keys(_adult())
+    assert "pplus_user_state" not in keys                # My5 is not Paramount+
+    assert {"audience_segments", "prior_season_viewer"} <= keys
+    # a non-My5 UK brand still carries pplus_user_state
+    ctrl = OrderBuilder().build(support_plan_from_dict(dict(
+        promoted_title="T", region="UK", campaign={"name": "Pluto TV - UK"},
+        durations=[30], genres=["Sports"])))
+    assert "pplus_user_state" in _tier1_keys(ctrl)
+
+
+def test_my5_tier1_accepts_manual_audience_segments():
+    o = _adult(audience_segments=["GL-DDA-1P-SHOW-FBI"])
+    for p in o.placements:
+        if p.tier == 1:
+            seg = next(d for t in p.targeting.tiers for d in t.dimensions if d.key == "audience_segments")
+            assert seg.resolved                          # CM-selected segments flow into Tier 1
+            break
+
+
 def test_kids_defaults_to_my5_vod_plus_milkshake():
     o = OrderBuilder().build(support_plan_from_dict(dict(
         promoted_title="SpongeBob", region="UK", campaign={"name": "5 - Kids - UK"},

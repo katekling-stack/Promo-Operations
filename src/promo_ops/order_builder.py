@@ -735,7 +735,9 @@ class OrderBuilder:
                 out.append(placement)
             return out
 
-        targeting = self.engine.build(plan, fmt)
+        # My5 (Channel 5) is not Paramount+, so it carries no P+ subscriber-state signal.
+        skip_dims = {"pplus_user_state"} if brand_cfg.get("my5_brand") else None
+        targeting = self.engine.build(plan, fmt, skip_dimensions=skip_dims)
         uses_durations = bool(tmpl.get("uses_durations"))
         durations = self._durations(plan) if uses_durations else [None]
         name_token = tmpl.get("name_token")   # e.g. "Pause Ad" for non-duration formats
