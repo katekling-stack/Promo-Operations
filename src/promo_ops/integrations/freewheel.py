@@ -261,6 +261,28 @@ class FreeWheelClient:
                                insertion_order_id=int(io_id), per_page=50)
         return self._rows(payload, "placements")
 
+    # Per scripts/extract_reference_io.py: `show-a-placement` only returns one widget
+    # per call, and targeting can live in EITHER placement-level content_targeting OR
+    # named relationship_targeting.set[] — always read both (docs/reference-ios.md).
+    PLACEMENT_WIDGETS = ("ad_product", "content_targeting", "geography_targeting",
+                        "audience_targeting", "budget", "relationship_targeting")
+
+    def get_placement_targeting(self, placement_id: str) -> dict[str, Any]:
+        """Read a live placement's full targeting by merging the per-widget reads.
+
+        `relationship_targeting` is returned by `show=<name>` WITHOUT a boolean widget
+        flag; every other widget needs `show=<name>&<name>=true`. Read-only — used to
+        pull a reference (e.g. a Tier 1 sibling) to mirror onto another placement.
+        """
+        out: dict[str, Any] = {}
+        for w in self.PLACEMENT_WIDGETS:
+            kwargs = {"show": w} if w == "relationship_targeting" else {"show": w, w: "true"}
+            r = self._invoke("sh_1_0_show-a-placement", placement_id=int(placement_id), **kwargs)
+            pl = (r or {}).get("data", {}).get("placement", {})
+            if isinstance(pl, dict) and w in pl:
+                out[w] = pl[w]
+        return out
+
     def search_series(self, show: str, per_page: int = 50) -> list[dict[str, Any]]:
         """Keyword-search series by name; return ALL matches ({id, name}).
 
@@ -658,6 +680,58 @@ class FreeWheelClient:
         if brand_note:
             out["brand"] = brand_note
         return out
+
+    def find_tool(self, keywords: list[str]) -> Optional[str]:
+        """Best-effort discovery of a tool name via the hub's `search_tools` meta-tool
+        (per docs/FREEWHEEL.md: tool names aren't uniformly `sh_1_1_*`/`sh_1_0_*`, so
+        names should be resolved rather than hard-coded).
+
+        UNVERIFIED: no update/PATCH placement call has been confirmed against the live
+        API in this codebase (only reads and create-a-placement are). This method is a
+        discovery aid, not a confirmed endpoint — callers must treat a hit as a lead to
+        verify (ideally on the test network, 520310) before ever using it to write to
+        production, and must not assume a miss means no such tool exists.
+        """
+        cache_key = "|".join(sorted(keywords))
+        if cache_key in self._tool_name_cache:
+            return self._tool_name_cache[cache_key]
+        self._ensure_auth()
+        try:
+            r = self._mcp("tools/call", {"name": "search_tools",
+                                         "arguments": {"query": " ".join(keywords)}})
+            text = r["result"]["content"][0]["text"]
+            found = json.loads(text) if text.strip().startswith(("{", "[")) else text
+        except Exception:
+            return None
+        candidates = found if isinstance(found, list) else (found or {}).get("tools", [])
+        for c in candidates if isinstance(candidates, list) else []:
+            name = c.get("name") if isinstance(c, dict) else c
+            if name and all(k.lower() in str(name).lower() for k in keywords):
+                self._tool_name_cache[cache_key] = name
+                return name
+        return None
+
+    def update_placement(self, placement_id: str, body: dict[str, Any],
+                         dry_run: bool = True) -> dict[str, Any]:
+        """Update an existing placement's targeting.
+
+        dry_run=True (default) returns the planned call without discovering or invoking
+        any tool — safe to run with no credentials and against production data. Setting
+        dry_run=False discovers the update tool via `find_tool` and calls it; this path
+        is UNVERIFIED (see find_tool) and should be proven on the test network (520310)
+        before ever targeting a production placement (520311).
+        """
+        plan = {"placement_id": placement_id, "body": body}
+        if dry_run:
+            return {"dry_run": True, **plan}
+        tool_name = self.find_tool(["update", "placement"])
+        if not tool_name:
+            raise RuntimeError(
+                "No update-placement tool could be discovered via search_tools. Refusing "
+                "to guess a tool name for a live write. Confirm the correct tool/endpoint "
+                "with FreeWheel support or by inspecting the Streaming Hub tool catalog, "
+                "then wire it in explicitly.")
+        return self._invoke(tool_name, placement_id=int(placement_id), body=body)
 
     def _ensure_io_brand(self, order: Order) -> Optional[dict[str, Any]]:
         """Live find-or-create of the IO Brand when the CM picked/typed one that isn't
