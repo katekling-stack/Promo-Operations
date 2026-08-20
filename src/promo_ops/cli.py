@@ -714,6 +714,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_brief.add_argument("--out", help="Where to write the draft plan.json")
     p_brief.set_defaults(func=_cmd_from_brief)
 
+    p_srv = sub.add_parser("serve-suggest",
+                           help="Run the local helper that powers the form's ✨ Suggest targeting button")
+    p_srv.set_defaults(func=lambda a: __import__("promo_ops.suggest_server", fromlist=["main"]).main())
+
     p_sug = sub.add_parser("suggest",
                            help="Cold-start affinities from a title + description (AI and/or past plans)")
     p_sug.add_argument("title")

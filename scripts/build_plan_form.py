@@ -318,6 +318,21 @@ datalist{display:none}
     <div id="briefReport" style="margin-top:14px"></div>
   </details>
 
+  <details class="card" id="suggestCard">
+    <summary style="cursor:pointer;font-weight:700;font-size:18px;list-style:revert">✨ Suggest targeting <span style="font-weight:400;font-size:13px;color:#888">(AI — for a thin brief; click to expand)</span></summary>
+    <p class="sub" style="margin-top:10px">No show/channel list yet? Give the <b>title</b> + a 1–3 sentence <b>description</b> and the tool proposes 10–20 comp shows, 10–20 Pluto channels, genres and Pluto categories — all matched to real FreeWheel inventory. The comp shows populate the Showlist (which feeds both Tier 2 and the Tier 1 DDA audience segments). Pick <b>Region</b> below first.</p>
+    <div class="row">
+      <div class="field"><label>Title</label><input type="text" id="suggestTitle" placeholder="e.g. Dexter: Resurrection S2"></div>
+    </div>
+    <div class="field"><label>Description / logline</label>
+      <textarea id="suggestDesc" rows="4" placeholder="A dark, suspenseful crime thriller about a vigilante serial killer in NYC…" style="width:100%;box-sizing:border-box;font-size:13px;padding:10px;border:1.5px solid var(--line);border-radius:10px;resize:vertical"></textarea></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+      <button class="btn primary" type="button" id="suggestBtn">✨ Suggest targeting</button>
+      <span class="hint" id="suggestHint" style="margin:0"></span>
+    </div>
+    <div id="suggestReport" style="margin-top:14px"></div>
+  </details>
+
   <div class="card">
     <h2>Campaign</h2><p class="sub">Pick the region, then the campaign — that sets the brand, advertiser and default products for you.</p>
     <div class="row">
@@ -1120,8 +1135,8 @@ function briefMatch(def, term){
 function briefAddToField(key, vals){ const cur=state.lists[key]||(state.lists[key]=[]);
   vals.forEach(v=>{ if(cur.indexOf(v)<0) cur.push(v); });
   const box=document.querySelector('[data-chips="'+key+'"]'); if(box&&box._render) box._render(); }
-function renderBriefReport(groups, notes){
-  const R=$("#briefReport"); R.innerHTML="";
+function renderBriefReport(groups, notes, R){
+  R = R || $("#briefReport"); R.innerHTML="";
   if(!groups.length && !notes.length){
     R.innerHTML='<p class="hint">No recognizable labels found. Start lines with Networks:, Genres:, Shows:, Pluto Categories:, Pluto Channels:, Audience:, or Ratings:.</p>'; return; }
   groups.forEach(g=>{
@@ -1165,6 +1180,43 @@ function runBrief(){
 }
 $("#briefParse").addEventListener("click", runBrief);
 $("#briefClear").addEventListener("click",()=>{ $("#briefText").value=""; $("#briefReport").innerHTML=""; $("#briefHint").textContent=""; });
+
+// --- ✨ Suggest targeting (AI, via the local helper server) --------------------------- //
+// POSTs {title, description, region} to /suggest (same-origin when the form is opened through
+// `python -m promo_ops.suggest_server`), then fills the fields with the grounded matches and
+// shows the review/not-found report. Never holds a key in the browser — the helper does.
+const SUGGEST_TITLES={genres:"Genres", showlist:"Shows (→ Tier 2 + Tier 1 audience segments)",
+  pluto_categories:"Pluto Categories", pluto_channels:"Pluto Channels"};
+function suggestOfflineMsg(){
+  return "This button needs the local helper. Run <code>python -m promo_ops.suggest_server</code>, "
+    + "then open the form at <b>http://127.0.0.1:8770/</b> (and set ANTHROPIC_API_KEY).";
+}
+async function runSuggest(){
+  const title=($("#suggestTitle").value||($("#title")?$("#title").value:"")||"").trim();
+  const desc=($("#suggestDesc").value||"").trim();
+  const region=$("#region").value;
+  const H=$("#suggestHint"), R=$("#suggestReport");
+  if(!title||!desc){ H.textContent="Enter a title and a short description."; return; }
+  if(!region){ H.textContent="Pick a Region below first — channels & categories are region-specific."; return; }
+  if($("#title")&&!$("#title").value){ $("#title").value=title; validate(); }   // seed the plan title
+  H.textContent=""; R.innerHTML='<span class="hint">✨ Thinking — asking the AI and grounding to real inventory…</span>';
+  let res;
+  try{
+    res=await fetch("/suggest",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({title,description:desc,region})});
+  }catch(e){ R.innerHTML='<span style="color:#a00">Couldn\'t reach the helper.</span><br>'+suggestOfflineMsg(); return; }
+  if(!res.ok){ let j={}; try{ j=await res.json(); }catch(_){}
+    R.innerHTML='<span style="color:#a00">'+briefEsc(j.error||("Error "+res.status))+'</span>'
+      + (res.status===503 ? "<br>"+suggestOfflineMsg() : ""); return; }
+  const data=await res.json();
+  const groups=Object.keys(SUGGEST_TITLES).filter(f=>data.fields&&data.fields[f]).map(f=>{
+    const fp=data.fields[f]; briefAddToField(f, fp.matched||[]);
+    return {def:{field:f,title:SUGGEST_TITLES[f]}, added:fp.matched||[], review:fp.review||[], none:fp.missed||[]};
+  });
+  const notes=(data.notes||[]).map(n=>({label:"note",payload:n}));
+  renderBriefReport(groups, notes, R);
+}
+$("#suggestBtn").addEventListener("click", runSuggest);
 
 validate();
 </script>
