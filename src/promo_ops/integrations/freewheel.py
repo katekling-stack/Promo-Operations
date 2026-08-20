@@ -638,6 +638,16 @@ class FreeWheelClient:
                 f"Parent campaign {order.campaign.get('name')!r} not found. "
                 f"Confirm the exact Advertiser + Campaign names.")
 
+        # Never create an empty IO: if the plan built 0 placements, stop BEFORE touching
+        # FreeWheel and say why. Most common causes: the campaign's brand isn't configured
+        # in this build of the tool (so no formats resolve), or a kids campaign was submitted
+        # without a Kids audience selected (kids placements are gated on it).
+        if not plan["placement_bodies"]:
+            raise RuntimeError(
+                f"Plan for {order.campaign.get('name')!r} built 0 placements — nothing was "
+                "created. Check that this campaign's brand is set up in the tool, and (for a "
+                "Kids campaign) that a Kids audience is selected.")
+
         # Add placements INTO an existing IO (no new IO) when routed there: a Scene Lift
         # target IO, or an explicit "add to existing IO" id (e.g. Season 2 -> Season 1 IO).
         append_io = getattr(order, "scene_lift_io_id", None) or getattr(order, "existing_io_id", None)
