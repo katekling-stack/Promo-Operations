@@ -297,7 +297,10 @@ class AudienceSegmentResolver:
             if not key or key in seen:
                 continue
             seen.add(key)
-            m = self.resolve_exact(s, region)
+            # Existence uses the SAME find-by-logic as targeting (region + title contained),
+            # so messy real names (INTL prefixes, _eu/_au suffixes) are recognized and not
+            # re-requested. resolve_exact would miss those and duplicate the request.
+            m = self.resolve(s, region)
             sid = next((r.segment_id for r in m.records if r.segment_id), None)
             if sid:
                 have.append({"show": s, "segment_id": sid})
