@@ -337,6 +337,11 @@ brands:
     - remnant_video
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        # 5 (UK) runs pre-roll, mid-roll AND post-roll on EVERY placement regardless of
+        # duration — disable the default :30 House Pre-Roll drop.
+        drop_preroll_at_duration: null
     # Channel 5 (UK) entertainment remnant — modeled on the UK Pluto/MTVE remnant setup.
     _cloned_from: pluto_tv_uk
   channel_5_kids_uk:
@@ -355,6 +360,8 @@ brands:
         kids_main_site_groups:
         - '929392'
         duration_infix: (Pluto)
+        # pre/mid/post on every placement regardless of duration (no :30 pre-roll drop)
+        drop_preroll_at_duration: null
     _cloned_from: nick_kids_uk
   paramount_plus_ie:
     display_name: Paramount+ (IE)
