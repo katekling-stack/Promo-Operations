@@ -243,3 +243,79 @@ def suggestion_to_fields(sug: AffinitySuggestion) -> dict[str, list[str]]:
     """The CONFIRMED (matched) picks, ready to merge into a plan dict via brief.to_plan_dict
     or the form. Review/missed are intentionally excluded — a CM confirms those."""
     return {f: fp.matched for f, fp in sug.fields.items() if fp.matched}
+
+
+# --- combined engine: brief + AI + historicals, ranked by agreement ---------- #
+
+# Field keys shared by all three engines (brief.resolve_brief, suggest_ai, suggest_history).
+_COMBINE_FIELDS = ("genres", "showlist", "pluto_categories", "pluto_channels")
+_SOURCE_PRIORITY = {"brief": 3, "history": 2, "ai": 1}   # tiebreak when agreement is equal
+
+
+def combine_targeting(title, region, brief_text=None, description=None, corpus=None,
+                      llm=None, series_resolver=None):
+    """Build the most grounded targeting by layering every available signal and ranking by
+    AGREEMENT across them. Each source contributes values already grounded to our inventory:
+
+      * brief    — explicit lists parsed from an uploaded/pasted brief (brief.resolve_brief)
+      * ai       — inferred from title + description (suggest_ai); skipped if no LLM/key
+      * history  — what similar past titles actually ran (suggest_history over a corpus)
+
+    A value confirmed by more sources ranks higher (brief > history > ai on ties). Returns
+    {'fields': {field: [values ranked]}, 'provenance': {field: {value: [sources]}}} — nothing
+    guessed: every value came through a resolver. Degrades gracefully when a source is absent.
+    """
+    sources: dict[str, dict[str, set]] = {}
+
+    def add(field, values, src):
+        d = sources.setdefault(field, {})
+        for v in values or []:
+            d.setdefault(v, set()).add(src)
+
+    if brief_text:
+        from .brief import parse_brief, resolve_brief
+        draft = parse_brief(brief_text)
+        for f, r in resolve_brief(draft, region).items():
+            add(f, r.matched, "brief")
+        if not description:                       # let the AI use the brief's own text
+            description = brief_text
+
+    if llm is not None or description:
+        try:
+            sug = suggest_ai(title, description or "", region, llm=llm,
+                             series_resolver=series_resolver)
+            for f, fp in sug.fields.items():
+                add(f, fp.matched, "ai")
+        except Exception:                          # no key/SDK -> skip the AI layer, keep the rest
+            pass
+
+    if corpus:
+        genres_so_far = list(sources.get("genres", {}))
+        h = suggest_history(title, genres_so_far, corpus)
+        for f, fp in h.fields.items():
+            add(f, fp.matched, "history")
+
+    fields: dict[str, list] = {}
+    provenance: dict[str, dict] = {}
+    for f in _COMBINE_FIELDS:
+        vals = sources.get(f, {})
+        ranked = sorted(vals.items(),
+                        key=lambda kv: (-len(kv[1]), -max(_SOURCE_PRIORITY[s] for s in kv[1])))
+        fields[f] = [v for v, _ in ranked]
+        provenance[f] = {v: sorted(srcs) for v, srcs in vals.items()}
+    return {"fields": fields, "provenance": provenance}
+
+
+def combined_to_plan(result, title, region, campaign_name=None, durations=None):
+    """A draft plan dict from a combine_targeting() result."""
+    f = result["fields"]
+    plan = {"promoted_title": title, "region": region,
+            "campaign": {"name": campaign_name or ""},
+            "genres": f.get("genres", []), "showlist": f.get("showlist", [])}
+    pluto = {k2: f[k1] for k1, k2 in
+             (("pluto_categories", "categories"), ("pluto_channels", "channels")) if f.get(k1)}
+    if pluto:
+        plan["pluto"] = pluto
+    if durations:
+        plan["durations"] = list(durations)
+    return plan
