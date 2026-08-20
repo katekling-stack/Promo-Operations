@@ -540,6 +540,25 @@ def _cmd_refresh_form(args: argparse.Namespace) -> int:
     return 0 if ok else 1
 
 
+def _cmd_from_brief(args: argparse.Namespace) -> int:
+    """Parse a promo brief (.docx or .txt — labeled lists OR a prose marketing brief),
+    resolve its key affinities (shows, genres, DMAs) against the catalogs, print a
+    matched/review/not-found report, and write a DRAFT plan.json of the confirmed terms."""
+    from .brief import read_brief, parse_brief, resolve_brief, to_plan_dict, report_text
+    text = read_brief(args.brief)
+    draft = parse_brief(text)
+    resolved = resolve_brief(draft, region=args.region)
+    print(report_text(draft, resolved))
+    plan = to_plan_dict(draft, resolved, region=args.region, campaign_name=args.campaign)
+    if args.durations:
+        plan["durations"] = [int(d) for d in args.durations.split(",") if d.strip()]
+    out = Path(args.out) if args.out else Path(args.brief).with_suffix(".plan.json")
+    out.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\nWrote draft plan → {out}")
+    print("Review it, add durations/campaign, then: promo-ops preview " + str(out))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -643,6 +662,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_sall = sub.add_parser("sync-all",
                             help="Refresh ALL FreeWheel data snapshots (series + audience + attributes)")
     p_sall.set_defaults(func=_cmd_sync_all)
+
+    p_brief = sub.add_parser("from-brief",
+                             help="Draft a plan from a promo brief (.docx/.txt) by resolving its affinities")
+    p_brief.add_argument("brief", help="Path to the brief (.docx or .txt)")
+    p_brief.add_argument("--region", default="USA", help="Target region (default USA)")
+    p_brief.add_argument("--campaign", help="Destination campaign name")
+    p_brief.add_argument("--durations", help="Comma-separated creative lengths, e.g. 15,30")
+    p_brief.add_argument("--out", help="Where to write the draft plan.json")
+    p_brief.set_defaults(func=_cmd_from_brief)
 
     p_refresh = sub.add_parser("refresh-form",
                                help="Weekly: sync every FreeWheel snapshot + rebuild the plan form")
