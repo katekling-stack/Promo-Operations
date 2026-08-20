@@ -325,6 +325,37 @@ brands:
         plan_label: Basic Plan
     optional_formats:
     - pplus_uk_remnant_pluto
+  channel_5_uk:
+    display_name: "5 (UK)"
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74400813'
+    campaign_name: 5 - UK
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    # Channel 5 (UK) entertainment remnant — modeled on the UK Pluto/MTVE remnant setup.
+    _cloned_from: pluto_tv_uk
+  channel_5_kids_uk:
+    display_name: "5 - Kids (UK)"
+    advertiser_name_contains:
+    - VCBS
+    template_campaign_id: '74314444'
+    campaign_name: 5 - Kids - UK
+    kids: true
+    formats:
+    - pplus_kids_remnant
+    ad_unit_groups:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
+        - '929392'
+        duration_infix: (Pluto)
+    _cloned_from: nick_kids_uk
   paramount_plus_ie:
     display_name: Paramount+ (IE)
     advertiser_name_contains:
