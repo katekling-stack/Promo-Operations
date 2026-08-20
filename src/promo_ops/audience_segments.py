@@ -104,58 +104,6 @@ def _conventions_for_region(region: Optional[str]) -> list[str]:
     return out
 
 
-def dda_request_name(show: str) -> str:
-    """Canonical DDA segment name to request for a show (matches the GL-DDA-1P-SHOW
-    convention, spaces -> underscores): 'Tulsa King' -> 'GL-DDA-1P-SHOW-Tulsa_King'."""
-    return "GL-DDA-1P-SHOW-" + re.sub(r"\s+", "_", (show or "").strip())
-
-
-# --- alignment with the Audience Segment Request tool (Apps Script) ---------- #
-# The request form groups markets into three region buckets and stamps a region prefix.
-TOOL_REGION_BUCKET = {
-    "USA": "Americas", "CA": "Americas", "BR": "Americas", "LATAM": "Americas",
-    "AU": "APAC",
-    "UK": "EU/UK", "IE": "EU/UK", "FR": "EU/UK", "IT": "EU/UK", "GSA": "EU/UK",
-    "ES": "EU/UK", "FI": "EU/UK", "DK": "EU/UK", "NO": "EU/UK", "SE": "EU/UK",
-}
-TOOL_REGION_PREFIX = {"Americas": "US-DDA-1P", "APAC": "APAC-DDA-1P", "EU/UK": "EU/UK-DDA-1P"}
-
-
-# Map our genres -> the request tool's genre TAB (required field). Best-guess; CM can override.
-_GENRE_TAB_GUESS = {
-    "crime": "Crime", "true crime": "Crime", "drama": "Drama/Action", "action": "Drama/Action",
-    "adventure": "Drama/Action", "thriller": "Horror/Thriller", "suspense": "Horror/Thriller",
-    "horror": "Horror/Thriller", "mystery": "Crime", "comedy": "Comedy/Sitcom",
-    "sitcom": "Comedy/Sitcom", "sports": "Sports", "reality": "Reality", "anime": "Anime/Gaming",
-    "gaming": "Anime/Gaming", "sci-fi": "Sci-Fi/Fantasy", "science fiction": "Sci-Fi/Fantasy",
-    "fantasy": "Sci-Fi/Fantasy", "romance": "Romance", "news": "News/Documentary",
-    "documentary": "News/Documentary", "western": "Western", "music": "Music",
-    "kids": "Family/Young Adult", "family": "Family/Young Adult", "food": "Food/Home",
-    "home": "Food/Home", "classic": "Classic TV", "bet": "BET/African American",
-}
-
-
-def guess_genre_tab(genres: list[str]) -> str:
-    """Best-guess the request tool's genre TAB from a plan's genres (first match wins)."""
-    for g in genres or []:
-        gl = (g or "").lower()
-        for key, tab in _GENRE_TAB_GUESS.items():
-            if key in gl:
-                return tab
-    return ""
-
-
-def tool_request(show: str, region: str, content_type: str = "show",
-                 io: str = "", requester: str = "") -> dict:
-    """Build the exact payload the Audience Segment Request tool expects for one show, so a
-    request is paste-ready (or POST-ready if the Apps Script adds a doPost). The tool
-    generates its own name as {region-prefix}-{SERIES|MOVIE}-{Title_}."""
-    bucket = TOOL_REGION_BUCKET.get((region or "").upper(), "Americas")
-    typ = "Movie" if str(content_type).lower() == "movie" else "Series"
-    slug = re.sub(r"\s+", "_", (show or "").strip())
-    gen = f"{TOOL_REGION_PREFIX[bucket]}-{typ.upper()}-{slug}"
-    return {"type": typ, "region": bucket, "title": show, "io": io,
-            "action": "Include", "requester": requester, "generated_name": gen}
 
 
 def _dda_tokens(text: str) -> str:
@@ -283,10 +231,10 @@ class AudienceSegmentResolver:
 
     def missing_dda(self, shows: list[str], region: Optional[str] = None
                     ) -> tuple[list[dict], list[dict]]:
-        """Split a showlist into (have_dda, needs_request). A show HAS a DDA segment when an
-        exact-match segment with a real FreeWheel id exists; otherwise it needs a new segment
-        requested. Returns request-ready rows: {'show', 'request_name'} for the missing ones
-        (canonical GL-DDA-1P name), and {'show', 'segment_id'} for the ones we already have."""
+        """Split a showlist into (have_dda, need). A show HAS a DDA segment when a segment with
+        a real FreeWheel id resolves for it (region + title find-logic); otherwise it needs one
+        generated. Returns {'show', 'segment_id'} for the ones we have and {'show'} for the
+        ones that need a segment generated (flag, not a submission)."""
         if not self._loaded:
             self.load()
         have: list[dict] = []
@@ -305,7 +253,7 @@ class AudienceSegmentResolver:
             if sid:
                 have.append({"show": s, "segment_id": sid})
             else:
-                need.append({"show": s, "request_name": dda_request_name(s)})
+                need.append({"show": s})
         return have, need
 
     def id_for_segment_name(self, name: str) -> list[str]:

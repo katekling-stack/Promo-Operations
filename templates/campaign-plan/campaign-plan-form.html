@@ -249,7 +249,8 @@ datalist{display:none}
     <div class="field hidden" id="my5Wrap"><label>My5 inventory <span class="req">*</span></label>
       <div class="chips" data-chips="my5_site_groups" data-source="my5"><input type="text" placeholder="type to search My5 endpoints (Stream Type / Channels)…"></div>
       <div class="hint">Channel 5 only — pick the My5 endpoints to run on (e.g. <b>SG: Stream Type: VOD: My5</b>, <b>SG: My5 Channels: UK: MTV Owned</b>). AND-ed into every tier. Leave blank to use the default (Adults: VOD; Kids: VOD + Milkshake).</div></div>
-    <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
+    <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div>
+      <div id="ddaFlag" class="hidden" style="margin-top:8px;font-size:12.5px;background:#FAEEDA;border:1px solid #E6C67A;color:#854F0B;border-radius:8px;padding:9px 12px"></div></div>
     <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
     <div class="field"><label>Content ratings to include (run ONLY on these)</label>
       <div class="chips" data-chips="rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require (e.g. TV-14, PG)…"></div>
@@ -625,7 +626,41 @@ $("#region").addEventListener("change",()=>{
 });
 ["title","existing_io_id"].forEach(id=>$("#"+id).addEventListener("input",validate));
 
+// --- Flag showlist shows with no DDA segment yet (heads-up, not a submission) ------- //
+// Which affinity shows will need a NEW DDA segment generated, so Tier 1 isn't silently
+// empty. Uses the baked-in audience library + the picked region. You still request them
+// through the audience form as usual — this just flags the gaps while you plan.
+const DDA_CONVENTIONS = {   // region -> accepted DDA name prefixes (normalized tokens)
+  USA:["gl dda 1p","us dda 1p"], CA:["gl dda 1p","us dda 1p"], BR:["gl dda 1p","us dda 1p"],
+  LATAM:["gl dda 1p","us dda 1p"], AU:["au dwh","apac dda 1p"],
+  UK:["gl dda 1p","eu uk dda 1p"], IE:["gl dda 1p","eu uk dda 1p"], FR:["gl dda 1p","eu uk dda 1p"],
+  IT:["gl dda 1p","eu uk dda 1p"], GSA:["gl dda 1p","eu uk dda 1p"], ES:["gl dda 1p","eu uk dda 1p"],
+  FI:["gl dda 1p","eu uk dda 1p"], DK:["gl dda 1p","eu uk dda 1p"], NO:["gl dda 1p","eu uk dda 1p"],
+  SE:["gl dda 1p","eu uk dda 1p"]
+};
+function ddaToks(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
+let _ddaNorm=null;
+function ddaFlag(){
+  const box=$("#ddaFlag"); if(!box) return;
+  const shows=state.lists.showlist||[]; const region=$("#region").value;
+  if(!shows.length){ box.classList.add("hidden"); return; }
+  const convs=DDA_CONVENTIONS[region]||["gl dda 1p"];
+  if(_ddaNorm===null) _ddaNorm=(APP.audienceSegments||[]).map(ddaToks);
+  const missing=shows.filter(sh=>{ const kw=ddaToks(sh); if(!kw) return false;
+    const has=_ddaNorm.some(n=> convs.some(c=>n.startsWith(c)) &&
+      (n===kw || n.endsWith(" "+kw) || n.includes(" "+kw+" ")));
+    return !has; });
+  if(!missing.length){ box.classList.add("hidden"); return; }
+  const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const many=missing.length>1;
+  box.innerHTML="⚠️ <b>"+missing.length+" show"+(many?"s":"")+(many?" don't":" doesn't")+
+    " have a DDA segment yet</b> — request "+(many?"these":"this")+
+    " through the audience form so Tier 1 can target "+(many?"them":"it")+":<br>• "+
+    missing.map(esc).join("<br>• ");
+  box.classList.remove("hidden");
+}
 function validate(){
+  ddaFlag();
   const core = $("#region").value && $("#campaign").value && $("#title").value.trim();
   const hasDur = ((state.lists.durations||[]).length)>0;
   // "Add to existing IO" (optional) must be a numeric FreeWheel IO ID when filled — a name
