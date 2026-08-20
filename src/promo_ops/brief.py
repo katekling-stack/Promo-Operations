@@ -16,10 +16,13 @@ Two brief shapes are supported by the SAME parser:
 
 `parse_brief(text)` runs BOTH passes and unions the result — labeled values win, prose
 fills the gaps. `resolve_brief(draft, region)` then matches every extracted term against
-the real catalogs (SeriesResolver, GenreVideoGroupResolver, GeoResolver) and reports, per
-field, what matched exactly, what's a close-but-unconfirmed suggestion, and what didn't
-resolve — the same three-way confidence the form's brief box shows. Nothing is guessed
-silently; a CM confirms the "review" items before a plan is pushed.
+the real catalogs (SeriesResolver, GenreVideoGroupResolver) and reports, per field, what
+matched exactly, what's a close-but-unconfirmed suggestion, and what didn't resolve — the
+same three-way confidence the form's brief box shows. Nothing is guessed silently; a CM
+confirms the "review" items before a plan is pushed.
+
+Geo is intentionally NOT extracted: promos run broad across the campaign's whole country,
+so DMAs/markets never come from a brief.
 """
 
 from __future__ import annotations
@@ -54,7 +57,7 @@ def read_brief(path: str | Path) -> str:
 # --- what we can target ---------------------------------------------------- #
 
 # Fields the brief can fill (the plan keys the OrderBuilder consumes for targeting).
-BRIEF_FIELDS = ("genres", "showlist", "pluto_categories", "pluto_channels", "geo_dmas")
+BRIEF_FIELDS = ("genres", "showlist", "pluto_categories", "pluto_channels")
 
 # Labeled-brief routing: label alias (lowercased) -> plan field. Longest alias wins.
 # NOTE: Pluto categories/channels require the "Pluto" carrier — bare "Category:"/"Channel:"
@@ -136,19 +139,6 @@ def _comp_show_list(text: str) -> list[str]:
     return shows
 
 
-def _top_dmas(text: str) -> list[str]:
-    """DMAs live under a 'Top DMAS' header, listed on the following 'S1 90D Starts/Streams:'
-    lines. Pull those; strip the parenthetical market qualifiers ('Phoenix (Prescott)')."""
-    m = re.search(r"Top DMAS?\b", text, re.I)
-    if not m:
-        return []
-    out: list[str] = []
-    for ln in text[m.end():].splitlines()[:5]:
-        if ":" in ln and re.search(r"start|stream|dma", ln, re.I):
-            out.extend(_split_terms(ln.split(":", 1)[1]))    # keep raw Nielsen names (parentheticals matter)
-    return out
-
-
 def _labeled_sections(text: str) -> tuple[dict[str, list[str]], list[str], list[str]]:
     """Find '<label>: <values>' where a label starts a line or follows ';'. A payload runs to
     the end of its LINE (or the next mid-line label), so a stray label in prose can only ever
@@ -192,7 +182,8 @@ def parse_brief(text: str) -> BriefDraft:
 
     # 2) prose-brief fallbacks
     d.fields["showlist"].extend(_comp_show_list(text))              # COMP SHOW LIST block
-    d.fields["geo_dmas"].extend(_top_dmas(text))                    # Top DMAS block
+    # NOTE: DMAs are deliberately NOT pulled — promos run broad across the whole country,
+    # so geo never comes from a brief.
     lower = text.lower()
     for g in GENRE_HINTS:                                            # genre words present anywhere
         if re.search(r"\b" + re.escape(g.lower()) + r"\b", lower):
@@ -240,14 +231,12 @@ def _expand_franchise(term: str, series_resolver) -> tuple[list[str], bool]:
 
 
 def resolve_brief(draft: BriefDraft, region: str,
-                  series_resolver=None, genre_resolver=None, geo_resolver=None) -> dict[str, FieldResult]:
+                  series_resolver=None, genre_resolver=None) -> dict[str, FieldResult]:
     from .series import SeriesResolver
     from .video_groups import GenreVideoGroupResolver
-    from .geo import GeoResolver
 
     sr = series_resolver or SeriesResolver().load()
     gr = genre_resolver or GenreVideoGroupResolver().load()
-    geo = geo_resolver or GeoResolver().load()
 
     out: dict[str, FieldResult] = {}
 
@@ -271,12 +260,6 @@ def resolve_brief(draft: BriefDraft, region: str,
     for term in draft.fields["genres"]:
         genres.matched.append(term) if gr.resolve(term).matched else genres.missed.append(term)
     out["genres"] = _dedup(genres)
-
-    # Top DMAs -> FW DMA ids
-    dmas = FieldResult("geo_dmas")
-    for gm in geo.resolve_dmas(draft.fields["geo_dmas"]):
-        (dmas.matched.append(gm.query) if gm.matched else dmas.missed.append(gm.query))
-    out["geo_dmas"] = _dedup(dmas)
 
     # Pluto categories / channels -> region option lists (best-effort; needs Pluto data)
     cats, chans = _pluto_options(region)
@@ -340,7 +323,6 @@ def to_plan_dict(draft: BriefDraft, resolved: dict[str, FieldResult], region: st
         "campaign": {"name": campaign_name or draft.logistics.get("campaign_name") or ""},
         "genres": resolved["genres"].matched,
         "showlist": resolved["showlist"].matched,
-        "geo_dmas": resolved["geo_dmas"].matched,
     }
     if resolved["pluto_categories"].matched or resolved["pluto_channels"].matched:
         plan["pluto"] = {}
@@ -356,7 +338,7 @@ def report_text(draft: BriefDraft, resolved: dict[str, FieldResult]) -> str:
     lines: list[str] = []
     if draft.logistics:
         lines.append("LOGISTICS: " + ", ".join(f"{k}={v}" for k, v in draft.logistics.items()))
-    titles = {"showlist": "Shows (affinity)", "genres": "Genres", "geo_dmas": "Top DMAs",
+    titles = {"showlist": "Shows (affinity)", "genres": "Genres",
               "pluto_categories": "Pluto Categories", "pluto_channels": "Pluto Channels"}
     for f, r in resolved.items():
         if not (r.matched or r.review or r.missed):

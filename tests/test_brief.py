@@ -24,13 +24,18 @@ def test_extracts_comp_show_list():
     assert len(d.fields["pluto_categories"]) < 5
 
 
-def test_extracts_logistics_and_dmas():
+def test_extracts_logistics():
     d = _draft()
     assert d.logistics.get("brand") == "Paramount+"
     assert "Dexter" in (d.logistics.get("campaign_name") or "")
     assert d.logistics.get("premiere") == "10/30/26"
     assert d.logistics.get("budget", "").startswith("US:")          # first BUDGET wins, not a later table
-    assert "New York" in d.fields["geo_dmas"] and "Chicago" in d.fields["geo_dmas"]
+
+
+def test_no_geo_from_brief():
+    # Promos run broad across the country — DMAs must never be pulled from a brief.
+    d = _draft()
+    assert "geo_dmas" not in d.fields
 
 
 def test_mines_genres_without_prose_noise():
@@ -48,7 +53,6 @@ def test_resolve_reports_matched_review_and_missed():
     # external comps not in the P+ catalog are surfaced, never silently dropped
     assert shows.review or shows.missed
     assert res["genres"].matched                                    # genres resolve to VGs
-    assert res["geo_dmas"].matched                                  # at least some DMAs resolve
 
 
 def test_to_plan_dict_uses_only_confirmed_terms():
