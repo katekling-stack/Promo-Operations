@@ -306,6 +306,18 @@ datalist{display:none}
     </div>
   </div>
 
+  <details class="card" id="briefCard">
+    <summary style="cursor:pointer;font-weight:700;font-size:18px;list-style:revert">🧠 Paste a brief — auto-fill targeting <span style="font-weight:400;font-size:13px;color:#888">(beta — click to expand)</span></summary>
+    <p class="sub" style="margin-top:10px">Pick <b>Region</b> + <b>Campaign</b> first, then paste your promo brief below. Use labels the tool understands — <code>Networks:</code>, <code>Genres:</code>, <code>Shows:</code>, <code>Pluto Categories:</code>, <code>Pluto Channels:</code>, <code>Audience:</code>, <code>Ratings:</code> (values comma- or line-separated). Exact matches are added to the fields automatically; close matches are <b>suggested</b> for you to confirm; anything unmatched is flagged.</p>
+    <textarea id="briefText" rows="8" placeholder="Networks: BET, MTV, Comedy Central&#10;Genres: Comedy, Drama&#10;Shows: NCIS, Yellowstone&#10;Pluto Categories: News, Sports&#10;Pluto Channels: CBS News&#10;Audience: &#10;Ratings: TV-MA&#10;Video Domination: Pluto homepage takeover" style="width:100%;box-sizing:border-box;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;padding:12px;border:1.5px solid var(--line);border-radius:10px;resize:vertical"></textarea>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+      <button class="btn primary" type="button" id="briefParse">Parse &amp; fill</button>
+      <button class="btn ghost" type="button" id="briefClear">Clear</button>
+      <span class="hint" id="briefHint" style="margin:0"></span>
+    </div>
+    <div id="briefReport" style="margin-top:14px"></div>
+  </details>
+
   <div class="card">
     <h2>Campaign</h2><p class="sub">Pick the region, then the campaign — that sets the brand, advertiser and default products for you.</p>
     <div class="row">
@@ -1041,6 +1053,118 @@ $("#loadFile").addEventListener("change",e=>{
   $("#draftDiscard").addEventListener("click",()=>{ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
     $("#draftBanner").classList.add("hidden"); });
 })();
+
+// --- Brief parser (beta): paste a promo brief, auto-fill the targeting fields -------- //
+// Splits the brief on its labels (Networks/Genres/Shows/Pluto Categories/Channels/Audience/
+// Ratings), routes each list to the matching field, and matches every term against that
+// field's REAL FreeWheel options: exact -> added automatically; close -> suggested to
+// confirm; unmatched -> flagged. Rides on sourceList()/state.lists so it inherits the same
+// exact-value guarantees as the pickers. No FreeWheel calls — matches the baked-in lists.
+const BRIEF_LABELS=[
+  {keys:["networks","network","brands","brand"], field:"genres", only:"brand", title:"Networks / Brands"},
+  {keys:["genres","genre"], field:"genres", noBrand:true, title:"Genres"},
+  {keys:["shows","show","series"], field:"showlist", title:"Shows"},
+  {keys:["pluto categories","categories","category"], field:"pluto_categories", title:"Pluto Categories"},
+  {keys:["pluto channels","channels","channel"], field:"pluto_channels", title:"Pluto Channels"},
+  {keys:["audience","audiences","audience segments","segments"], field:"audience_segments", title:"Audience Segments"},
+  {keys:["ratings","rating","rating restrictions","exclude ratings"], field:"rating_restrictions", title:"Ratings to exclude"},
+  {keys:["exclude shows","exclude series"], field:"exclude_series", title:"Shows to exclude"},
+  {keys:["exclude channels"], field:"exclude_channels", title:"Channels to exclude"},
+];
+const BRIEF_SRC={genres:"genres", showlist:"shows", pluto_categories:"categories",
+  pluto_channels:"channels", audience_segments:"audience", rating_restrictions:"ratings",
+  exclude_series:"shows", exclude_channels:"channels"};
+// Notes-only labels: informational, surfaced but never auto-filled (mirrors the sibling tool).
+const BRIEF_NOTE_KEYS=["video domination","pause ads","flight","dates","kpi","kpis","objective","notes","budget"];
+const briefEsc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const _briefLc=new Map();                                  // source name -> Map(lowercase->canonical)
+function briefSrcMap(src){ if(_briefLc.has(src)) return _briefLc.get(src);
+  const mp=new Map(); (sourceList(src)||[]).forEach(x=>{ const k=x.toLowerCase(); if(!mp.has(k)) mp.set(k,x); });
+  _briefLc.set(src,mp); return mp; }
+function briefOptOK(def,x){ const s=x.toLowerCase();
+  if(def.only==="brand") return s.startsWith("brand:");
+  if(def.noBrand && s.startsWith("brand:")) return false;
+  return true; }
+function parseBrief(text){
+  // Strip a leading "Pluto TV:" / "Pluto:" so its sub-labels (Categories:/Channels:) read
+  // as first-class labels, then find every "<label>:" at a line start or after ";".
+  let t="\n"+String(text).replace(/\r/g,"").replace(/pluto tv\s*:/gi,"").replace(/pluto\s*:/gi,"");
+  const alias=[]; BRIEF_LABELS.forEach(l=>l.keys.forEach(k=>alias.push(k)));
+  const kw=alias.concat(BRIEF_NOTE_KEYS).sort((a,b)=>b.length-a.length).join("|");
+  const re=new RegExp("(?:^|\\n|;)[ \\t]*("+kw+")[ \\t]*:","gi");
+  const hits=[]; let m;
+  while((m=re.exec(t))!==null) hits.push({label:m[1].toLowerCase().trim(), at:re.lastIndex, start:m.index});
+  const sections=[], notes=[];
+  for(let i=0;i<hits.length;i++){
+    const end = i+1<hits.length ? hits[i+1].start : t.length;
+    const payload=t.slice(hits[i].at, end).trim();
+    const def=BRIEF_LABELS.find(l=>l.keys.indexOf(hits[i].label)>=0);
+    if(!def){ if(payload) notes.push({label:hits[i].label, payload}); continue; }
+    const terms=payload.split(/[\n,;\t]+/).map(s=>s.trim()).filter(Boolean);
+    if(terms.length) sections.push({def, terms});
+  }
+  return {sections, notes};
+}
+function briefMatch(def, term){
+  const src=BRIEF_SRC[def.field], list=sourceList(src)||[], t=term.toLowerCase();
+  const hit=briefSrcMap(src).get(t);
+  if(hit && briefOptOK(def,hit)) return {status:"exact", value:hit};
+  const cands=[];
+  for(let i=0;i<list.length && cands.length<50;i++){ const x=list[i]; if(!briefOptOK(def,x)) continue;
+    const s=x.toLowerCase();
+    if(s.indexOf(t)>=0 || s.split(/[^a-z0-9]+/).indexOf(t)>=0) cands.push(x); }
+  cands.sort((a,b)=>a.length-b.length);
+  if(cands.length) return {status:"fuzzy", options:cands.slice(0,6)};
+  return {status:"none"};
+}
+function briefAddToField(key, vals){ const cur=state.lists[key]||(state.lists[key]=[]);
+  vals.forEach(v=>{ if(cur.indexOf(v)<0) cur.push(v); });
+  const box=document.querySelector('[data-chips="'+key+'"]'); if(box&&box._render) box._render(); }
+function renderBriefReport(groups, notes){
+  const R=$("#briefReport"); R.innerHTML="";
+  if(!groups.length && !notes.length){
+    R.innerHTML='<p class="hint">No recognizable labels found. Start lines with Networks:, Genres:, Shows:, Pluto Categories:, Pluto Channels:, Audience:, or Ratings:.</p>'; return; }
+  groups.forEach(g=>{
+    const box=document.createElement("div");
+    box.style.cssText="margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px";
+    const h=document.createElement("div"); h.style.cssText="font-weight:700;margin-bottom:6px"; h.textContent=g.def.title; box.appendChild(h);
+    if(g.added.length){ const d=document.createElement("div"); d.style.cssText="font-size:13px;margin:2px 0";
+      d.innerHTML='<span style="color:#137333">✅ Added '+g.added.length+':</span> '+briefEsc(g.added.join(", ")); box.appendChild(d); }
+    g.review.forEach(rv=>{ const d=document.createElement("div"); d.style.cssText="font-size:13px;margin:4px 0";
+      d.innerHTML='<span style="color:#b06000">🟡 “'+briefEsc(rv.term)+'” — did you mean:</span> ';
+      rv.options.forEach(opt=>{ const b=document.createElement("button"); b.type="button"; b.className="btn ghost";
+        b.style.cssText="padding:3px 9px;font-size:12px;margin:2px 4px 2px 0"; b.textContent=opt;
+        b.onclick=()=>{ briefAddToField(g.def.field,[opt]); b.textContent="✓ "+opt; b.disabled=true; };
+        d.appendChild(b); }); box.appendChild(d); });
+    if(g.none.length){ const d=document.createElement("div"); d.style.cssText="font-size:13px;margin:2px 0;color:#a00";
+      d.textContent="❌ Not found: "+g.none.join(", "); box.appendChild(d); }
+    R.appendChild(box);
+  });
+  if(notes.length){ const d=document.createElement("div"); d.style.cssText="font-size:13px;margin-top:6px;color:#555";
+    d.innerHTML="📝 <b>Notes (not auto-filled):</b> "+notes.map(n=>briefEsc(n.label)+": "+briefEsc(n.payload)).join(" · "); R.appendChild(d); }
+}
+function runBrief(){
+  _briefLc.clear();                                        // region may have changed -> rebuild exact maps
+  const text=$("#briefText").value||"";
+  if(!text.trim()){ $("#briefHint").textContent="Paste a brief first."; $("#briefReport").innerHTML=""; return; }
+  $("#briefHint").textContent = (!$("#region").value || !$("#campaign").value)
+    ? "Tip: pick a Region + Campaign first — channels, categories and ratings are region-specific."
+    : "";
+  const {sections, notes}=parseBrief(text);
+  const groups=[];
+  sections.forEach(sec=>{
+    const added=[], review=[], none=[];
+    sec.terms.forEach(term=>{ const r=briefMatch(sec.def, term);
+      if(r.status==="exact"){ if(added.indexOf(r.value)<0) added.push(r.value); }
+      else if(r.status==="fuzzy") review.push({term, options:r.options});
+      else none.push(term); });
+    if(added.length) briefAddToField(sec.def.field, added);
+    groups.push({def:sec.def, added, review, none});
+  });
+  renderBriefReport(groups, notes);
+}
+$("#briefParse").addEventListener("click", runBrief);
+$("#briefClear").addEventListener("click",()=>{ $("#briefText").value=""; $("#briefReport").innerHTML=""; $("#briefHint").textContent=""; });
 
 validate();
 </script>
