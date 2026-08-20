@@ -559,6 +559,48 @@ def _cmd_from_brief(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_suggest(args: argparse.Namespace) -> int:
+    """Cold-start affinity suggester for a THIN brief: from a title + description, propose
+    targeting grounded in our real inventory (AI engine), and/or by analogy to past plans
+    (--history DIR). Writes a draft plan.json of the confirmed picks."""
+    from .suggest import suggest_ai, suggest_history, load_past_plans, suggestion_to_fields
+    desc = args.description or (Path(args.desc_file).read_text(encoding="utf-8") if args.desc_file else "")
+    fields: dict[str, list] = {}
+    if args.genres:
+        fields["genres"] = [g.strip() for g in args.genres.split(",") if g.strip()]
+    if not args.history_only:
+        try:
+            sug = suggest_ai(args.title, desc, region=args.region)
+        except Exception as exc:  # noqa: BLE001 - no key/SDK is a common, expected case
+            print(f"AI suggester unavailable ({exc}).\nSet ANTHROPIC_API_KEY and `pip install "
+                  "anthropic`, or use --history DIR for the past-plans engine.", file=sys.stderr)
+            return 2
+        for f, fp in sug.fields.items():
+            print(f"{f}: ✅ {', '.join(fp.matched)}"
+                  + (f"  | ❌ dropped: {', '.join(fp.missed)}" if fp.missed else ""))
+        fields = suggestion_to_fields(sug)
+    if args.history:
+        hist = suggest_history(args.title, fields.get("genres", []), load_past_plans(args.history))
+        print("\n[history] " + (hist.notes[0] if hist.notes else ""))
+        for f, fp in hist.fields.items():
+            if fp.matched:
+                fields.setdefault(f, [])
+                fields[f] += [v for v in fp.matched if v not in fields[f]]
+    plan = {"promoted_title": args.title, "region": args.region,
+            "campaign": {"name": args.campaign or ""},
+            "genres": fields.get("genres", []), "showlist": fields.get("showlist", [])}
+    pluto = {k2: fields[k1] for k1, k2 in
+             (("pluto_categories", "categories"), ("pluto_channels", "channels")) if fields.get(k1)}
+    if pluto:
+        plan["pluto"] = pluto
+    if args.durations:
+        plan["durations"] = [int(d) for d in args.durations.split(",") if d.strip()]
+    out = Path(args.out) if args.out else Path(f"{args.title}.plan.json".replace("/", "-"))
+    out.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\nWrote draft plan → {out}  (review, then: promo-ops preview {out})")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="promo-ops", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -671,6 +713,20 @@ def build_parser() -> argparse.ArgumentParser:
     p_brief.add_argument("--durations", help="Comma-separated creative lengths, e.g. 15,30")
     p_brief.add_argument("--out", help="Where to write the draft plan.json")
     p_brief.set_defaults(func=_cmd_from_brief)
+
+    p_sug = sub.add_parser("suggest",
+                           help="Cold-start affinities from a title + description (AI and/or past plans)")
+    p_sug.add_argument("title")
+    p_sug.add_argument("--description", help="Show description / logline")
+    p_sug.add_argument("--desc-file", help="Read the description from a file")
+    p_sug.add_argument("--region", default="USA")
+    p_sug.add_argument("--genres", help="Comma-separated genres (seeds the history engine)")
+    p_sug.add_argument("--campaign", help="Destination campaign name")
+    p_sug.add_argument("--durations", help="Comma-separated creative lengths, e.g. 15,30")
+    p_sug.add_argument("--history", help="Folder of past *.plan.json to also learn from")
+    p_sug.add_argument("--history-only", action="store_true", help="Skip the AI engine; use past plans only")
+    p_sug.add_argument("--out", help="Where to write the draft plan.json")
+    p_sug.set_defaults(func=_cmd_suggest)
 
     p_refresh = sub.add_parser("refresh-form",
                                help="Weekly: sync every FreeWheel snapshot + rebuild the plan form")

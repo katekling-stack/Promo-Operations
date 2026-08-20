@@ -218,8 +218,9 @@ def build() -> dict[str, int]:
     active_regions = {r: m for r, m in REGION_TO_PLUTO_MARKETS.items() if r in pluto_regions}
 
     def _by_region(kind: str, path: Path):
+        col = {"categories": "category", "channels": "channel"}[kind]
         with path.open("w", newline="", encoding="utf-8") as fh:
-            w = csv.writer(fh); w.writerow(["region", kind[:-1] if kind.endswith("s") else kind])
+            w = csv.writer(fh); w.writerow(["region", col])
             for region, markets in active_regions.items():
                 for v in sorted({v for m in markets for v in pluto.get(m, {}).get(kind, [])}):
                     w.writerow([region, v])
