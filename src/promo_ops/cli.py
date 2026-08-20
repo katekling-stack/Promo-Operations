@@ -650,27 +650,58 @@ def _cmd_dda_requests(args: argparse.Namespace) -> int:
     one yet — the exact GL-DDA-1P names, ready to submit to the segment-request tool. Also
     writes a CSV (show, request_name, region, requested_by)."""
     import csv as _csv
-    from .audience_segments import AudienceSegmentResolver
+    from .audience_segments import AudienceSegmentResolver, tool_request, guess_genre_tab
+    genre_tab = args.genre or ""
     if args.plan:
         plan = load_plan(args.plan)
         shows, region, who = plan.showlist, plan.region, plan.primary_trafficker or ""
+        ctype = plan.content_type or "show"
+        io = plan.insertion_order_name or f"{plan.promoted_title} - {region}"
+        genre_tab = genre_tab or guess_genre_tab(plan.genres)
     else:
         shows = [s.strip() for s in (args.shows or "").split(";") if s.strip()]
-        region, who = args.region, ""
+        region, who, ctype, io = args.region, "", "show", ""
     have, need = AudienceSegmentResolver().load().missing_dda(shows, region)
-    print(f"Region {region} — {len(have)} show(s) already have a DDA segment; "
+    reqs = [tool_request(n["show"], region, ctype, io=io, requester=who) for n in need]
+    bucket = reqs[0]["region"] if reqs else region
+    print(f"Region {region} ({bucket}) — {len(have)} show(s) already have a DDA segment; "
           f"{len(need)} need one requested.\n")
-    if need:
-        print("REQUEST THESE (paste into the segment-request tool):")
-        for r in need:
-            print(f"  • {r['request_name']}   ({r['show']})")
+    if reqs:
+        print("REQUEST THESE via the Audience Segment tool "
+              "(Type / Region / Title -> it generates the name):")
+        for r in reqs:
+            print(f"  • {r['type']:6} | {r['region']:8} | {r['title']}   →  {r['generated_name']}")
     out = Path(args.out) if args.out else (Path(args.plan).with_suffix(".dda-requests.csv")
                                            if args.plan else Path("dda-requests.csv"))
     with out.open("w", newline="", encoding="utf-8") as fh:
-        w = _csv.writer(fh); w.writerow(["show", "request_name", "region", "requested_by"])
-        for r in need:
-            w.writerow([r["show"], r["request_name"], region, who])
-    print(f"\nWrote {out} ({len(need)} requests)")
+        w = _csv.writer(fh)
+        w.writerow(["title", "type", "region", "action", "io", "requester", "generated_name"])
+        for r in reqs:
+            w.writerow([r["title"], r["type"], r["region"], r["action"], r["io"],
+                        r["requester"], r["generated_name"]])
+    print(f"\nWrote {out} ({len(reqs)} requests, ready for the segment-request tool)")
+
+    if args.submit and reqs:
+        from .integrations.segment_requests import submit_all
+        if not genre_tab:
+            print("⚠️  --submit needs a genre tab. Pass --genre \"Crime\" (or set genres on "
+                  "the plan so it can be guessed).", file=sys.stderr)
+            return 2
+        if not args.email:
+            print("⚠️  --submit needs --email (the requester email the tool CCs).", file=sys.stderr)
+            return 2
+        import datetime as _dt
+        payloads = [{**r, "genre": genre_tab, "email": args.email,
+                     "requester": r["requester"] or args.email,
+                     "date": _dt.date.today().isoformat(), "placement": "", "notes":
+                     "Auto-requested by promo-ops for a Tier 1 affinity show."} for r in reqs]
+        print(f"\nSubmitting {len(payloads)} request(s) to the segment tool…")
+        results = submit_all(payloads)
+        for res in results:
+            t = res["payload"]["title"]
+            print(f"  {'✅' if res['ok'] else '❌'} {t}"
+                  + ("" if res["ok"] else f" — {res['error']}"))
+        return 0 if all(r["ok"] for r in results) else 1
     return 0
 
 
@@ -817,6 +848,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_dda.add_argument("plan", nargs="?", help="Plan .json (uses its showlist + region)")
     p_dda.add_argument("--shows", help="';'-separated show names (instead of a plan)")
     p_dda.add_argument("--region", default="USA")
+    p_dda.add_argument("--genre", help="Genre tab for the request tool (else guessed from plan genres)")
+    p_dda.add_argument("--email", help="Requester email (required with --submit)")
+    p_dda.add_argument("--submit", action="store_true",
+                       help="POST the requests to the segment tool (needs DDA_REQUEST_URL + doPost)")
     p_dda.add_argument("--out", help="CSV output path")
     p_dda.set_defaults(func=_cmd_dda_requests)
 
