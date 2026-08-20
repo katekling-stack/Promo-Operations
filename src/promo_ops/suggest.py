@@ -75,9 +75,13 @@ _AI_SYSTEM = (
     "description, choose promo TARGETING affinities. Rules:\n"
     "- Pick genres ONLY from the allowed genre list.\n"
     "- Pick Pluto categories ONLY from the allowed category list.\n"
-    "- For Pluto channels and comp shows, propose real names that fit the content's genre "
-    "and tone (these will be matched against our catalog).\n"
-    "- Comp shows = existing TV series with a similar audience/tone (not the promoted title).\n"
+    "- Propose 10-20 comp SHOWS and 10-20 PLUTO CHANNELS by real name (they'll be matched "
+    "against our catalog). Aim for a GOOD MIX, not just the single closest genre: include the "
+    "core-genre titles PLUS tonally adjacent ones (similar audience, mood, or era) so the "
+    "affinity set has breadth. Comp shows = existing TV series with a similar audience/tone "
+    "(never the promoted title itself). Order both lists best-fit first.\n"
+    "- Each comp show also becomes a Tier 1 audience segment downstream, so favor well-known "
+    "series likely to have a dedicated audience.\n"
     'Return STRICT JSON: {"genres":[],"pluto_categories":[],"pluto_channels":[],"comp_shows":[]}. '
     "No commentary."
 )
