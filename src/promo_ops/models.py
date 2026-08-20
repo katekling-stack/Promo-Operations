@@ -73,6 +73,11 @@ class SupportPlan:
     networks: list[str] = field(default_factory=list)
     genres: list[str] = field(default_factory=list)
     showlist: list[str] = field(default_factory=list)
+    # My5 (Channel 5) inventory selection — the My5 Site Group NAMES a CM picks for a
+    # "5 - UK" / "5 - Kids - UK" campaign (e.g. "SG: Stream Type: VOD: My5",
+    # "SG: My5 Channels: UK: MTV Owned"). Resolved to IDs and AND-ed into every tier as the
+    # platform subset. Empty -> the brand's My5 default (adults VOD; kids VOD + Milkshake).
+    my5_site_groups: list[str] = field(default_factory=list)
     # Manually-specified Tier 1 audience segments (names or IDs). Added to Tier 1
     # in addition to any segments auto-resolved from the showlist.
     audience_segments: list[str] = field(default_factory=list)

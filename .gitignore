@@ -31,6 +31,8 @@ data/standard_attributes/synced_*.csv
 data/geo/synced_*.csv
 data/ad_units/synced_*.csv
 data/site_groups/synced_*.csv
+# committed: the My5 (Channel 5) inventory picker + resolver depend on this snapshot
+!data/site_groups/synced_my5_site_groups.csv
 data/series/synced_*.csv
 !data/series/synced_series.csv
 data/video_groups/synced_*.csv

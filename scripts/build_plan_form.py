@@ -98,6 +98,7 @@ def app_data() -> dict:
         sig = brand_sync.brand_signature(cname)
         campaigns.append({"name": cname, "region": _region_of(cname),
                           "brand": b.get("display_name", key), "kids": bool(b.get("kids")),
+                          "my5": bool(b.get("my5_brand")),
                           "products": prods, "product_defaults": prod_default,
                           # brand identity for cross-market mirroring (family|kids)
                           "sig": f"{sig[0]}|{int(sig[1])}" if sig else None})
@@ -114,6 +115,8 @@ def app_data() -> dict:
         "slackSubmitUrl": SLACK_SUBMIT_URL,
         "regions": [{"code": c, "name": REGION_NAME.get(c, c)} for c in REGION_ORDER],
         "campaigns": campaigns, "productLabels": PRODUCT_LABEL,
+        # My5 (Channel 5) inventory options for the "5 - UK" campaigns' My5 Inventory field.
+        "my5SiteGroups": _my5_site_group_names(),
         "videoDominations": vd, "takeovers": tk,
         # Canonical batch-Sheet column order (single source of truth in promo_ops.batch),
         # so the "Copy row for Sheet" button emits cells in the Sheet's column order.
@@ -121,6 +124,21 @@ def app_data() -> dict:
         # Canonical targeting options for type-to-search (generated from FreeWheel).
         **_targeting_options(),
     }
+
+
+def _my5_site_group_names() -> list:
+    """CM-facing My5 Site Group names (Stream Type + My5 Channels) for the My5 Inventory
+    picker, from the synced snapshot."""
+    import csv as _csv
+    path = REPO / "data" / "site_groups" / "synced_my5_site_groups.csv"
+    if not path.exists():
+        return []
+    out = []
+    for row in _csv.DictReader(path.open(encoding="utf-8")):
+        nm = (row.get("name") or "").strip()
+        if nm and (row.get("status", "ACTIVE") == "ACTIVE"):
+            out.append(nm)
+    return sorted(out)
 
 
 def _targeting_options() -> dict:
@@ -442,6 +460,9 @@ datalist{display:none}
   <div class="card">
     <h2>Targeting</h2><p class="sub">Type to search — pick from the real FreeWheel list (no free text). Categories &amp; channels are for the selected Region. Audience Segments (Tier 1) auto-resolve from the Showlist; leave blank.</p>
     <div class="note hidden" id="plutoNudge">This is a <b>Pluto</b> campaign — add the specific <b>Pluto channels / categories</b> below to target that inventory directly. Left blank, the lines run across the whole Pluto platform (broadest reach).</div>
+    <div class="field hidden" id="my5Wrap"><label>My5 inventory <span class="req">*</span></label>
+      <div class="chips" data-chips="my5_site_groups" data-source="my5"><input type="text" placeholder="type to search My5 endpoints (Stream Type / Channels)…"></div>
+      <div class="hint">Channel 5 only — pick the My5 endpoints to run on (e.g. <b>SG: Stream Type: VOD: My5</b>, <b>SG: My5 Channels: UK: MTV Owned</b>). AND-ed into every tier. Leave blank to use the default (Adults: VOD; Kids: VOD + Milkshake).</div></div>
     <div class="field"><label>Showlist</label><div class="chips" data-chips="showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
     <div class="field"><label>Genres</label><div class="chips" data-chips="genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
     <div class="field"><label>Content ratings to include (run ONLY on these)</label>
@@ -544,6 +565,7 @@ function onCampaign(){
   const c = currentCampaign();
   $("#brandChip").innerHTML = c ? `<span class="derived">Brand: ${c.brand}</span>` : "";
   $("#kidsWrap").classList.toggle("hidden", !(c && c.kids));
+  $("#my5Wrap").classList.toggle("hidden", !(c && c.my5));
   // products
   const prods = c ? c.products : [];
   const defs = (c && c.product_defaults) || {};
@@ -704,6 +726,7 @@ function collectDayparts(){
 function sourceList(name){
   if(name==="shows") return APP.shows;
   if(name==="genres") return APP.genres;
+  if(name==="my5") return APP.my5SiteGroups||[];
   if(name==="audience") return APP.audienceSegments;
   const rc=$("#region").value;
   if(name==="categories") return (APP.categoriesByRegion||{})[rc]||[];
@@ -881,6 +904,7 @@ function buildPlan(){
   if(L.geo_cities_exclude.length) plan.geo_cities_exclude=L.geo_cities_exclude;
   if(L.genres.length) plan.genres=L.genres;
   if(L.showlist.length) plan.showlist=L.showlist;
+  if(L.my5_site_groups&&L.my5_site_groups.length) plan.my5_site_groups=L.my5_site_groups;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
   const pl={}; if(L.pluto_categories.length)pl.categories=L.pluto_categories;
   if(L.pluto_channels.length)pl.channels=L.pluto_channels; if(Object.keys(pl).length)plan.pluto=pl;
@@ -1027,6 +1051,7 @@ function loadPlan(plan){
   setChips("rating_restrictions",plan.rating_restrictions);
   setChips("rating_inclusions",plan.rating_inclusions);
   setChips("genres",plan.genres); setChips("showlist",plan.showlist);
+  setChips("my5_site_groups",plan.my5_site_groups);
   setChips("audience_segments",plan.audience_segments);
   setChips("pluto_categories",(plan.pluto||{}).categories);
   setChips("pluto_channels",(plan.pluto||{}).channels);

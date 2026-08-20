@@ -111,6 +111,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         networks=list(raw.get("networks") or []),
         genres=list(raw.get("genres") or []),
         showlist=list(raw.get("showlist") or []),
+        my5_site_groups=list(raw.get("my5_site_groups") or []),
         audience_segments=list(raw.get("audience_segments") or []),
         pluto_categories=categories,
         pluto_channels=channels,

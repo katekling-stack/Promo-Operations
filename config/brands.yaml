@@ -331,18 +331,22 @@ brands:
     - VCBS
     template_campaign_id: '74400813'
     campaign_name: 5 - UK
-    main_site_groups:
-    - '929392'
+    # 5 (UK) targets My5 endpoints. The platform subset is the CM-selected My5 inventory
+    # (My5 Inventory field in the form); default to My5 VOD when none is chosen.
+    my5_brand: true
+    my5_default:
+    - 'SG: Stream Type: VOD: My5'
     formats:
     - remnant_video
     ad_unit_groups:
       remnant_video: pplus_cbs_pluto_vcbs
     format_overrides:
       remnant_video:
-        # 5 (UK) runs pre-roll, mid-roll AND post-roll on EVERY placement regardless of
-        # duration — disable the default :30 House Pre-Roll drop.
+        # placements are named "... (Tier N) (My5) - UK" like the existing 5 - UK campaigns
+        tier_infix: (My5)
+        duration_infix: (My5)
+        # pre-roll, mid-roll AND post-roll on EVERY placement regardless of duration
         drop_preroll_at_duration: null
-    # Channel 5 (UK) entertainment remnant — modeled on the UK Pluto/MTVE remnant setup.
     _cloned_from: pluto_tv_uk
   channel_5_kids_uk:
     display_name: "5 - Kids (UK)"
@@ -351,15 +355,20 @@ brands:
     template_campaign_id: '74314444'
     campaign_name: 5 - Kids - UK
     kids: true
+    # My5 kids inventory (My5 Inventory field), AND-ed with the standard Kids targeting.
+    # Default to My5 VOD + Milkshake (mirrors the live 5 - Kids - UK placements).
+    my5_brand: true
+    my5_default:
+    - 'SG: Stream Type: VOD: My5'
+    - 'SG: My5 Channels: UK: Milkshake'
     formats:
     - pplus_kids_remnant
     ad_unit_groups:
       pplus_kids_remnant: pplus_cbs_pluto_vcbs
     format_overrides:
       pplus_kids_remnant:
-        kids_main_site_groups:
-        - '929392'
-        duration_infix: (Pluto)
+        # placements named "... (My5) - Kids - UK"
+        duration_infix: (My5)
         # pre/mid/post on every placement regardless of duration (no :30 pre-roll drop)
         drop_preroll_at_duration: null
     _cloned_from: nick_kids_uk

@@ -53,6 +53,35 @@ class OrderBuilder:
         self._regions = regions_config()
         self._ad_units = ad_units_config()
         self._campaign_defaults = campaign_defaults_config()
+        self._my5_map: Optional[dict] = None
+
+    def _resolve_my5(self, values: list) -> list:
+        """Map My5 Site Group NAMES (or raw numeric IDs) to FW site-group IDs, using the
+        synced My5 snapshot. Names match case-insensitively; unknown names are dropped."""
+        out: list[str] = []
+        if self._my5_map is None:
+            import csv as _csv
+            from .config import REPO_ROOT
+            self._my5_map = {}
+            p = REPO_ROOT / "data" / "site_groups" / "synced_my5_site_groups.csv"
+            if p.exists():
+                for row in _csv.DictReader(p.open(encoding="utf-8")):
+                    nm = (row.get("name") or "").strip().lower()
+                    sid = (row.get("id") or "").strip()
+                    if nm and sid:
+                        self._my5_map[nm] = sid
+        for v in values:
+            v = str(v).strip()
+            if v.isdigit():
+                out.append(v)                       # already an ID
+            elif v.lower() in self._my5_map:
+                out.append(self._my5_map[v.lower()])
+        # de-dupe, preserve order
+        seen, uniq = set(), []
+        for x in out:
+            if x not in seen:
+                seen.add(x); uniq.append(x)
+        return uniq
 
     @staticmethod
     def _ids_from_tier(tier) -> dict:
@@ -512,6 +541,14 @@ class OrderBuilder:
         # Per-format main-SG override (the UK P+/Pluto split: P+ line vs Pluto line).
         if tmpl.get("main_site_groups"):
             main_sgs = list(tmpl["main_site_groups"])
+        # My5 (Channel 5) brands: the platform subset is the CM-selected My5 inventory
+        # (Stream Type / My5 Channels site groups), AND-ed into every tier. Falls back to
+        # the brand's My5 default when the plan doesn't specify one.
+        if brand_cfg.get("my5_brand"):
+            chosen = plan.my5_site_groups or brand_cfg.get("my5_default", [])
+            my5_ids = self._resolve_my5(chosen)
+            if my5_ids:
+                main_sgs = my5_ids
         include_vgs = list(brand_cfg.get("include_video_groups", []))
         pause_main = list(brand_cfg.get("pause_main_site_groups", []))
         # Pluto TV brands exclude Samsung TV Plus SGs on EVERY placement (placement-level
@@ -563,7 +600,9 @@ class OrderBuilder:
                 and self._resolve_brand(plan) not in pblk.get("except_brands", [])):
             if pblk["site_group"] not in excl_sgs:
                 excl_sgs.append(pblk["site_group"])
-        if is_kids and tmpl.get("kids_main_site_groups"):
+        # My5 kids keep the CM-selected My5 inventory as their platform subset (set above);
+        # non-My5 kids use the format's kids_main_site_groups.
+        if is_kids and tmpl.get("kids_main_site_groups") and not brand_cfg.get("my5_brand"):
             main_sgs = list(tmpl["kids_main_site_groups"])
 
         def base(name, targeting, **kw) -> Placement:
