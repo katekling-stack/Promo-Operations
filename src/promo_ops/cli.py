@@ -531,6 +531,15 @@ def _cmd_refresh_form(args: argparse.Namespace) -> int:
         print("  [+] audience segments (sheet)…")
     except Exception:
         pass
+    # Refresh the affinity historicals corpus so newly-launched titles get picked up.
+    try:
+        from .history import build_corpus
+        ids = [c for c in (fw.resolve_campaign_id(n) for n in DEFAULT_HISTORY_CAMPAIGNS) if c]
+        if ids:
+            build_corpus(fw, ids, REPO_ROOT / "data" / "history" / "corpus.jsonl", max_ios_per_campaign=25)
+            print("  [+] historicals corpus…")
+    except Exception as exc:  # noqa: BLE001
+        print(f"      ⚠️  skipped historicals: {exc}", file=sys.stderr)
     print("Rebuilding option lists + form…")
     for script in ("build_targeting_options.py", "build_plan_form.py"):
         subprocess.run([sys.executable, str(REPO_ROOT / "scripts" / script)], check=True)
@@ -579,8 +588,13 @@ def _cmd_suggest(args: argparse.Namespace) -> int:
             print(f"{f}: ✅ {', '.join(fp.matched)}"
                   + (f"  | ❌ dropped: {', '.join(fp.missed)}" if fp.missed else ""))
         fields = suggestion_to_fields(sug)
-    if args.history:
-        hist = suggest_history(args.title, fields.get("genres", []), load_past_plans(args.history))
+    # Historicals: explicit --history path/dir, else the default harvested corpus.
+    from .history import load_corpus
+    from .config import REPO_ROOT
+    hist_src = args.history or (REPO_ROOT / "data" / "history" / "corpus.jsonl")
+    corpus = load_corpus(hist_src)
+    if corpus:
+        hist = suggest_history(args.title, fields.get("genres", []), corpus, region=args.region)
         print("\n[history] " + (hist.notes[0] if hist.notes else ""))
         for f, fp in hist.fields.items():
             if fp.matched:
@@ -598,6 +612,36 @@ def _cmd_suggest(args: argparse.Namespace) -> int:
     out = Path(args.out) if args.out else Path(f"{args.title}.plan.json".replace("/", "-"))
     out.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nWrote draft plan → {out}  (review, then: promo-ops preview {out})")
+    return 0
+
+
+# Seed campaigns to learn historicals from (per Ad Ops) — broad genre buckets that reflect
+# what actually ran. Re-run periodically so newly-launched titles get picked up.
+DEFAULT_HISTORY_CAMPAIGNS = ["CBS Network - USA", "Paramount + - USA", "Pluto TV - USA"]
+
+
+def _cmd_sync_history(args: argparse.Namespace) -> int:
+    """Harvest past FreeWheel IOs from the given campaigns into a historicals corpus the
+    affinity suggester learns from (title + genres + showlist + Pluto channels, per region).
+    Re-run on a cadence to stay current with recently-launched titles."""
+    from .integrations.freewheel import FreeWheelClient
+    from .history import build_corpus
+    from .config import REPO_ROOT
+    fw = FreeWheelClient()
+    names = [n.strip() for n in (args.campaigns.split(";") if args.campaigns else DEFAULT_HISTORY_CAMPAIGNS) if n.strip()]
+    print(f"Resolving {len(names)} campaign(s)…")
+    ids = []
+    for n in names:
+        cid = fw.resolve_campaign_id(n)
+        print(f"  {n} -> {cid or 'NOT FOUND'}")
+        if cid:
+            ids.append(cid)
+    if not ids:
+        print("No campaigns resolved — nothing to harvest.", file=sys.stderr)
+        return 1
+    out = Path(args.out) if args.out else REPO_ROOT / "data" / "history" / "corpus.jsonl"
+    print(f"Harvesting up to {args.max_ios} IOs per campaign (reads each placement's targeting)…")
+    print("Wrote " + build_corpus(fw, ids, out, max_ios_per_campaign=args.max_ios))
     return 0
 
 
@@ -731,6 +775,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_sug.add_argument("--history-only", action="store_true", help="Skip the AI engine; use past plans only")
     p_sug.add_argument("--out", help="Where to write the draft plan.json")
     p_sug.set_defaults(func=_cmd_suggest)
+
+    p_hist = sub.add_parser("sync-history",
+                            help="Harvest past IOs into the affinity historicals corpus (per region)")
+    p_hist.add_argument("--campaigns", help="';'-separated campaign names (default: CBS Network / P+ / Pluto TV - USA)")
+    p_hist.add_argument("--max-ios", type=int, default=40, help="Max IOs per campaign to harvest")
+    p_hist.add_argument("--out", help="Corpus output path (default data/history/corpus.jsonl)")
+    p_hist.set_defaults(func=_cmd_sync_history)
 
     p_refresh = sub.add_parser("refresh-form",
                                help="Weekly: sync every FreeWheel snapshot + rebuild the plan form")

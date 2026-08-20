@@ -201,9 +201,15 @@ def _similarity(title: str, genres: list[str], plan: dict) -> float:
 
 
 def suggest_history(title: str, genres: list[str], past_plans: list[dict],
-                    k: int = 3) -> AffinitySuggestion:
+                    k: int = 3, region: Optional[str] = None) -> AffinitySuggestion:
     """Rank past plans by similarity to (title, genres); surface the affinities that recur in
-    the most similar ones, weighted by similarity. Pure analogy — no external calls."""
+    the most similar ones, weighted by similarity. Pure analogy — no external calls.
+
+    When `region` is given, only same-region history is used (titles/channels differ per
+    region) — falling back to all regions if that region has no history yet."""
+    if region:
+        same = [p for p in past_plans if (p.get("region") or "").upper() == region.upper()]
+        past_plans = same or past_plans
     scored = sorted(((p, _similarity(title, genres, p)) for p in past_plans),
                     key=lambda x: x[1], reverse=True)
     top = [(p, s) for p, s in scored if s > 0][:k]
