@@ -1,5 +1,6 @@
-"""The local helper server: serves the form and a POST /suggest that runs the AI engine
-server-side (key never in the browser). Uses a stubbed model so it runs without a real key."""
+"""The local helper server: serves the form and a POST /suggest that runs combine_targeting
+server-side (key never in the browser), layering brief + AI + historicals. Uses a stubbed
+model so it runs without a real key."""
 
 from __future__ import annotations
 
@@ -50,11 +51,21 @@ def test_suggest_grounds_and_returns_fields(server):
     assert code == 200
     f = data["fields"]
     assert f["genres"]["matched"] and f["pluto_channels"]["matched"]
-    assert "Zzzq Invented Channel" not in f["pluto_channels"]["matched"]     # invented dropped/reviewed
+    # ungrounded (invented) values are silently dropped — never surfaced as a suggestion
+    assert "Zzzq Invented Channel" not in f["pluto_channels"]["matched"]
+    assert not any("Zzzq Invented Series" in m for m in f["showlist"]["matched"])
     assert any("NCIS" in m for m in f["showlist"]["matched"])
-    assert "Zzzq Invented Series" in f["showlist"]["missed"]
+    # combine_targeting contract: provenance + degrade-mode reported
+    assert "provenance" in data and data["mode"] in ("historicals", "ai+historicals")
+    assert isinstance(data.get("notes"), list) and data["notes"]
 
 
-def test_missing_inputs_400(server):
+def test_missing_title_400(server):
     code, data = _post(server, "/suggest", {"title": "", "description": ""})
     assert code == 400 and "error" in data
+
+
+def test_title_only_ok_without_description(server):
+    # No description and no brief: still valid — historicals(+AI stub) can work from title alone
+    code, data = _post(server, "/suggest", {"title": "A Crime Drama", "region": "USA"})
+    assert code == 200 and "fields" in data

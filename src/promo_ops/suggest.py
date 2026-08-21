@@ -200,13 +200,50 @@ def _similarity(title: str, genres: list[str], plan: dict) -> float:
     return 0.8 * gj + 0.2 * tj
 
 
+# Generic title words that carry no franchise signal — excluded when inferring genres from a
+# title, so "Jackass: Best And Last" keys on "jackass", not "best"/"and"/"last".
+_TITLE_STOP = {"the", "and", "movie", "show", "series", "season", "live", "tour", "part",
+               "story", "best", "last", "new", "special", "event", "film", "presents",
+               "returns", "forever", "vol", "edition"}
+
+
+def _title_key_toks(s: str) -> set[str]:
+    return _toks(s) - _TITLE_STOP
+
+
+def _genres_from_title(title: str, past_plans: list[dict]) -> list[str]:
+    """Infer a title's genres from its OWN history — past plans whose title shares a
+    meaningful (non-generic) word with it, weighted by key-token overlap. Lets
+    historicals-only mode (no brief/AI to supply genres) bootstrap a signal for titles that
+    have run before anywhere, e.g. a franchise launching in a new region. Returns [] when the
+    title has no franchise word in common with any past plan (genuinely new — the AI layer's
+    job)."""
+    qt = _title_key_toks(title)
+    if not qt:
+        return []
+    weight: dict[str, float] = {}
+    for p in past_plans:
+        pt = _title_key_toks(p.get("promoted_title", ""))
+        if not (qt & pt):
+            continue
+        tj = len(qt & pt) / len(qt | pt)
+        for g in p.get("genres", []):
+            weight[g] = weight.get(g, 0.0) + tj
+    return [g for g, _ in sorted(weight.items(), key=lambda x: x[1], reverse=True)][:6]
+
+
 def suggest_history(title: str, genres: list[str], past_plans: list[dict],
                     k: int = 3, region: Optional[str] = None) -> AffinitySuggestion:
     """Rank past plans by similarity to (title, genres); surface the affinities that recur in
     the most similar ones, weighted by similarity. Pure analogy — no external calls.
 
     When `region` is given, only same-region history is used (titles/channels differ per
-    region) — falling back to all regions if that region has no history yet."""
+    region) — falling back to all regions if that region has no history yet.
+
+    When `genres` is empty (historicals-only mode with no brief/AI), genres are bootstrapped
+    from the title's own cross-region history first, so a returning title still matches."""
+    if not genres:
+        genres = _genres_from_title(title, past_plans)
     if region:
         same = [p for p in past_plans if (p.get("region") or "").upper() == region.upper()]
         past_plans = same or past_plans
@@ -223,10 +260,11 @@ def suggest_history(title: str, genres: list[str], past_plans: list[dict],
         ranked = [v for v, _ in sorted(weight.items(), key=lambda x: x[1], reverse=True)]
         return FieldPicks(getter.__name__.strip("_"), matched=ranked)
 
+    def genres(p):            return p.get("genres", [])
     def showlist(p):          return p.get("showlist", [])
     def pluto_channels(p):    return (p.get("pluto") or {}).get("channels", [])
     def pluto_categories(p):  return (p.get("pluto") or {}).get("categories", [])
-    for f in (showlist, pluto_channels, pluto_categories):
+    for f in (genres, showlist, pluto_channels, pluto_categories):
         picks = _weighted(f); picks.field = f.__name__
         sug.fields[f.__name__] = picks
     if top:
@@ -291,7 +329,7 @@ def combine_targeting(title, region, brief_text=None, description=None, corpus=N
 
     if corpus:
         genres_so_far = list(sources.get("genres", {}))
-        h = suggest_history(title, genres_so_far, corpus)
+        h = suggest_history(title, genres_so_far, corpus, region=region)
         for f, fp in h.fields.items():
             add(f, fp.matched, "history")
 
