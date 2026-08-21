@@ -615,6 +615,27 @@ class FreeWheelClient:
         """
         return self._invoke("sh_1_1_delete-an-insertion-order", insertion_order_id=int(io_id))
 
+    def _validate_append_io(self, io_id: str, campaign_id: str, campaign_name: str = "") -> None:
+        """Guard the "add to existing IO" path: the id must be a REAL Insertion Order, not the
+        campaign id. Fails cleanly (before any Brand/placement is created) so a mistaken id
+        can't silently create nothing. The classic slip is pasting the CAMPAIGN id into
+        'Add to existing IO', which 422s on every placement ("Insertion Order not found")."""
+        if io_id == campaign_id:
+            raise RuntimeError(
+                f"'Add to existing IO' is set to {io_id}, which is the CAMPAIGN id"
+                f"{f' for {campaign_name!r}' if campaign_name else ''} — not an Insertion Order. "
+                "Leave 'Add to existing IO' BLANK to create a NEW IO, or paste an existing IO's "
+                "numeric FreeWheel id (e.g. for Season 2 -> Season 1's IO).")
+        try:
+            found = self.get_insertion_order(io_id)
+            exists = bool(((found.get("data") or {}).get("insertion_order") or {}).get("id"))
+        except Exception:
+            exists = False
+        if not exists:
+            raise RuntimeError(
+                f"'Add to existing IO' = {io_id} is not a FreeWheel Insertion Order (not found). "
+                "Leave it BLANK to create a NEW IO, or paste an existing IO's numeric FreeWheel id.")
+
     def create_order(self, order: Order, dry_run: bool = True) -> dict[str, Any]:
         """Create the Insertion Order + per-tier Placements under the parent campaign.
 
@@ -624,19 +645,32 @@ class FreeWheelClient:
         Validated on the test network (520310): create-IO and create-placement accept
         JSON object bodies via the gateway; IO is created NOT_BOOKED (draft).
         """
-        # On a live push, find-or-create the IO Brand (if the CM picked/typed one that
-        # isn't already resolved) BEFORE building the plan, so exclusivity carries it.
+        # Route: add placements INTO an existing IO (no new IO) when set — a Scene Lift target
+        # IO, or an explicit "add to existing IO" id (e.g. Season 2 -> Season 1 IO).
+        append_io = str(getattr(order, "scene_lift_io_id", None)
+                        or getattr(order, "existing_io_id", None) or "").strip() or None
+
+        # On a live push, resolve the parent campaign and validate any "add to existing IO"
+        # BEFORE we create the Brand or any placements — so a bad IO id (the classic slip is
+        # pasting the CAMPAIGN id into "Add to existing IO") fails cleanly with nothing created,
+        # instead of creating a Brand and then 422-ing on every placement.
+        campaign_id = None
+        if not dry_run:
+            campaign_id = order.campaign.get("resolved_id") or self.resolve_campaign_id(
+                order.campaign.get("name", ""))
+            if not campaign_id:
+                raise RuntimeError(
+                    f"Parent campaign {order.campaign.get('name')!r} not found. "
+                    f"Confirm the exact Advertiser + Campaign names.")
+            if append_io:
+                self._validate_append_io(append_io, str(campaign_id), order.campaign.get("name", ""))
+
+        # find-or-create the IO Brand (if the CM picked/typed one that isn't already resolved)
+        # BEFORE building the plan, so exclusivity carries it.
         brand_note = None if dry_run else self._ensure_io_brand(order)
         plan = self.to_freewheel_plan(order)
         if dry_run:
             return {"dry_run": True, "planned_calls": plan}
-
-        campaign_id = order.campaign.get("resolved_id") or self.resolve_campaign_id(
-            order.campaign.get("name", ""))
-        if not campaign_id:
-            raise RuntimeError(
-                f"Parent campaign {order.campaign.get('name')!r} not found. "
-                f"Confirm the exact Advertiser + Campaign names.")
 
         # Never create an empty IO: if the plan built 0 placements, stop BEFORE touching
         # FreeWheel and say why. Most common causes: the campaign's brand isn't configured
@@ -648,9 +682,6 @@ class FreeWheelClient:
                 "created. Check that this campaign's brand is set up in the tool, and (for a "
                 "Kids campaign) that a Kids audience is selected.")
 
-        # Add placements INTO an existing IO (no new IO) when routed there: a Scene Lift
-        # target IO, or an explicit "add to existing IO" id (e.g. Season 2 -> Season 1 IO).
-        append_io = getattr(order, "scene_lift_io_id", None) or getattr(order, "existing_io_id", None)
         if append_io:
             io_id = append_io
             io = {"append_to_existing_io": io_id}
