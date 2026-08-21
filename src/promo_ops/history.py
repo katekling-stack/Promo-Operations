@@ -114,27 +114,44 @@ def harvest_io(client, io_id: str, io_name: str, maps: tuple[dict, dict, dict]) 
 
 
 def build_corpus(client, campaign_ids: list[str], out_path: str | Path,
-                 max_ios_per_campaign: int = 40) -> str:
+                 max_ios_per_campaign: int = 40, progress=None) -> str:
     """Harvest campaigns' IOs into a JSONL corpus. Skips IOs that yield no targeting
-    (empty shells / VD lines)."""
+    (empty shells / VD lines).
+
+    RESUMABLE: appends to an existing corpus and skips IOs already harvested (by io_id),
+    so a large multi-region sweep can run in several passes — an interruption never loses
+    prior progress, and re-running only fills the gaps. Pass progress=print (or any
+    callable) for per-campaign logging on long runs.
+    """
     maps = (_id_to_show(), _id_to_genre(), _id_to_channel())
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
+    seen = {str(r.get("io_id")) for r in load_corpus(out)} if out.exists() else set()
+    log = progress or (lambda *_: None)
     n = 0
-    with out.open("w", encoding="utf-8") as fh:
-        for cid in campaign_ids:
+    with out.open("a", encoding="utf-8") as fh:
+        for ci, cid in enumerate(campaign_ids, 1):
             try:
                 payload = client._invoke("sh_1_1_list-insertion-orders-of-a-campaign",
                                          campaign_id=int(cid), per_page=max_ios_per_campaign, page=1)
                 ios = client._rows(payload, "insertion_orders")
             except Exception:
+                log(f"[{ci}/{len(campaign_ids)}] campaign {cid}: list failed — skipped")
                 continue
+            added = 0
             for io in ios[:max_ios_per_campaign]:
-                row = harvest_io(client, str(io.get("id")), str(io.get("name", "")), maps)
+                io_id = str(io.get("id"))
+                if io_id in seen:
+                    continue
+                seen.add(io_id)
+                row = harvest_io(client, io_id, str(io.get("name", "")), maps)
                 if row["showlist"] or row["genres"] or row["pluto"]["channels"]:
                     fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    fh.flush()
                     n += 1
-    return f"{out} ({n} plans)"
+                    added += 1
+            log(f"[{ci}/{len(campaign_ids)}] campaign {cid}: +{added} rows ({n} new this run)")
+    return f"{out} ({n} new plans)"
 
 
 def load_corpus(path: str | Path) -> list[dict]:

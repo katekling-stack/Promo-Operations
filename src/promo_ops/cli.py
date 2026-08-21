@@ -647,7 +647,8 @@ def _cmd_sync_history(args: argparse.Namespace) -> int:
         return 1
     out = Path(args.out) if args.out else REPO_ROOT / "data" / "history" / "corpus.jsonl"
     print(f"Harvesting up to {args.max_ios} IOs per campaign (reads each placement's targeting)…")
-    print("Wrote " + build_corpus(fw, ids, out, max_ios_per_campaign=args.max_ios))
+    print("Wrote " + build_corpus(fw, ids, out, max_ios_per_campaign=args.max_ios,
+                                  progress=lambda m: print(m, flush=True)))
     return 0
 
 
