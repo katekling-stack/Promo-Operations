@@ -66,7 +66,8 @@ BRIEF_FIELDS = ("genres", "showlist", "pluto_categories", "pluto_channels")
 LABEL_ROUTES: dict[str, str] = {}
 for _field, _aliases in {
     "genres": ["genres", "genre"],
-    "showlist": ["shows/titles", "shows", "titles", "series", "comp show list"],
+    "showlist": ["shows/titles", "shows", "titles", "series", "comp show list",
+                 "comp titles", "comp title", "comp shows", "comp show"],
     "pluto_categories": ["pluto tv categories", "pluto categories"],
     "pluto_channels": ["pluto tv channels", "pluto channels"],
     "audience_hints": ["target audience", "audience segments"],
