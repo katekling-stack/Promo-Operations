@@ -90,7 +90,10 @@ def test_idempotent_reuse_of_existing_io():
     from promo_ops.order_builder import OrderBuilder
     from promo_ops.plan_loader import support_plan_from_dict
     order = OrderBuilder().build(support_plan_from_dict(row_to_plan_dict(_row())))
-    reuse_fw = FakeFW(existing={(FakeFW.CAMPAIGN_ID, order.name): "77777777"})
+    # The row's campaign is pinned in brands.yaml, so the order carries that resolved id —
+    # process_batch uses it (not fw.resolve_campaign_id) for the reuse lookup.
+    cid = order.campaign.get("resolved_id") or FakeFW.CAMPAIGN_ID
+    reuse_fw = FakeFW(existing={(cid, order.name): "77777777"})
     r = process_batch([_row()], fw=reuse_fw, create=True)[0]
     assert r.status == "reused" and r.io_id == "77777777"
     assert reuse_fw.created == []                          # nothing new created

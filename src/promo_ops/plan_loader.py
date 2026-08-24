@@ -172,9 +172,17 @@ def _apply_defaults(plan: SupportPlan) -> None:
     Products toggles include/exclude specific products. Leaves everything else to the
     builder's own defaults (IO name, recommended/exclude show).
     """
-    from .config import brand_for_campaign, brands_config
+    from .config import brand_for_campaign, brands_config, pinned_campaign_id
     if not plan.brand:
         plan.brand = brand_for_campaign(plan.campaign)
+    # Pin the parent campaign to the authoritative id in brands.yaml when only a name is given.
+    # Two campaigns can share a name (e.g. an old "Paramount + - USA" at the 500-IO cap and its
+    # replacement); pinning here means the push lands on the intended campaign, not whichever a
+    # name search returns first.
+    if plan.campaign and not plan.campaign.get("resolved_id") and plan.campaign.get("name"):
+        pinned = pinned_campaign_id(plan.campaign.get("name"))
+        if pinned:
+            plan.campaign["resolved_id"] = pinned
     cfg = brands_config().get("brands", {}).get(plan.brand or "", {})
     if not plan.formats and plan.brand:
         plan.formats = list(cfg.get("formats") or [])
