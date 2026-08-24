@@ -1,0 +1,9 @@
+# Repoint a campaign that has hit FreeWheel's 500-Insertion-Order-per-campaign cap to its
+# replacement campaign. This WINS over the campaign's template_campaign_id in brands.yaml,
+# so when a campaign fills you just add one line here instead of editing the big brands file.
+#
+# Format:  <exact campaign name>: '<replacement FreeWheel campaign id>'
+# Remove a line if a campaign is ever reopened / no longer full.
+campaign_ids:
+  # "Pluto TV - USA" 54413718 hit the 500-IO cap -> new campaign 91310778 (2026-08).
+  Pluto TV - USA: '91310778'

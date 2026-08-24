@@ -132,14 +132,30 @@ def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
     return None
 
 
+def campaign_repoints() -> dict[str, str]:
+    """Campaign-name (lowercased) -> replacement FreeWheel campaign id, from
+    config/campaign_repoints.yaml. Used to repoint a campaign that hit FreeWheel's 500-IO
+    cap to its replacement without editing the big brands.yaml. Missing file -> {}."""
+    try:
+        raw = load_yaml("campaign_repoints.yaml")
+    except FileNotFoundError:
+        return {}
+    return {str(k).strip().lower(): str(v).strip()
+            for k, v in (raw.get("campaign_ids", {}) or {}).items() if str(v).strip()}
+
+
 def pinned_campaign_id(name: str) -> str | None:
-    """The authoritative FreeWheel campaign id for a campaign name, from brands.yaml
-    (template_campaign_id, synced from FreeWheel). Preferred over a live name lookup because
-    two campaigns can share a name — e.g. an old "Paramount + - USA" that has hit the 500-IO
-    cap and its replacement — and a name search would pick the wrong (often full) one."""
+    """The authoritative FreeWheel campaign id for a campaign name. A repoint (a capped
+    campaign's replacement, config/campaign_repoints.yaml) wins; otherwise brands.yaml's
+    template_campaign_id (synced from FreeWheel). Preferred over a live name lookup because
+    two campaigns can share a name — e.g. an old "Pluto TV - USA" at the 500-IO cap and its
+    replacement — and a name search would pick the wrong (often full) one."""
     n = (name or "").strip().lower()
     if not n:
         return None
+    repoint = campaign_repoints().get(n)
+    if repoint:
+        return repoint
     for cfg in (brands_config().get("brands", {}) or {}).values():
         if str(cfg.get("campaign_name") or "").strip().lower() == n:
             cid = str(cfg.get("template_campaign_id") or "").strip()
