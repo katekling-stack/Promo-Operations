@@ -69,12 +69,41 @@ def _norm_daypart_time(t: str, is_end: bool = False) -> str:
     return f"{hh:02d}:00{ap}"
 
 
+def _time_ordinal(token: str) -> int:
+    """Minutes from midnight for a NORMALIZED FreeWheel daypart token — ordering only."""
+    t = token.strip().upper()
+    if t == "12 MIDNIGHT":
+        return 0
+    if t == "12 NOON":
+        return 720
+    m = re.fullmatch(r"(\d{2}):00(AM|PM)", t)
+    hh, ap = int(m.group(1)), m.group(2)
+    return hh * 60 if ap == "AM" else (hh + 12) * 60
+
+
+def _split_overnight(sd: str, ed: str, st: str, et: str) -> list[dict]:
+    """FreeWheel requires start < end WITHIN a daypart window — a window can't wrap past
+    midnight. An overnight window (start >= end, e.g. 9PM->5AM) is split into two valid
+    windows that together cover the same hours: start->11:00PM (runs through end of day) and
+    12 MIDNIGHT->end. A normal daytime window passes through unchanged. This is what a CM
+    means by "9PM-5AM", and it stops a live push from half-creating an IO that then 422s."""
+    if _time_ordinal(st) < _time_ordinal(et):
+        return [{"start_day": sd, "end_day": ed, "start_time": st, "end_time": et}]
+    windows: list[dict] = []
+    if _time_ordinal(st) < _time_ordinal("11:00PM"):
+        windows.append({"start_day": sd, "end_day": ed, "start_time": st, "end_time": "11:00PM"})
+    windows.append({"start_day": sd, "end_day": ed, "start_time": "12 MIDNIGHT", "end_time": et})
+    return windows
+
+
 def _dayparts(raw: Any) -> list[dict]:
     """Normalize daypart windows. Each window needs start_day/end_day/start_time/end_time.
     Days are upper-cased and validated against the weekday enum; malformed windows are
     dropped (never a partial). Times are validated/normalized to FreeWheel's whole-hour
     tokens — an off-the-hour time (e.g. '08:30PM') raises a clear error at build time,
-    BEFORE a live push creates the IO. Empty -> [] (= 24/7, no daypart_targeting emitted)."""
+    BEFORE a live push creates the IO. An overnight window (start >= end, e.g. 9PM->5AM) is
+    auto-split into the two windows FreeWheel needs. Empty -> [] (= 24/7, no daypart_targeting
+    emitted)."""
     out: list[dict] = []
     for w in (raw or []):
         if not isinstance(w, dict):
@@ -84,9 +113,9 @@ def _dayparts(raw: Any) -> list[dict]:
         st = str(w.get("start_time") or "").strip()
         et = str(w.get("end_time") or "").strip()
         if sd in _DAYPART_DAYS and ed in _DAYPART_DAYS and st and et:
-            out.append({"start_day": sd, "end_day": ed,
-                        "start_time": _norm_daypart_time(st, is_end=False),
-                        "end_time": _norm_daypart_time(et, is_end=True)})
+            out.extend(_split_overnight(sd, ed,
+                                        _norm_daypart_time(st, is_end=False),
+                                        _norm_daypart_time(et, is_end=True)))
     return out
 
 
