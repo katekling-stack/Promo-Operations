@@ -132,6 +132,21 @@ def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
     return None
 
 
+def pinned_campaign_id(name: str) -> str | None:
+    """The authoritative FreeWheel campaign id for a campaign name, from brands.yaml
+    (template_campaign_id, synced from FreeWheel). Preferred over a live name lookup because
+    two campaigns can share a name — e.g. an old "Paramount + - USA" that has hit the 500-IO
+    cap and its replacement — and a name search would pick the wrong (often full) one."""
+    n = (name or "").strip().lower()
+    if not n:
+        return None
+    for cfg in (brands_config().get("brands", {}) or {}).values():
+        if str(cfg.get("campaign_name") or "").strip().lower() == n:
+            cid = str(cfg.get("template_campaign_id") or "").strip()
+            return cid or None
+    return None
+
+
 def env(key: str, default: str | None = None) -> str | None:
     """Read a credential/setting from the environment."""
     return os.environ.get(key, default)
