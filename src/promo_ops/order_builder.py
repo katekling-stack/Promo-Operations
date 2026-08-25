@@ -662,7 +662,24 @@ class OrderBuilder:
                     frequency_cap=tmpl.get("frequency_cap"),
                 )]
             fc = tmpl.get("frequency_cap") or self._freq_cap(None, fmt)
-            # P+ Plan lines: one Genre argument (genre VGs) + one Recommended Show.
+            # P+ adult Plan lines (Premium Pre-Roll / Essential Bumper): Tier 1 targeting
+            # (audience segments from the showlist + Recommended Show) — replacing the former
+            # Genre + Recommended Show. Mirrors the remnant Tier 1 line, so Plan and remnant
+            # target identically. Non-P+ guaranteed lines (shouldn't reach here) or a region
+            # without Tier 1 fall back to the old Genre argument so the line is never unfilled.
+            t1 = self.engine.build(plan, fmt, tier_override=[1])
+            tier1 = t1.tiers[0] if t1.tiers else None
+            if self._is_pplus(plan) and tier1 is not None:
+                return [base(
+                    self._guaranteed_name(plan, tmpl),
+                    TieredTargeting(format=fmt, tiers=[tier1]),
+                    guaranteed=True, tier=1, precedence_level=precedence,
+                    arguments={"recommended_show": recommended},
+                    targeting_ids=self._targeting_ids(plan, tier1),
+                    recommended_show_value=plan.recommended_show_id or plan.content_id,
+                    priority_level=self._guaranteed_priority(), frequency_cap=fc,
+                )]
+            # Fallback (non-P+ or Tier 1 not eligible): one Genre argument + Recommended Show.
             g_ids: dict[str, list] = {}
             g_vgs = self.genre_resolver.ids_for(list(plan.genres))
             if g_vgs:

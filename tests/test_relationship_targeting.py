@@ -97,15 +97,21 @@ def test_pause_ads_have_no_pluto_and_platform_sgs():
     assert ["929447", "929449"] in sgs                            # CTV + Desktop platforms
 
 
-def test_guaranteed_has_only_genre_and_recommended_show():
-    # Plan placements = exactly 1 Genre argument + 1 Recommended Show — no showlist.
+def test_guaranteed_plan_lines_carry_tier1_audience_and_recommended_show():
+    # P+ adult Plan placements now carry Tier 1 targeting: an Affinity Shows set with the DDA
+    # audience segments (from the showlist) + a Recommended Show — replacing the old Genre.
     order = _order(content_id="956609957")
-    prem = next(p for p in order.placements if p.format == "premium_preroll")
-    s = _sets(prem)
-    assert set(s) == {"Genre", "Recommended Show"}
-    inc = s["Genre"]["content_targeting"]["network_items"]["include"]
-    assert any("video_group" in sub for sub in inc["set"])         # genre VGs
-    assert not any("series" in sub for sub in inc["set"])          # NO showlist series
+    PPLUS = relationship_targeting_config()["domestic_usa"]["pplus_site_group"]
+    for fmt in ("premium_preroll", "essential_bumper"):
+        p = next(p for p in order.placements if p.format == fmt)
+        s = _sets(p)
+        assert set(s) == {"Affinity Shows", "Recommended Show"}, fmt
+        assert "Genre" not in s
+        aff = s["Affinity Shows"]
+        assert aff["audience_targeting"]["include"]["audience_item"]           # DDA segments
+        inc = aff["content_targeting"]["network_items"]["include"]
+        assert inc["site_group"] == PPLUS                                      # P+ platform SG
+        assert "series" not in inc                                             # no showlist series
 
 
 def test_recommended_show_prebuilt_with_placeholder_when_blank():

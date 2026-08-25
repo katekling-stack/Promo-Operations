@@ -1318,13 +1318,24 @@ class FreeWheelClient:
             return []   # bare sponsorship line (ad unit + geo only)
 
         if p.guaranteed:
-            # P+ sponsored (Plan placements): exactly one Genre argument (genre Video
-            # Groups on Paramount+) + one Recommended Show argument. No showlist.
-            # Format-level excludes (Bumper -> Stream Type: Live SG; Pre-Roll -> Clips VG)
-            # ride on base_exclude via the placement, so they hit EVERY set below.
+            # P+ adult Plan placements (Premium Pre-Roll / Essential Bumper). Format-level
+            # excludes (Bumper -> Stream Type: Live SG; Pre-Roll -> Clips VG) ride on
+            # base_exclude via the placement, so they hit EVERY set below.
             if genre_vgs:
+                # Fallback (non-P+ / Tier 1 not eligible): single Genre argument.
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
                     [{"site_group": pplus}, {"video_group": genre_vgs}], base_exclude())})
+            else:
+                # Tier 1 targeting: an "Affinity Shows" set carrying the DDA audience segments
+                # (from the showlist), constrained to the P+ platform SG — mirrors the remnant
+                # Tier 1 set. No resolved segments -> still emit the platform-constrained set.
+                s = {"set_name": "Affinity Shows"}
+                if dda:
+                    s["audience_targeting"] = {"include": {"audience_item": dda}}
+                c = FreeWheelClient._content([{"site_group": pplus}], base_exclude())
+                if c:
+                    s.update(c)
+                sets.append(s)
             if add_rec_show:   # guaranteed lines are P+ (non-Pluto) -> always add
                 sets.append(rec_show_set(pplus))
             return sets

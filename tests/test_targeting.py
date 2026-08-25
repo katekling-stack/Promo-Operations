@@ -232,4 +232,6 @@ def test_guaranteed_placements_built_from_args():
     assert prem.guaranteed
     assert prem.nests_in == "existing_guaranteed_order"
     assert prem.arguments["recommended_show"] == "Frisco King"
-    assert prem.arguments["genre"]  # genre-specific arg present
+    # P+ adult Plan lines now carry Tier 1 targeting (audience segments) instead of a genre arg.
+    assert "genre" not in prem.arguments
+    assert prem.tier == 1 and prem.targeting_ids.get("dda")
