@@ -102,7 +102,20 @@ def _print_preview(order: Order) -> None:
         if p.exclusions:
             print(f"    Exclude (label): {', '.join(p.exclusions)}")
         if p.guaranteed:
-            print(f"    Arguments: genre={p.arguments.get('genre')} | recommended_show={p.arguments.get('recommended_show')!r}")
+            rec = p.arguments.get("recommended_show")
+            if p.arguments.get("genre"):          # fallback (non-Tier-1) line: genre argument
+                print(f"    Arguments: genre={p.arguments.get('genre')} | recommended_show={rec!r}")
+            else:                                  # P+ adult Plan line: Tier 1 audience segments
+                seg_ids, need = 0, 0
+                for t in p.targeting.tiers:
+                    for d in t.dimensions:
+                        if d.key == "audience_segments":
+                            seg_ids = len({r["segment_id"] for r in d.resolved if r.get("segment_id")})
+                            if d.notes:
+                                need = 1
+                print(f"    Plan line → Tier 1: {seg_ids} DDA segment(s) resolved"
+                      + (" (some shows need a segment — see note below)" if need else "")
+                      + f"  +  Recommended Show={rec!r}")
         for tier in p.targeting.tiers:
             print(f"    Tier {tier.id} — {tier.name}")
             for d in tier.dimensions:
