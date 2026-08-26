@@ -167,6 +167,14 @@ def test_genres_resolve_to_standard_attribute_ids():
     assert len(genre.resolved) == len(plan.genres)
 
 
+def test_franchise_video_group_resolves_as_genre():
+    # A Franchise VG ("VG: Franchise: Star Trek"), offered in the Genre picker under its BARE
+    # name, must resolve to its VG id. Regression: franchises silently dropped because the
+    # resolver only handled Genre / Sub / Daypart / Brand prefixes.
+    from promo_ops.video_groups import GenreVideoGroupResolver
+    assert GenreVideoGroupResolver().load().ids_for(["Star Trek"]) == ["414452175"]
+
+
 def test_showlist_resolves_to_video_series_ids():
     # Select-all against the Video Series (asset-group) namespace: a show resolves to
     # every matching series (large IDs), mirroring the team's UI workflow.

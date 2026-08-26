@@ -37,6 +37,11 @@ DAYPART_LABEL = "Daypart: "
 # include). The bare tail keeps its own colons (e.g. "Brand: VCBS: Cable Adults: BET").
 BRAND_PREFIX = "VG: Biz Div-Brand: "
 BRAND_LABEL = "Brand: "
+# Franchise Video Groups ("VG: Franchise: <name>", e.g. "VG: Franchise: Star Trek") are
+# offered in the same Genre picker under their BARE name (build_targeting_options.genres()),
+# so the resolver keys them under that same bare name — a CM picking a franchise under Genres
+# targets its franchise Video Group. Resolved like any other content Video Group include.
+FRANCHISE_PREFIX = "VG: Franchise: "
 
 
 @dataclass
@@ -79,6 +84,8 @@ class GenreVideoGroupResolver:
                     key = normalize_title(DAYPART_LABEL + name[len(DAYPART_PREFIX):])
                 elif name.startswith(BRAND_PREFIX):
                     key = normalize_title(BRAND_LABEL + name[len(BRAND_PREFIX):])
+                elif name.startswith(FRANCHISE_PREFIX):
+                    key = normalize_title(name[len(FRANCHISE_PREFIX):])
                 elif name.startswith(PREFIX):
                     key = normalize_title(name[len(PREFIX):])
                 else:
