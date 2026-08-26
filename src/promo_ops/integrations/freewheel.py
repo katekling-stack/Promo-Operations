@@ -1192,9 +1192,9 @@ class FreeWheelClient:
         is_pluto = bool(getattr(p, "is_pluto_brand", False))
         is_pplus = bool(getattr(p, "is_pplus_brand", False))
         rec_key = "recommended_shows" if is_pluto else cfg.get("recommended_show_key", "recommended_show")
-        # Recommended Show is ONLY for P+ (global) and Pluto (domestic). Every other brand
-        # (MTVE, CBS, BET, …) gets NONE. Movies never get it either (Show-ID-only feature).
-        add_rec_show = (is_pplus or (is_pluto and bool(getattr(p, "region_is_domestic", False)))) \
+        # Recommended Show is for P+ and Pluto TV (ALL regions). Every other brand (MTVE, CBS,
+        # BET, …) gets NONE. Movies never get it either (Show-ID-only feature).
+        add_rec_show = (is_pplus or is_pluto) \
             and bool(getattr(p, "recommended_show_enabled", True))
 
         t = p.targeting_ids or {}

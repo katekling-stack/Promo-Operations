@@ -1,7 +1,7 @@
 """Recommended Show argument:
   * P+ (and other non-Pluto adult): key "recommended_show" (singular), applied GLOBALLY.
-  * Pluto TV: key "recommended_shows" (plural), applied DOMESTICALLY only (not rolled out
-    internationally). Verified against live Pluto (recommended_shows=) and P+ placements."""
+  * Pluto TV: key "recommended_shows" (plural), applied in ALL regions.
+  Verified against live Pluto (recommended_shows=) and P+ placements."""
 
 from __future__ import annotations
 
@@ -34,16 +34,13 @@ def test_pplus_uses_singular_recommended_show_globally():
         assert all(kv.startswith("recommended_show=") for kv in kvs), f"{region}: {kvs}"
 
 
-def test_pluto_uses_plural_recommended_shows_domestic_only():
-    # Domestic Pluto: plural key present.
-    dom = _order(promoted_title="NCIS", region="USA", campaign={"name": "Pluto TV - USA"},
-                 durations=[30], pluto={"channels": ["Comedy"]}, recommended_show_id="abc123")
-    kvs = _rec_show_kv(dom)
-    assert kvs and all(kv.startswith("recommended_shows=") for kv in kvs), kvs
-    # International Pluto: NO Recommended Show set at all (feature not rolled out globally).
-    intl = _order(promoted_title="NCIS", region="LATAM", campaign={"name": "Pluto TV - LATAM"},
-                  durations=[30], pluto={"channels": ["Comedy"]}, recommended_show_id="abc123")
-    assert _rec_show_kv(intl) == []
+def test_pluto_uses_plural_recommended_shows_all_regions():
+    # Pluto uses the plural key, in ALL regions (domestic + international).
+    for region, campaign in [("USA", "Pluto TV - USA"), ("LATAM", "Pluto TV - LATAM")]:
+        order = _order(promoted_title="NCIS", region=region, campaign={"name": campaign},
+                       durations=[30], pluto={"channels": ["Comedy"]}, recommended_show_id="abc123")
+        kvs = _rec_show_kv(order)
+        assert kvs and all(kv.startswith("recommended_shows=") for kv in kvs), f"{region}: {kvs}"
 
 
 def test_movie_gets_no_recommended_show_argument():
