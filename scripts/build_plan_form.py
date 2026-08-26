@@ -399,7 +399,7 @@ datalist{display:none}
         <div class="hint">Select when you need to note a Show or Movie ID for Paramount+ campaigns. Leave as <b>N/A</b> for campaigns that don't need a Show/Movie ID.</div></div>
     </div>
     <div class="row hidden" id="pplusIdRow">
-      <div class="field"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">
+      <div class="field hidden" id="showMovieIdWrap"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">
         <div class="hint">Pick <b>Content type</b> above (Show vs Movie) to set the tag.</div></div>
       <div class="field"><label>Recommended Show ID</label><input type="text" id="rec_show_id"></div>
     </div>
@@ -587,14 +587,15 @@ function onCampaign(){
   $("#prodQuick").classList.toggle("hidden", !prods.length);
   $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
-  // Content Type + Show/Movie ID + Recommended Show ID show for P+ (all) AND Pluto TV
-  // (non-kids) — both use the Recommended Show / Show-Movie ID (it rides on Tier 1). Hidden for
-  // CBS/MTVE/etc. The P+-specific "stamped on every placement" note stays P+ only.
+  // Content Type + Show/Movie ID are P+ only (the ID stamps the [ShowID:] name). Recommended
+  // Show ID also shows for Pluto TV (non-kids) — it drives the Pluto recommended_shows= key on
+  // Tier 1. Hidden for CBS/MTVE/Pluto Kids. The P+-specific note stays P+ only.
   const isPplus = !!(c && c.sig && c.sig.startsWith("paramount_plus"));
   const isPlutoNonKids = !!(c && c.sig && c.sig.startsWith("pluto") && !c.kids);
-  const showIds = isPplus || isPlutoNonKids;
-  $("#ctypeWrap").classList.toggle("hidden", !showIds);
-  $("#pplusIdRow").classList.toggle("hidden", !showIds);
+  const showRecShow = isPplus || isPlutoNonKids;
+  $("#ctypeWrap").classList.toggle("hidden", !isPplus);          // Content type: P+ only
+  $("#showMovieIdWrap").classList.toggle("hidden", !isPplus);    // Show/Movie ID: P+ only
+  $("#pplusIdRow").classList.toggle("hidden", !showRecShow);     // row (holds Rec Show ID)
   $("#pplusIdNudge").classList.toggle("hidden", !isPplus);
   renderMirrorTargets();
   validate();
