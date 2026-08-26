@@ -373,11 +373,14 @@ function onCampaign(){
   $("#prodQuick").classList.toggle("hidden", !prods.length);
   $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
-  // Content Type + Show/Movie ID + Recommended Show ID are P+ features — show them only for
-  // a "Paramount +" campaign (the ID stamps onto P+ placement names / drives Recommended Show).
+  // Content Type + Show/Movie ID + Recommended Show ID show for P+ (all) AND Pluto TV
+  // (non-kids) — both use the Recommended Show / Show-Movie ID (it rides on Tier 1). Hidden for
+  // CBS/MTVE/etc. The P+-specific "stamped on every placement" note stays P+ only.
   const isPplus = !!(c && c.sig && c.sig.startsWith("paramount_plus"));
-  $("#ctypeWrap").classList.toggle("hidden", !isPplus);
-  $("#pplusIdRow").classList.toggle("hidden", !isPplus);
+  const isPlutoNonKids = !!(c && c.sig && c.sig.startsWith("pluto") && !c.kids);
+  const showIds = isPplus || isPlutoNonKids;
+  $("#ctypeWrap").classList.toggle("hidden", !showIds);
+  $("#pplusIdRow").classList.toggle("hidden", !showIds);
   $("#pplusIdNudge").classList.toggle("hidden", !isPplus);
   renderMirrorTargets();
   validate();
