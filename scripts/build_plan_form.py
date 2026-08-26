@@ -394,11 +394,11 @@ datalist{display:none}
       <div class="field"><label>Season or messaging</label>
         <input type="text" id="season" placeholder="e.g. Season 1 / Now Streaming / Launch">
         <div class="hint">The middle of every placement name — use it for the season, launch beat, or campaign messaging.</div></div>
-      <div class="field"><label>Content type</label>
+      <div class="field hidden" id="ctypeWrap"><label>Content type</label>
         <select id="content_type"><option value="show">Show</option><option value="movie">Movie</option><option value="na">N/A</option></select>
         <div class="hint">Select when you need to note a Show or Movie ID for Paramount+ campaigns. Leave as <b>N/A</b> for campaigns that don't need a Show/Movie ID.</div></div>
     </div>
-    <div class="row">
+    <div class="row hidden" id="pplusIdRow">
       <div class="field"><label>Show / Movie ID</label><input type="text" id="content_id" placeholder="the ShowID or MovieID">
         <div class="hint">Pick <b>Content type</b> above (Show vs Movie) to set the tag.</div></div>
       <div class="field"><label>Recommended Show ID</label><input type="text" id="rec_show_id"></div>
@@ -415,8 +415,16 @@ datalist{display:none}
   <div class="card">
     <h2>Flighting</h2>
     <div class="row">
-      <div class="field"><label>Flight start</label><input type="date" id="flight_start"></div>
-      <div class="field"><label>Flight end</label><input type="date" id="flight_end"></div>
+      <div class="field"><label>Flight start</label>
+        <div style="display:flex;gap:6px">
+          <input type="date" id="flight_start" style="flex:1">
+          <input type="time" id="flight_start_time" step="3600" title="optional start time (region's time zone)" style="width:120px"></div>
+        <div class="hint">Time optional — leave blank to start at the region's default hour.</div></div>
+      <div class="field"><label>Flight end</label>
+        <div style="display:flex;gap:6px">
+          <input type="date" id="flight_end" style="flex:1">
+          <input type="time" id="flight_end_time" step="3600" title="optional end time (region's time zone)" style="width:120px"></div>
+        <div class="hint">Time optional — leave blank to end at 11:59 PM.</div></div>
     </div>
     <div class="row">
       <div class="field"><label>Video durations (seconds)</label>
@@ -579,7 +587,12 @@ function onCampaign(){
   $("#prodQuick").classList.toggle("hidden", !prods.length);
   $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
-  $("#pplusIdNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("paramount_plus")));
+  // Content Type + Show/Movie ID + Recommended Show ID are P+ features — show them only for
+  // a "Paramount +" campaign (the ID stamps onto P+ placement names / drives Recommended Show).
+  const isPplus = !!(c && c.sig && c.sig.startsWith("paramount_plus"));
+  $("#ctypeWrap").classList.toggle("hidden", !isPplus);
+  $("#pplusIdRow").classList.toggle("hidden", !isPplus);
+  $("#pplusIdNudge").classList.toggle("hidden", !isPplus);
   renderMirrorTargets();
   validate();
 }
@@ -934,8 +947,11 @@ function buildPlan(){
   if($("#rec_show_id").value) plan.recommended_show_id=$("#rec_show_id").value;
   if(L.durations.length) plan.durations=L.durations.map(Number);
   const dp=collectDayparts(); if(dp.length) plan.dayparts=dp;
-  const fl={}; if($("#flight_start").value)fl.start=$("#flight_start").value;
-  if($("#flight_end").value)fl.end=$("#flight_end").value;
+  // Flight dates, with an OPTIONAL specific time-of-day (region's time zone). A time makes it
+  // "YYYY-MM-DDTHH:MM"; the builder honors that exact time instead of the default start/end-of-day.
+  const fl={};
+  if($("#flight_start").value){ const t=$("#flight_start_time").value; fl.start=$("#flight_start").value+(t?("T"+t):""); }
+  if($("#flight_end").value){ const t=$("#flight_end_time").value; fl.end=$("#flight_end").value+(t?("T"+t):""); }
   if(Object.keys(fl).length) plan.flight=fl;
   if(Object.keys(po).length) plan.product_overrides=po;
   if(c&&c.kids&&state.kids.size) plan.kids_audience=[...state.kids];
@@ -1082,7 +1098,11 @@ function loadPlan(plan){
   setV("content_type",plan.content_type||"show"); setV("content_id",plan.content_id);
   setV("rec_show_id",plan.recommended_show_id); setV("scene_lift",plan.scene_lift);
   setV("video_domination",plan.video_domination); setV("takeover",plan.takeover);
-  setV("flight_start",(plan.flight||{}).start); setV("flight_end",(plan.flight||{}).end);
+  // Flight start/end may carry an optional time ("YYYY-MM-DDTHH:MM") — split it back into the
+  // date + time inputs.
+  const _fs=String((plan.flight||{}).start||"").split("T"), _fe=String((plan.flight||{}).end||"").split("T");
+  setV("flight_start",_fs[0]); setV("flight_start_time",_fs[1]||"");
+  setV("flight_end",_fe[0]); setV("flight_end_time",_fe[1]||"");
   $("#video_domination").dispatchEvent(new Event("change"));
   $("#takeover").dispatchEvent(new Event("change"));
   $("#standard").checked=!!plan.standard;
