@@ -431,6 +431,7 @@ datalist{display:none}
 
   <div class="card">
     <h2>Products</h2><p class="sub">Each toggle is preset to this brand's standard set — every product that gets built is shown as <b>Yes</b>. Switch any to <b>No</b> to leave it out. Only the products this campaign can run appear.</p>
+    <div id="prodQuick" class="hint hidden" style="margin-bottom:8px">Quick select: <span id="prodPauseWrap"><a href="#" id="prodPauseOnly" class="toggle-adv">Pause Ads only</a> · </span><a href="#" id="prodReset" class="toggle-adv">Reset to defaults</a></div>
     <div id="products"></div>
   </div>
 
@@ -575,6 +576,8 @@ function onCampaign(){
   $("#products").innerHTML = prods.length ? prods.map(p=>prodRow(p, defs[p])).join("")
      : '<p class="hint">Pick a campaign to see its products.</p>';
   bindProducts();
+  $("#prodQuick").classList.toggle("hidden", !prods.length);
+  $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
   $("#pplusIdNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("paramount_plus")));
   renderMirrorTargets();
@@ -655,6 +658,17 @@ function bindProducts(){
     }));
   });
 }
+function setProd(fam, val){   // val "yes"/"no" — flip a product row's toggle
+  const seg = document.querySelector('.prod[data-fam="'+fam+'"] .seg');
+  if(seg) seg.querySelectorAll("button").forEach(x=>x.classList.toggle("on", x.dataset.v===val));
+}
+// Quick-select: Pause Ads only (everything else No), or reset every product to its default.
+$("#prodPauseOnly").addEventListener("click",e=>{ e.preventDefault();
+  document.querySelectorAll(".prod").forEach(r=>setProd(r.dataset.fam, r.dataset.fam==="pause_ads"?"yes":"no"));
+});
+$("#prodReset").addEventListener("click",e=>{ e.preventDefault();
+  document.querySelectorAll(".prod").forEach(r=>setProd(r.dataset.fam, r.dataset.default));
+});
 // kids tri-state (multi)
 $("#kidsSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
   const k=b.dataset.k;
