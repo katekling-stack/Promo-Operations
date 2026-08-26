@@ -553,8 +553,8 @@ def _cmd_refresh_form(args: argparse.Namespace) -> int:
             print("  [+] historicals corpus…")
     except Exception as exc:  # noqa: BLE001
         print(f"      ⚠️  skipped historicals: {exc}", file=sys.stderr)
-    print("Rebuilding option lists + form…")
-    for script in ("build_targeting_options.py", "build_plan_form.py"):
+    print("Rebuilding option lists + form + targeting catalog…")
+    for script in ("build_targeting_options.py", "build_plan_form.py", "build_targeting_catalog.py"):
         subprocess.run([sys.executable, str(REPO_ROOT / "scripts" / script)], check=True)
     form = REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html"
     print(f"\n✅ Done ({ok}/{len(steps)} sources refreshed). Upload this to Drive as a NEW "
