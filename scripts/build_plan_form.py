@@ -914,7 +914,12 @@ function validate(){
   // there reaches FreeWheel as insertion_order_id and fails ("fail to convert … to Int").
   const ioRaw = ($("#existing_io_id").value||"").trim();
   const ioBad = ioRaw && !/^\d+$/.test(ioRaw);
-  const ok = core && hasDur && !ioBad;
+  // A flight needs BOTH a start and an end — FreeWheel's schedule is {start_time, end_time},
+  // so a start with no end (the classic slip) pushes a schedule FreeWheel rejects and nothing
+  // books. Require the pair whenever either date is filled.
+  const fs=($("#flight_start").value||"").trim(), fe=($("#flight_end").value||"").trim();
+  const flightHalf = (!!fs)!==(!!fe);
+  const ok = core && hasDur && !ioBad && !flightHalf;
   $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
   // Keep the mirror ("Download mirrored plan(s)") button in sync on EVERY field change,
   // not just on market-chip clicks — enabled once the plan is valid AND a market is ticked.
@@ -924,9 +929,11 @@ function validate(){
     ? "Ready — click Download & post to Slack (or Copy row for Sheet for a batch)."
     : (ioBad
         ? "‘Add to existing IO’ must be a numeric FreeWheel IO ID (or blank for a new IO)."
-        : (core && !hasDur
-          ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
-          : "Fill Region, Campaign, Promoted title and Video durations to continue."));
+        : (flightHalf
+          ? "Flight needs BOTH a start and an end date — add the "+(fs?"Flight End":"Flight Start")+" date (it won't book without it)."
+          : (core && !hasDur
+            ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
+            : "Fill Region, Campaign, Promoted title and Video durations to continue.")));
   return ok;
 }
 

@@ -1926,11 +1926,16 @@ brands:
     - pplus_kids_remnant
     ad_unit_groups:
       pplus_kids_remnant: pplus_cbs_pluto_vcbs
+      nick_au_network_10_remnant: network_10_house
+      nick_au_network_10_bumper: network_10_bumper
     format_overrides:
       pplus_kids_remnant:
         kids_main_site_groups:
         - '929392'
         duration_infix: (Pluto)
+    optional_formats:
+    - nick_au_network_10_remnant
+    - nick_au_network_10_bumper
     _cloned_from: nick_latam
   nick_br_2:
     display_name: Nick (BR)
@@ -2417,6 +2422,9 @@ brands:
     ad_unit_groups:
       pictures_remnant: pplus_cbs_pluto_vcbs
       pause_ads: pause_ads
+      network_10_remnant: network_10_house
+    optional_formats:
+    - network_10_remnant
     _cloned_from: paramount_pictures_uk
   paramount_pictures_english_ca:
     display_name: Paramount Pictures - English (CA)

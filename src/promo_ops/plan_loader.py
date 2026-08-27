@@ -311,6 +311,19 @@ def validate_plan(plan: SupportPlan) -> list[str]:
     if not (plan.campaign.get("resolved_id") or plan.campaign.get("name")):
         problems.append("Parent Campaign (name or ID) is required.")
 
+    # A flight needs BOTH a start and an end — FreeWheel's IO/placement schedule is
+    # {start_time, end_time, time_zone}, so a half-filled flight (a start with no end, the
+    # classic slip) pushes a schedule FreeWheel rejects and nothing books. Catch it here with
+    # an actionable message instead of a cryptic downstream failure.
+    fl_start = getattr(plan.flight, "start", None)
+    fl_end = getattr(plan.flight, "end", None)
+    if bool(fl_start) != bool(fl_end):
+        have, missing = ("start", "end") if fl_start else ("end", "start")
+        problems.append(
+            f"Flight has a {have} but no {missing} date — a flight needs BOTH a start and an "
+            f"end. Add the Flight {missing.capitalize()} date (the IO/placement won't book "
+            f"without it).")
+
     if plan.video_domination:
         from .config import video_dominations_config
         vds = video_dominations_config().get("options", {})

@@ -37,12 +37,13 @@ PLUTO_PLATFORM_SG = "929392"
 
 
 def _deplu_infix(infix: Optional[str], region_has_pluto: bool) -> Optional[str]:
-    """Strip the Pluto reference from a placement-name platform infix in a no-Pluto region:
-    "(P+/Pluto)" -> "(P+)"; a lone "(Pluto)" -> "". Leaves it untouched where Pluto runs."""
+    """In a no-Pluto region, drop the P+/Pluto platform marker from a placement-name infix
+    entirely ("(P+/Pluto)" / "(Pluto)" / "(P+)" -> ""). Non-Pluto infixes that mark a real
+    platform ("(10 Streaming)", "(My5)") are kept. No-op where Pluto runs."""
     if not infix or region_has_pluto:
         return infix
-    out = infix.replace("/Pluto", "").replace("Pluto/", "").replace("Pluto", "")
-    return "" if out.strip() in ("()", "( )", "") else out
+    low = infix.lower()
+    return "" if ("pluto" in low or "p+" in low) else infix
 
 
 class OrderBuilder:
