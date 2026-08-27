@@ -1213,6 +1213,13 @@ class FreeWheelClient:
         excl_vg_brand = list(getattr(p, "extra_exclude_video_groups", []))
         excl_series = list(getattr(p, "exclude_series", []))   # promoted show's own series
         excl_videos = list(getattr(p, "exclude_videos", []))   # movie video-asset excludes
+        # A series can't be INCLUDED and EXCLUDED in the same set — FreeWheel 422s the whole
+        # placement (and since only Tier 2 uses the affinity showlist, ONLY Tier 2 fails). The
+        # promoted title lands in both when it's left in its own affinity showlist AND
+        # self-excluded, so drop any excluded series from the include here.
+        if excl_series:
+            _ex = set(excl_series)
+            series = [s for s in series if s not in _ex]
 
         def base_exclude(**extra):
             e = dict(extra)
