@@ -1,7 +1,7 @@
-"""AU Tier-1 audience segments use the DWH "Summit" convention
-("AU - DWH - <src> - ID - Summit - ...") instead of the global GL-DDA-1P DDA
-convention. Region-scoped: AU resolves Summit segments, everyone else GL-DDA-1P,
-and neither leaks into the other. Deactivated segments are never targeted."""
+"""AU Tier-1 audience segments: AU resolves the regular global GL-DDA-1P segment when a
+show/movie has one, AND its DWH "Summit" segments ("AU - DWH - <src> - ID - Summit - …").
+The AU Summit taxonomy never leaks into non-AU regions (they use GL-DDA-1P only).
+Deactivated segments are never targeted."""
 
 from __future__ import annotations
 
@@ -27,13 +27,14 @@ def _resolver(tmp_path):
     return AudienceSegmentResolver(data_dir=tmp_path).load()
 
 
-def test_au_uses_summit_not_gl_dda(tmp_path):
+def test_au_uses_gl_and_summit(tmp_path):
     r = _resolver(tmp_path)
-    # AU resolves the DWH Summit segment (active only — deactivated is dropped).
+    # AU resolves the regular GL-DDA-1P segment AND its DWH Summit segment (active only —
+    # the deactivated one is dropped).
     au = r.resolve("Tulsa King", region="AU")
-    assert [rec.segment_id for rec in au.records] == ["1478745"]
-    # AU never resolves the GL-DDA-1P segment.
-    assert all("GL-DDA-1P" not in rec.segment_name for rec in au.records)
+    ids = {rec.segment_id for rec in au.records}
+    assert ids == {"1437993", "1478745"}      # GL global + AU Summit
+    assert "1476542" not in ids               # deactivated Summit never targeted
 
 
 def test_non_au_uses_gl_dda_not_summit(tmp_path):

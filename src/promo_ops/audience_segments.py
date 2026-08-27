@@ -71,10 +71,10 @@ class SegmentMatch:
 
 
 # Tier-1 audience-segment naming conventions, in _dda_tokens (normalized) form. The
-# resolver keeps only segments matching a known convention, and each region resolves
-# against ITS convention. The global default is the GL-DDA-1P DDA convention; AU uses
-# the DWH "Summit" segments instead ("AU - DWH - <src> - ID - Summit - ..." — never the
-# GL-DDA-1P ones).
+# resolver keeps only segments matching a known convention. Every region resolves against
+# the GLOBAL GL-DDA-1P convention FIRST (use the regular segment when a show/movie has one),
+# PLUS any region-specific conventions: AU also matches its DWH "Summit" segments
+# ("AU - DWH - <src> - ID - Summit - …"), and every region matches its new request-tool bucket.
 DEFAULT_TIER1_CONVENTION = "gl dda 1p"
 TIER1_CONVENTIONS: dict[str, str] = {
     "AU": "au dwh",
@@ -94,10 +94,15 @@ ALL_BUCKET_CONVENTIONS = ["us dda 1p", "eu uk dda 1p", "apac dda 1p"]
 
 
 def _conventions_for_region(region: Optional[str]) -> list[str]:
-    """Conventions a region's Tier 1 segments may use: its legacy convention (GL, or AU DWH)
-    PLUS its new request-tool bucket convention, so old and new segments both resolve."""
+    """Conventions a region's Tier 1 segments may use: the GLOBAL GL-DDA-1P convention FIRST
+    (so a show/movie's regular segment is used whenever it exists), PLUS any region-specific
+    legacy convention (e.g. AU's DWH segments) and its new request-tool bucket convention —
+    so regular, region-specific, and new segments all resolve."""
     r = (region or "").upper()
-    out = [TIER1_CONVENTIONS.get(r, DEFAULT_TIER1_CONVENTION)]
+    out = [DEFAULT_TIER1_CONVENTION]
+    legacy = TIER1_CONVENTIONS.get(r)
+    if legacy and legacy not in out:
+        out.append(legacy)
     b = REGION_BUCKET_CONVENTION.get(r)
     if b and b not in out:
         out.append(b)
