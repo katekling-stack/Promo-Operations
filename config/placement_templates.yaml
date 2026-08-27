@@ -80,6 +80,7 @@ formats:
     unit_label: Pre-Roll
     plan_label: Premium Plan
     guaranteed: true
+    precedence_level: HIGHEST
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Premium
@@ -96,6 +97,7 @@ formats:
     unit_label: Bumper
     plan_label: Essential Plan
     guaranteed: true
+    precedence_level: HIGHEST
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Essential
@@ -207,7 +209,7 @@ formats:
     kids: true
     kids_main_site_groups:
     - '932583'
-    precedence_level: HIGH
+    precedence_level: HIGHEST
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Premium
@@ -223,7 +225,7 @@ formats:
     kids: true
     kids_main_site_groups:
     - '932583'
-    precedence_level: HIGH
+    precedence_level: HIGHEST
     nests_in: existing_guaranteed_order
     platforms:
     - Paramount+ Essential
