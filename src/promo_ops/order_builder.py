@@ -32,6 +32,18 @@ from .series import SeriesResolver
 from .targeting import TargetingEngine
 from .video_groups import GenreVideoGroupResolver
 
+# "SG: Platform: PlutoTV" — dropped from a no-Pluto region's platform main SGs (AU/IE).
+PLUTO_PLATFORM_SG = "929392"
+
+
+def _deplu_infix(infix: Optional[str], region_has_pluto: bool) -> Optional[str]:
+    """Strip the Pluto reference from a placement-name platform infix in a no-Pluto region:
+    "(P+/Pluto)" -> "(P+)"; a lone "(Pluto)" -> "". Leaves it untouched where Pluto runs."""
+    if not infix or region_has_pluto:
+        return infix
+    out = infix.replace("/Pluto", "").replace("Pluto/", "").replace("Pluto", "")
+    return "" if out.strip() in ("()", "( )", "") else out
+
 
 class OrderBuilder:
     def __init__(self, engine: Optional[TargetingEngine] = None,
@@ -604,6 +616,13 @@ class OrderBuilder:
         # non-My5 kids use the format's kids_main_site_groups.
         if is_kids and tmpl.get("kids_main_site_groups") and not brand_cfg.get("my5_brand"):
             main_sgs = list(tmpl["kids_main_site_groups"])
+        # Regions without Pluto (regions.yaml has_pluto: false — e.g. AU, IE) must not target
+        # Pluto: drop the Pluto platform SG from the platform main SGs. (The "(P+/Pluto)" name
+        # infix is likewise de-Pluto'd below.)
+        region_has_pluto = bool(self._regions.get("regions", {})
+                                .get(plan.region, {}).get("has_pluto", True))
+        if not region_has_pluto:
+            main_sgs = [sg for sg in main_sgs if sg != PLUTO_PLATFORM_SG]
 
         def base(name, targeting, **kw) -> Placement:
             return Placement(
@@ -627,8 +646,7 @@ class OrderBuilder:
                 exclude_series=list(self_series),
                 exclude_videos=list(plan.exclude_videos),
                 exclude_audience_items=list(self_audience),
-                region_has_pluto=bool(self._regions.get("regions", {})
-                                      .get(plan.region, {}).get("has_pluto", True)),
+                region_has_pluto=region_has_pluto,
                 region_is_domestic=bool(self._regions.get("regions", {})
                                         .get(plan.region, {}).get("domestic", False)),
                 is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
@@ -709,7 +727,7 @@ class OrderBuilder:
             audience = tmpl.get("audience_label")
             region_suffix = brand_cfg.get("placement_name_suffix") or plan.region
             suffix = f"{audience} - {plan.region}" if audience else region_suffix
-            infix = tmpl.get("duration_infix")
+            infix = _deplu_infix(tmpl.get("duration_infix"), region_has_pluto)
             # Kids O&O lines put the audience BEFORE the duration slot (mirrors the AU
             # Nick IOs: "{title} - {msg} - Kids - 15 (10 Streaming) - AU").
             audience_first = bool(audience and tmpl.get("audience_before_slot"))
@@ -758,7 +776,7 @@ class OrderBuilder:
         uses_durations = bool(tmpl.get("uses_durations"))
         durations = self._durations(plan) if uses_durations else [None]
         name_token = tmpl.get("name_token")   # e.g. "Pause Ad" for non-duration formats
-        tier_infix = tmpl.get("tier_infix")   # e.g. "(Pluto)" for the UK Pluto split line
+        tier_infix = _deplu_infix(tmpl.get("tier_infix"), region_has_pluto)   # e.g. "(Pluto)" UK split
         # Per-format targeting routing (the UK P+/Pluto split): P+ lines keep the showlist
         # (series), Pluto lines keep channels/categories. Empty => keep everything.
         kinds = tmpl.get("targeting_kinds")
@@ -819,7 +837,10 @@ class OrderBuilder:
                 f"'Add to existing IO' must be a numeric FreeWheel IO ID, got "
                 f"{plan.existing_io_id!r}. Leave it blank to create a NEW IO, or paste the "
                 f"existing IO's numeric FreeWheel ID (e.g. 93584432).")
-        io_name = plan.insertion_order_name or f"{plan.promoted_title} - {plan.region}"
+        # Kids campaigns (Kids advertiser/brand) carry "Kids" in the IO name too — mirrors the
+        # placement names ("… - Kids - {region}"): "{title} - Kids - {region}".
+        kids_tag = " - Kids" if brand_cfg.get("kids") else ""
+        io_name = plan.insertion_order_name or f"{plan.promoted_title}{kids_tag} - {plan.region}"
         # Scene Lift: placements are added into the existing "Scene Lifts - {Region}" IO
         # (no new IO). Use that IO's name for reference; routing id set below.
         sl_target = self._scene_lift_target(plan)
