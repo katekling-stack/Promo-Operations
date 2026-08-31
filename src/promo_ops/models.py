@@ -308,6 +308,10 @@ class Placement:
     # P+). Empty -> the shared default from config. `include_video_groups` are brand
     # content VGs AND-ed into the genre targeting (e.g. the MTV / BET brand VG).
     main_site_groups: list[str] = field(default_factory=list)
+    # Brand inventory scoped by VIDEO GROUP instead of site group (e.g. BET Media Group runs
+    # on the "VCBS: Cable Adults: BET / VH1" VGs, not a site group). When set, it REPLACES the
+    # main site-group inventory subset in every tier's relationship set.
+    main_video_groups: list[str] = field(default_factory=list)
     include_video_groups: list[str] = field(default_factory=list)
     # Content-rating INCLUDES: VG ids AND-ed into every relationship set's content
     # targeting (run ONLY on that rating's content). Distinct from include_video_groups

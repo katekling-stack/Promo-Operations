@@ -87,10 +87,13 @@ def test_mtve_main_sgs_ad_units_brand_vg_and_excludes():
     assert "73408899" in vgs        # MTV brand video group included in the genre set
 
 
-def test_bet_single_main_sg_and_competitor_excludes():
+def test_bet_main_video_groups_and_competitor_excludes():
+    # BET Media Group scopes its main inventory by the VCBS "Cable Adults" VIDEO GROUPS
+    # (BET + VH1), NOT the BET+ site group — mirrors the live BET IOs.
     t1, _ = _remnant("bet")
     ni = t1["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]
-    assert ni["include"]["site_group"] == ["1072587"]                       # BET Plus only
+    assert ni["include"]["video_group"] == ["73408894", "73408898"]         # Cable Adults: BET + VH1
+    assert "site_group" not in ni["include"]                                 # no BET+ site group
     assert "73408891" in ni["exclude"]["video_group"]                       # Paramount Network excluded
 
 

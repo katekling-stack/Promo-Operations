@@ -563,6 +563,9 @@ class OrderBuilder:
             if my5_ids:
                 main_sgs = my5_ids
         include_vgs = list(brand_cfg.get("include_video_groups", []))
+        # Brand inventory scoped by VIDEO GROUP (e.g. BET -> Cable Adults: BET/VH1 VGs) instead
+        # of a site group. When set, it replaces the site-group main subset in the body.
+        main_vgs = list(brand_cfg.get("main_video_groups", []))
         pause_main = list(brand_cfg.get("pause_main_site_groups", []))
         # Pluto TV brands exclude Samsung TV Plus SGs on EVERY placement (placement-level
         # content exclude), region-scoped: US SGs domestically, the intl SGs abroad.
@@ -639,7 +642,8 @@ class OrderBuilder:
                 geo_exclude_city_ids=list(geo_x_city_ids),
                 ad_unit_names=ad_unit_names, ad_unit_ids=ad_unit_ids,
                 extra_exclude_site_groups=excl_sgs, extra_exclude_video_groups=excl_vgs,
-                main_site_groups=main_sgs, include_video_groups=include_vgs,
+                main_site_groups=main_sgs, main_video_groups=main_vgs,
+                include_video_groups=include_vgs,
                 rating_include_video_groups=list(rating_include_vgs),
                 pause_main_site_groups=pause_main,
                 kids_video_groups=list(kids_vgs), kids_content_site_group=kids_sg,

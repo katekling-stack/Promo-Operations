@@ -103,10 +103,12 @@ brands:
     template_campaign_id: '68562294'
     template_io_id: '94999325'
     campaign_name: BET Media Group - USA
-    main_site_groups:
-    - '1072587'
-    include_video_groups:
-    - '73408894'
+    # BET Media Group runs on the VCBS "Cable Adults" Video Groups (BET + VH1), NOT the BET+
+    # site group — mirrors the live BET IOs. main_video_groups replaces the site-group main
+    # inventory subset in every tier.
+    main_video_groups:
+    - '73408894'   # VG: Biz Div-Brand: VCBS: Cable Adults: BET
+    - '73408898'   # VG: Biz Div-Brand: VCBS: Cable Adults: VH1
     extra_exclude_video_groups:
     - '73408899'
     - '73408859'

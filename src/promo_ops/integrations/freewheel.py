@@ -1206,6 +1206,13 @@ class FreeWheelClient:
         genre_vgs = sorted(set(t.get("genre_vgs", [])) | set(getattr(p, "include_video_groups", [])))
         # Per-brand platform "main SGs" override (falls back to the shared default).
         main = list(getattr(p, "main_site_groups", []) or main)
+        # A brand can scope its main inventory by VIDEO GROUP instead of site group (e.g. BET
+        # Media Group runs on the "VCBS: Cable Adults: BET / VH1" VGs, not a site group). When
+        # set it REPLACES the site-group main subset in every tier's relationship set.
+        main_vgs = list(getattr(p, "main_video_groups", []) or [])
+
+        def main_subset() -> dict[str, Any]:
+            return {"video_group": main_vgs} if main_vgs else {"site_group": main}
 
         # Shared DNR + this brand's always-exclude site/video groups (e.g. CBS News
         # excludes the Pluto News category SGs).
@@ -1317,7 +1324,7 @@ class FreeWheelClient:
             excl = base_exclude(video_group=excl_vgs) if excl_vgs else base_exclude()
             subsets = [{"video_group": kids_vgs,
                         "site_group": [kids_sg] if kids_sg else []},
-                       {"site_group": main}]
+                       main_subset()]
             return [{"set_name": "Kids",
                      **FreeWheelClient._content(subsets, excl)}]
 
@@ -1352,7 +1359,7 @@ class FreeWheelClient:
             s = {"set_name": "Affinity Shows"}
             if dda:
                 s["audience_targeting"] = {"include": {"audience_item": dda}}
-            c = FreeWheelClient._content([{"site_group": main}], base_exclude())
+            c = FreeWheelClient._content([main_subset()], base_exclude())
             if c:
                 s.update(c)
             sets.append(s)
@@ -1364,32 +1371,32 @@ class FreeWheelClient:
         elif p.tier == 2:
             if series:
                 sets.append({"set_name": "Affinity Shows", **FreeWheelClient._content(
-                    [{"series": series}, {"site_group": main}], base_exclude())})
+                    [{"series": series}, main_subset()], base_exclude())})
             if channels:
                 sets.append({"set_name": "Channels", **FreeWheelClient._content(
                     [{"site_group": channels}], base_exclude())})
             if not sets:   # no showlist/channels -> platform-constrained, still excludes promoted
                 sets.append({"set_name": "Affinity Shows", **FreeWheelClient._content(
-                    [{"site_group": main}], base_exclude())})
+                    [main_subset()], base_exclude())})
         elif p.tier == 3:
             if genre_vgs:
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                    [{"site_group": main}, {"video_group": genre_vgs}],
+                    [main_subset(), {"video_group": genre_vgs}],
                     base_exclude(video_group=excl_clips))})
             elif is_pluto:
                 # Pluto TV always carries a Genre argument in Tier 3 (globally), even when
                 # the plan names no genres — a platform-constrained genre set (CM fills VGs).
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                    [{"site_group": main}], base_exclude(video_group=excl_clips))})
+                    [main_subset()], base_exclude(video_group=excl_clips))})
             if categories:
                 sets.append({"set_name": "Pluto Categories", **FreeWheelClient._content(
                     [{"site_group": categories}], base_exclude())})
             if not sets:   # no genre/categories -> platform-constrained, still excludes promoted
                 sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                    [{"site_group": main}], base_exclude(video_group=excl_clips))})
+                    [main_subset()], base_exclude(video_group=excl_clips))})
         else:  # tier 4 — platform-constrained RON
             sets.append({"set_name": "Genre", **FreeWheelClient._content(
-                [{"site_group": main}], base_exclude())})
+                [main_subset()], base_exclude())})
         return sets
 
     @staticmethod
