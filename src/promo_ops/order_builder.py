@@ -36,14 +36,20 @@ from .video_groups import GenreVideoGroupResolver
 PLUTO_PLATFORM_SG = "929392"
 
 
-def _deplu_infix(infix: Optional[str], region_has_pluto: bool) -> Optional[str]:
-    """In a no-Pluto region, drop the P+/Pluto platform marker from a placement-name infix
-    entirely ("(P+/Pluto)" / "(Pluto)" / "(P+)" -> ""). Non-Pluto infixes that mark a real
-    platform ("(10 Streaming)", "(My5)") are kept. No-op where Pluto runs."""
-    if not infix or region_has_pluto:
+def _deplu_infix(infix: Optional[str], region_has_pluto: bool = True) -> Optional[str]:
+    """Clean the platform marker out of a placement-name infix.
+
+    A COMBINED P+/Pluto marker ("(P+/Pluto)", "(P+/Pluto TV)", "(P+)") is noise on the standard
+    remnant line and is dropped in EVERY region. A standalone "(Pluto)" infix means a real Pluto
+    BREAKOUT line (e.g. adult UK), so it's kept where Pluto runs — but in a no-Pluto region
+    (AU/IE) even "(Pluto)" is dropped since there is no Pluto there. Real non-Pluto platform
+    markers a CM wants ("(10 Streaming)", "(My5)") are always kept."""
+    if not infix:
         return infix
     low = infix.lower()
-    return "" if ("pluto" in low or "p+" in low) else infix
+    if not region_has_pluto:
+        return "" if ("pluto" in low or "p+" in low) else infix
+    return "" if "p+" in low else infix
 
 
 class OrderBuilder:

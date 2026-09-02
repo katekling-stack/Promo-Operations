@@ -277,19 +277,25 @@ brands:
     template_campaign_id: '75617429'
     campaign_name: Paramount + - Kids - UK
     kids: true
+    # Pluto is folded into the STANDARD kids remnant line (P+ + Pluto UK site groups on ONE
+    # placement), not a separate "(Pluto)" breakout — so the remnant runs across both. Keeps
+    # the P+ UK house ad units.
     formats:
     - pplus_kids_remnant_pplus
-    - pplus_kids_remnant_pluto
     - pplus_kids_premium_preroll
     - pplus_kids_essential_bumper
     ad_unit_groups:
       pplus_kids_remnant_pplus: pplus_uk_house
-      pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs
       pplus_kids_premium_preroll: premium_preroll
       pplus_kids_essential_bumper: essential_bumper
     format_overrides:
       pplus_kids_essential_bumper:
         plan_label: Basic Plan
+      pplus_kids_remnant_pplus:
+        kids_main_site_groups:
+        - '932583'      # Paramount+ Kids
+        - '1109067'     # Pluto UK Kids
+        - '1120870'     # Pluto UK Kids
   pluto_tv_uk:
     display_name: Pluto TV (UK)
     advertiser_name_contains:
@@ -2346,28 +2352,12 @@ brands:
       pplus_kids_remnant: pplus_cbs_pluto_vcbs
       pplus_kids_premium_preroll: premium_preroll
       pplus_kids_essential_bumper: essential_bumper
+      nick_au_network_10_remnant: network_10_house
+      nick_au_network_10_bumper: network_10_bumper
+    optional_formats:
+    - nick_au_network_10_remnant
+    - nick_au_network_10_bumper
     _cloned_from: paramount_plus_kids
-  paramount_kids_dk:
-    display_name: Paramount + - Kids (DK)
-    advertiser_name_contains:
-    - VCBS
-    template_campaign_id: '72703315'
-    campaign_name: Paramount + - Kids - DK
-    kids: true
-    formats:
-    - pplus_kids_remnant_pplus
-    - pplus_kids_remnant_pluto
-    - pplus_kids_premium_preroll
-    - pplus_kids_essential_bumper
-    ad_unit_groups:
-      pplus_kids_remnant_pplus: pplus_uk_house
-      pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs
-      pplus_kids_premium_preroll: premium_preroll
-      pplus_kids_essential_bumper: essential_bumper
-    format_overrides:
-      pplus_kids_essential_bumper:
-        plan_label: Basic Plan
-    _cloned_from: paramount_plus_kids_uk
   paramount_consumer_products_gsa:
     display_name: Paramount Consumer Products (GSA)
     advertiser_name_contains:
