@@ -83,6 +83,24 @@ def test_raw_vg_id_passes_through():
     assert r.resolve("USA", ["73408858"]) == ["73408858"]
 
 
+def test_short_rating_label_never_passes_through_as_vg_id():
+    # A short all-digit label ("15"/"18") is a RATING, not a VG id — it must resolve to a real
+    # VG id or be dropped, never emitted raw (which 422s "Asset Group item [15,18] doesn't exist").
+    r = RatingRestrictionResolver().load()
+    assert r.resolve("US", ["15", "18"]) == []              # US has no such labels -> dropped
+    assert all(len(x) >= 5 for x in r.resolve("UK", ["15", "18"]))
+
+
+def test_ie_ratings_alias_to_uk():
+    # Ireland has no rating VGs of its own; it shares the UK/BBFC classification, so its
+    # ratings resolve to the UK Content Rating VGs (real ids, never the raw "15"/"18").
+    r = RatingRestrictionResolver().load()
+    assert r.ratings_for("IE") == r.ratings_for("UK")
+    ie = r.resolve("IE", ["15", "15+", "18", "18+"])
+    assert ie == r.resolve("UK", ["15", "15+", "18", "18+"])
+    assert ie and all(x.isdigit() and len(x) >= 5 for x in ie)
+
+
 def test_no_ratings_no_exclusion_change():
     order = _order("USA", "Paramount + - USA", [])
     assert "877330305" not in _excluded_vgs(order)

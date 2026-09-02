@@ -23,6 +23,15 @@ DATA_DIR = REPO_ROOT / "data" / "video_groups"
 PREFIX = "VG: Content Rating: "
 _FILE = "synced_content_rating_video_groups.csv"
 
+# Some markets have no rating VGs of their own and share another market's. Ireland (IE) uses
+# the same UK/BBFC classification, so its ratings resolve against the UK Content Rating VGs.
+_REGION_ALIAS = {"IE": "UK"}
+
+# A real FreeWheel Video Group id is a long integer; a rating LABEL that happens to be all
+# digits ("15", "18", "12") is only 1-2 chars. The raw-id passthrough (AU supplies VG ids
+# directly) must accept only the former, never mistake a short rating label for an id.
+_MIN_RAW_VG_ID_LEN = 5
+
 
 def _norm(s: str) -> str:
     return " ".join(str(s or "").strip().lower().split())
@@ -72,6 +81,7 @@ class RatingRestrictionResolver:
         """Top-level rating labels for a region code (the sub-descriptor variants like
         'TV-MA: V' are hidden from the picker), sorted."""
         self._ensure()
+        region_code = _REGION_ALIAS.get(region_code, region_code)
         labels = {r for r in self._labels.get(region_code, []) if ":" not in r}
         return sorted(labels, key=str.lower)
 
@@ -81,6 +91,7 @@ class RatingRestrictionResolver:
         A LONG all-digit value passes through as a raw VG id (back-compat with the AU flow
         that supplies ids directly); a short numeric like '6' is a rating and is resolved."""
         self._ensure()
+        region_code = _REGION_ALIAS.get(region_code, region_code)   # e.g. IE -> UK
         table = self._by_region.get(region_code, {})
         labels = self._labels.get(region_code, [])
         out: list[str] = []
@@ -103,8 +114,11 @@ class RatingRestrictionResolver:
                     if vg:
                         add(vg)
                         matched = True
-            if not matched and r.isdigit():        # numeric that isn't a known rating ->
-                add(r)                              # treat as a raw VG id (AU supplies ids)
+            # A numeric that isn't a known rating: pass through ONLY if it's long enough to be
+            # a real VG id (AU supplies ids directly). A short label like "15"/"18" is a rating,
+            # not an id — dropping it (rather than emitting a bogus VG id) avoids a 422.
+            if not matched and r.isdigit() and len(r) >= _MIN_RAW_VG_ID_LEN:
+                add(r)
         return out
 
     def regions(self) -> list[str]:
