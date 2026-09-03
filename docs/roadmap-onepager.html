@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ops Automation — Roadmap Case</title>
+<style>
+  :root{
+    --ink:#14171f; --muted:#5b6472; --line:#e4e7ec; --bg:#fff; --panel:#f7f8fa;
+    --accent:#1f6feb; --accent-soft:#eaf1fe; --good:#0f8a5f; --good-soft:#e7f6ef;
+    --warn:#b06a00; --warn-soft:#fdf3e3; --radius:12px;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#eceef1; line-height:1.45; -webkit-font-smoothing:antialiased;}
+  .page{width:1000px; max-width:100%; margin:24px auto; background:var(--bg); border:1px solid var(--line);
+    border-radius:16px; overflow:hidden; box-shadow:0 6px 28px rgba(20,23,31,.08);}
+  header{padding:26px 34px 22px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#fbfcfe,#f4f7fb);}
+  .eyebrow{font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  h1{font-size:26px; margin:6px 0 4px; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:14px; max-width:78ch}
+  .body{padding:22px 34px 30px}
+  h2{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px}
+  .hero{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px}
+  .stat{border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--bg)}
+  .stat .n{font-size:26px; font-weight:780; letter-spacing:-.02em; line-height:1}
+  .stat .n.g{color:var(--good)} .stat .n.b{color:var(--accent)}
+  .stat .l{font-size:12px; color:var(--muted); margin-top:6px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .card{border:1px solid var(--line); border-radius:var(--radius); padding:15px 16px 13px; background:var(--bg)}
+  .card h3{margin:0 0 6px; font-size:15px; display:flex; align-items:center; gap:8px}
+  .card p{margin:0; color:var(--muted); font-size:13.5px}
+  .tag{font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; background:var(--good-soft); color:var(--good)}
+  .tag.b{background:var(--accent-soft); color:var(--accent)}
+  ul.tight{margin:7px 0 0; padding-left:18px} ul.tight li{margin:3px 0; font-size:13.5px; color:var(--muted)}
+  ul.tight li b{color:var(--ink)}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
+  .split .col{padding:15px 18px}
+  .split .col.now{background:#fbf3f2} .split .col.after{background:var(--good-soft)}
+  .split .col h4{margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.05em}
+  .split .col.now h4{color:#a1483b} .split .col.after h4{color:var(--good)}
+  .split .col ul{margin:0; padding-left:18px} .split .col li{font-size:13px; margin:4px 0; color:var(--ink)}
+  .callout{margin-top:16px; border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:12px 16px; border-radius:0 var(--radius) var(--radius) 0; font-size:14px}
+  .callout b{color:var(--ink)}
+  .ask{margin-top:8px; counter-reset:s; list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
+  .ask li{position:relative; border:1px solid var(--line); border-radius:var(--radius); padding:14px; font-size:13px; color:var(--muted)}
+  .ask li b{color:var(--ink); display:block; margin-bottom:3px}
+  .ask li::before{counter-increment:s; content:counter(s); position:absolute; top:-11px; left:14px; width:22px; height:22px;
+    border-radius:50%; background:var(--accent); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  footer{padding:14px 34px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; justify-content:space-between}
+  @media print{ body{background:#fff} .page{box-shadow:none;border:none;margin:0;width:100%} }
+  @media(max-width:720px){ .hero,.grid2,.ask,.split{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">Digital Promo Ad Operations · Roadmap Case</div>
+    <h1>Automated order building + Suggested Targeting</h1>
+    <div class="sub">The build is done and running against FreeWheel production. Putting the last mile on the roadmap — hosting it + turning on Suggested Targeting — converts it into faster, more accurate order building for the whole team.</div>
+    <div class="hero">
+      <div class="stat"><div class="n g">−75%</div><div class="l">Error rate — pre-built, rule-complete, validated before push</div></div>
+      <div class="stat"><div class="n g">−60%</div><div class="l">Time to generate &amp; build an order</div></div>
+      <div class="stat"><div class="n b">15 / ~79</div><div class="l">Regions / brands already encoded</div></div>
+      <div class="stat"><div class="n b">389</div><div class="l">Automated tests guarding behavior</div></div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <h2>The problem today</h2>
+    <p style="margin:0 0 4px; font-size:14.5px">Promo campaigns are trafficked <b>by hand</b> — dozens of placements per order across tiers, durations, formats, regions and platforms, each with precise targeting, ad units, geo, flight timing and exclusions. Coordinators rely on <b>institutional knowledge, common sense, and scattered reference docs</b>. That’s slow, error-prone, inconsistent, and hard to scale or onboard.</p>
+
+    <h2>What changes</h2>
+    <div class="split">
+      <div class="col now">
+        <h4>Today — manual</h4>
+        <ul>
+          <li>Dozens of settings keyed by hand per order</li>
+          <li>Targeting from judgment + manual lookups</li>
+          <li>Errors surface after campaigns go live</li>
+          <li>Output varies by who built it</li>
+          <li>Rules live in people’s heads</li>
+        </ul>
+      </div>
+      <div class="col after">
+        <h4>With the tool</h4>
+        <ul>
+          <li>Rule-complete draft generated in seconds</li>
+          <li>Targeting grounded in real inventory + history</li>
+          <li>Malformed orders blocked <b>before</b> push</li>
+          <li>Same rules every time — consistent &amp; auditable</li>
+          <li>Best practice encoded once, in the system</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Why it moves the needle</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3><span class="tag">−75% errors</span> Rule-complete by construction</h3>
+        <p>The settings people mis-key today — site groups, ad units, exclusions, rating VGs, flight dates — are applied consistently and validated before push. Fewer live-campaign incidents, make-goods, and re-trafficking cycles.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag">−60% time</span> Review, don’t rebuild</h3>
+        <p>Significant manual setup becomes a reviewed draft in seconds. Coordinators shift from building placements to QA — absorbing more volume without adding headcount.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag b">Accuracy</span> Consistent &amp; auditable</h3>
+        <p>Every order follows the same rule set, mirrored from the live reference IOs. Deterministic and reviewable — and the tool never books on its own; a human activates every draft.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag b">Smarter targeting</span> Real data, not guesswork</h3>
+        <p>Suggested Targeting proposes comp shows, Pluto channels, genres &amp; categories — matched to our real FreeWheel inventory and what similar past campaigns actually ran. Huge for new titles and onboarding.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>Illustrative:</b> at ~1,000 orders/yr at ~45 min each, a 60% cut saves <b>~450 hours/year</b> — before counting the error-rate savings, which avoid the costliest failures (live mis-targeting). <span style="color:var(--muted)">Swap in our real volumes to finalize.</span>
+    </div>
+
+    <h2>The ask — a small, well-scoped last mile</h2>
+    <ol class="ask">
+      <li><b>Host it</b>One small internal VM (behind VPN) serves the form + Suggested Targeting to all 5 of us.</li>
+      <li><b>Enable Suggest</b>Historicals-only first (zero external deps); optional AI layer later behind one server-side key.</li>
+      <li><b>Own the refresh</b>A daily data-refresh job (already scripted) keeps dropdowns &amp; suggestions current.</li>
+    </ol>
+
+  </div>
+  <footer>
+    <span>Promo Operations Automation · Paramount Digital Promo Ad Ops</span>
+    <span>Build: live against FreeWheel production (drafts) · The remaining work is operational, not inventive</span>
+  </footer>
+</div>
+</body>
+</html>
