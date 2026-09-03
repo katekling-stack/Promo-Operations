@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Operations — Hosting & Suggest Enablement</title>
+<style>
+  :root{
+    --ink:#14171f; --muted:#5b6472; --line:#e4e7ec; --bg:#ffffff; --panel:#f7f8fa;
+    --accent:#1f6feb; --accent-soft:#eaf1fe; --good:#0f8a5f; --good-soft:#e7f6ef;
+    --warn:#b06a00; --warn-soft:#fdf3e3;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#eceef1; line-height:1.45; -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    width:1000px; max-width:100%; margin:24px auto; background:var(--bg);
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    box-shadow:0 6px 28px rgba(20,23,31,.08);
+  }
+  header{
+    padding:26px 34px 20px; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#fbfcfe,#f4f7fb);
+  }
+  .eyebrow{font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  h1{font-size:26px; margin:6px 0 4px; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:14px}
+  .body{padding:24px 34px 30px}
+  h2{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:26px 0 12px}
+  .lead{font-size:15px; margin:0 0 4px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px}
+  .card{border:1px solid var(--line); border-radius:var(--radius); padding:16px 16px 14px; background:var(--bg)}
+  .card h3{margin:0 0 6px; font-size:15px}
+  .card p{margin:0; color:var(--muted); font-size:13.5px}
+  .pill{display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; margin-bottom:8px}
+  .pill.now{background:var(--good-soft); color:var(--good)}
+  .pill.later{background:var(--warn-soft); color:var(--warn)}
+  .pill.core{background:var(--accent-soft); color:var(--accent)}
+  ul.tight{margin:8px 0 0; padding-left:18px}
+  ul.tight li{margin:3px 0; font-size:13.5px; color:var(--muted)}
+  ul.tight li b{color:var(--ink)}
+  .ask{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:6px 4px}
+  .ask table{width:100%; border-collapse:collapse; font-size:13.5px}
+  .ask td{padding:9px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+  .ask tr:last-child td{border-bottom:none}
+  .ask td:first-child{font-weight:700; width:150px}
+  .steps{counter-reset:s; margin:0; padding:0; list-style:none; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
+  .steps li{position:relative; border:1px solid var(--line); border-radius:var(--radius); padding:14px 14px 12px 14px; font-size:13.5px; color:var(--muted)}
+  .steps li b{color:var(--ink); display:block; margin-bottom:3px}
+  .steps li::before{
+    counter-increment:s; content:counter(s); position:absolute; top:-11px; left:14px;
+    width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff;
+    font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  .callout{
+    margin-top:8px; border-left:3px solid var(--accent); background:var(--accent-soft);
+    padding:12px 16px; border-radius:0 var(--radius) var(--radius) 0; font-size:13.5px;
+  }
+  .callout b{color:var(--ink)}
+  footer{padding:14px 34px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; display:flex; justify-content:space-between}
+  .kpis{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .kpi{flex:1; min-width:120px; border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; background:var(--bg)}
+  .kpi .n{font-size:20px; font-weight:750; letter-spacing:-.01em}
+  .kpi .l{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  @media print{ body{background:#fff} .page{box-shadow:none; border:none; margin:0; width:100%} }
+  @media (max-width:720px){ .grid2,.grid3,.steps{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">Promo Ad Operations · Engineering Discussion</div>
+    <h1>Host the tool &amp; enable “Suggest Targeting”</h1>
+    <div class="sub">Turn campaign plans into fully-built FreeWheel orders — and give the team AI-assisted targeting from one shared URL.</div>
+    <div class="kpis">
+      <div class="kpi"><div class="n">15 / ~79</div><div class="l">Regions / Brands</div></div>
+      <div class="kpi"><div class="n">389</div><div class="l">Tests passing</div></div>
+      <div class="kpi"><div class="n">Live</div><div class="l">FreeWheel prod (drafts)</div></div>
+      <div class="kpi"><div class="n">1 VM</div><div class="l">Infra ask</div></div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <p class="lead"><b>The decision:</b> stand up one small internal host so our 5-person team uses the Campaign Plan form + “Suggest Targeting” from a single URL — instead of everyone running Python on their laptop.</p>
+
+    <h2>What we’re hosting — two separable pieces</h2>
+    <div class="grid2">
+      <div class="card">
+        <span class="pill core">The immediate ask</span>
+        <h3>✨ Suggest Targeting helper</h3>
+        <p>A ~130-line stdlib Python web app. Serves the form + answers one <code>/suggest</code> endpoint. Proposes grounded targeting (comp shows, Pluto channels, genres) from our own past campaigns.</p>
+        <ul class="tight">
+          <li><b>No database, no FreeWheel credentials.</b></li>
+          <li>Behind VPN/SSO, one port (8770).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="pill later">Later / optional</span>
+        <h3>Order-building CLI &amp; automation</h3>
+        <p>Builds &amp; pushes FreeWheel orders (drafts only). Needs FreeWheel credentials. Can stay operator-side for now; moves server-side once Salesforce + MRM creds land.</p>
+        <ul class="tight">
+          <li>Creates <b>NOT_BOOKED drafts only</b> — a human activates.</li>
+          <li>Daily data-refresh job already scripted.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Suggest runs in two modes — this is the security crux</h2>
+    <div class="grid2">
+      <div class="card" style="border-color:#cfe9db">
+        <span class="pill now">Start here · no approval needed</span>
+        <h3>Historicals-only (default)</h3>
+        <p>Suggestions come only from our own past-campaign data. <b>Zero external calls — nothing leaves our environment.</b> Works today.</p>
+      </div>
+      <div class="card" style="border-color:#f0e0c2">
+        <span class="pill later">Add later</span>
+        <h3>AI-enhanced (optional)</h3>
+        <p>One <b>server-side</b> <code>ANTHROPIC_API_KEY</code> adds an AI layer for brand-new titles. Key never touches a browser. Only this needs the API-key sign-off.</p>
+      </div>
+    </div>
+
+    <h2>What we need from engineering</h2>
+    <div class="ask">
+      <table>
+        <tr><td>Host</td><td>One always-on Linux VM/container — <b>1 vCPU, 512 MB–1 GB RAM</b>. No GPU, no database.</td></tr>
+        <tr><td>Runtime</td><td>Python 3.10+. Pull the repo, run one command.</td></tr>
+        <tr><td>Network</td><td>Reachable by 5 users <b>behind VPN/SSO</b>. Not public. One TCP port.</td></tr>
+        <tr><td>Outbound</td><td>Historicals-only: <b>none</b>. AI layer: HTTPS to Anthropic only. CLI push: HTTPS to FreeWheel.</td></tr>
+        <tr><td>Process</td><td><code>systemd</code>/container for auto-restart + a daily <code>refresh-form</code> job.</td></tr>
+        <tr><td>Secrets</td><td>Env/secret store for the optional Anthropic key and (if CLI runs here) FreeWheel creds.</td></tr>
+      </table>
+    </div>
+
+    <h2>Recommended rollout</h2>
+    <ol class="steps">
+      <li><b>Now</b>Host Suggest in <b>historicals-only</b> mode behind VPN. Immediate value, no blockers, no external traffic.</li>
+      <li><b>Next</b>Add the <b>Anthropic key</b> once approved — same host, just a restart. Turns on the AI layer.</li>
+      <li><b>Later</b>Move order-building / Case automation server-side once <b>Salesforce + FreeWheel MRM</b> creds are provisioned.</li>
+    </ol>
+
+    <div class="callout">
+      <b>Bottom line:</b> one small internal VM + one command unblocks the whole team today, with nothing leaving our environment. The optional AI layer is a single server-side key we can switch on later — no rework.
+    </div>
+
+    <h2>Open dependencies to name in the room</h2>
+    <ul class="tight">
+      <li><b>Salesforce</b> field/credential setup — for full Case→drafts automation (building from the form/CLI doesn’t need it).</li>
+      <li><b>FreeWheel MRM client-credentials</b> — until then the IO Brand is set by hand on push; everything else works.</li>
+      <li><b>API-key sign-off</b> — the only gate on the Suggest AI layer.</li>
+    </ul>
+
+  </div>
+  <footer>
+    <span>Promo Operations Automation · Paramount Digital Promo Ad Ops</span>
+    <span>Status: live against FreeWheel production (drafts) · 2026-09-03</span>
+  </footer>
+</div>
+</body>
+</html>
