@@ -94,7 +94,7 @@ def test_pplus_kids_uk_combined_remnant_and_basic_plan():
     # Keeps the P+ UK house ad units (INTL pre-roll 69304 + house pre-roll on 15s)
     assert set(remnant15.ad_unit_ids) == {"69304", "71999", "72000", "72001"}
     _, main = _kids_set(remnant15)
-    assert main == {"932583", "1109067", "1120870"}     # P+ + Pluto UK kids SGs on ONE line
+    assert main == {"932583", "929392"}                 # P+ Kids + SG: Platform: PlutoTV on ONE line
 
     assert any("Bumper - Basic Plan" in p.name for p in order.placements)
 

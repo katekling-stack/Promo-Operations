@@ -294,8 +294,7 @@ brands:
       pplus_kids_remnant_pplus:
         kids_main_site_groups:
         - '932583'      # Paramount+ Kids
-        - '1109067'     # Pluto UK Kids
-        - '1120870'     # Pluto UK Kids
+        - '929392'      # SG: Platform: PlutoTV (single platform SG, geo-scoped to UK)
   pluto_tv_uk:
     display_name: Pluto TV (UK)
     advertiser_name_contains:
