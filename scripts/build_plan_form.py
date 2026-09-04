@@ -909,7 +909,14 @@ function ddaFlag(){
 function validate(){
   ddaFlag();
   const core = $("#region").value && $("#campaign").value && $("#title").value.trim();
+  // Which products are toggled ON. Durations are only required when a VIDEO product is on —
+  // pause ads have no durations, so a "Pause Ads only" order needs none.
+  const yesFams=[...document.querySelectorAll(".prod")]
+    .filter(p=>p.querySelector(".seg button.on").dataset.v==="yes").map(p=>p.dataset.fam);
+  const anyProduct = yesFams.length>0;
+  const videoOn = yesFams.some(f=>f!=="pause_ads");
   const hasDur = ((state.lists.durations||[]).length)>0;
+  const durOk = hasDur || !videoOn;                    // no video product -> durations optional
   // "Add to existing IO" (optional) must be a numeric FreeWheel IO ID when filled — a name
   // there reaches FreeWheel as insertion_order_id and fails ("fail to convert … to Int").
   const ioRaw = ($("#existing_io_id").value||"").trim();
@@ -919,7 +926,7 @@ function validate(){
   // books. Require the pair whenever either date is filled.
   const fs=($("#flight_start").value||"").trim(), fe=($("#flight_end").value||"").trim();
   const flightHalf = (!!fs)!==(!!fe);
-  const ok = core && hasDur && !ioBad && !flightHalf;
+  const ok = core && anyProduct && durOk && !ioBad && !flightHalf;
   $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
   // Keep the mirror ("Download mirrored plan(s)") button in sync on EVERY field change,
   // not just on market-chip clicks — enabled once the plan is valid AND a market is ticked.
@@ -931,9 +938,11 @@ function validate(){
         ? "‘Add to existing IO’ must be a numeric FreeWheel IO ID (or blank for a new IO)."
         : (flightHalf
           ? "Flight needs BOTH a start and an end date — add the "+(fs?"Flight End":"Flight Start")+" date (it won't book without it)."
-          : (core && !hasDur
-            ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
-            : "Fill Region, Campaign, Promoted title and Video durations to continue.")));
+          : (core && !anyProduct
+            ? "Select at least one Product (e.g. Pause Ads) to continue."
+            : (core && videoOn && !hasDur
+              ? "Add at least one Video duration (type e.g. 30 and press Enter) to continue."
+              : "Fill Region, Campaign, Promoted title and Video durations to continue."))));
   return ok;
 }
 
