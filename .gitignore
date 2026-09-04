@@ -21,6 +21,13 @@ googleads.yaml
 /build/
 /out/
 
+# OS / editor noise + local logs — never commit (these clutter every pull)
+.DS_Store
+**/.DS_Store
+Thumbs.db
+logs/
+*.log
+
 # Live syncs are regenerated; only seed_*.csv is committed — EXCEPT the two snapshots the
 # shipped form's pickers depend on (series name->ID and DDA audience item IDs), which are
 # committed so a fresh download resolves everything the form offers without a sync step.
