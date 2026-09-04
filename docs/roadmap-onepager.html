@@ -43,6 +43,16 @@
   .callout{margin-top:16px; border-left:3px solid var(--accent); background:var(--accent-soft);
     padding:12px 16px; border-radius:0 var(--radius) var(--radius) 0; font-size:14px}
   .callout b{color:var(--ink)}
+  .spotlight{margin-top:8px; border:1px solid #d8c9ee; border-radius:var(--radius);
+    background:linear-gradient(180deg,#faf7ff,#f2ecfc); padding:16px 18px}
+  .spotlight h3{margin:0 0 6px; font-size:15.5px}
+  .spotlight .lede{font-size:13.7px; color:var(--ink); margin:0 0 8px}
+  .spotlight ul{margin:0; padding-left:18px}
+  .spotlight li{font-size:13.3px; color:var(--muted); margin:4px 0}
+  .spotlight li b{color:var(--ink)}
+  .spotlight .need{margin-top:11px; font-size:12.9px; background:#fff; border:1px solid #e6dcf7;
+    border-radius:10px; padding:10px 13px; color:var(--ink)}
+  .spotlight .need b{color:#5b3ba6}
   .ask{margin-top:8px; counter-reset:s; list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
   .ask li{position:relative; border:1px solid var(--line); border-radius:var(--radius); padding:14px; font-size:13px; color:var(--muted)}
   .ask li b{color:var(--ink); display:block; margin-bottom:3px}
@@ -120,10 +130,23 @@
       <b>Illustrative:</b> at ~1,000 orders/yr at ~45 min each, a 60% cut saves <b>~450 hours/year</b> — before counting the error-rate savings, which avoid the costliest failures (live mis-targeting). <span style="color:var(--muted)">Swap in our real volumes to finalize.</span>
     </div>
 
+    <h2>Spotlight — the Suggested Targeting tool</h2>
+    <div class="spotlight">
+      <h3>🎯 Data-based targeting direction — strongest when other resources fall short</h3>
+      <p class="lede">Targeting is where campaigns win or waste impressions, and today it's built from judgment and scattered references. Suggested Targeting gives every coordinator a <b>strategic, intentional, data-grounded starting point</b> instead of guesswork.</p>
+      <ul>
+        <li><b>More strategic &amp; intentional</b> — proposes comp shows, Pluto channels, genres &amp; categories <i>with a rationale</i>, ranked by agreement across signals, not gut feel.</li>
+        <li><b>Grounded in real data</b> — every suggestion is matched to our live FreeWheel inventory and to what <i>similar past campaigns in that region actually ran</i>.</li>
+        <li><b>Most valuable exactly when references are thin</b> — new titles with no history, unfamiliar regions or genres, or tight timelines, where a coordinator would otherwise be guessing.</li>
+        <li><b>Levels up the whole team</b> — encodes best-practice targeting so a newer coordinator builds like our most experienced one.</li>
+      </ul>
+      <div class="need">⚡ <b>Requires the external AI component to work as intended.</b> The AI layer is what reasons about an unfamiliar title, layers in the brief, and turns our real data into a usable recommendation — it's the piece that makes the guidance genuinely strategic. It runs on <b>one server-side key</b>; no data sits in anyone's browser.</div>
+    </div>
+
     <h2>The ask — a small, well-scoped last mile</h2>
     <ol class="ask">
       <li><b>Host it</b>One small internal VM (behind VPN) serves the form + Suggested Targeting to all 5 of us.</li>
-      <li><b>Enable Suggest</b>Historicals-only first (zero external deps); optional AI layer later behind one server-side key.</li>
+      <li><b>Enable Suggest</b>Turn on Suggested Targeting — the external AI component powers the strategic guidance (one server-side key; a historicals-only mode is a limited fallback).</li>
       <li><b>Own the refresh</b>A daily data-refresh job (already scripted) keeps dropdowns &amp; suggestions current.</li>
     </ol>
 
