@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ops Automation — ROI Calculator</title>
+<style>
+  :root{
+    --ink:#14171f; --muted:#5b6472; --line:#e4e7ec; --bg:#fff; --panel:#f7f8fa;
+    --accent:#1f6feb; --accent-soft:#eaf1fe; --good:#0f8a5f; --good-soft:#e7f6ef; --radius:12px;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:#eceef1; line-height:1.45; -webkit-font-smoothing:antialiased;}
+  .page{width:980px; max-width:100%; margin:24px auto; background:var(--bg); border:1px solid var(--line);
+    border-radius:16px; overflow:hidden; box-shadow:0 6px 28px rgba(20,23,31,.08);}
+  header{padding:24px 32px 18px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,#fbfcfe,#f4f7fb);}
+  .eyebrow{font-size:12px; letter-spacing:.10em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  h1{font-size:23px; margin:6px 0 3px; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:13.5px}
+  .body{padding:20px 32px 28px; display:grid; grid-template-columns:340px 1fr; gap:24px}
+  h2{font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 12px}
+  .field{margin-bottom:14px}
+  .field label{display:block; font-size:13px; font-weight:600; margin-bottom:5px}
+  .field .hint{font-size:11.5px; color:var(--muted); font-weight:400}
+  .field input{width:100%; font-size:15px; padding:9px 11px; border:1px solid var(--line); border-radius:9px; background:var(--bg)}
+  .field input:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .results{display:flex; flex-direction:column; gap:14px}
+  .big{border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; background:var(--good-soft); border-color:#cfe9db}
+  .big .n{font-size:40px; font-weight:800; letter-spacing:-.02em; color:var(--good); line-height:1}
+  .big .l{font-size:13px; color:var(--ink); margin-top:6px; font-weight:600}
+  .big .s{font-size:12.5px; color:var(--muted); margin-top:3px}
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .rc{border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--bg)}
+  .rc .n{font-size:24px; font-weight:750; letter-spacing:-.01em}
+  .rc .n.b{color:var(--accent)}
+  .rc .l{font-size:11.5px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:.04em}
+  .note{font-size:12px; color:var(--muted); border-left:3px solid var(--line); padding:8px 14px; margin-top:2px}
+  footer{padding:12px 32px; border-top:1px solid var(--line); color:var(--muted); font-size:11.5px}
+  .assump{font-size:11.5px; color:var(--muted); margin-top:6px}
+  @media print{ body{background:#fff} .page{box-shadow:none;border:none;margin:0;width:100%} }
+  @media(max-width:760px){ .body{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">Promo Operations Automation · ROI Calculator</div>
+    <h1>What hosting this saves the team</h1>
+    <div class="sub">Enter your real numbers on the left — the results update live. Defaults use the ops estimates (−60% build time, −75% error rate).</div>
+  </header>
+  <div class="body">
+    <div>
+      <h2>Your inputs</h2>
+      <div class="field">
+        <label>Orders built per year <span class="hint">— across the team</span></label>
+        <input id="orders" type="number" min="0" step="10" value="1000">
+      </div>
+      <div class="field">
+        <label>Avg time to build one order (min) <span class="hint">— manual, today</span></label>
+        <input id="tmin" type="number" min="0" step="1" value="45">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Build-time reduction</label>
+          <input id="tcut" type="number" min="0" max="100" step="1" value="60"> <span class="hint">%</span>
+        </div>
+        <div class="field">
+          <label>Loaded cost / hour <span class="hint">optional</span></label>
+          <input id="rate" type="number" min="0" step="5" value="55"> <span class="hint">$</span>
+        </div>
+      </div>
+      <h2 style="margin-top:8px">Error / rework</h2>
+      <div class="row2">
+        <div class="field">
+          <label>Current error rate</label>
+          <input id="erate" type="number" min="0" max="100" step="0.5" value="8"> <span class="hint">% of orders</span>
+        </div>
+        <div class="field">
+          <label>Error reduction</label>
+          <input id="ecut" type="number" min="0" max="100" step="1" value="75"> <span class="hint">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Rework time per error (hrs) <span class="hint">— fix + re-traffic + QA</span></label>
+        <input id="ehrs" type="number" min="0" step="0.25" value="2">
+      </div>
+    </div>
+
+    <div>
+      <h2>Estimated annual impact</h2>
+      <div class="results">
+        <div class="big">
+          <div class="n" id="totalHours">—</div>
+          <div class="l">hours saved per year</div>
+          <div class="s" id="fte">—</div>
+        </div>
+        <div class="cards">
+          <div class="rc"><div class="n" id="buildHours">—</div><div class="l">Hrs saved — faster builds</div></div>
+          <div class="rc"><div class="n" id="errHours">—</div><div class="l">Hrs saved — fewer errors</div></div>
+          <div class="rc"><div class="n b" id="dollars">—</div><div class="l">Est. $ value / year</div></div>
+          <div class="rc"><div class="n b" id="errAvoided">—</div><div class="l">Mis-trafficked orders avoided</div></div>
+        </div>
+        <div class="note" id="perOrder">—</div>
+        <div class="assump">The two headline percentages are ops estimates; everything else is arithmetic on your inputs. “Fewer errors” counts only the rework hours — the bigger, harder-to-price win is avoiding live mis-targeting and make-goods.</div>
+      </div>
+    </div>
+  </div>
+  <footer>Promo Operations Automation · figures update from your inputs · print to PDF with ⌘/Ctrl-P</footer>
+</div>
+<script>
+  const $ = id => document.getElementById(id);
+  const ids = ["orders","tmin","tcut","rate","erate","ecut","ehrs"];
+  const fmt = n => n.toLocaleString(undefined,{maximumFractionDigits:0});
+  function calc(){
+    const orders=+$("orders").value||0, tmin=+$("tmin").value||0, tcut=(+$("tcut").value||0)/100,
+          rate=+$("rate").value||0, erate=(+$("erate").value||0)/100, ecut=(+$("ecut").value||0)/100,
+          ehrs=+$("ehrs").value||0;
+    const buildHours = orders * tmin * tcut / 60;
+    const errorsNow = orders * erate;
+    const errAvoided = errorsNow * ecut;
+    const errHours = errAvoided * ehrs;
+    const totalHours = buildHours + errHours;
+    const dollars = totalHours * rate;
+    const fteHours = 1800; // productive hrs/yr
+    $("buildHours").textContent = fmt(buildHours);
+    $("errHours").textContent = fmt(errHours);
+    $("totalHours").textContent = fmt(totalHours);
+    $("dollars").textContent = "$"+fmt(dollars);
+    $("errAvoided").textContent = fmt(errAvoided);
+    $("fte").textContent = "≈ "+(totalHours/fteHours).toFixed(2)+" FTE-years of capacity returned";
+    const newMin = tmin*(1-tcut);
+    $("perOrder").textContent = "Per order: "+tmin+" min → "+newMin.toFixed(0)+" min (a "+fmt(tcut*100)+"% cut). "
+      + "Error rate: "+(erate*100).toFixed(1)+"% → "+((erate*(1-ecut))*100).toFixed(1)+"%.";
+  }
+  ids.forEach(id=>$(id).addEventListener("input",calc));
+  calc();
+</script>
+</body>
+</html>
