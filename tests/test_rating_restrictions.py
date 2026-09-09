@@ -91,6 +91,22 @@ def test_short_rating_label_never_passes_through_as_vg_id():
     assert all(len(x) >= 5 for x in r.resolve("UK", ["15", "18"]))
 
 
+def test_au_extra_dnr_vg_selectable_include_and_exclude():
+    # The AU "DNR - Adult Content Ratings" VG isn't under the "Content Rating" naming, but is
+    # merged in so it's selectable in AU's rating pickers and resolves to its VG id — usable as
+    # both an include and an exclude, and never leaking into another region.
+    r = RatingRestrictionResolver().load()
+    assert "DNR - Adult Content Ratings" in r.ratings_for("AU")
+    assert r.resolve("AU", ["DNR - Adult Content Ratings"]) == ["1204831367"]
+    assert "DNR - Adult Content Ratings" not in r.ratings_for("UK")
+    # end to end: AND-ed into every set as an include, and present as an exclude
+    order = _order("AU", "Paramount + - AU",
+                   ratings=["DNR - Adult Content Ratings"],
+                   includes=["DNR - Adult Content Ratings"])
+    assert _every_set_ands_vg(order, "1204831367")
+    assert "1204831367" in _excluded_vgs(order)
+
+
 def test_ie_ratings_alias_to_uk():
     # Ireland has no rating VGs of its own; it shares the UK/BBFC classification, so its
     # ratings resolve to the UK Content Rating VGs (real ids, never the raw "15"/"18").

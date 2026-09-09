@@ -32,6 +32,14 @@ _REGION_ALIAS = {"IE": "UK"}
 # directly) must accept only the former, never mistake a short rating label for an id.
 _MIN_RAW_VG_ID_LEN = 5
 
+# Extra rating Video Groups that aren't under the "VG: Content Rating: {region}: {rating}"
+# naming (so the sync doesn't pick them up) but the team wants selectable in a region's rating
+# include/exclude pickers — e.g. the AU "DNR" (Do-Not-Run) adult-content VG. region -> {picker
+# label -> VG id}. Labels must NOT contain a colon (the picker hides colon labels as sub-variants).
+_EXTRA_RATING_VGS: dict[str, dict[str, str]] = {
+    "AU": {"DNR - Adult Content Ratings": "1204831367"},   # VG: DNR: AU: Adult Content Ratings
+}
+
 
 def _norm(s: str) -> str:
     return " ".join(str(s or "").strip().lower().split())
@@ -70,6 +78,12 @@ class RatingRestrictionResolver:
                         continue
                     self._by_region.setdefault(region, {})[_norm(rating)] = str(row.get("id"))
                     self._labels.setdefault(region, []).append(rating)
+        # Merge in the extra (non-"Content Rating"-named) VGs so they're selectable too.
+        for region, extras in _EXTRA_RATING_VGS.items():
+            for label, vg in extras.items():
+                if _norm(label) not in self._by_region.setdefault(region, {}):
+                    self._by_region[region][_norm(label)] = str(vg)
+                    self._labels.setdefault(region, []).append(label)
         self._loaded = True
         return self
 
