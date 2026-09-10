@@ -573,10 +573,14 @@ class OrderBuilder:
         # of a site group. When set, it replaces the site-group main subset in the body.
         main_vgs = list(brand_cfg.get("main_video_groups", []))
         pause_main = list(brand_cfg.get("pause_main_site_groups", []))
-        # Pluto TV brands exclude Samsung TV Plus SGs on EVERY placement (placement-level
-        # content exclude), region-scoped: US SGs domestically, the intl SGs abroad.
+        # Samsung TV Plus is excluded on EVERY placement ONLY for the "Pluto TV - {Region}"
+        # brands (region-scoped: US SGs domestically, the intl SGs abroad). Other brands that
+        # merely run on Pluto inventory (e.g. Partner - SE/NO/DK) keep their Pluto targeting but
+        # do NOT exclude Samsung.
         content_excl_sgs: list[str] = []
-        if brand_cfg.get("pluto_brand"):
+        is_pluto_tv_brand = (bool(brand_cfg.get("pluto_brand"))
+                             and str(brand_cfg.get("campaign_name", "")).startswith("Pluto TV"))
+        if is_pluto_tv_brand:
             samsung = relationship_targeting_config().get("samsung_tv_plus", {})
             samsung_sgs = list(samsung.get("domestic" if plan.region == "USA"
                                            else "international", []))

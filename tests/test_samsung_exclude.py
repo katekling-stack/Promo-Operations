@@ -34,6 +34,24 @@ def test_intl_pluto_excludes_intl_samsung_incl_flat():
                                 season_or_messaging="Sur Pluto TV")
 
 
+def test_partner_pluto_brand_has_no_samsung_exclude():
+    # Partner - SE runs on Pluto inventory (pluto_brand) but is NOT a "Pluto TV - {Region}"
+    # brand, so it must NOT exclude Samsung TV Plus.
+    plan = support_plan_from_dict({"promoted_title": "X", "region": "SE",
+                                   "campaign": {"name": "Partner - SE"},
+                                   "durations": [30], "genres": ["Comedy"]})
+    order = OrderBuilder().build(plan)
+    assert order.placements
+    samsung = {"1121578", "1164068", "1164069", "932411", "932412"}
+    for p in order.placements:
+        body = FreeWheelClient._placement_body(p)
+        found = set((body.get("content_targeting", {}) or {}).get("exclude", {}).get("site_group", []))
+        for s in body.get("relationship_targeting", {}).get("set", []):
+            found |= set(s.get("content_targeting", {}).get("network_items", {})
+                         .get("exclude", {}).get("site_group", []))
+        assert not (samsung & found), f"{p.name}: unexpectedly excludes Samsung {samsung & found}"
+
+
 def test_non_pluto_brand_has_no_samsung_exclude():
     plan = support_plan_from_dict({"promoted_title": "X", "region": "USA",
                                    "campaign": {"name": "Paramount + - USA"},
