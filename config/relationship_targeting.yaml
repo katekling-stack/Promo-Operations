@@ -23,15 +23,10 @@ domestic_usa:
     platform_site_groups:
     - '929447'
     - '929449'
-    # Custom-targeting key-value excludes on every pause set. Domestic (US) uses the
-    # short list; all international regions use the fuller list.
-    exclude_key_values:
-    - sb=14
-    - tsb=14
-    - tve=14
-    - tve=17
-    # International pause ads no longer apply the sb/tsb/tve key-value excludes (removed per
-    # ops). Kept empty (not deleted) so it's explicit; domestic still uses the list above.
+    # Custom-targeting key-value (sb/tsb/tve) excludes on pause sets are RETIRED globally —
+    # no campaign/region applies them anymore (removed per ops). Both lists kept empty (not
+    # deleted) so re-adding is a one-line change if ever needed.
+    exclude_key_values: []
     exclude_key_values_international: []
     exclude_video_groups:
     - '98314060'

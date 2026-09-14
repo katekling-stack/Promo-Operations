@@ -47,9 +47,9 @@ def test_tier3_genre_uses_video_groups():
     assert "74003267" in vg   # VG: Genre: Crime
 
 
-def test_pause_key_value_excludes_are_region_scoped():
-    """Domestic (US) pause sets carry the sb/tsb/tve custom key-value excludes; international
-    regions no longer apply them (removed per ops)."""
+def test_pause_key_value_excludes_are_retired_globally():
+    """The sb/tsb/tve custom key-value excludes on pause sets are retired everywhere —
+    neither domestic (US) nor international regions apply them anymore."""
     from promo_ops.plan_loader import support_plan_from_dict
 
     def _pause_kv(region, campaign):
@@ -65,7 +65,7 @@ def test_pause_key_value_excludes_are_region_scoped():
         # No custom key-value exclude at all -> empty set.
         return set((st.get("custom_targeting", {}) or {}).get("exclude", {}).get("key_value", []))
 
-    assert _pause_kv("USA", "Paramount + - USA") == {"sb=14", "tsb=14", "tve=14", "tve=17"}
+    assert _pause_kv("USA", "Paramount + - USA") == set()        # domestic: none
     assert _pause_kv("IE", "Paramount + - IE") == set()          # international: none
 
 
