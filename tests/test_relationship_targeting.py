@@ -48,8 +48,8 @@ def test_tier3_genre_uses_video_groups():
 
 
 def test_pause_key_value_excludes_are_region_scoped():
-    """Domestic (US) pause sets use the short custom key-value exclude list; all
-    international regions use the fuller one."""
+    """Domestic (US) pause sets carry the sb/tsb/tve custom key-value excludes; international
+    regions no longer apply them (removed per ops)."""
     from promo_ops.plan_loader import support_plan_from_dict
 
     def _pause_kv(region, campaign):
@@ -61,13 +61,12 @@ def test_pause_key_value_excludes_are_region_scoped():
         order = OrderBuilder().build(plan)
         p = next(pp for pp in order.placements if "Pause Ad (Tier 4)" in pp.name)
         body = FreeWheelClient._placement_body(p)
-        return set(body["relationship_targeting"]["set"][0]["custom_targeting"]
-                   ["exclude"]["key_value"])
+        st = body["relationship_targeting"]["set"][0]
+        # No custom key-value exclude at all -> empty set.
+        return set((st.get("custom_targeting", {}) or {}).get("exclude", {}).get("key_value", []))
 
     assert _pause_kv("USA", "Paramount + - USA") == {"sb=14", "tsb=14", "tve=14", "tve=17"}
-    assert _pause_kv("IE", "Paramount + - IE") == {
-        "sb=14", "sb=17", "tsb=14", "tsb=17",
-        "tve=14", "tve=15", "tve=17", "tve=24", "tve=25"}
+    assert _pause_kv("IE", "Paramount + - IE") == set()          # international: none
 
 
 def test_recommended_show_key_value_when_content_id_present():

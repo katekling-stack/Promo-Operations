@@ -30,16 +30,9 @@ domestic_usa:
     - tsb=14
     - tve=14
     - tve=17
-    exclude_key_values_international:
-    - sb=14
-    - sb=17
-    - tsb=14
-    - tsb=17
-    - tve=14
-    - tve=15
-    - tve=17
-    - tve=24
-    - tve=25
+    # International pause ads no longer apply the sb/tsb/tve key-value excludes (removed per
+    # ops). Kept empty (not deleted) so it's explicit; domestic still uses the list above.
+    exclude_key_values_international: []
     exclude_video_groups:
     - '98314060'
     - '98405426'

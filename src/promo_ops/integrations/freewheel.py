@@ -1264,11 +1264,14 @@ class FreeWheelClient:
             pplat = pause.get("platform_site_groups", [])
             plat_subsets = [{"site_group": pmain}, {"site_group": pplat}]
             ex = base_exclude(video_group=pause.get("exclude_video_groups", []))
-            # Domestic (US) uses the short key-value exclude list; international regions
-            # use the fuller one.
-            kv = pause.get("exclude_key_values", [])
-            if not getattr(p, "region_is_domestic", True):
-                kv = pause.get("exclude_key_values_international") or kv
+            # Pause key-value excludes (sb/tsb/tve) apply to DOMESTIC (US) campaigns only.
+            # International campaigns use their own list (currently empty -> no key-value
+            # exclude). Use the international list AS-IS (no fallback to domestic) so an empty
+            # list truly means "none".
+            if getattr(p, "region_is_domestic", True):
+                kv = pause.get("exclude_key_values", [])
+            else:
+                kv = pause.get("exclude_key_values_international", [])
             custom_excl = ({"custom_targeting": {"exclude": {"key_value": kv}}} if kv else {})
             if p.tier == 1:
                 s = {"set_name": "Affinity Shows", **custom_excl}
