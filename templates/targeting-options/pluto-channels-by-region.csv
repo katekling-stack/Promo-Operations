@@ -134,6 +134,7 @@ USA,Baby Shark TV
 USA,Bad Girls Club
 USA,Badass novelas
 USA,Bar Rescue
+USA,Basketball Wives
 USA,Battlestar Galactica
 USA,Baywatch
 USA,Beach Day
@@ -242,6 +243,7 @@ USA,Car Chase
 USA,Casos de la Dra. Polo
 USA,Casos de la Dra. Polo 2
 USA,Cats 24/7
+USA,Celia
 USA,Champions League Goals
 USA,Charmed
 USA,Chassy
@@ -347,6 +349,7 @@ USA,Earthday 365
 USA,Eastern Washington
 USA,Ebony TV Drama
 USA,Ebony TV Drama 2
+USA,El Capo
 USA,El Reino Infantil
 USA,El Rey Rebel
 USA,Emergencia 911
@@ -361,6 +364,7 @@ USA,EstrellaTV
 USA,EuroNews
 USA,Expedientes Sobrenaturales
 USA,F1 Channel
+USA,FLS Free Live Sports
 USA,FOX 10 Phoenix
 USA,FOX 11 Los Angeles
 USA,FOX 13 Seattle
@@ -440,6 +444,7 @@ USA,Gaming on Verizon
 USA,Garfield and Friends
 USA,Ghost Hunters
 USA,Ghost Whisperer
+USA,Ghosts
 USA,Go Go Gadget!
 USA,Godzilla
 USA,Godzilla 2
@@ -484,6 +489,7 @@ USA,Ink Master
 USA,Inuyasha
 USA,Investiga
 USA,Iron Chef
+USA,It's Anime
 USA,Jamie Oliver Channel
 USA,Jane the Virgin
 USA,Jeopardy! hosted by Alex Trebek
@@ -508,6 +514,7 @@ USA,LIVE STREAM TEST
 USA,La Academia
 USA,La Familia del Barrio
 USA,La Familia del Barrio 2
+USA,La novia de Estambul
 USA,Law and Order
 USA,Let's Make A Deal
 USA,Let’s Make A Deal
@@ -705,6 +712,7 @@ USA,Pluto TV Franchise Favorites
 USA,Pluto TV Game Shows
 USA,Pluto TV Gamer
 USA,Pluto TV Her
+USA,Pluto TV Hispanic Favorites
 USA,Pluto TV History
 USA,Pluto TV Home
 USA,Pluto TV Hometown Drama
@@ -729,6 +737,7 @@ USA,Pluto TV Reality
 USA,Pluto TV Rocky
 USA,Pluto TV Rocky + Creed
 USA,Pluto TV Romance
+USA,Pluto TV Royal Drama
 USA,Pluto TV Sci-Fi
 USA,Pluto TV Sci-Fi 1
 USA,Pluto TV Sci-Fi 2
@@ -762,6 +771,7 @@ USA,Property Brothers
 USA,QVC 2
 USA,Qello Concerts
 USA,Queens of Reality
+USA,Quirky AF
 USA,Rainbow Squad
 USA,Rawhe
 USA,Rawhide
@@ -913,6 +923,7 @@ USA,True Live Google DAI
 USA,TuDiscovery
 USA,TuWarner
 USA,UFC
+USA,UPN Sitcoms Pluto TV
 USA,Ultimate Builds
 USA,UnXplained Zone
 USA,Undercover Boss
@@ -1041,6 +1052,7 @@ CA,21 Jump Street
 CA,3ICE Hockey World Cup 2026
 CA,48 Hours
 CA,50 Cent Action
+CA,7th Heaven
 CA,A Million Little Things
 CA,APTN Beyond
 CA,AWSN
@@ -1091,6 +1103,7 @@ CA,Cheaters
 CA,Cheddar News
 CA,Cheers
 CA,Christmas 365
+CA,Classic TV Comedy
 CA,Classica
 CA,Come Dine With Me
 CA,Comedy Central
@@ -1123,6 +1136,7 @@ CA,Dynasty
 CA,FBI Files
 CA,FIFA+
 CA,FailArmy
+CA,Family Feud Canada
 CA,Family Feud Classic
 CA,Family Ties
 CA,Farmer Wants a Wife
@@ -1130,6 +1144,7 @@ CA,Fatal Attraction
 CA,Fear Factor
 CA,Festive Fireplace
 CA,Fixers and Flippers
+CA,FloHockey 24/7
 CA,Forensic Files
 CA,Frasier
 CA,Fresh Movies by VVS Films
@@ -1166,6 +1181,7 @@ CA,HauntTV
 CA,Hawai Five-0
 CA,History & Warfare
 CA,Hit Sitcoms
+CA,Hogan's Heroes
 CA,Holiday Lights
 CA,Home Outside
 CA,Homeful
@@ -1241,6 +1257,7 @@ CA,NCIS - Best of Tony & Ziva
 CA,NCIS - Los Angeles
 CA,NCL 20 Canada
 CA,NFB
+CA,NFL Channel
 CA,NHL Channel
 CA,Naruto
 CA,Nash Bridges
@@ -1302,6 +1319,7 @@ CA,Pluto TV Snooker 900
 CA,Pluto TV Spicy
 CA,Pluto TV Sports
 CA,Pluto TV Spotlight
+CA,Pluto TV TGIF Comedy
 CA,Pluto TV True Crime
 CA,Pluto TV Truly Canadian
 CA,Pluto TV Westerns
@@ -1329,6 +1347,7 @@ CA,River Monsters
 CA,Rock Channel
 CA,Romance 365
 CA,Ryan and Friends
+CA,SI TV
 CA,SUMO Paris 2026
 CA,Sailor Moon
 CA,Saw
@@ -1394,6 +1413,7 @@ CA,The Red Green Channel
 CA,The Walking Dead Universe
 CA,The Weather Network
 CA,The Wiggles Classic
+CA,The Wild Wild West
 CA,The X-files
 CA,This Old House
 CA,Three's Company
@@ -1404,6 +1424,7 @@ CA,Top Gear - Racing Icons
 CA,Tortues Ninja TV
 CA,Total Crime
 CA,Totally Turtles
+CA,Touched By An Angel
 CA,Transformers
 CA,True Crime Now
 CA,UEFA TEST CANADA
@@ -1419,11 +1440,13 @@ CA,Wicked Tuna
 CA,Will & Grace
 CA,Willow Sports
 CA,Wipeout
+CA,Wired2Fish
 CA,World Poker Tour
 CA,World of Love Island
 CA,Yo! MTV
 CA,Yu-Gi-Oh!
 CA,Z Nation
+CA,Zuffa Boxing Prelims
 BR,A Caçadora de Relíquias
 BR,A Culpa é do Cabral
 BR,A Feiticeira
@@ -1432,6 +1455,7 @@ BR,Acumuladores Obsessivos
 BR,Ad Ops Test Channel 2
 BR,AdoroCinema
 BR,Adrenalina Pura TV
+BR,Amor de Aluguel by Noverama TV
 BR,Are you the One?
 BR,As Aventuras de Jackie Chan
 BR,As Panteras
@@ -1453,6 +1477,7 @@ BR,Best of The Drew Barrymore Show
 BR,Beyblade
 BR,Billiard TV
 BR,Bloomberg Television
+BR,Blue Bloods
 BR,Bob Esponja Calça Quadrada
 BR,Boruto - Naruto Next Generations
 BR,Brazil's Next Top Model
@@ -1501,11 +1526,11 @@ BR,MTV Biggest Pop
 BR,MTV Catfish
 BR,MTV Classic
 BR,MTV Com o Ex
-BR,MTV Dating - GF
 BR,MTV Drag
 BR,MTV EMA
 BR,MTV Flow Latino
 BR,MTV Halloween
+BR,MTV Ink Master
 BR,MTV Jovens e Mães
 BR,MTV Just Tattoo of Us
 BR,MTV Músicas de Natal
@@ -1518,6 +1543,8 @@ BR,MTV Ridiculousness - GF
 BR,MTV Rocks
 BR,MTV Shore
 BR,MTV Spankin' New
+BR,MTV VMA 2026 em Inglês
+BR,MTV VMA 2026 em Português
 BR,MacGyver
 BR,Mais MasterChef Brasil
 BR,Manual do Mundo
@@ -1534,6 +1561,7 @@ BR,Músicas de Natal
 BR,NCIS
 BR,NCIS - O Melhor de Tony & Ziva
 BR,NEW Brasil
+BR,NFL Channel
 BR,Naruto
 BR,Naruto Shippuden
 BR,NatureTime
@@ -1552,6 +1580,7 @@ BR,Numbers
 BR,O Clube das Winx
 BR,O Encantador de Cães
 BR,O Homem que veio do Céu
+BR,O Rei do Bairro
 BR,O Reino Infantil
 BR,Oggy e as Baratas Tontas
 BR,One Piece
@@ -1582,14 +1611,17 @@ BR,Pluto TV Cine Natal
 BR,Pluto TV Cine Romance
 BR,Pluto TV Cine Sucessos
 BR,Pluto TV Cine Terror
+BR,Pluto TV Cine Trapalhões
 BR,Pluto TV Cineminha
 BR,Pluto TV Comédia
 BR,Pluto TV Cozinha
+BR,Pluto TV Criaturas Malditas
 BR,Pluto TV Curiosidade
 BR,Pluto TV Desenhos Clássicos
 BR,Pluto TV Era de Ouro do Cinema
 BR,Pluto TV Esportes
 BR,Pluto TV Esportes 2
+BR,Pluto TV Espírito de Natal
 BR,Pluto TV Estilo de Vida
 BR,Pluto TV Fashionstream
 BR,Pluto TV Ficção Científica
@@ -1612,16 +1644,19 @@ BR,Pluto TV Kids Club
 BR,Pluto TV Minha Obsessão Favorita
 BR,Pluto TV Mistérios
 BR,Pluto TV Modus Super Series Darts
+BR,Pluto TV Natal em Família
 BR,Pluto TV Natureza
 BR,Pluto TV Negócio Fechado
 BR,Pluto TV Netmovies
 BR,Pluto TV Novelas
+BR,Pluto TV Novelas Teen
 BR,Pluto TV Paisagens por Stingray
 BR,Pluto TV Policial
 BR,Pluto TV Porta dos Fundos
 BR,Pluto TV Quebrando o Tabu
 BR,Pluto TV Record News
 BR,Pluto TV Retrô
+BR,Pluto TV Romance de Natal
 BR,Pluto TV Shows por Stingray
 BR,Pluto TV Star Trek
 BR,Pluto TV Séries
@@ -1651,6 +1686,7 @@ BR,Runtime
 BR,SFT Combat
 BR,Salon Line
 BR,Schitt's Creek
+BR,Sexta-Feira 13
 BR,Smithsonian Channel Pluto TV
 BR,Sobrevivi
 BR,Sony One Shark Tank Brasil
@@ -1665,6 +1701,8 @@ BR,South Park - O Melhor do Stan
 BR,South Park - Rock and Roll
 BR,Sports Go
 BR,Starsky & Hutch - Justiça em Dobro
+BR,Stingray Cityscapes
+BR,Stingray Hits Brasileiros
 BR,Super Onze
 BR,TV Brasil
 BR,TV Cultura
@@ -1727,6 +1765,7 @@ UK,Ad Ops Test Channel 2
 UK,Advent Calendar
 UK,Advertising Test Channel
 UK,Aftershock
+UK,Alien Files Unsealed
 UK,America's Funniest Home Videos - Holiday Edition
 UK,America's Next Top Model
 UK,Andromeda
@@ -1827,16 +1866,17 @@ UK,Forensic Files
 UK,Full Custom Garage
 UK,Funnier AF
 UK,Funny AF
+UK,Gamera
 UK,Garfield & Friends
+UK,Generation Iron
 UK,Geordie Shore
 UK,Get.factual
 UK,Ghost Dimension
 UK,Ghost Hunters
-UK,Ghostly Encounters
 UK,Girlfriends
 UK,Glory Kickboxing
 UK,Great British Menu
-UK,Greatest Hits
+UK,Greatest Hits of Music
 UK,Gunsmoke
 UK,Gusto TV
 UK,Hart to Hart
@@ -1911,6 +1951,7 @@ UK,MTV Thriller Night
 UK,MTV on Tour!
 UK,MacGyver
 UK,Mad Men
+UK,Man City TV
 UK,Mario vs. Sonic
 UK,Married with Children
 UK,Master Chef Australila
@@ -1946,6 +1987,7 @@ UK,My Strange Addiction
 UK,Mystery TV
 UK,Mythbusters
 UK,Mythbusters+
+UK,NFL Channel
 UK,Nature Time
 UK,Naturescape
 UK,New Life in the Sun
@@ -2042,6 +2084,7 @@ UK,Pluto TV Kids Learn
 UK,Pluto TV Luxury Listings
 UK,Pluto TV Masters of Horror
 UK,Pluto TV Mistletoe
+UK,Pluto TV More 80's Action
 UK,Pluto TV More Movies
 UK,Pluto TV Motor
 UK,Pluto TV Motor+
@@ -2114,10 +2157,12 @@ UK,Rules Of Engagement
 UK,SUMO Paris 2026
 UK,Sabrina Teenage Witch
 UK,Sabrina The Teenage Witch
+UK,Sam and Colby
 UK,Sarah's House
 UK,Saw
 UK,Say Yes To The Dress
 UK,Scorpion
+UK,Sea Patrol
 UK,Secret Dealers
 UK,Sensing Murder
 UK,She-Ra and the Princesses of Power
@@ -2146,6 +2191,7 @@ UK,Teen Mom
 UK,Teen Mom UK
 UK,Teletubbies
 UK,Tennis Channel
+UK,Terra Matter WILD
 UK,Test Channel
 UK,That 60's
 UK,That Peter Crouch Podcast
@@ -2159,6 +2205,7 @@ UK,The Challenge
 UK,The Crystal Maze
 UK,The Dick Van Dyke Show
 UK,The Ed Sullivan Show
+UK,The First 48 & Beyond
 UK,The Graham Norton Show
 UK,The Great Christmas Light Fight
 UK,The Hotel Inspector
@@ -2175,6 +2222,7 @@ UK,The Raccoons
 UK,The Real Housewives
 UK,The Smurfs
 UK,The Therapy Crouch
+UK,The Walking Dead Universe
 UK,The Yellow Couch with Jeremy Lynch
 UK,Tiny Pop
 UK,Top Chef
@@ -2220,6 +2268,7 @@ UK,Yo! MTV
 UK,Yo! MTV Raps Classic
 UK,Yu-Gi-Oh!
 FR,Adjugé - vendu!
+FR,Adrenaline Spica Life
 FR,Alerte Cobra
 FR,Alerte à Malibu
 FR,Allociné
@@ -2258,6 +2307,7 @@ FR,Christmas Songs
 FR,Ciné 666 by Pluto TV
 FR,Ciné Action by Pluto TV
 FR,Ciné Catastrophe by Pluto TV
+FR,Ciné Charme by Pluto TV
 FR,Ciné Gore & Slasher by Pluto TV
 FR,Ciné Horreur by Pluto TV
 FR,Ciné Romance by Pluto TV
@@ -2316,11 +2366,13 @@ FR,INA 70'
 FR,Illuminations de Noël
 FR,Inazuma Eleven
 FR,Incroyables Transformations
+FR,Ink Master
 FR,Instant Saga
 FR,Investigation by Pluto TV
 FR,JAG
 FR,Just Tattoo of Us
 FR,Juste pour rire GAGS
+FR,Konbini
 FR,La Moderna
 FR,La maison France 5
 FR,Le Figaro TV
@@ -2359,6 +2411,7 @@ FR,Monster Jam
 FR,Montreux Comedy
 FR,Most Haunted
 FR,Motorvision
+FR,NFL Channel
 FR,Nature Time
 FR,Nina
 FR,Nos Années pensions
@@ -2388,7 +2441,6 @@ FR,Pluto TV Comédies Cultes
 FR,Pluto TV Concert
 FR,Pluto TV Cuisine
 FR,Pluto TV Cuisine+
-FR,Pluto TV Dating
 FR,Pluto TV Extrême
 FR,Pluto TV Feu de cheminée
 FR,Pluto TV Footanim'
@@ -2412,8 +2464,8 @@ FR,Pluto TV Nature
 FR,Pluto TV Paranormal
 FR,Pluto TV Polar
 FR,Pluto TV Polar+
-FR,Pluto TV Pride
 FR,Pluto TV Rap
+FR,Pluto TV Reality
 FR,Pluto TV Retro Toons
 FR,Pluto TV Rich
 FR,Pluto TV SOS Secours
@@ -2439,6 +2491,7 @@ FR,Pêche300
 FR,Qui veut gagner des millions?
 FR,Qwest TV
 FR,Realmadrid TV
+FR,Red Bull TV
 FR,Rex - Chien Flic
 FR,Ridiculousness
 FR,Robot Wars by MECH+
@@ -2460,6 +2513,7 @@ FR,Starsky & Hutch
 FR,Stingray Classica
 FR,Teen Mom
 FR,Telefe Noticias
+FR,Tennis Channel
 FR,The Asylum
 FR,The Pet Collective
 FR,Top Gear
@@ -2516,6 +2570,7 @@ IT,Baywatch
 IT,Beavis & Butt-head
 IT,Best of The Drew Barrymore Show
 IT,Billiard TV
+IT,Black Beard Project
 IT,Borussia Dortmund TV
 IT,CBS News 24/7
 IT,CNN Headlines International
@@ -2537,6 +2592,7 @@ IT,DFB Play TV
 IT,DRM Test Channel 1 IT
 IT,Deluxe Lounge HD
 IT,Desi Play TV
+IT,Distretto di Polizia
 IT,Doctor Who
 IT,Due Fantagenitori
 IT,Duri a Morire
@@ -2554,9 +2610,10 @@ IT,Flashpoint
 IT,Forensic Files
 IT,Gambero Rosso
 IT,Geordie Shore
-IT,Gli Immortali - Van Damme vs Lundgren
+IT,Gli Immortali - Seagal vs Lundgren
 IT,Gormiti
 IT,Got Game
+IT,H2O & Friends
 IT,Hell's Kitchen
 IT,Horror Club
 IT,I Jefferson
@@ -2589,6 +2646,7 @@ IT,Medium
 IT,Mission Impossible
 IT,Monster Jam
 IT,Mutant X
+IT,NFL Channel
 IT,NUMB3RS
 IT,Naturescape
 IT,New Tricks
@@ -2605,8 +2663,10 @@ IT,Pluto TV Alberto Sordi
 IT,Pluto TV Alieni
 IT,Pluto TV Amori in cucina
 IT,Pluto TV Anime
+IT,Pluto TV Arte
 IT,Pluto TV Azione Cult
 IT,Pluto TV Bud & Terence
+IT,Pluto TV Cartoni Animati
 IT,Pluto TV Catastrofi
 IT,Pluto TV Celebration
 IT,Pluto TV Christmas Family
@@ -2645,6 +2705,7 @@ IT,Pluto TV In Love
 IT,Pluto TV Italia Bella
 IT,Pluto TV K-Pop
 IT,Pluto TV Kids
+IT,Pluto TV Kids Classics
 IT,Pluto TV Kids Ukraine
 IT,Pluto TV Legami Letali
 IT,Pluto TV Matrimoni
@@ -2676,6 +2737,7 @@ IT,Pluto TV Star Trek
 IT,Pluto TV Storia
 IT,Pluto TV Summer
 IT,Pluto TV Teen
+IT,Pluto TV Teen Club
 IT,Pluto TV Totò
 IT,Pluto TV True Crime
 IT,Pluto TV Viaggi
@@ -2687,6 +2749,7 @@ IT,Qwest TV
 IT,Rakuten Viki
 IT,Rally TV
 IT,Realmadrid TV
+IT,Red Bull TV
 IT,Relic Hunter
 IT,Renegade
 IT,Ridiculousness
@@ -2713,6 +2776,7 @@ IT,South Park Rock'N'Roll
 IT,South Park San Valentino
 IT,South Park VIP
 IT,Space Live
+IT,Spongebob
 IT,Sposati...con figli
 IT,Squadra Speciale Cobra 11
 IT,Star Trek - Deep Space Nine
@@ -2725,7 +2789,6 @@ IT,Sulle tracce del crimine
 IT,Super! A casa dei Loud
 IT,Super! Big Time Rush
 IT,Super! Brothers and Sisters
-IT,Super! Cartoni Animati
 IT,Super! Cupido
 IT,Super! Danger & Thunder
 IT,Super! Eroi
@@ -2735,24 +2798,20 @@ IT,Super! Girl Power
 IT,Super! Halloween
 IT,Super! Instant Mom
 IT,Super! Intervallo
-IT,Super! Kids Classics
 IT,Super! Magia
 IT,Super! Mamma
 IT,Super! Mystery
 IT,Super! Natale
 IT,Super! Papà
-IT,Super! Pop
 IT,Super! Pop+
 IT,Super! Rugrats
 IT,Super! Spaziale
-IT,Super! SpongeBob
 IT,Super! Spongebob+
 IT,Super! Spyders
 IT,Super! Summer
 IT,Super! Surprise
 IT,Super! Victorious
 IT,Super! Zoey 101
-IT,Super! iCarly
 IT,Super! iCarly+
 IT,Tandem
 IT,Teen Mom
@@ -2794,6 +2853,7 @@ IT,VH1+ Pride
 IT,VH1+ Rock!
 IT,VH1+ Summer Vibes
 IT,VH1+ back to 90's
+IT,VMA
 IT,VOD
 IT,Viva la Mamma!
 IT,Wicked Tuna
@@ -2803,6 +2863,9 @@ IT,Yo! VH1+
 IT,Young & Fabulous
 IT,Young & Fabulous+
 IT,Yu-Gi-Oh!
+IT,ZDF Guardia Costiera
+IT,ZDF Squadra Speciale Lipsia
+IT,iCarly
 FI,21 Jump Street
 FI,3ICE Hockey World Cup 2026
 FI,48 hours
@@ -2810,10 +2873,12 @@ FI,7th Heaven
 FI,AWSN
 FI,America's Funniest Home Videos
 FI,America's Next Top Model
+FI,American Gladiators
 FI,Anger Management
 FI,Auction Hunters
 FI,Avatar
 FI,Baywatch
+FI,Beauty and the Beast
 FI,Beavis and Butt-Head
 FI,Best of Magnus Midtbø
 FI,Beverly Hills 90210
@@ -2829,6 +2894,7 @@ FI,Burning Love
 FI,CBS News 24/7
 FI,CNN Headlines International
 FI,CSI - Miami
+FI,Cagney & Lacey
 FI,Car Chase
 FI,Catfish - OMG!
 FI,Chappelle's Show
@@ -2848,6 +2914,7 @@ FI,Dominance FC TV
 FI,Dora TV
 FI,Duudsonit
 FI,Dynastia
+FI,Enkelin kosketus
 FI,Ernest goes to Pluto TV
 FI,Escape to the Country
 FI,Euronews
@@ -2857,12 +2924,14 @@ FI,Farscape
 FI,Finland Ruutu Test 2026
 FI,Flashpoint
 FI,Flipper - The New Adventures
+FI,FloHockey 24/7
 FI,Forensic Files
 FI,Frasier
 FI,Frasier - Nilesin parhaat
 FI,Frasier - tähtivieraat
 FI,Frasier juhlatuulella
 FI,Freaks and Geeks
+FI,Friday the 13th - The TV series
 FI,From Dusk Till Dawn - The Series
 FI,From South Park with Love
 FI,Glory Kickboxing
@@ -2903,12 +2972,12 @@ FI,MTV Awkward
 FI,MTV Biggest Pop
 FI,MTV Catfish
 FI,MTV Classic
-FI,MTV Dating
 FI,MTV EMA
 FI,MTV Ex On The Beach
 FI,MTV Flow Latino
 FI,MTV Geordie Shore
 FI,MTV Halloween
+FI,MTV Ink Master
 FI,MTV Jersey Shore
 FI,MTV Jouluhitit
 FI,MTV Movie Hits
@@ -2920,9 +2989,11 @@ FI,MTV Spankin' New
 FI,MTV Teen Mom
 FI,MTV The Hills
 FI,MTV Thriller Night
+FI,MTV VMAs 2026
 FI,MTV Xmas
 FI,MTV on Tour!
 FI,Madventures
+FI,Man City TV
 FI,Man with a Plan
 FI,Mando Diao MTV Unplugged
 FI,Matlock
@@ -2933,6 +3004,7 @@ FI,Motorvision
 FI,NCIS
 FI,NCIS - Gibbsin parhaat
 FI,NCIS - Tonyn ja Zivan parhaat
+FI,NFL Channel
 FI,NonStop Kung Fu
 FI,Numb3rs
 FI,Näin meillä
@@ -2955,6 +3027,7 @@ FI,Pluto TV Haileffat
 FI,Pluto TV Halloween lapsille
 FI,Pluto TV Harlequin
 FI,Pluto TV Hirviöt ja demonit
+FI,Pluto TV Horror Classics
 FI,Pluto TV John Wayne
 FI,Pluto TV Joulufiilis
 FI,Pluto TV Joulujaksot
@@ -3021,6 +3094,10 @@ FI,South Park Rockin' Out
 FI,Space Live
 FI,Speed Racer
 FI,Spin City
+FI,Star Trek - Deep Space Nine
+FI,Star Trek - Enterprise
+FI,Star Trek - The Animated Series
+FI,Star Trek - The Klingon Logs
 FI,Star Trek - The Next Generation
 FI,Star Trek - The Original Series
 FI,Star Trek - Voyager
@@ -3034,7 +3111,13 @@ FI,Teachers
 FI,Team Ahma
 FI,Teen Wolf
 FI,Tennis Channel
+FI,That's 60s
+FI,That's 70s
+FI,That's 80s
+FI,That's 90s00s
+FI,That's Rock
 FI,The 4400
+FI,The Bob Ross Channel
 FI,The Daily Show
 FI,The Graham Norton Show
 FI,The Great Christmas Light Fight
@@ -3054,7 +3137,6 @@ FI,Top Gear Challenge
 FI,Top Gear Classics
 FI,Top Gear Road Trips
 FI,Totally Turtles
-FI,Touched by an Angel
 FI,Triton Poker
 FI,UFC
 FI,VOD
@@ -3077,8 +3159,10 @@ DK,7th Heaven
 DK,AWSN
 DK,Afterwork TV
 DK,All exclusive
+DK,Amalies verden
 DK,America's Funniest Home Videos
 DK,America's Next Top Model
+DK,American Gladiators
 DK,Andersens Julehemmelighed
 DK,Andromeda
 DK,Anger Management
@@ -3143,6 +3227,7 @@ DK,DFB Play TV
 DK,Dallas Cowboys Cheerleaders
 DK,Dance Moms
 DK,Danmarks Næste Topmodel
+DK,Danske Hollywoodfruer
 DK,Dansktoppen
 DK,Dating Naked UK
 DK,Dawson's Creek
@@ -3156,6 +3241,7 @@ DK,Det store eksperiment
 DK,Diagnosis Murder
 DK,Discountheltene
 DK,Ditzel & Turbomodul
+DK,Divaernes Dillemmaer
 DK,Doctor Who
 DK,Doctor Who Classic
 DK,Dog The Bounty Hunter
@@ -3169,6 +3255,7 @@ DK,Døds World Championship
 DK,Ekstrem hjemmeservice
 DK,Ernest goes to Pluto TV
 DK,Escape to the Country
+DK,Et Ton Cash
 DK,Euronews
 DK,Everybody Hates Chris
 DK,Ex On The Beach
@@ -3186,6 +3273,7 @@ DK,Farscape
 DK,Fear Factor
 DK,Flashpoint
 DK,Flipper - The New Adventures
+DK,FloHockey 24/7
 DK,For lækker til love
 DK,Forbidden Apple
 DK,Forensic Files
@@ -3206,6 +3294,7 @@ DK,Geordie Shore
 DK,Ghost Dimension
 DK,Gigolos
 DK,Glory Kickboxing
+DK,Great by Choice
 DK,Gunsmoke
 DK,Gustav & Linse på udebane
 DK,HORSE TV
@@ -3244,9 +3333,11 @@ DK,Jersey Shore Family Vacation
 DK,Judge Judy
 DK,Julehvalpe
 DK,Julesjov for børn
+DK,Just Shoot Me
 DK,Just Tattoo Of Us
 DK,Just for Laughs GAGS
 DK,Karadayi
+DK,Kebab Date
 DK,Key & Peele
 DK,Kickin'it
 DK,Klassiske dramaserier fra Viafree
@@ -3268,11 +3359,11 @@ DK,MTV Catfish
 DK,MTV Christmas Songs
 DK,MTV Classic
 DK,MTV Cribs
-DK,MTV Dating
 DK,MTV EMA
 DK,MTV Flow Latino
 DK,MTV Halloween
 DK,MTV Hits
+DK,MTV Ink Master
 DK,MTV Love Music
 DK,MTV Movie Hits
 DK,MTV Queens of Pop
@@ -3284,9 +3375,11 @@ DK,MTV Summer Hits
 DK,MTV Teen Mom
 DK,MTV Thriller Night
 DK,MTV Unplugged
+DK,MTV VMAs 2026
 DK,MTV on Tour!
 DK,MTV x Smukfest
 DK,MacGyver
+DK,Man City TV
 DK,Man with a Plan
 DK,Mando Diao MTV Unplugged
 DK,MasterChef Danmarks største madtalenter
@@ -3308,6 +3401,7 @@ DK,NCIS
 DK,NCIS - Det bedste med Gibbs
 DK,NCIS - Det bedste med Tony & Ziva
 DK,NCIS - Los Angeles
+DK,NFL Channel
 DK,Nathan for you
 DK,Nature Time
 DK,Nick Ukraine
@@ -3322,6 +3416,7 @@ DK,Pacific Blue
 DK,Padeltime TV
 DK,Paradise
 DK,Paradise Hotel
+DK,Paradise Hotel - Ny säsong
 DK,Paradise Hotel - Under lagnerne
 DK,Party of Five
 DK,Paw Patrol
@@ -3349,6 +3444,7 @@ DK,Pluto TV Halloween for børn
 DK,Pluto TV Harlequin
 DK,Pluto TV History
 DK,Pluto TV Horror
+DK,Pluto TV Horror Classics
 DK,Pluto TV Humor
 DK,Pluto TV Hus fra helvede
 DK,Pluto TV Håndbold Highlights
@@ -3369,6 +3465,7 @@ DK,Pluto TV Paranormal
 DK,Pluto TV Pejs
 DK,Pluto TV Romantik
 DK,Pluto TV Sci-Fi
+DK,Pluto TV Sci-fi film
 DK,Pluto TV Sherlock Holmes
 DK,Pluto TV Snooker 900
 DK,Pluto TV Space
@@ -3437,8 +3534,14 @@ DK,Space Live
 DK,Speed Racer
 DK,Spin City
 DK,Sport Live Replay
+DK,Star Trek - Deep Space Nine
+DK,Star Trek - Enterprise
 DK,Star Trek - Fanfavoritter
+DK,Star Trek - The Animated Series
+DK,Star Trek - The Klingon Logs
+DK,Star Trek - The Next Generation
 DK,Star Trek - The Original Series
+DK,Star Trek - Voyager
 DK,Star Trek Movies
 DK,Survivor
 DK,Survivorman
@@ -3450,7 +3553,14 @@ DK,Tareq Taylor's Nordic Cookery
 DK,Tattoo Fixers
 DK,Taxi
 DK,Teen Wolf
+DK,Temptation Island
+DK,That's 60s
+DK,That's 70s
+DK,That's 80s
+DK,That's 90s00s
+DK,That's Rock
 DK,The 4400
+DK,The Bob Ross Channel
 DK,The Daily Show
 DK,The F Word
 DK,The Graham Norton Show
@@ -3518,6 +3628,7 @@ NO,AWSN
 NO,Afterwork TV
 NO,America's Funniest Home Videos
 NO,America's Next Top Model
+NO,American Gladiators
 NO,Andromeda
 NO,Anger Management
 NO,Are You The One?
@@ -3615,6 +3726,7 @@ NO,Fangene på Fortet
 NO,Farscape
 NO,Flashpoint
 NO,Flipper - The New Adventures
+NO,FloHockey 24/7
 NO,Forbidden Apple
 NO,Forensic Files
 NO,Forsidefruer
@@ -3686,11 +3798,11 @@ NO,MTV Catfish
 NO,MTV Christmas Songs
 NO,MTV Classic
 NO,MTV Cribs
-NO,MTV Dating
 NO,MTV EMA
 NO,MTV Flow Latino
 NO,MTV Halloween
 NO,MTV Hits
+NO,MTV Ink Master
 NO,MTV Love Music
 NO,MTV Movie Hits
 NO,MTV Queens of Pop
@@ -3702,8 +3814,10 @@ NO,MTV Summer Hits
 NO,MTV Teen Mom
 NO,MTV Thriller Night
 NO,MTV Unplugged
+NO,MTV VMAs 2026
 NO,MTV on Tour!
 NO,MacGyver
+NO,Man City TV
 NO,Man with a Plan
 NO,Mando Diao MTV Unplugged
 NO,Matlock
@@ -3718,6 +3832,7 @@ NO,Monster Jam
 NO,Motorvision
 NO,My Super Sweet 16
 NO,NCIS
+NO,NFL Channel
 NO,Nathan for you
 NO,Nature Time
 NO,Nick Ukraine
@@ -3757,6 +3872,7 @@ NO,Pluto TV Halloween for barn
 NO,Pluto TV Harlequin
 NO,Pluto TV History
 NO,Pluto TV Horror
+NO,Pluto TV Horror Classics
 NO,Pluto TV Hus fra helvete
 NO,Pluto TV Inside
 NO,Pluto TV John Wayne
@@ -3776,6 +3892,7 @@ NO,Pluto TV Overnaturlig
 NO,Pluto TV Peis
 NO,Pluto TV Romantikk
 NO,Pluto TV Sci-Fi
+NO,Pluto TV Sci-fi filmer
 NO,Pluto TV Sherlock Holmes
 NO,Pluto TV Snooker 900
 NO,Pluto TV Space
@@ -3836,7 +3953,14 @@ NO,South Park Rockin' Out
 NO,Space Live
 NO,Speed Racer
 NO,Spin City
+NO,Star Trek - Deep Space Nine
+NO,Star Trek - Enterprise
+NO,Star Trek - Fanfavoritter
+NO,Star Trek - The Animated Series
+NO,Star Trek - The Klingon Logs
+NO,Star Trek - The Next Generation
 NO,Star Trek - The Original Series
+NO,Star Trek - Voyager
 NO,Star Trek Movies
 NO,Storage Wars
 NO,Survivor
@@ -3851,7 +3975,13 @@ NO,Tattoo Fixers
 NO,Taxi
 NO,Teen Wolf
 NO,Tennis Channel
+NO,That's 60s
+NO,That's 70s
+NO,That's 80s
+NO,That's 90s00s
+NO,That's Rock
 NO,The 4400
+NO,The Bob Ross Channel
 NO,The Daily Show
 NO,The F Word
 NO,The Graham Norton Show
@@ -3914,6 +4044,7 @@ SE,AWSN
 SE,Afterwork TV
 SE,America's Funniest Home Videos
 SE,America's Next Top Model
+SE,American Gladiators
 SE,American Pickers
 SE,Andromeda
 SE,Anger Management
@@ -4011,6 +4142,7 @@ SE,Family Ties
 SE,Farscape
 SE,Flashpoint
 SE,Flipper - The New Adventures
+SE,FloHockey 24/7
 SE,Forbidden Apple
 SE,Forensic Files
 SE,Frasier
@@ -4061,6 +4193,7 @@ SE,Jersey Shore Family Vacation
 SE,Judge Judy
 SE,Julskoj för barn
 SE,Julvalpar
+SE,Just Shoot Me
 SE,Just Tattoo Of Us
 SE,Just for Laughs GAGS
 SE,Karadayi
@@ -4086,11 +4219,11 @@ SE,MTV Catfish
 SE,MTV Christmas Songs
 SE,MTV Classic
 SE,MTV Cribs
-SE,MTV Dating
 SE,MTV EMA
 SE,MTV Flow Latino
 SE,MTV Halloween
 SE,MTV Hits
+SE,MTV Ink Master
 SE,MTV Love Music
 SE,MTV Movie Hits
 SE,MTV Pride - Archived
@@ -4103,8 +4236,10 @@ SE,MTV Summer Hits
 SE,MTV Teen Mom
 SE,MTV Thriller Night
 SE,MTV Unplugged
+SE,MTV VMAs 2026
 SE,MTV on Tour!
 SE,MacGyver
+SE,Man City TV
 SE,Man with a Plan
 SE,Mando Diao MTV Unplugged
 SE,Mannen som talar med hundar
@@ -4121,6 +4256,7 @@ SE,Motorvision
 SE,My Super Sweet 16
 SE,NCIS
 SE,NCIS - New Orleans
+SE,NFL Channel
 SE,Nathan for you
 SE,Nature Time
 SE,Nick Ukraine
@@ -4135,6 +4271,7 @@ SE,Pacific Blue
 SE,Padeltime TV
 SE,Paradise
 SE,Paradise Hotel
+SE,Paradise Hotel Ny säsong
 SE,Party of Five
 SE,Paw Patrol
 SE,Pawn Stars
@@ -4166,6 +4303,7 @@ SE,Pluto TV Handboll Live
 SE,Pluto TV Harlequin
 SE,Pluto TV History
 SE,Pluto TV Horror
+SE,Pluto TV Horror Classics
 SE,Pluto TV Hus från helvetet
 SE,Pluto TV Inside
 SE,Pluto TV John Wayne
@@ -4184,6 +4322,7 @@ SE,Pluto TV Music
 SE,Pluto TV Paranormal
 SE,Pluto TV Romantik
 SE,Pluto TV Sci-Fi
+SE,Pluto TV Sci-fi filmer
 SE,Pluto TV Sherlock Holmes
 SE,Pluto TV Slutet är nära
 SE,Pluto TV Snooker 900
@@ -4246,7 +4385,14 @@ SE,South Park Rockin' Out
 SE,Space Live
 SE,Speed Racer
 SE,Spin City
+SE,Star Trek - Deep Space Nine
+SE,Star Trek - Enterprise
+SE,Star Trek - Fansens favoriter
+SE,Star Trek - The Animated Series
+SE,Star Trek - The Klingon Logs
+SE,Star Trek - The Next Generation
 SE,Star Trek - The Original Series
+SE,Star Trek - Voyager
 SE,Star Trek Movies
 SE,Storage Wars
 SE,Stugfixarna Norge
@@ -4264,7 +4410,13 @@ SE,Tattoo Fixers
 SE,Taxi
 SE,Teen Wolf
 SE,Tennis Channel
+SE,That's 60s
+SE,That's 70s
+SE,That's 80s
+SE,That's 90s00s
+SE,That's Rock
 SE,The 4400
+SE,The Bob Ross Channel
 SE,The Daily Show
 SE,The F Word
 SE,The Graham Norton Show
@@ -4325,6 +4477,7 @@ SE,Zoey 101
 SE,iCarly
 SE,iCarly+
 ES,A las 11 en casa
+ES,Acapulco Shore
 ES,Actualidad 360
 ES,Al salir de clase
 ES,Alaska y Mario
@@ -4353,6 +4506,7 @@ ES,COPS
 ES,Car Chase
 ES,Cazador de Homicidas
 ES,Cazasubastas
+ES,Cenando con Pablo
 ES,Cheers
 ES,Cherif
 ES,Chilevision Noticias
@@ -4427,6 +4581,7 @@ ES,Llama a la Comadrona
 ES,Los Asesinatos de Midsomer
 ES,Los Asesinatos de Midsomer+
 ES,Los Gipsy Kings
+ES,Los Misteriosos asesinatos de Miss Fisher
 ES,Los Mosqueteros
 ES,Los Pitufos
 ES,Los archivos del FBI
@@ -4447,7 +4602,6 @@ ES,MTV CATFISH
 ES,MTV Catfish+
 ES,MTV Cribs
 ES,MTV Cribs+
-ES,MTV Dating
 ES,MTV EMA
 ES,MTV Embarazada a los 16
 ES,MTV En Vivo
@@ -4456,6 +4610,7 @@ ES,MTV Geordie's
 ES,MTV Halloween
 ES,MTV Hip Hop & Rap
 ES,MTV Hits Navidad
+ES,MTV Ink Master
 ES,MTV Jerseys
 ES,MTV Love Music
 ES,MTV Movie Hits
@@ -4474,6 +4629,7 @@ ES,MTV Summer Hits
 ES,MTV Tattoo a dos
 ES,MTV Teen Mom
 ES,MTV Urban Music
+ES,MTV VMAs 2026
 ES,MTV Vergüenza ajena
 ES,MTV Women
 ES,MTV Éxitos 2022
@@ -4488,10 +4644,13 @@ ES,Metal Rocks
 ES,Mi Extraña Obsesión
 ES,Monster High
 ES,Monster Jam
+ES,Mr. Bean
 ES,Mutante X
 ES,MyPadel TV
 ES,NCIS
+ES,NFL Channel
 ES,Nature Time
+ES,Noche y día
 ES,Noobees
 ES,One Piece
 ES,PFL MMA
@@ -4599,6 +4758,8 @@ ES,Rakuten Viki
 ES,Rally TV
 ES,Real Life
 ES,Realmadrid TV
+ES,Rebelde
+ES,Red Bull TV
 ES,Rookie Blue
 ES,Rugrats
 ES,Rugrats+
@@ -4670,7 +4831,9 @@ GSA,100% Hotter
 GSA,21 Jump Street
 GSA,3ICE Hockey World Cup 2026
 GSA,48 Hours
+GSA,60 Jahre Star Trek – Live aus dem Movie Park
 GSA,90210
+GSA,AKIBA Anime
 GSA,AKIBA PASS TV Anime - Sport
 GSA,Air Warriors
 GSA,Alisa - Folge deinem Herzen
@@ -4688,7 +4851,7 @@ GSA,Avatar OV
 GSA,Awkward
 GSA,Ax Men - Die Holzfäller
 GSA,Axel!
-GSA,BBC Travel
+GSA,BBC Lifestyle
 GSA,BIG BROTHER CLASSICS
 GSA,BVB-Frauen
 GSA,Bana Sevmeyi Anlat - Wings of Love
@@ -4719,6 +4882,7 @@ GSA,CC Pluto TV
 GSA,CNN Headlines International
 GSA,CNNi
 GSA,CSI - Cyber
+GSA,Cagney & Lacey
 GSA,Call My Agent!
 GSA,Car Chase
 GSA,Catfish - Neue Episoden
@@ -4755,6 +4919,7 @@ GSA,Der Chef
 GSA,Der Denver-Clan
 GSA,Der Hundetrainer
 GSA,Der Sentinel – Im Auge des Jägers
+GSA,Die Addams Family
 GSA,Die Casagrandes
 GSA,Die Nanny
 GSA,Die Schöne und das Biest
@@ -4838,6 +5003,7 @@ GSA,Just for Laughs
 GSA,Just.fishing
 GSA,Kickin'it
 GSA,Kids' Choice Awards 2022
+GSA,Kommissar Rex
 GSA,KultKrimi
 GSA,KultKrimi - Der Alte
 GSA,KultKrimi - Der Kommissar
@@ -4852,6 +5018,7 @@ GSA,Leprechaun
 GSA,Liebe Sünde
 GSA,Loupe
 GSA,Love Boat
+GSA,MODUS Super Series - Deutsche Woche
 GSA,MODUS Super Series Darts
 GSA,MOVIEDOME
 GSA,MST3K
@@ -4866,13 +5033,13 @@ GSA,MTV Christmas Songs
 GSA,MTV Classic
 GSA,MTV Cribs
 GSA,MTV Cribs+
-GSA,MTV Dating
 GSA,MTV Dating (OV)
 GSA,MTV EMA
 GSA,MTV Flow Latino
 GSA,MTV German Music
 GSA,MTV Halloween
 GSA,MTV Hot Summer
+GSA,MTV Ink Master
 GSA,MTV Love Music
 GSA,MTV Movie Hits
 GSA,MTV Music
@@ -4881,8 +5048,8 @@ GSA,MTV Party
 GSA,MTV Pimp My Ride
 GSA,MTV Pluto TV
 GSA,MTV Pluto TV+
-GSA,MTV Pride
 GSA,MTV Queens of Pop
+GSA,MTV Reality
 GSA,MTV Ridiculousness
 GSA,MTV RockZone
 GSA,MTV Rocks
@@ -4916,6 +5083,7 @@ GSA,Myspass TV Total classics
 GSA,Myth Hunters
 GSA,N24 Doku
 GSA,NCIS - New Orleans
+GSA,NFL Channel
 GSA,Naruto
 GSA,Ned's Declassified School Survival Guide
 GSA,Nick Christmas
@@ -4933,6 +5101,7 @@ GSA,Nick Ukraine
 GSA,Nickelodeon Classics
 GSA,Nickelodeon Teen
 GSA,Nickelodeon Toons
+GSA,Numb3rs – Die Logik des Verbrechens
 GSA,Nurse Jackie
 GSA,PRIDEtv
 GSA,Pacific Blue
@@ -5048,6 +5217,11 @@ GSA,Pluto TV Star Trek
 GSA,Pluto TV Star Trek - Animation
 GSA,Pluto TV Star Trek - Bösewichte & Gegenspieler
 GSA,Pluto TV Star Trek - Heghlu'meH QaQ jajvam
+GSA,Pluto TV Star Trek - Kirks Missionen
+GSA,Pluto TV Star Trek - Liebe Beziehungen & Verführung
+GSA,Pluto TV Star Trek - Picards Scharfsinn
+GSA,Pluto TV Star Trek - Spock - Lebe lang und in Frieden
+GSA,Pluto TV Star Trek - Zeitreisen Paradoxa und das Q-Kontinuum
 GSA,Pluto TV Stimulierende Dokus
 GSA,Pluto TV Surf
 GSA,Pluto TV Thriller
@@ -5125,6 +5299,7 @@ GSA,Spyders
 GSA,Squash TV
 GSA,Stand-Up Comedy
 GSA,Star Trek - Deep Space Nine
+GSA,Star Trek - Discovery
 GSA,Star Trek - Enterprise
 GSA,Star Trek - The Next Generation
 GSA,Star Trek - The Original Series
@@ -5141,6 +5316,7 @@ GSA,TMNT - Best of Michelangelo
 GSA,TMNT - Best of Raphael
 GSA,TRT World
 GSA,Takeshi's Castle
+GSA,Talk?Now!
 GSA,Teenage Mutant Ninja Turtles
 GSA,Telenovela ZDF
 GSA,Telenovela ZDF+
@@ -5236,6 +5412,7 @@ LATAM,Best of The Drew Barrymore Show
 LATAM,Beverly Hills 90210
 LATAM,Beyblade
 LATAM,Bloomberg Television
+LATAM,Blue Bloods
 LATAM,Bob Esponja Pantalones Cuadrados
 LATAM,Boom
 LATAM,Boruto - Naruto Next Generations
@@ -5248,6 +5425,7 @@ LATAM,Canal 6 CdMx
 LATAM,Canal Claro
 LATAM,Captain Tsubasa
 LATAM,Cazador de Homicidas
+LATAM,Celia
 LATAM,Chilevision Contigo
 LATAM,Chilevision Deportes
 LATAM,Chilevision Noticias
@@ -5257,7 +5435,7 @@ LATAM,Cinema
 LATAM,Cinépolis Channel
 LATAM,Claro Sports
 LATAM,Claro Sports 2
-LATAM,Claro Sports Mexico
+LATAM,Claro Sports FAST
 LATAM,Comedy Central Pluto TV
 LATAM,Comedy Central South Park
 LATAM,Concert Channel
@@ -5275,6 +5453,7 @@ LATAM,"Dora, La Exploradora"
 LATAM,Dr. G
 LATAM,Dulce by elGourmet
 LATAM,ESR 24/7
+LATAM,El Capo
 LATAM,El Encantador de Perros
 LATAM,El Mariachi
 LATAM,El Reino Infantil
@@ -5335,11 +5514,11 @@ LATAM,MTV Biggest Pop
 LATAM,MTV Catfish
 LATAM,MTV Classic
 LATAM,MTV Con Mi Ex
-LATAM,MTV Dating - GF
 LATAM,MTV Drag
 LATAM,MTV EMA
 LATAM,MTV Flow Latino
 LATAM,MTV Halloween
+LATAM,MTV Ink Master
 LATAM,MTV Música Navideña
 LATAM,MTV Pluto TV
 LATAM,MTV Pride
@@ -5349,6 +5528,8 @@ LATAM,MTV Ridiculousness
 LATAM,MTV Rocks
 LATAM,MTV Spankin' New
 LATAM,MTV Teen Mom
+LATAM,MTV VMAs 2026 en Español
+LATAM,MTV VMAs 2026 en Inglés
 LATAM,MTV on Tour!
 LATAM,MacGyver
 LATAM,Madre
@@ -5365,9 +5546,11 @@ LATAM,Minuto Para Ganar
 LATAM,Misterios sin Resolver
 LATAM,Monstruos de Rio
 LATAM,Motorvision TV
+LATAM,Moviesphere
 LATAM,Mr. Bean Animated
 LATAM,NCIS
 LATAM,NCIS - Lo Mejor de Tony & Ziva
+LATAM,NFL Channel
 LATAM,Naruto
 LATAM,Naruto Shippuden
 LATAM,NatureTime
@@ -5454,12 +5637,13 @@ LATAM,Pluto TV Series
 LATAM,Pluto TV Series Latinas
 LATAM,Pluto TV Series Retro
 LATAM,Pluto TV Series de Acción
-LATAM,Pluto TV Series de Aventura
+LATAM,Pluto TV Series de Aventura y Fantasía
 LATAM,Pluto TV Series de Comedia
 LATAM,Pluto TV Series de Crimen
 LATAM,Pluto TV Series de Drama
 LATAM,Pluto TV Series de Otros Continentes
 LATAM,Pluto TV Series de Sci-Fi
+LATAM,Pluto TV Series de Terror y Suspenso
 LATAM,Pluto TV Stage
 LATAM,Pluto TV Star Trek
 LATAM,Pluto TV Teen
@@ -5496,6 +5680,9 @@ LATAM,South Park - Lo Mejor de Kyle
 LATAM,South Park - Lo Mejor de Stan
 LATAM,South Park - ¡Rock & Roll!
 LATAM,Starsky & Hutch
+LATAM,Stingray Pop Mexicano 80's
+LATAM,Stingray Época Dorada del Cine Mexicano
+LATAM,Stingray Éxitos Regional Mexicano
 LATAM,Survivor México
 LATAM,Susana Giménez
 LATAM,Tastemade
@@ -5508,6 +5695,7 @@ LATAM,Telefe Hits
 LATAM,Telefe Noticias
 LATAM,Telefe Pluto TV
 LATAM,The Ed Sullivan Show
+LATAM,The King of Queens
 LATAM,The New Detectives
 LATAM,The Night Shift
 LATAM,The Pet Collective

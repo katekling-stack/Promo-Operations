@@ -378,7 +378,7 @@ AU - DWH - 10 - ID - Summit - Content - SpongeBob SquarePants watchers APAC,AU-D
 AU - DWH - 10 - ID - Summit - Content - Sunday Hoops watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Content - Survivor watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Content - TBATB watchers APAC,AU-DWH-Summit
-AU - DWH - 10 - ID - Summit - Content - TEST The Good Doctor watchers APAC,AU-DWH-Summit
+AU - DWH - 10 - ID - Summit - Content - TEST The Good Doctor watchers APAC deactivated at 2026-07-22 00:19:27 UTC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Content - Talkin Bout Your Generation watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Content - Taskmasters watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Content - Thank God Youre Here watchers APAC,AU-DWH-Summit
@@ -438,12 +438,14 @@ AU - DWH - 10 - ID - Summit - Genre - Reality watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Genre - Reality watchers US,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Genre - Romance watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Genre - Sports watchers APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Agricultural Forestry and Fishing Occupation APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Auto - Motor Vehicles APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Birthplace Elsewhere APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Indigenous APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Education - Tertiary Education APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Financial - High Family Income APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Summit - Financial - Low Family Income APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Health - Health Conditions APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Lifestage - Families APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Profession - Clerical and administrative workers APAC,AU-DWH-Summit
@@ -559,6 +561,7 @@ AU - DWH - PP - ID - Summit - Content - 1923 Watchers deactivated at 2026-04-28 
 AU - DWH - PP - ID - Summit - Content - 1923 watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - 1923 watchers APAC deactivated at 2026-04-28 03:45:31 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - A League watchers APAC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - Among Us watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Aussie Shore Watchers deactivated at 2026-05-21 01:24:16 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Aussie Shore watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Blue Bloods Watchers deactivated at 2026-04-28 01:51:30 UTC,AU-DWH-Summit
@@ -578,6 +581,7 @@ AU - DWH - PP - ID - Summit - Content - Charmed watchers deactivated at 2026-04-
 AU - DWH - PP - ID - Summit - Content - Criminal Minds Watchers deactivated at 2026-05-21 06:34:03 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Criminal Minds watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Criminal Minds watchers APAC deactivated at 2026-04-28 04:10:31 UTC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - Devotion Obedience or Betrayal watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Dexter Watchers deactivated at 2026-04-28 01:01:27 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Dexter watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Dutton Ranch watchers APAC,AU-DWH-Summit
@@ -661,6 +665,7 @@ AU - DWH - PP - ID - Summit - Content - Scottish Cup watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Sheriff Country Watchers deactivated at 2026-04-27 17:01:04 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Sheriff Country watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Sheriff Country watchers APAC deactivated at 2026-04-28 01:49:06 UTC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - SkyMed watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - South Park Watchers deactivated at 2026-05-21 01:24:35 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - South Park watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Star Trek Discovery watchers APAC,AU-DWH-Summit
@@ -679,13 +684,17 @@ AU - DWH - PP - ID - Summit - Content - Star Trek: Strange New Worlds Watchers d
 AU - DWH - PP - ID - Summit - Content - Star Trek: Strange New Worlds watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Gilded Age Watchers deactivated at 2026-05-21 01:24:36 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Gilded Age watchers APAC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - The Gray House watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Madison Watchers deactivated at 2026-05-21 01:24:37 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Madison watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Neighborhood Watchers deactivated at 2026-05-21 01:24:38 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Neighborhood watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - The Neighborhood watchers APAC deactivated at 2026-04-28 04:13:29 UTC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - The Running Man (2025) watchers APAC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - The Ultimate Fighter watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Tulsa King Watchers deactivated at 2026-05-21 01:24:39 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - Tulsa King watchers APAC,AU-DWH-Summit
+AU - DWH - PP - ID - Summit - Content - Two Years Later watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - UFC Fight Night Watchers deactivated at 2026-05-21 06:34:10 UTC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - UFC Fight Night watchers APAC,AU-DWH-Summit
 AU - DWH - PP - ID - Summit - Content - UFC watchers APAC,AU-DWH-Summit
@@ -1087,8 +1096,11 @@ AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Aldi Brand Overexposed APA
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Aldi Brand Underexposed APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Aldi Mobile Competitors Optus Telstra Vodafone Overexposed APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Aldi Mobile Underexposed APAC,AU-DWH-Summit
+AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Lotterywest APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Picklebet Neds Bet365 Overexposed APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Picklebet Neds Bet365 Underexposed APAC,AU-DWH-Summit
+AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Slater & Gordon Brand Underexposed APAC,AU-DWH-Summit
+AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Slater & Gordon Brand Underexposed B30 APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Woolworths Coles IGA Overexposed APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Custom - Woolworths Coles IGA Underexposed APAC,AU-DWH-Summit
 AU - DWH - Samba TV - Geo - Peak - Viewing - Heavy TV Viewers APAC,AU-DWH-Summit
@@ -1622,6 +1634,7 @@ GL-DDA-1P_12_Days_Of_Christmas_Eve,GL-DDA-1P
 GL-DDA-1P_1883__A_Yellowstone_Origin_Story,GL-DDA-1P
 GL-DDA-1P_21_Jump_Street,GL-DDA-1P
 GL-DDA-1P_22_Jump_Street,GL-DDA-1P
+GL-DDA-1P_50_First_Dates,GL-DDA-1P
 GL-DDA-1P_AWSN,GL-DDA-1P
 GL-DDA-1P_A_Christmas_Karen,GL-DDA-1P
 GL-DDA-1P_A_Demon_s_Revenge,GL-DDA-1P
@@ -1694,9 +1707,11 @@ GL-DDA-1P_Colleen_Hoover_s_Regretting_You,GL-DDA-1P
 GL-DDA-1P_Comedy,GL-DDA-1P
 GL-DDA-1P_Comic_View,GL-DDA-1P
 GL-DDA-1P_Cotton_Comes_To_Harlem,GL-DDA-1P
+GL-DDA-1P_Country_Christmas_Album,GL-DDA-1P
 GL-DDA-1P_Crawl,GL-DDA-1P
 GL-DDA-1P_Crime,GL-DDA-1P
 GL-DDA-1P_Crime_360,GL-DDA-1P
+GL-DDA-1P_Cross,GL-DDA-1P
 GL-DDA-1P_Dallas_Cowboys_Cheerleaders-_Making_The_Team,GL-DDA-1P
 GL-DDA-1P_Dances_with_Wolves,GL-DDA-1P
 GL-DDA-1P_Dating_Naked_UK,GL-DDA-1P
@@ -1760,6 +1775,7 @@ GL-DDA-1P_Good_Will_Hunting,GL-DDA-1P
 GL-DDA-1P_Gravity,GL-DDA-1P
 GL-DDA-1P_HIGH_GROUND,GL-DDA-1P
 GL-DDA-1P_HOMEFRONT,GL-DDA-1P
+GL-DDA-1P_HOOK,GL-DDA-1P
 GL-DDA-1P_Hacked,GL-DDA-1P
 GL-DDA-1P_Half___Half,GL-DDA-1P
 GL-DDA-1P_Hallmark_Movies___More,GL-DDA-1P
@@ -1789,7 +1805,9 @@ GL-DDA-1P_INTL___Madame_X,GL-DDA-1P
 GL-DDA-1P_INTL___Man_With_No_Past,GL-DDA-1P
 GL-DDA-1P_INTL___Matador,GL-DDA-1P
 GL-DDA-1P_INTL___Milli_Vanilli,GL-DDA-1P
+GL-DDA-1P_INTL___Off_the_Grid,GL-DDA-1P
 GL-DDA-1P_INTL___One_Last_Time__An_Evening_with_Lady_Gaga_and_Tony_Bennett,GL-DDA-1P
+GL-DDA-1P_INTL___Prisoner_of_War,GL-DDA-1P
 GL-DDA-1P_INTL___Project_Almanac,GL-DDA-1P
 GL-DDA-1P_INTL___The_Children_of_October_7th,GL-DDA-1P
 GL-DDA-1P_INTL___The_Internship,GL-DDA-1P
@@ -1805,7 +1823,9 @@ GL-DDA-1P_Indiana_Jones_and_the_Temple_of_Doom,GL-DDA-1P
 GL-DDA-1P_Instant_Family,GL-DDA-1P
 GL-DDA-1P_Interstellar,GL-DDA-1P
 GL-DDA-1P_Islands_of_Creation,GL-DDA-1P
+GL-DDA-1P_Jackass-_The_Movie,GL-DDA-1P
 GL-DDA-1P_Jackass_Presents-_Bad_Grandpa,GL-DDA-1P
+GL-DDA-1P_Jackass__The_Movie,GL-DDA-1P
 GL-DDA-1P_Just_Tattoo_Of_Us,GL-DDA-1P
 GL-DDA-1P_Kemba,GL-DDA-1P
 GL-DDA-1P_Kim_Kardashian_West-_Hollywood_Royalty,GL-DDA-1P
@@ -1889,6 +1909,7 @@ GL-DDA-1P_Rambo_III,GL-DDA-1P
 GL-DDA-1P_Reality___Gameshow,GL-DDA-1P
 GL-DDA-1P_Religion___Spirtuality,GL-DDA-1P
 GL-DDA-1P_Rio_Lobo,GL-DDA-1P
+GL-DDA-1P_Rio_Shore,GL-DDA-1P
 GL-DDA-1P_Rizzoli___Isles,GL-DDA-1P
 GL-DDA-1P_Romance,GL-DDA-1P
 GL-DDA-1P_RuPaul_s_Drag_Race_-_All_Stars,GL-DDA-1P
@@ -1902,9 +1923,11 @@ GL-DDA-1P_Same_Kind_Of_Different_As_Me,GL-DDA-1P
 GL-DDA-1P_Santa_Baby,GL-DDA-1P
 GL-DDA-1P_Santa_Girl,GL-DDA-1P
 GL-DDA-1P_Santa_Jaws,GL-DDA-1P
+GL-DDA-1P_Sarah_Off_The_Grid,GL-DDA-1P
 GL-DDA-1P_Sasquatch_Mountain_Man,GL-DDA-1P
 GL-DDA-1P_Scary_Movie_2,GL-DDA-1P
 GL-DDA-1P_Scary_Movie_3,GL-DDA-1P
+GL-DDA-1P_School_of_Rock,GL-DDA-1P
 GL-DDA-1P_Sci-Fi___Fantasy,GL-DDA-1P
 GL-DDA-1P_Science___Technology,GL-DDA-1P
 GL-DDA-1P_Scream_3,GL-DDA-1P
@@ -1920,6 +1943,7 @@ GL-DDA-1P_Sonic_The_Hedgehog_3,GL-DDA-1P
 GL-DDA-1P_Sonic_the_Hedgehog,GL-DDA-1P
 GL-DDA-1P_Sonic_the_Hedgehog_2,GL-DDA-1P
 GL-DDA-1P_Soul_Plane,GL-DDA-1P
+GL-DDA-1P_Special_Ops_True,GL-DDA-1P
 GL-DDA-1P_Sports,GL-DDA-1P
 GL-DDA-1P_Star_Trek,GL-DDA-1P
 GL-DDA-1P_Star_Trek_Beyond,GL-DDA-1P
@@ -1982,6 +2006,7 @@ GL-DDA-1P_Tony_Robbins_Network,GL-DDA-1P
 GL-DDA-1P_Too_Close_For_Christmas,GL-DDA-1P
 GL-DDA-1P_Top_Chef,GL-DDA-1P
 GL-DDA-1P_Top_Gear_UK,GL-DDA-1P
+GL-DDA-1P_Transformers,GL-DDA-1P
 GL-DDA-1P_Transformers_One,GL-DDA-1P
 GL-DDA-1P_Transformers__Rise_of_the_Beasts,GL-DDA-1P
 GL-DDA-1P_Triton_Poker,GL-DDA-1P
