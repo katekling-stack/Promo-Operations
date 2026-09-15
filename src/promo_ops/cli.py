@@ -544,6 +544,19 @@ def _cmd_refresh_form(args: argparse.Namespace) -> int:
         print("  [+] audience segments (sheet)…")
     except Exception:
         pass
+    # Optional: the per-advertiser IO Brand list (the "(Promo)" competitive-separation brands
+    # in the form's Brand picker). Needs MRM client-credentials (FREEWHEEL_MRM_CLIENT_ID/_SECRET);
+    # skips cleanly when they're not provisioned so the rest of the refresh still runs.
+    try:
+        r = subprocess.run([sys.executable, str(REPO_ROOT / "scripts" / "sync_brands.py")],
+                           capture_output=True, text=True)
+        if r.returncode == 0:
+            print("  [+] IO Brands (per-advertiser)…")
+        else:
+            print("      ⚠️  skipped IO Brands — set FREEWHEEL_MRM_CLIENT_ID / _SECRET (MRM API) "
+                  "to sync them; new (Promo) brands won't appear until then.", file=sys.stderr)
+    except Exception as exc:  # noqa: BLE001
+        print(f"      ⚠️  skipped IO Brands: {exc}", file=sys.stderr)
     # Refresh the affinity historicals corpus so newly-launched titles get picked up.
     try:
         from .history import build_corpus
