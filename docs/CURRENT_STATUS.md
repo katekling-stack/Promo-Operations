@@ -36,8 +36,9 @@
 
 - **Salesforce field + credential setup** — needed for full Case→drafts automation (building
   from a plan/form does not depend on it).
-- **FreeWheel MRM client-credentials** not yet provisioned — IO Brand is set by hand on push
-  until then; everything else works.
+- **FreeWheel MRM client-credentials** — provisioned. The IO Brand list now syncs
+  automatically from MRM (new "(Promo)" advertisers pull through on refresh), and the IO Brand
+  is resolved on push. Credentials live only in the local `.env` (never committed).
 - **Suggest helper hosting** — pending the engineering discussion this doc supports.
 - **Housekeeping:** placement hard-delete isn't supported by our FreeWheel gateway, so stray
   placements are cleaned up in the FreeWheel UI.

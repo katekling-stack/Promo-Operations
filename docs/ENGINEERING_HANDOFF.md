@@ -117,7 +117,7 @@ Nothing is hard-coded; nothing is stored in the browser.
 | `PROMO_SUGGEST_HOST` / `PROMO_SUGGEST_PORT` | Suggest helper | Bind address / port (default `127.0.0.1:8770`; use `0.0.0.0` to share). |
 | `FREEWHEEL_USERNAME` / `FREEWHEEL_PASSWORD` | CLI push/sync | FreeWheel Streaming Hub login (OAuth 2.1 PKCE → JWT). **Works today.** |
 | `FREEWHEEL_NETWORK_ID`, `FREEWHEEL_ENVIRONMENT`, `FREEWHEEL_HUB_URL` | CLI | FreeWheel environment routing. |
-| `FREEWHEEL_MRM_CLIENT_ID` / `FREEWHEEL_MRM_CLIENT_SECRET` | CLI | MRM API (client-credentials) — used to auto-create the IO Brand on push. **Not yet provisioned**; without it the IO Brand is set by hand. |
+| `FREEWHEEL_MRM_CLIENT_ID` / `FREEWHEEL_MRM_CLIENT_SECRET` | CLI | MRM API (client-credentials) — syncs the IO Brand list and resolves the IO Brand on push. **Provisioned** (kept in `.env`, never committed). |
 | `FREEWHEEL_ADVERTISER_NAME_FILTER`, `FREEWHEEL_RETRY_*` | CLI | Optional tuning. |
 
 **Auth model:** FreeWheel login is username/password → OAuth PKCE → short-lived JWT, refreshed
@@ -143,8 +143,8 @@ the repo. Run `promo-ops doctor` to verify connectivity + which creds are presen
    value, no approval blockers, no external traffic.
 2. **Then:** once the API-key sign-off lands, add `ANTHROPIC_API_KEY` on the same host — no
    rework, just a restart.
-3. **Later:** move order-building / Case automation server-side once Salesforce field setup +
-   FreeWheel MRM credentials are provisioned.
+3. **Later:** move order-building / Case automation server-side once Salesforce field setup is
+   provisioned. (FreeWheel MRM credentials are already provisioned — see below.)
 
 ---
 
@@ -166,8 +166,8 @@ the repo. Run `promo-ops doctor` to verify connectivity + which creds are presen
 
 - **Salesforce field + credential setup** (in progress) — needed for full Case→drafts
   automation. Building/pushing from a plan/form does **not** depend on it. See the `docs/SALESFORCE_*` set.
-- **FreeWheel MRM client-credentials** not yet provisioned — without them the IO Brand is set
-  by hand on push (everything else works).
+- **FreeWheel MRM client-credentials** — provisioned. The IO Brand list syncs from MRM on
+  refresh and the IO Brand is resolved automatically on push. Credentials live only in `.env`.
 - **Placement hard-delete** isn't cleanly supported by the FreeWheel gateway we use; cleanup
   of stray placements is done in the FreeWheel UI today.
 
