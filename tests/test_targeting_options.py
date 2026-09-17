@@ -37,7 +37,8 @@ def test_audience_segments_match_known_structures():
     aud = opts.audience_segments()
     assert len(aud) > 500
     structs = {s for _, s in aud}
-    assert structs <= {"GL-DDA-1P", "AU-DWH-Summit", "AAM-VCBS-Extension", "comScore"}
+    assert structs <= {"GL-DDA-1P", "US-DDA-1P", "EU/UK-DDA-1P", "APAC-DDA-1P",
+                       "AU-DWH-Summit", "AAM-VCBS-Extension", "comScore"}
     assert any(s == "GL-DDA-1P" for _, s in aud)
     # every kept segment actually matches its structure (no free-text leakage)
     for name, _ in aud:
