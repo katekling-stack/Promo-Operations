@@ -376,6 +376,7 @@ AT,Blue Mountain State
 AT,Blue's Clues
 AT,Bronco
 AT,Bubble Guppies
+AT,Büro Büro
 AT,CBS News 24/7
 AT,CC Made in Germany
 AT,CC Made in Germany+
@@ -418,6 +419,7 @@ AT,Dawson's Creek
 AT,Der Bergdoktor
 AT,Der Chef
 AT,Der Denver-Clan
+AT,Der Fahnder
 AT,Der Hundetrainer
 AT,Der Sentinel – Im Auge des Jägers
 AT,Die Addams Family
@@ -566,6 +568,7 @@ AT,MTV The Shores
 AT,MTV True Life
 AT,MTV Tu Fiesta Latina
 AT,MTV Unplugged
+AT,MTV VMAs 2026
 AT,MTV on Tour!
 AT,MacGyver
 AT,Marco Polo TV
@@ -850,6 +853,7 @@ AT,Trio mit vier Fäusten
 AT,True Jackson
 AT,Twin Peaks
 AT,Täterjagd
+AT,Ultimate Hype
 AT,Unbeaten ESports
 AT,Unentdeckt-Mörder unter uns
 AT,Unfabulous
@@ -2032,6 +2036,7 @@ CH,Blue Mountain State
 CH,Blue's Clues
 CH,Bronco
 CH,Bubble Guppies
+CH,Büro Büro
 CH,CBS News 24/7
 CH,CC Made in Germany
 CH,CC Made in Germany+
@@ -2074,6 +2079,7 @@ CH,Dawson's Creek
 CH,Der Bergdoktor
 CH,Der Chef
 CH,Der Denver-Clan
+CH,Der Fahnder
 CH,Der Hundetrainer
 CH,Der Sentinel – Im Auge des Jägers
 CH,Die Addams Family
@@ -2221,6 +2227,7 @@ CH,MTV The Shores
 CH,MTV True Life
 CH,MTV Tu Fiesta Latina
 CH,MTV Unplugged
+CH,MTV VMAs 2026
 CH,MTV on Tour!
 CH,MacGyver
 CH,Marco Polo TV
@@ -2505,6 +2512,7 @@ CH,Trio mit vier Fäusten
 CH,True Jackson
 CH,Twin Peaks
 CH,Täterjagd
+CH,Ultimate Hype
 CH,Unbeaten ESports
 CH,Unentdeckt-Mörder unter uns
 CH,Unfabulous
@@ -3579,6 +3587,7 @@ DE,Blue Mountain State
 DE,Blue's Clues
 DE,Bronco
 DE,Bubble Guppies
+DE,Büro Büro
 DE,CBS News 24/7
 DE,CC Made in Germany
 DE,CC Made in Germany+
@@ -3621,6 +3630,7 @@ DE,Dawson's Creek
 DE,Der Bergdoktor
 DE,Der Chef
 DE,Der Denver-Clan
+DE,Der Fahnder
 DE,Der Hundetrainer
 DE,Der Sentinel – Im Auge des Jägers
 DE,Die Addams Family
@@ -3768,6 +3778,7 @@ DE,MTV The Shores
 DE,MTV True Life
 DE,MTV Tu Fiesta Latina
 DE,MTV Unplugged
+DE,MTV VMAs 2026
 DE,MTV on Tour!
 DE,MacGyver
 DE,Marco Polo TV
@@ -4052,6 +4063,7 @@ DE,Trio mit vier Fäusten
 DE,True Jackson
 DE,Twin Peaks
 DE,Täterjagd
+DE,Ultimate Hype
 DE,Unbeaten ESports
 DE,Unentdeckt-Mörder unter uns
 DE,Unfabulous
@@ -4500,6 +4512,7 @@ DK,That's 80s
 DK,That's 90s00s
 DK,That's Rock
 DK,The 4400
+DK,The Addams Family
 DK,The Bob Ross Channel
 DK,The Daily Show
 DK,The F Word
@@ -4515,6 +4528,7 @@ DK,The Nanny
 DK,The Nanny & Mr Sheffield - A Fine Romance
 DK,The New Detectives
 DK,The Only Way is Essex
+DK,The Outer Limits
 DK,The Pet Collective
 DK,The Shores
 DK,The Twilight Zone
@@ -5297,6 +5311,7 @@ ES,Gata salvaje
 ES,Go Diego Go!
 ES,Goku Day
 ES,Gol Classics
+ES,Greatest Hits of Music
 ES,H2O & Friends
 ES,Heidi
 ES,Heidi y Marco
@@ -5510,6 +5525,7 @@ ES,"Sakura, cazadora de cartas"
 ES,Saw
 ES,SensaCine TV x Pluto
 ES,Sensación de Vivir
+ES,Series made in Spain de Pluto TV
 ES,Sin tetas no hay paraíso
 ES,South Park
 ES,South Park - Colección Butters
@@ -5539,6 +5555,9 @@ ES,TOP BARÇA
 ES,Telefe Noticias
 ES,Terapia con Charlie
 ES,Test Template ES
+ES,That's 80s
+ES,That's 90s00s
+ES,That's Rock
 ES,The Good Wife
 ES,The Pet Collective
 ES,Tierra de lobos
@@ -5647,6 +5666,7 @@ FI,Horse & Country
 FI,Hot Ones
 FI,House of Lies
 FI,Huvila & Huussi
+FI,Hämärän rajamailla
 FI,IS esittää - Sain sen videolle
 FI,Ihmemies MacGyver
 FI,Inter 24/7
@@ -5820,6 +5840,7 @@ FI,That's 80s
 FI,That's 90s00s
 FI,That's Rock
 FI,The 4400
+FI,The Addams Family
 FI,The Bob Ross Channel
 FI,The Daily Show
 FI,The Graham Norton Show
@@ -5828,6 +5849,7 @@ FI,The Hills - särkyneet sydämet
 FI,The Incredible Hulk
 FI,The L Word
 FI,The Millers
+FI,The Outer Limits
 FI,The Wild Wild West
 FI,Tohtori tuli kaupunkiin
 FI,Top Barça
@@ -5945,6 +5967,7 @@ FR,Gaming TV
 FR,Génération Sitcoms
 FR,Heathcliff
 FR,Homicide
+FR,Horrorland by Pluto TV
 FR,House of Creators
 FR,Hélène et les garçons
 FR,IGN
@@ -5997,6 +6020,7 @@ FR,Monster Jam
 FR,Montreux Comedy
 FR,Most Haunted
 FR,Motorvision
+FR,Mr. Bean
 FR,NFL Channel
 FR,Nature Time
 FR,Nina
@@ -6089,6 +6113,7 @@ FR,Secret Story
 FR,Series by Pluto TV
 FR,Si près de chez vous
 FR,SoFoot+
+FR,Soda
 FR,South Park
 FR,South Park Armageddon
 FR,South Park Halloween
@@ -7013,6 +7038,7 @@ IT,Black Beard Project
 IT,Borussia Dortmund TV
 IT,CBS News 24/7
 IT,CNN Headlines International
+IT,Call the Midwife
 IT,Car Chase
 IT,Carabinieri
 IT,Case Pazzesche
@@ -7084,6 +7110,7 @@ IT,Mayday - Disastro Aereo
 IT,Medium
 IT,Mission Impossible
 IT,Monster Jam
+IT,Mr. Bean
 IT,Mutant X
 IT,NFL Channel
 IT,NUMB3RS
@@ -7292,6 +7319,7 @@ IT,VH1+ Pride
 IT,VH1+ Rock!
 IT,VH1+ Summer Vibes
 IT,VH1+ back to 90's
+IT,VICE
 IT,VMA
 IT,VOD
 IT,Viva la Mamma!
@@ -8324,6 +8352,7 @@ NO,That's 80s
 NO,That's 90s00s
 NO,That's Rock
 NO,The 4400
+NO,The Addams Family
 NO,The Bob Ross Channel
 NO,The Daily Show
 NO,The F Word
@@ -8338,6 +8367,7 @@ NO,The Millers
 NO,The Nanny
 NO,The New Detectives
 NO,The Only Way is Essex
+NO,The Outer Limits
 NO,The Pet Collective
 NO,The Shores
 NO,The Twilight Zone
@@ -9747,6 +9777,7 @@ SE,That's 80s
 SE,That's 90s00s
 SE,That's Rock
 SE,The 4400
+SE,The Addams Family
 SE,The Bob Ross Channel
 SE,The Daily Show
 SE,The F Word
@@ -9762,6 +9793,7 @@ SE,The Nanny
 SE,The Nanny & Mr Sheffield - A Fine Romance
 SE,The New Detectives
 SE,The Only Way is Essex
+SE,The Outer Limits
 SE,The Pet Collective
 SE,The Shores
 SE,The Twilight Zone
@@ -10354,6 +10386,7 @@ UK,MTV Spankin' New
 UK,MTV Summer Hits
 UK,MTV Teen Mom
 UK,MTV Thriller Night
+UK,MTV VMAs 2026
 UK,MTV on Tour!
 UK,MacGyver
 UK,Mad Men
@@ -10772,6 +10805,7 @@ US,American Crimes
 US,American Gladiators
 US,Ancient Aliens
 US,Andy Griffith HISENSE TEST Channel
+US,Ani-Monsters
 US,Anime All Ages
 US,Anime All Day
 US,Anime on Verizon
@@ -11408,6 +11442,7 @@ US,Pluto TV Pro Wrestling
 US,Pluto TV Reaction
 US,Pluto TV Realities en Español
 US,Pluto TV Reality
+US,Pluto TV Recent Releases
 US,Pluto TV Rocky
 US,Pluto TV Rocky + Creed
 US,Pluto TV Romance

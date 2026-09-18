@@ -98,6 +98,7 @@ USA,American Crimes
 USA,American Gladiators
 USA,Ancient Aliens
 USA,Andy Griffith HISENSE TEST Channel
+USA,Ani-Monsters
 USA,Anime All Ages
 USA,Anime All Day
 USA,Anime on Verizon
@@ -734,6 +735,7 @@ USA,Pluto TV Pro Wrestling
 USA,Pluto TV Reaction
 USA,Pluto TV Realities en Español
 USA,Pluto TV Reality
+USA,Pluto TV Recent Releases
 USA,Pluto TV Rocky
 USA,Pluto TV Rocky + Creed
 USA,Pluto TV Romance
@@ -1948,6 +1950,7 @@ UK,MTV Spankin' New
 UK,MTV Summer Hits
 UK,MTV Teen Mom
 UK,MTV Thriller Night
+UK,MTV VMAs 2026
 UK,MTV on Tour!
 UK,MacGyver
 UK,Mad Men
@@ -2359,6 +2362,7 @@ FR,Gaming TV
 FR,Génération Sitcoms
 FR,Heathcliff
 FR,Homicide
+FR,Horrorland by Pluto TV
 FR,House of Creators
 FR,Hélène et les garçons
 FR,IGN
@@ -2411,6 +2415,7 @@ FR,Monster Jam
 FR,Montreux Comedy
 FR,Most Haunted
 FR,Motorvision
+FR,Mr. Bean
 FR,NFL Channel
 FR,Nature Time
 FR,Nina
@@ -2503,6 +2508,7 @@ FR,Secret Story
 FR,Series by Pluto TV
 FR,Si près de chez vous
 FR,SoFoot+
+FR,Soda
 FR,South Park
 FR,South Park Armageddon
 FR,South Park Halloween
@@ -2574,6 +2580,7 @@ IT,Black Beard Project
 IT,Borussia Dortmund TV
 IT,CBS News 24/7
 IT,CNN Headlines International
+IT,Call the Midwife
 IT,Car Chase
 IT,Carabinieri
 IT,Case Pazzesche
@@ -2645,6 +2652,7 @@ IT,Mayday - Disastro Aereo
 IT,Medium
 IT,Mission Impossible
 IT,Monster Jam
+IT,Mr. Bean
 IT,Mutant X
 IT,NFL Channel
 IT,NUMB3RS
@@ -2853,6 +2861,7 @@ IT,VH1+ Pride
 IT,VH1+ Rock!
 IT,VH1+ Summer Vibes
 IT,VH1+ back to 90's
+IT,VICE
 IT,VMA
 IT,VOD
 IT,Viva la Mamma!
@@ -2944,6 +2953,7 @@ FI,Horse & Country
 FI,Hot Ones
 FI,House of Lies
 FI,Huvila & Huussi
+FI,Hämärän rajamailla
 FI,IS esittää - Sain sen videolle
 FI,Ihmemies MacGyver
 FI,Inter 24/7
@@ -3117,6 +3127,7 @@ FI,That's 80s
 FI,That's 90s00s
 FI,That's Rock
 FI,The 4400
+FI,The Addams Family
 FI,The Bob Ross Channel
 FI,The Daily Show
 FI,The Graham Norton Show
@@ -3125,6 +3136,7 @@ FI,The Hills - särkyneet sydämet
 FI,The Incredible Hulk
 FI,The L Word
 FI,The Millers
+FI,The Outer Limits
 FI,The Wild Wild West
 FI,Tohtori tuli kaupunkiin
 FI,Top Barça
@@ -3560,6 +3572,7 @@ DK,That's 80s
 DK,That's 90s00s
 DK,That's Rock
 DK,The 4400
+DK,The Addams Family
 DK,The Bob Ross Channel
 DK,The Daily Show
 DK,The F Word
@@ -3575,6 +3588,7 @@ DK,The Nanny
 DK,The Nanny & Mr Sheffield - A Fine Romance
 DK,The New Detectives
 DK,The Only Way is Essex
+DK,The Outer Limits
 DK,The Pet Collective
 DK,The Shores
 DK,The Twilight Zone
@@ -3981,6 +3995,7 @@ NO,That's 80s
 NO,That's 90s00s
 NO,That's Rock
 NO,The 4400
+NO,The Addams Family
 NO,The Bob Ross Channel
 NO,The Daily Show
 NO,The F Word
@@ -3995,6 +4010,7 @@ NO,The Millers
 NO,The Nanny
 NO,The New Detectives
 NO,The Only Way is Essex
+NO,The Outer Limits
 NO,The Pet Collective
 NO,The Shores
 NO,The Twilight Zone
@@ -4416,6 +4432,7 @@ SE,That's 80s
 SE,That's 90s00s
 SE,That's Rock
 SE,The 4400
+SE,The Addams Family
 SE,The Bob Ross Channel
 SE,The Daily Show
 SE,The F Word
@@ -4431,6 +4448,7 @@ SE,The Nanny
 SE,The Nanny & Mr Sheffield - A Fine Romance
 SE,The New Detectives
 SE,The Only Way is Essex
+SE,The Outer Limits
 SE,The Pet Collective
 SE,The Shores
 SE,The Twilight Zone
@@ -4555,6 +4573,7 @@ ES,Gata salvaje
 ES,Go Diego Go!
 ES,Goku Day
 ES,Gol Classics
+ES,Greatest Hits of Music
 ES,H2O & Friends
 ES,Heidi
 ES,Heidi y Marco
@@ -4768,6 +4787,7 @@ ES,"Sakura, cazadora de cartas"
 ES,Saw
 ES,SensaCine TV x Pluto
 ES,Sensación de Vivir
+ES,Series made in Spain de Pluto TV
 ES,Sin tetas no hay paraíso
 ES,South Park
 ES,South Park - Colección Butters
@@ -4797,6 +4817,9 @@ ES,TOP BARÇA
 ES,Telefe Noticias
 ES,Terapia con Charlie
 ES,Test Template ES
+ES,That's 80s
+ES,That's 90s00s
+ES,That's Rock
 ES,The Good Wife
 ES,The Pet Collective
 ES,Tierra de lobos
@@ -4875,6 +4898,7 @@ GSA,Blue Mountain State
 GSA,Blue's Clues
 GSA,Bronco
 GSA,Bubble Guppies
+GSA,Büro Büro
 GSA,CBS News 24/7
 GSA,CC Made in Germany
 GSA,CC Made in Germany+
@@ -4917,6 +4941,7 @@ GSA,Dawson's Creek
 GSA,Der Bergdoktor
 GSA,Der Chef
 GSA,Der Denver-Clan
+GSA,Der Fahnder
 GSA,Der Hundetrainer
 GSA,Der Sentinel – Im Auge des Jägers
 GSA,Die Addams Family
@@ -5064,6 +5089,7 @@ GSA,MTV The Shores
 GSA,MTV True Life
 GSA,MTV Tu Fiesta Latina
 GSA,MTV Unplugged
+GSA,MTV VMAs 2026
 GSA,MTV on Tour!
 GSA,MacGyver
 GSA,Marco Polo TV
@@ -5348,6 +5374,7 @@ GSA,Trio mit vier Fäusten
 GSA,True Jackson
 GSA,Twin Peaks
 GSA,Täterjagd
+GSA,Ultimate Hype
 GSA,Unbeaten ESports
 GSA,Unentdeckt-Mörder unter uns
 GSA,Unfabulous
