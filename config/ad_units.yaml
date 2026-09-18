@@ -89,6 +89,7 @@ format_ad_unit_group:
   pplus_kids_remnant_pluto: pplus_cbs_pluto_vcbs
   pplus_uk_remnant_pplus: pplus_uk_house
   pplus_uk_remnant_pluto: pplus_cbs_pluto_vcbs
+  my5_remnant: pplus_cbs_pluto_vcbs
   pluto_ca_remnant: pplus_cbs_pluto_vcbs
   network_10_remnant: network_10_house
   nick_au_remnant: pplus_cbs_pluto_vcbs

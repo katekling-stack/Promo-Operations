@@ -312,6 +312,30 @@ formats:
     - CTV
     platforms:
     - Pluto TV
+  my5_remnant:
+    # Optional My5 (Channel 5) breakout for non-My5 UK brands (Paramount+ UK, MTVE UK).
+    # Off by default; opted in via the "My5 breakout" product. Runs the tiered remnant on
+    # the CM-selected My5 inventory (My5 Inventory picker) instead of P+/Pluto — mirrors the
+    # dedicated "5 - UK" campaign's lines: (My5) name infix, pre/mid/post on every duration.
+    format_code: RVID
+    display_name: My5 Non-Guaranteed Video (My5 line)
+    uses_durations: true
+    my5: true                    # platform subset = the CM-selected My5 inventory
+    my5_default:
+    - 'SG: Stream Type: VOD: My5'
+    tier_infix: (My5)
+    duration_infix: (My5)
+    drop_preroll_at_duration: null   # pre/mid/post on every placement (like the 5 - UK lines)
+    targeting_kinds:
+    - dda
+    - series
+    - genre_vgs
+    endpoints:
+    - Desktop
+    - Mobile
+    - CTV
+    platforms:
+    - My5
   pluto_ca_remnant:
     format_code: RVID
     display_name: CA Pluto Non-Guaranteed (Genre + Categories)

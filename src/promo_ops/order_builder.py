@@ -563,8 +563,12 @@ class OrderBuilder:
         # My5 (Channel 5) brands: the platform subset is the CM-selected My5 inventory
         # (Stream Type / My5 Channels site groups), AND-ed into every tier. Falls back to
         # the brand's My5 default when the plan doesn't specify one.
-        if brand_cfg.get("my5_brand"):
-            chosen = plan.my5_site_groups or brand_cfg.get("my5_default", [])
+        # Full My5 brands (5 - UK) OR an optional My5 breakout format on a non-My5 brand
+        # (my5_remnant on Paramount+ UK / MTVE UK): the platform subset is the CM-selected
+        # My5 inventory, falling back to the brand's then the format's My5 default.
+        if brand_cfg.get("my5_brand") or tmpl.get("my5"):
+            chosen = (plan.my5_site_groups or brand_cfg.get("my5_default")
+                      or tmpl.get("my5_default", []))
             my5_ids = self._resolve_my5(chosen)
             if my5_ids:
                 main_sgs = my5_ids
@@ -785,8 +789,10 @@ class OrderBuilder:
                 out.append(placement)
             return out
 
-        # My5 (Channel 5) is not Paramount+, so it carries no P+ subscriber-state signal.
-        skip_dims = {"pplus_user_state"} if brand_cfg.get("my5_brand") else None
+        # My5 (Channel 5) is not Paramount+, so it carries no P+ subscriber-state signal —
+        # true for both full My5 brands and the My5 breakout format on a P+ brand.
+        skip_dims = ({"pplus_user_state"}
+                     if (brand_cfg.get("my5_brand") or tmpl.get("my5")) else None)
         targeting = self.engine.build(plan, fmt, skip_dimensions=skip_dims)
         uses_durations = bool(tmpl.get("uses_durations"))
         durations = self._durations(plan) if uses_durations else [None]

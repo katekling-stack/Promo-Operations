@@ -51,6 +51,7 @@ PRODUCT_LABEL = {
     "cbs_preroll": "CBS Pre-Roll", "after_midroll_bumper": "After Mid-Roll Bumper",
     "cbs_1z_lockdown": "1Z Lockdown", "cbs_2z_lockdown": "2Z Lockdown",
     "pluto_breakout": "Include Pluto (UK P+)", "network_10": "Network 10 (10 Streaming)",
+    "my5_breakout": "My5 breakout (Channel 5)",
 }
 GENRES = ["Action", "Action & Adventure", "Adventure", "Animation", "Anime", "Comedy",
           "Crime", "Documentary", "Drama", "Family", "Fantasy", "Horror", "Kids",
@@ -99,6 +100,9 @@ def app_data() -> dict:
         campaigns.append({"name": cname, "region": _region_of(cname),
                           "brand": b.get("display_name", key), "kids": bool(b.get("kids")),
                           "my5": bool(b.get("my5_brand")),
+                          # Offers the optional My5 breakout product (non-My5 brand) — the My5
+                          # Inventory picker appears only when that product is toggled on.
+                          "my5Breakout": "my5_breakout" in prods,
                           "products": prods, "product_defaults": prod_default,
                           # brand identity for cross-market mirroring (family|kids)
                           "sig": f"{sig[0]}|{int(sig[1])}" if sig else None})
@@ -577,13 +581,13 @@ function onCampaign(){
   const c = currentCampaign();
   $("#brandChip").innerHTML = c ? `<span class="derived">Brand: ${c.brand}</span>` : "";
   $("#kidsWrap").classList.toggle("hidden", !(c && c.kids));
-  $("#my5Wrap").classList.toggle("hidden", !(c && c.my5));
   // products
   const prods = c ? c.products : [];
   const defs = (c && c.product_defaults) || {};
   $("#products").innerHTML = prods.length ? prods.map(p=>prodRow(p, defs[p])).join("")
      : '<p class="hint">Pick a campaign to see its products.</p>';
   bindProducts();
+  syncMy5();   // My5 picker: after products render (its visibility can depend on them)
   $("#prodQuick").classList.toggle("hidden", !prods.length);
   $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
@@ -672,8 +676,22 @@ function bindProducts(){
     seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
       seg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
       b.classList.add("on");
+      syncMy5();   // toggling "My5 breakout" shows/hides the My5 Inventory picker
+      validate();
     }));
   });
+}
+// Is a product family currently toggled "yes"?
+function prodOn(fam){
+  const b=document.querySelector('.prod[data-fam="'+fam+'"] .seg button.on');
+  return !!(b && b.dataset.v==="yes");
+}
+// My5 Inventory picker: shown for a full My5 brand (5 - UK), or when a non-My5 brand's
+// optional "My5 breakout" product is toggled on.
+function syncMy5(){
+  const c=currentCampaign();
+  const show = !!(c && (c.my5 || (c.my5Breakout && prodOn("my5_breakout"))));
+  $("#my5Wrap").classList.toggle("hidden", !show);
 }
 function setProd(fam, val){   // val "yes"/"no" — flip a product row's toggle
   const seg = document.querySelector('.prod[data-fam="'+fam+'"] .seg');
@@ -1131,6 +1149,7 @@ function loadPlan(plan){
     const p=document.querySelector(`.prod[data-fam="${fam}"]`); if(!p) return;
     const want=on?"yes":"no";
     p.querySelectorAll(".seg button").forEach(x=>x.classList.toggle("on", x.dataset.v===want)); });
+  syncMy5();   // reflect a restored "My5 breakout" toggle in the My5 Inventory picker
   // 5) kids audience
   state.kids=new Set(plan.kids_audience||[]);
   $("#kidsSeg").querySelectorAll("button").forEach(x=>{

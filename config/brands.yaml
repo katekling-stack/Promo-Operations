@@ -332,6 +332,7 @@ brands:
         plan_label: Basic Plan
     optional_formats:
     - pplus_uk_remnant_pluto
+    - my5_remnant                # optional My5 (Channel 5) breakout lines
   channel_5_uk:
     display_name: "5 (UK)"
     advertiser_name_contains:
@@ -1324,6 +1325,27 @@ brands:
         drop_units:
         - Paramount House Preroll
     pluto_brand: true
+  # Partner - FI: same Viaplay-style Pluto-only promo partner as DK/NO/SE, for Finland.
+  # No template_campaign_id/template_io_id yet (new market) — the push resolves the
+  # "Partner - FI" campaign by name in FreeWheel; add the ids via brand-sync once live.
+  partner_fi:
+    advertiser_name_contains:
+    - VCBS
+    campaign_name: Partner - FI
+    display_name: Partner (FI)
+    hot_tier4: false            # standard Tier 4 (-10), not the hotter Pluto TV Tier 4 (-8)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
   pluto_tv_kids_se:
     advertiser_name_contains:
     - VCBS
@@ -1921,6 +1943,8 @@ brands:
     formats:
     - remnant_video
     - mtve_after_midroll_bumper
+    optional_formats:
+    - my5_remnant                # optional My5 (Channel 5) breakout lines
     _cloned_from: mtve_dk
   nick_au_2:
     display_name: Nick (AU)

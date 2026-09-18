@@ -42,6 +42,10 @@ PRODUCT_FAMILIES: dict[str, list[str]] = {
     # UK P+ only: the optional Pluto breakout remnant lines. Off by default; the
     # "Include Pluto" checkbox opts them in (Pluto is auto-combined in other regions).
     "pluto_breakout": ["pplus_uk_remnant_pluto"],
+    # UK only: optional My5 (Channel 5) breakout lines for non-My5 brands (Paramount+ UK,
+    # MTVE UK). Off by default; the "My5 breakout" toggle opts them in and the My5 Inventory
+    # picker chooses the endpoints. (Full My5 brands like "5 - UK" use my5_brand instead.)
+    "my5_breakout": ["my5_remnant"],
     # AU only: optional Network 10 (10 Streaming) lines. The opt-in adds whichever
     # members the selected brand supports — P+ AU gets the tiered remnant; Nick AU gets
     # the Kids 10 Streaming remnant + After Mid-Roll Bumper.

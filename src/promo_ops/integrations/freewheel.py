@@ -1192,17 +1192,19 @@ class FreeWheelClient:
         is_pluto = bool(getattr(p, "is_pluto_brand", False))
         is_pplus = bool(getattr(p, "is_pplus_brand", False))
         rec_key = "recommended_shows" if is_pluto else cfg.get("recommended_show_key", "recommended_show")
-        # A dedicated Pluto breakout line (the P+ UK/Kids "(Pluto)" lines + the CA Pluto line)
-        # serves ONLY Pluto inventory (platforms == ['Pluto TV']). The P+ Recommended Show is a
-        # Paramount+ feature and must NOT ride on those lines — they target Pluto TV only. The
-        # Pluto TV brands themselves (is_pluto) keep their own Recommended Show on such lines.
+        # A dedicated single-platform breakout line that ISN'T Paramount+ — the P+ UK/Kids
+        # "(Pluto)" lines, the CA Pluto line, and the My5 breakout line ((platforms) == ['Pluto
+        # TV'] / ['My5']). The P+ Recommended Show is a Paramount+ feature and must NOT ride on
+        # those lines — they target Pluto TV / My5 only. The Pluto TV brands themselves
+        # (is_pluto) keep their own Recommended Show on such lines.
         placement_platforms = [str(x) for x in getattr(p, "platforms", [])]
-        pluto_only_line = placement_platforms == ["Pluto TV"]
+        non_pplus_breakout = (len(placement_platforms) == 1
+                              and not placement_platforms[0].startswith("Paramount+"))
         # Recommended Show is for P+ and Pluto TV (ALL regions). Every other brand (MTVE, CBS,
         # BET, …) gets NONE. Movies never get it either (Show-ID-only feature).
         add_rec_show = (is_pplus or is_pluto) \
             and bool(getattr(p, "recommended_show_enabled", True)) \
-            and not (is_pplus and not is_pluto and pluto_only_line)
+            and not (is_pplus and not is_pluto and non_pplus_breakout)
 
         t = p.targeting_ids or {}
         dda = sorted(set(t.get("dda", [])))
