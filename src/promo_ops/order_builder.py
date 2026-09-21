@@ -669,6 +669,7 @@ class OrderBuilder:
                 region_is_domestic=bool(self._regions.get("regions", {})
                                         .get(plan.region, {}).get("domestic", False)),
                 is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
+                is_pluto_tv_campaign=is_pluto_tv_brand,
                 is_pplus_brand=self._is_pplus(plan),
                 # Movies can't carry a Recommended Show argument (Show-ID-only feature);
                 # their id rides only in the placement name ([MovieID:…]).

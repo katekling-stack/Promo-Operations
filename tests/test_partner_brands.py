@@ -58,3 +58,20 @@ def test_partner_preroll_under_20_midpost_30_plus(region, campaign):
         else:
             assert PREROLL not in units, (p.name, p.duration, p.ad_unit_ids)  # dropped at :30+
         assert {MIDROLL, POSTROLL} <= units                                # mid/post-roll always
+
+
+@pytest.mark.parametrize("region,campaign", [
+    ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE"),
+    ("FI", "Partner - FI")])
+def test_partner_never_gets_recommended_show(region, campaign):
+    # Recommended Show is ONLY for the real "Paramount + - {Region}" / "Pluto TV - {Region}"
+    # campaigns. Partner runs on Pluto INVENTORY but is NOT the Pluto TV campaign, so it must
+    # carry no Recommended Show set on any line.
+    order = OrderBuilder().build(support_plan_from_dict(dict(
+        promoted_title="Sex and the City", region=region, campaign={"name": campaign},
+        durations=[15, 30], showlist=["FBI"], genres=["Drama"],
+        recommended_show_id="970002006", content_type="show")))
+    for p in order.placements:
+        rt = FreeWheelClient._placement_body(p).get("relationship_targeting") or {}
+        names = [s.get("set_name") for s in rt.get("set", [])]
+        assert "Recommended Show" not in names, (p.name, names)

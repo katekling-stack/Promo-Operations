@@ -1191,7 +1191,12 @@ class FreeWheelClient:
         #             feature isn't rolled out for Pluto internationally).
         is_pluto = bool(getattr(p, "is_pluto_brand", False))
         is_pplus = bool(getattr(p, "is_pplus_brand", False))
-        rec_key = "recommended_shows" if is_pluto else cfg.get("recommended_show_key", "recommended_show")
+        # Recommended Show belongs ONLY to the actual "Paramount + - {Region}" and "Pluto TV -
+        # {Region}" campaigns. is_pluto (runs-on-Pluto-inventory) is too broad — it's also true
+        # for Partner - DK/NO/SE/FI, which must NOT get a Recommended Show. Gate the feature on
+        # the narrow is_pluto_tv (real Pluto TV campaign); keep is_pluto for Pluto tier logic.
+        is_pluto_tv = bool(getattr(p, "is_pluto_tv_campaign", False))
+        rec_key = "recommended_shows" if is_pluto_tv else cfg.get("recommended_show_key", "recommended_show")
         # A dedicated single-platform breakout line that ISN'T Paramount+ — the P+ UK/Kids
         # "(Pluto)" lines, the CA Pluto line, and the My5 breakout line ((platforms) == ['Pluto
         # TV'] / ['My5']). The P+ Recommended Show is a Paramount+ feature and must NOT ride on
@@ -1200,11 +1205,11 @@ class FreeWheelClient:
         placement_platforms = [str(x) for x in getattr(p, "platforms", [])]
         non_pplus_breakout = (len(placement_platforms) == 1
                               and not placement_platforms[0].startswith("Paramount+"))
-        # Recommended Show is for P+ and Pluto TV (ALL regions). Every other brand (MTVE, CBS,
-        # BET, …) gets NONE. Movies never get it either (Show-ID-only feature).
-        add_rec_show = (is_pplus or is_pluto) \
+        # Recommended Show is for the P+ and Pluto TV campaigns (ALL regions). Every other brand
+        # (MTVE, CBS, BET, Partner, …) gets NONE. Movies never get it either (Show-ID-only).
+        add_rec_show = (is_pplus or is_pluto_tv) \
             and bool(getattr(p, "recommended_show_enabled", True)) \
-            and not (is_pplus and not is_pluto and non_pplus_breakout)
+            and not (is_pplus and not is_pluto_tv and non_pplus_breakout)
 
         t = p.targeting_ids or {}
         dda = sorted(set(t.get("dda", [])))
@@ -1375,9 +1380,9 @@ class FreeWheelClient:
             if c:
                 s.update(c)
             sets.append(s)
-            # Recommended Show: P+ globally (pplus SG); Pluto domestically only (Pluto SG).
+            # Recommended Show: P+ globally (pplus SG); Pluto TV domestically only (Pluto SG).
             if add_rec_show:
-                rs = rec_show_set(main if is_pluto else pplus)
+                rs = rec_show_set(main if is_pluto_tv else pplus)
                 if rs:
                     sets.append(rs)
         elif p.tier == 2:

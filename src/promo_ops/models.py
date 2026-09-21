@@ -353,9 +353,13 @@ class Placement:
     # Pluto uses the key "recommended_shows" (plural) and ONLY domestically (the feature
     # isn't rolled out globally); P+/other adult brands use "recommended_show" globally.
     is_pluto_brand: bool = False
+    # Whether this is the actual "Pluto TV - {Region}" promo campaign (not merely a brand that
+    # RUNS on Pluto inventory, e.g. Partner - DK/NO/SE/FI). ONLY these get the Recommended Show;
+    # is_pluto_brand alone is too broad (it's true for the Partner brands too).
+    is_pluto_tv_campaign: bool = False
     # Whether this is a Paramount+ brand placement. Recommended Show ("recommended_show=")
-    # is added ONLY for P+ (global) and Pluto (domestic). Any other brand (MTVE, CBS, BET,
-    # …) gets NO recommended show.
+    # is added ONLY for P+ (global) and the Pluto TV campaign (domestic). Any other brand
+    # (MTVE, CBS, BET, Partner, …) gets NO recommended show.
     is_pplus_brand: bool = False
     # Brand-constant relationship sets (targeting fixed per brand, not derived from the
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
