@@ -6,7 +6,7 @@ don't run Pluto (has_pluto: false) are omitted.
 
 | Our region | Pluto market(s) | categories | channels |
 |---|---|---|---|
-| USA | US | 69 | 1050 |
+| USA | US | 69 | 1054 |
 | CA | CA | 22 | 400 |
 | BR | BR | 19 | 284 |
 | UK | UK | 22 | 537 |

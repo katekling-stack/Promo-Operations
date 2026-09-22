@@ -220,7 +220,6 @@ series_id,name
 1002857232,Serie A Highlights [Live EPG]
 1002857233,Frauen-Bundesliga Highlights [Live EPG]
 1002865169,Dark Web- Cicada 3301 [Live EPG]
-1002868894,The Cat's Meow FI
 1002875959,Connecticut in Color [Live EPG]
 1002875981,NBC4- Discover Black Heritage [Live EPG]
 1002876781,NBC DFW 6-30pm [Live EPG]
@@ -283,7 +282,6 @@ series_id,name
 1003821401,Unsere Schule ist die Beste [Live EPG]
 1003821403,Peter und Paul [Live EPG]
 1003821404,Familie Sonnenfeld [Live EPG]
-1003821405,Schlußakkord [Live EPG]
 1003821406,Der Pfundskerl [Live EPG]
 1003821409,Die Alpenklinik [Live EPG]
 1003821415,"Cola, Candy, Chocolate [Live EPG]"
@@ -297,7 +295,6 @@ series_id,name
 1003821499,Seitenstechen [Live EPG]
 1003822490,Die blutigen Geier von Alaska [Live EPG]
 1003822528,Sunnyboy und Sugarbaby [Live EPG]
-1003822529,Letzte Chance für Harry [Live EPG]
 1003822530,Echt [Live EPG]
 1003822531,Ab morgen sind wir reich und ehrlich [Live EPG]
 1003824104,Immer für dich da [Live EPG]
@@ -921,7 +918,6 @@ series_id,name
 1013856227,Lady Macbeth [Live EPG]
 1013856228,A Better Life [Live EPG]
 1013858217,Free Agency Spotlight [Live EPG]
-1013901157,Ein dicker Hund [Live EPG]
 1013906028,GolfPass Top Tips [Live EPG]
 1013906564,Early Man [Live EPG]
 1013906999,The Shadow of Violence [Live EPG]
@@ -1028,7 +1024,6 @@ series_id,name
 1015231785,Der Gendarm vom Wörthersee [Live EPG]
 1015231786,Frau Wirtin bläst auch gern Trompete [Live EPG]
 1015231787,Der Traumbus [Live EPG]
-1015253912,Hundert Fäuste und ein Vaterunser [Live EPG]
 1015273890,The Dog Hospital With Graeme Hall
 1015275355,Morgan Wallen 'One Thing At A Time' Album 1st Anniversary [Live EPG]
 1015275897,Galway Girl [Live EPG]
@@ -1873,7 +1868,6 @@ series_id,name
 1027827411,Jake Paul vs. Nate Diaz [Live EPG]
 1027848387,Alle meine Lieben [Live EPG]
 1027848394,Der Feuervogel [Live EPG]
-1027848636,Mein Opa ist der Beste [Live EPG]
 1027851499,United States Of Tara DE
 1027928387,Scorpion IT
 1027971134,The Painter
@@ -6787,6 +6781,7 @@ series_id,name
 1116984362,Beauty Report with Amy Morrison -- Birthday Deals Under $47 [Live EPG]
 1116984973,Ricochets [Live EPG]
 1117007484,Come On In! With Callie -- Birthday Deals [Live EPG]
+1117068851,IMPROVEMENTS for the Kitchen & Home Celebration [Live EPG]
 1117069178,Best of the Rolling Stones [Live EPG]
 1117180996,Double Threat
 1117249047,Best of Christian Nodal [Live EPG]
@@ -8256,7 +8251,6 @@ series_id,name
 1127524956,Navidad de corazón
 1127525407,Motel Woodstock [Live EPG]
 1127525408,Suffragette [Live EPG]
-1127529796,Valor- El testimonio de Johnny St. James [Live EPG]
 1127529797,De vuelta al fondo del mar [Live EPG]
 1127531965,Tres [Live EPG]
 1127533131,12 Hours
@@ -9270,7 +9264,6 @@ series_id,name
 1133226241,Nightmare Pageant Moms [Live EPG]
 1133226475,Sombras de luz [Live EPG]
 1133226476,La doble imagen del crimen [Live EPG]
-1133226477,Asesino de modelos [Live EPG]
 1133236858,World's Most Talented Pets [Live EPG]
 1133260620,On The Red Carpet at D23 [Live EPG]
 1133260627,Best Of Michael Jackson [Live EPG]
@@ -9439,7 +9432,6 @@ series_id,name
 1134127064,Wir sagen Du! Schatz.
 1134128912,EHF European League [Live EPG]
 1134128930,EHF Champions League [Live EPG]
-1134147949,LandlustTV Live
 1134172327,Kickboxer Iii (The Art Of War)
 1134202443,Carabinieri
 1134203178,2015 FedEx St. Jude Championship [Live EPG]
@@ -147232,47 +147224,296 @@ L'Aquila E Il Leone"
 2053055795,Cascading Falls- Iceland
 2053175869,UFC 331 BR TRL
 2053176368,UFC 331 LAS TRL
+2053251313,Predator Pro Billiard Series- Indonesia
+2053254970,KDKA Turkey Fund
+2053255146,The Very Vera Show
+2053269988,Her Boyfriend's Secret
+2053288978,Lo Siniestro
+2053289287,Incidente
+2053289413,Dibujos contra balas
+2053289517,Demonio Eclipse Rojo
+2053347610,An Hour To Kill
 205348445,Scarlet Street BR
+2053553941,Her Minor Thing
+2053629391,Inuyasha- The Final Act (English Dub)
+2053635121,Music in the Air
+2053650953,Heat of the Sun
+2053683048,The Killer Nurse: Poisoning on...
+2053683309,Body of Evidence: A Teagarden...
+2053744010,Amazon Tablet
+2053756363,I Am Raquel Welch
+2053780155,Unscripted- Jen Epstein
+2053780230,Graça e Coragem
+2053817399,Ugly Pretty Jewelry Style Edit
+2053817415,Bali Legacy Jewelry with Robert Manse
+2053817427,ALERT! Swiss Blue Topaz Super Deals
+2053817652,EPIC Peridot Jewelry Vault Premiere
+2053817883,Montana Sapphire 100% USA Mined
+2053817974,Platinum Jewelry Heirloom Luxury
+2053817985,Tony Presents Colombian Emerald Jewelry
+2053823048,Unscripted- Russell Rhodes
+2053823074,Unscripted- Charley Belcher
 205383225,La calle te da y te quita
+2054038212,Crypto.com UFC 331- Embedded | Episódios 1 - 5
 205404099,Replay - 2021 WCRA Cowtown Christmas Championship Rodeo Short Round
+2054042879,Crypto.com UFC 331 Embedded- Vlog Series - Ep. 1-6
+2054093258,The Greatest AtHome Videos
+2054276808,Halloween Cookie Challenge
 205433354,Global Pandemic- A World At War
+2054453071,LOVEFORRENT_2015_20260218_S001_E001_RECAP_10
+2054465454,I Am Jackie O
 205447528,China Exposed- the New Cold War
+2054595309,Pink- Staying True
 205462209,Covid-19- Made In China
 205480894,Lockdown- Small Business Under Siege
+2054865562,"Judge Judy - Unfiltered, Unforgettabl"
+2054931695,Crypto.com UFC 331- Embedded | Episódios 1 - 6
 205555943,The Pauly D Project IT
+2055562408,A Lesson in Murder: A Teagarden...
+2055562425,Play for Today: Wild
+2055646317,A Model Murder
 205578093,Atrás de las nubes
+2055895623,UFC MAIN EVENT- Poirier x Gaethje
+2055898970,Highlights from Saturday's UFC!
 205595151,Big Tips Texas IT
 205622319,El Chácharas
+2056239797,Aces- The ATP No. 1 Club
+2056239807,2026 Hangzhou Open Tennis
+2056425335,LOVEFORRENT_2015_20260218_S001_E001_RECAP_11
+2056597738,Best of VMAs
 205663516,Tunadas BR
+2056701341,Genesis- Sum of the Parts
 205680310,Domino (2019)
 205680311,The Package (Lionsgate)
+2056854196,SI TV
 205685545,Winchester
 205694614,Obsession
 205695806,Come As You Are
 205696760,The Parts That You Lose
+2057230004,death_comes_to_pemberley
+2057231950,public_enemies
 205730370,A Wedding to Remember
 205731766,Divided
+2057340929,Wild Hour
+2057347247,safe_breakers
+2057366514,Boonie Bears Autumn Awesomeness Season 1
+2057422263,the_pinkertons
+2057590785,one_killer_punch
+2057598681,No Name on the Bullet
+2057598686,When Classic Comedy Goes...
+2057598967,Secrets of the Royal Servants
+2057709000,hestons_fantastical_food
+2057741292,hestons_feast
+2057771008,hestons_great_british_food
+2057775652,hestons_fishy_feast
+2057829984,guy_martins_ww1_tank
+2057831651,hestons_recipe_for_romance
+2057876819,Best of the VMA's: Unforgettable Moments
+2057904690,guy_martin_battle_of_britain
 205790691,The Marfa Tapes
+2057921888,Spieltag 6 Live-  BVB-Frauen vs FSV Gütersloh
+2057922832,Spieltag 6 -  BVB-Frauen vs FSV Gütersloh
+2057943346,Softball- South Carolina vs Nebraska
+2057954115,Du og blå løser gåder
+2057956435,Du och Blå löser gåtor
+2057956631,Blue's Clues & You ! Blue et ses amis
+2057956734,¡Pistas de Blue y tú!
+2057957781,Sinä ja Sinin arvoitukset
+2057959493,Blues Clues und Du
 205799198,Scotty and the Secret History of Hollywood
 205799229,Days of Bagnold Summer
 205799230,Us Kids
+2058002626,La Masia
+2058053893,CBS Presents - 2026 MTV Video Music Awards
 205808102,Atuh Beach- Indonesia
+2058103990,Eating History - De Gustibus
+2058116615,EHF Men's European League- IK Sävehof vs MRK Sesvete Triglav osiguranje  [LIVE]
+2058130065,Beast of War
+2058130373,"""L'Inter È Una Mamma Per Me"" | Ciao Sandro, Bandiera Eterna"
+2058130706,EHF Men's European League- Elverum Håndball vs Hammarby Handboll  [LIVE]
+2058146439,Inter Weekly - All The Insights Ahead Of Roma - Inter | 2026/27
+2058156362,WINTER- Swatch Nines 2026 Japan - Highlights
+2058203790,Dirt - The Race to Redemption
+2058203810,Diabolik wird gejagt
+2058235406,FOX Weather LIVE- 2 Years After Helene
+2058237947,Cenando con Pablo
+2058240267,Jacob Bridgeman Wins the 2026 Biltmore Championship Asheville
+2058241086,2025 Constellation FURYK & FRIENDS
+2058241087,2025 Baycurrent Classic - Final Round
+2058304902,guy_martin_the_worlds_fastest_van
+2058313032,EHF Men's Champions League- Montpellier Handball vs Barça (17 september 2026)
+2058317117,The Sea Wolf
+2058337270,Der Todesmutige
+2058338724,Der weiße Hund von Beverly Hills
+2058339504,melting_me_softly
+2058346033,gordon_behind_bars
+2058371568,"Sari, sei metri di eleganza"
+2058373080,Russell Simmons Presents Stand-Up at the El-Rey
+2058373283,Un giorno con i Pigmei
+2058402487,Ink Master - Grudge Match
+2058437888,Off the Oche- Jack Drayton
+2058439822,Red Dragon Darts Creator Clash
+2058463122,Das Geheimnis der Inkas
+2058463477,Jenseits aller Grenzen
+2058463703,La Navidad de Cat
+2058463900,guy_martins_great_escape
+2058464316,Boonie Cubs
+2058464593,Receta navideña para Navidad
+2058471232,Planificadora de Bodas de Navidad
+2058472643,Corriendo a  casa para Navidad
+2058473264,Sushi Mortal
 205847852,All Creatures Here Below
+2058482858,Women Vs. Men
+2058545234,shins_project
+2058595114,guy_martin_vs_the_robot_car
 205859731,Fly Over Earth
+2058597917,Love On-air
 205859809,"Harry Chapin- When In Doubt, Do Something"
+2058604127,Control Room (ESP)
+2058634991,extraordinary_weddings
+2058638926,Placido Domingo -- Live at the Roundhouse
+2058639795,Gritzbach - O Delator Morto no Aeroporto
+2058644281,kevin_mcclouds_escape_to_the_wild
+2058649043,2026 Stockyards Championship Rodeo 10.4.26
+2058665742,the_early_edge
+2058676924,Sunlight
+2058682984,happiness
+2058697226,EHF Men's Champions League- RK Celje Pivovarna Laško vs Aalborg Håndbold (17 september 2026)
 205870508,Star Trek Iv - The Voyage Home
+2058712134,USPA Polo - Breakaway Polo in Europe
+2058748007,Hostile Takeover
+2058749209,Dracula (Trailer)
+2058759393,Osos Boonie Sunsational Summer Temporada 1
+2058795132,Camino a la corona
+2058801393,Demonology
+2058803806,"Judge Judy - Unfiltered, Unforgettable"
+2058811471,Tracker (2024)
+2058829024,Electronic Connection Featuring Amazon
+2058829229,Illegal army
+2058858061,Bad Santa 2 (Trailer)
+2058858063,The Outsiders (Trailer)
+2058858068,Falling in Love (Trailer)
+2058858080,The Honeymooners (Trailer)
+2058858088,Bad Santa (Trailer)
+2058865147,Samsung Electronic Gifts
+2058868930,The Invoking 2
+2058868931,Narcotics Heroes
+2058907224,Football- West VA State v Fairmont
+2058907225,MLTT- Portland v New York
+2058907245,Volleyball- Howard v Morgan State
+2058907257,Open Floor - Kawhi’s Title Odds
+2058907258,MLTT- Portland v Chicago
+2058907359,The Vigil
+2058910064,Dr. Wayne Dyer- I Can Do It
+2058911495,BIKE- Encouraged – Courage Adams Returns to Nigeria
+2058930888,Brave Wilderness - Creator Essentials
+2058941436,Gal's Gotta Have It!
+2058941520,Electronic Gift Connection featuring Samsung
+2058941521,HSN Today with Friends Weekend Edition - Good Morning Gifts
+2058941522,Debbie & Adam's Friday Night House Party! - Holiday Kick-Off
+2058941524,Tis the Season's Best Beauty Gifts! with Lesley Ann Premiere
+2058941534,Saturday Holiday Shopping with Suzanne
+2058941564,Crazy for Christmas! with Jasmine & Friends Premiere - Merry Cyber Weekend Deals
+2058941583,The List With Debbie D Premiere
+2058941584,Come On In! with Callie & Andrew Lessman 30th Anniversary
+2058941720,Rob Zombie - The Zombie Horror Picture Show
+2058942492,Finnerty Weekly
+2058945687,Welcome to Mercy
+2058945787,Pyewacket
+2058961731,Kids Diana Show Ultimate Mishmash
+2058962274,CBoys - Creator Essentials
+2058970455,Topper Guild - Creators Essentials
+2058977812,Zhong - Creator Essentials
+2058983393,"Love, Diana Musical Mysteries"
+2058983944,Jesser - Test the Limits
+2058984047,The Besties in Spooky Sleepover
+2058989135,Osos Boonie- Los Aventureros
+2059020368,Osos Boonie- Bosque Frenetico
+2059023460,Satan's Doctor
+2059029464,Super Wings Season 5
 205905378,MTV Suspect ES
 205905379,Sports Disasters LAS
 205913140,Dying of the Light (LAS)
 205913141,I HATE LOVE (LAS)
+2059176907,cop_car_workshop
+2059190997,Navy Seals- The Untold Stories
+2059194442,Special Forces- The Untold Stories
+2059198030,Welcome to Dongmakgol
+2059198792,The President's Barber
+2059218349,The Road Between Us - The Ultimate Rescue
+2059254718,Bullet- Director's Cut
 205926242,UTB 2022 (VOD)
 205926243,2022 According to Flint (VOD)
 205926246,VT 2022 (VOD)
+2059268769,wild_boys
+2059282379,A Broken Life
+2059375481,oh_my_ghost
 205938916,Teen Mom- Girls' Night In
+2059414681,murder_on_the_blackpool_express
+2059415646,kcon_la_2018
+2059519868,Holidaying with Jane McDonald &...
+2059519899,1988: Most Shocking Moments
+2059520254,Queen Victoria: How She Shaped...
 205956772,Skiing
 205956784,Soul Hunter
+2059621204,hoarders_sos
+2059636698,Politics BY Faith- the Evolution of Ai
+2059638592,HF
+2059665262,Rocktober- Hair & Heavy
 205973096,Kevin Hart - Let Me Explain
+2059779487,Rocktober- Classic Rock Legends
+2059795255,Rocktober- The 2000s Vault
+2059850483,The MMQB - QB Injuries & 0-2 Teams
+2059851007,Natalia Silva vs Rose Namajunas | FULL FIGHT
+2059851008,Raoni Barcelos vs Khalid Taha | FULL FIGHT
+2059851159,Payton Talbott vs Henry Cejudo | FULL FIGHT
+2059851429,Raul Rosas Jr. vs Ricky Turcios | FULL FIGHT
+2059851442,Tracy Cortez vs Wang Cong | FULL FIGHT
+2059851443,SNOWBOARDING- Method Movie 3 – True to the Core
+2059853623,P+FN2- Strickland x Hernandez (Luta a Luta)
+2059853670,P+FN3- Moreno x Kavanagh (Luta a Luta)
+2059858730,Family Business - Sono affari di famiglia
+2059859331,This Boy's Life - Voglia di ricominciare
+2059860081,Inter Women | La Notte Più Lunga
+2059863387,Inter Women | The Longest Night
+2059887696,80 Years of 49ers - Quest for Six
+2059887869,80 Years of 49ers - The Golden Years
+2059912146,Embarrassing Bodies UK
+2059919209,Ashfall - The Final Countdown
+2059925470,The Devil Conspiracy
+2059942751,Saint Seiya- The Hades Chapter
 206011162,Pororari River Track- New Zealand
+2060136284,Mami nunca te haría daño
+2060165356,Rocktober- Grunge Celebration
+2060170552,PARTIDO COMPLETO | Alavés Femenino - Barça | Copa de la reina 2025/2026
+2060270619,Magia Musical Winx
+2060349240,Los Osos Boonie- ¡En acción!
+2060372803,Simsala Grimm
+2060372914,Inter Legacy | Ronaldo Il Fenomeno
+2060373114,Outside the Box
+2060380393,A Lenda do Rei  Macaco- A volta do Heroi
+2060392961,LIVE- Boston News Now at 7am
+2060392962,LIVE- Boston News Now at 8am
+2060392963,LIVE- Boston News Now at 9am
+2060392964,LIVE- Boston News Now at 2pm
+2060392965,LIVE- Boston News Now at 12pm
+2060392968,LIVE- Boston News Now at 11am
+2060392969,LIVE- Boston News Now at 3pm
+2060393035,LIVE- Boston News Now at 1pm
+2060393410,Moloch
+2060395124,FOX 10 Weekend News
+2060418056,Capitão Sharky- O Pequeno Pirata
+2060446141,The Infographics Show- Military & Government
+2060449315,Cupido - A Magia Do Amor
+2060479025,The Best Thing I Ever Ate
+2060488332,Saint Seiya- Capítulo de Hades
+2060526247,Mutter
+2060576572,IC International
+2060625499,Alternative Norge
+2060673107,CBS News Colorado 10pm Saturday
+2060673246,CBS News Colorado 10pm Sunday
+2060724263,Bourne Identity
+2060746792,A Jornada de Jesus Cristo com Kevin Sorbo
 206137323,"Whiritoa Beach, New Zealand"
 206172376,UFO Chronicles- The Smoking Gun (Gravitas)
 206251187,Nusa Penida- Indonesia
@@ -154429,7 +154670,6 @@ L'Aquila E Il Leone"
 296171889,Pimp My Ride NO
 296171968,LOL NO
 296171969,Jamie's Easy Christmas Countdown NO
-296175717,The National Report [Live EPG]
 296175741,Pimp My Ride DA
 296178738,The Hills DA
 296178876,Storage Wars- Miami NO
@@ -154514,7 +154754,6 @@ L'Aquila E Il Leone"
 296239504,Dogs On The Job
 296250879,Cold Feet (A&E)
 296250880,Deadly Alibi
-296255952,American Agenda [Live EPG]
 296317529,Lemony Snicket's A Series Of Unfortunate Events (LAS)
 296327983,Spring Break with Grandad DE
 296341210,I Shouldn't Be Alive (Banijay)
@@ -168888,6 +169127,7 @@ L'Aquila E Il Leone"
 421148217,The Fiend FR
 421151410,Lo mejor de Galatasaray [Live EPG]
 421155519,MAY GOD FORGIVE YOU… BUT I WON'T IT
+421188429,In the Kitchen with Mary [Live EPG]
 421189106,Fale com Ela
 421201833,Crime Story [Live EPG]
 421227915,Rush BR
@@ -174635,6 +174875,7 @@ L'Aquila E Il Leone"
 494394777,Drive Thru History- The Holy Land [Live EPG]
 494550052,The Many Loves of Dobie Gillis [Live EPG]
 494613554,Star Trek VI- The Undiscovered Country NO
+494628434,Simple Home Solutions [Live EPG]
 494652652,World Surf League [Live EPG]
 494766016,Kiss of the Dragon
 494781932,Dolly Parton- Queen of Country [Live EPG]
@@ -175760,6 +176001,7 @@ L'Aquila E Il Leone"
 515991135,The Ticket [Live EPG]
 515992692,Celebrity Ex on the Beach DE
 515992702,Ex On The Beach US DE
+515999467,"Motorsport- DM i Folkerace 2023, 2. afdeling DA"
 516012437,Pride Artist Spotlight- Syd & The Internet [Live EPG]
 516012439,00's Top Hits [Live EPG]
 516027660,Black Narcissus [Live EPG]
@@ -177165,6 +177407,7 @@ L'Aquila E Il Leone"
 542888070,Rickie Fowler Wins Rocket Mortgage Classic
 543169283,Strange Wilderness (LAS)
 543748495,Beauty Report with Amy Morrison Celebration [Live EPG]
+543983991,Waterfall Paradise- Plitvice [Live EPG]
 544433415,Connie Craig Carroll Jewelry Collection Celebration [Live EPG]
 544893848,Ultraman Kids 3000 [Live EPG]
 544933294,Best of Santana [Live EPG]
@@ -177534,6 +177777,7 @@ L'Aquila E Il Leone"
 663218832,Fábulas de Esopo
 663222169,The Adventures of Shark Boy & Lava Girl in 3-D (LAS)
 665391627,Paraiso perdido (LAS) [Pluto O&O]
+666249040,Temp-tations Presentable Kitchen -- Holiday Edition [Live EPG]
 666531226,Winter Gold (LAS)[Pluto O&O]
 667705547,KORRES Beauty Celebration - All on Free Shipping [Live EPG]
 667918525,Love & Hip Hop Miami - The Rewind
@@ -178138,6 +178382,7 @@ L'Aquila E Il Leone"
 868831484,Brasileirão Série A Top Goals Rounds 1-16 [Live EPG]
 868837542,Rap Royalty- Special Ed [Live EPG]
 868858853,Top 10 PFL 2022 Season Moments [Live EPG]
+868876902,Fall Home Update [Live EPG]
 868876929,Storage & Organization Featuring Origami [Live EPG]
 868889565,Best of Back Together Weekend [Live EPG]
 868925538,Morphle Songs
@@ -181925,6 +182170,7 @@ L'Aquila E Il Leone"
 889495318,RiffTrax- Zombie aka I Eat Your Skin
 889505952,Star Trek Day 2023 [Live EPG]
 889542221,Rhonda Shear Intimates & Loungewear - All On Sale [Live EPG]
+889565492,Rose of Tralee Celebration Sale [Live EPG]
 889574715,The Presidents- From Politics To Power
 889575351,The Breaking Point [Live EPG]
 889583371,The Total Tailgate [Live EPG]
@@ -189691,6 +189937,7 @@ L'Aquila E Il Leone"
 959878468,The Boss Baby
 959892675,Mob Wives Daytime Card
 959893322,Willie Nelson and Family
+959902284,Works by Mendelssohn & Hensel [Live EPG]
 959902285,Mirabile Mysterium [Live EPG]
 959902286,1st Concerto & 2nd Symphony [Live EPG]
 959902470,Beethoven - Symphony No. 3 [Live EPG]
@@ -191319,7 +191566,6 @@ L'Aquila E Il Leone"
 980583460,Life in the Undergrowth [Live EPG]
 980583461,Banded Brothers- The Mongoose Mob [Live EPG]
 980583463,Wild Thailand [Live EPG]
-980583465,The Restless Year [Live EPG]
 980583467,Nature's Miracle Babies [Live EPG]
 980583468,Wild Caribbean [Live EPG]
 980583679,The Life of Mammals [Live EPG]
@@ -191335,7 +191581,6 @@ L'Aquila E Il Leone"
 980583785,Wild Africa [Live EPG]
 980583887,The Bear Family and Me [Live EPG]
 980583888,Dolphins- Spy in the Pod [Live EPG]
-980583891,Chimp Family Fortunes [Live EPG]
 980583892,Elephant Diaries [Live EPG]
 980583895,Meganature [Live EPG]
 980583898,Antarctica- Into the Unknown [Live EPG]

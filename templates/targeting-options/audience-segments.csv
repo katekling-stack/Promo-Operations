@@ -198,6 +198,7 @@ APAC-DDA-1P_Drama_au,APAC-DDA-1P
 APAC-DDA-1P_Educational___Documentary_au,APAC-DDA-1P
 APAC-DDA-1P_Entertainment_au,APAC-DDA-1P
 APAC-DDA-1P_Fashion___Style_au,APAC-DDA-1P
+APAC-DDA-1P_Golden_Axe_au,APAC-DDA-1P
 APAC-DDA-1P_Hobbies___Interests_au,APAC-DDA-1P
 APAC-DDA-1P_Holiday_au,APAC-DDA-1P
 APAC-DDA-1P_Home___Garden_au,APAC-DDA-1P
@@ -468,6 +469,8 @@ AU - DWH - 10 - ID - Summit - Genre - Romance watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Genre - Sports watchers APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Agricultural Forestry and Fishing Occupation APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test4 APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test5 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Auto - Motor Vehicles APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Birthplace Elsewhere APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Indigenous APAC,AU-DWH-Summit
@@ -1148,6 +1151,7 @@ EU/UK-DDA-1P_Action___Adventure_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Adult_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_African_American_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_All_Creatures_Great_and_Small_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Amalies_Verden_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Andrew_Crisis__How_Can_The_Royals_Recover__eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Animation_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Beauty_and_the_Beast_eu,EU/UK-DDA-1P
@@ -1174,6 +1178,7 @@ EU/UK-DDA-1P_Entertainment_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Forever_Home_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_GLBT_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Gilmore_Girls_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Golden_Axe_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Harlan_Coben_s_Shelter_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Heat_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Hobbies___Interests_eu,EU/UK-DDA-1P
@@ -1189,6 +1194,7 @@ EU/UK-DDA-1P_INTL___One_Mile__Chapter_One_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___One_Mile__Chapter_Two_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___Redux_Redux_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___The_Man_in_the_White_Van_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_INTL___Twisted_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Instinct_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Kebab_Date_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Keeping_Faith_eu,EU/UK-DDA-1P
@@ -1228,6 +1234,7 @@ EU/UK-DDA-1P_Religion___Spirtuality_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Rich_House_Poor_House_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Riptide_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Romance_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Route_187_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Sci-Fi___Fantasy_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Scream_7_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Secrets_of_the_Royal_Traditions_eu,EU/UK-DDA-1P
@@ -2198,6 +2205,7 @@ GL-DDA-1P_gordon_ramsays_secret_service,GL-DDA-1P
 US-DDA-1P-Campaign_Retarget_264728,US-DDA-1P
 US-DDA-1P-Interest_in_Spanish_Content,US-DDA-1P
 US-DDA-1P_2026_BET_Awards,US-DDA-1P
+US-DDA-1P_40_Dates_and_40_Nights,US-DDA-1P
 US-DDA-1P_A_Hip_Hop_Story,US-DDA-1P
 US-DDA-1P_Ace_Ventura__Pet_Detective,US-DDA-1P
 US-DDA-1P_Alias,US-DDA-1P
@@ -2206,7 +2214,9 @@ US-DDA-1P_Argentina_Liga_Profesional_de_Futbol,US-DDA-1P
 US-DDA-1P_Avatar_Aang__The_Last_Airbender,US-DDA-1P
 US-DDA-1P_Average_Joe,US-DDA-1P
 US-DDA-1P_BET_AWARDS_2026,US-DDA-1P
+US-DDA-1P_BET_Soul_Train_Awards_2023,US-DDA-1P
 US-DDA-1P_Bad_Teacher,US-DDA-1P
+US-DDA-1P_Billy_Madison,US-DDA-1P
 US-DDA-1P_Burn_Notice,US-DDA-1P
 US-DDA-1P_Casa_Bonita_Mi_Amor_,US-DDA-1P
 US-DDA-1P_Charmed,US-DDA-1P
@@ -2279,6 +2289,7 @@ US-DDA-1P_Murder_USA,US-DDA-1P
 US-DDA-1P_My_Boyfriend_Made_Me_Do_It,US-DDA-1P
 US-DDA-1P_My_Killer_Father_-_The_Green_Hollow_Murders,US-DDA-1P
 US-DDA-1P_NCAA_on_CBS,US-DDA-1P
+US-DDA-1P_NCIS_-_New_York,US-DDA-1P
 US-DDA-1P_Norbit,US-DDA-1P
 US-DDA-1P_One_Night_Stay,US-DDA-1P
 US-DDA-1P_Outlaw_Posse,US-DDA-1P
@@ -2297,10 +2308,15 @@ US-DDA-1P_Scary_Movie_5,US-DDA-1P
 US-DDA-1P_Scary_Movie_V,US-DDA-1P
 US-DDA-1P_Scream_7,US-DDA-1P
 US-DDA-1P_Serial_Killer_Wives,US-DDA-1P
+US-DDA-1P_Soul_Train_Awards_2019,US-DDA-1P
+US-DDA-1P_Soul_Train_Awards_2020,US-DDA-1P
+US-DDA-1P_Soul_Train_Awards_2021,US-DDA-1P
+US-DDA-1P_Soul_Train_Awards_2023,US-DDA-1P
 US-DDA-1P_South_Park-_Bigger_Longer___Uncut,US-DDA-1P
 US-DDA-1P_South_Park_Bigger_Longer___Uncut,US-DDA-1P
 US-DDA-1P_South_Park__Bigger_Longer___Uncut,US-DDA-1P
 US-DDA-1P_South_Park__Bigger_Longer___Uncut_Trailer,US-DDA-1P
+US-DDA-1P_Spy_Kids,US-DDA-1P
 US-DDA-1P_Star_Trek-_Deep_Space_Nine,US-DDA-1P
 US-DDA-1P_Star_Trek-_Enterprise,US-DDA-1P
 US-DDA-1P_Star_Trek-_The_Original_Series,US-DDA-1P
@@ -2317,6 +2333,8 @@ US-DDA-1P_The_Faculty_Trailer,US-DDA-1P
 US-DDA-1P_The_Gangster_The_Cop_The_Devil,US-DDA-1P
 US-DDA-1P_The_Honey_Trap__A_True_Story_of_Love_Lies_and_the_FBI,US-DDA-1P
 US-DDA-1P_The_Impossible,US-DDA-1P
+US-DDA-1P_The_Jennifer_Hudson_Show,US-DDA-1P
+US-DDA-1P_The_King_of_Queens,US-DDA-1P
 US-DDA-1P_The_Mask_Of_Zorro,US-DDA-1P
 US-DDA-1P_The_Outer_Threat,US-DDA-1P
 US-DDA-1P_The_Program_-_Texas_Tech,US-DDA-1P
@@ -2326,6 +2344,7 @@ US-DDA-1P_Trading_Places,US-DDA-1P
 US-DDA-1P_Wake,US-DDA-1P
 US-DDA-1P_Wardriver,US-DDA-1P
 US-DDA-1P_You_Don_t_Know_Where_I_m_From_Dawg,US-DDA-1P
+US-DDA-1P_Zoolander_2,US-DDA-1P
 comScore > Over-the-top & Gaming (US) > OTT Streaming > Amazon OTT Watchers,comScore
 comScore > Over-the-top & Gaming (US) > OTT Streaming > Hulu OTT Watchers,comScore
 comScore > Over-the-top & Gaming (US) > OTT Streaming > Netflix OTT Watchers,comScore
