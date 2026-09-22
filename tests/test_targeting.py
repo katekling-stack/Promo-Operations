@@ -187,8 +187,15 @@ def test_showlist_resolves_to_video_series_ids():
     assert by_show.get("Landman")                     # resolves to >=1 series
     assert "1147080004" in by_show["Landman"]         # the FW Video Series id (matches Dutton)
     assert all(i.isdigit() and len(i) > 6 for i in by_show["Landman"])   # asset-group namespace
-    # NCIS: New York not premiered yet -> no series -> flagged
-    assert "NCIS: New York" in (showdim.notes or "")
+    # A show with no matching Video Series (e.g. not yet in the catalog) is flagged in notes.
+    # Use a guaranteed-fictional title so this doesn't depend on a real show's premiere timing.
+    fake = "Zzz Nonexistent Promo Show 9999"
+    plan2 = support_plan_from_dict(dict(
+        promoted_title="Landman", region="USA", campaign={"name": "Paramount + - USA"},
+        durations=[30], genres=["Drama"], showlist=["Landman", fake]))
+    t2b = next(t for t in TargetingEngine().build(plan2, "remnant_video").tiers if t.id == 2)
+    showdim2 = next(d for d in t2b.dimensions if d.key == "content_affinity_showlist")
+    assert fake in (showdim2.notes or "")
 
 
 def test_tier1_dda_audience_item_resolves():

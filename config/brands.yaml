@@ -1346,6 +1346,27 @@ brands:
         drop_units:
         - Paramount House Preroll
     pluto_brand: true
+  # Partner - GSA: same Viaplay-style Pluto-only promo partner as DK/NO/SE/FI, for Germany/
+  # Switzerland/Austria. No template_campaign_id/template_io_id yet (new market) — the push
+  # resolves the "Partner - GSA" campaign by name in FreeWheel; add the ids via brand-sync once live.
+  partner_gsa:
+    advertiser_name_contains:
+    - VCBS
+    campaign_name: Partner - GSA
+    display_name: Partner (GSA)
+    hot_tier4: false            # standard Tier 4 (-10), not the hotter Pluto TV Tier 4 (-8)
+    main_site_groups:
+    - '929392'
+    formats:
+    - remnant_video
+    ad_unit_groups:
+      remnant_video: pplus_cbs_pluto_vcbs
+    format_overrides:
+      remnant_video:
+        drop_preroll_at_duration: 30
+        drop_units:
+        - Paramount House Preroll
+    pluto_brand: true
   pluto_tv_kids_se:
     advertiser_name_contains:
     - VCBS

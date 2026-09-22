@@ -1,4 +1,4 @@
-"""Partner - {NO/DK/SE/FI}: Viaplay-style promo partner brand, Pluto TV ONLY. Tiered remnant
+"""Partner - {NO/DK/SE/FI/GSA}: Viaplay-style promo partner brand, Pluto TV ONLY. Tiered remnant
 1-4 (Tier 1 audience included), House ad units with Pre-roll on :20 and under (dropped at
 :30+, leaving Mid/Post-roll). Mirrors the live Partner IOs (DK IO 96141616, SE IO 81464925)."""
 
@@ -21,7 +21,7 @@ def _order(region, campaign, durations):
 
 @pytest.mark.parametrize("region,campaign", [
     ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE"),
-    ("FI", "Partner - FI")])
+    ("FI", "Partner - FI"), ("GSA", "Partner - GSA")])
 def test_partner_builds_tiers_1_4_pluto_only(region, campaign):
     order = _order(region, campaign, [15, 30])
     remnant = [p for p in order.placements if p.tier]
@@ -33,7 +33,7 @@ def test_partner_builds_tiers_1_4_pluto_only(region, campaign):
 
 @pytest.mark.parametrize("region,campaign", [
     ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE"),
-    ("FI", "Partner - FI")])
+    ("FI", "Partner - FI"), ("GSA", "Partner - GSA")])
 def test_partner_tier4_is_standard_minus_10(region, campaign):
     # Partner runs on Pluto inventory but uses the STANDARD Tier 4 (-10), NOT the hotter
     # Pluto TV Tier 4 (-8 on :15/:30+) that the Pluto TV brand runs.
@@ -46,7 +46,7 @@ def test_partner_tier4_is_standard_minus_10(region, campaign):
 
 @pytest.mark.parametrize("region,campaign", [
     ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE"),
-    ("FI", "Partner - FI")])
+    ("FI", "Partner - FI"), ("GSA", "Partner - GSA")])
 def test_partner_preroll_under_20_midpost_30_plus(region, campaign):
     order = _order(region, campaign, [15, 20, 30, 45])
     for p in order.placements:
@@ -62,7 +62,7 @@ def test_partner_preroll_under_20_midpost_30_plus(region, campaign):
 
 @pytest.mark.parametrize("region,campaign", [
     ("DK", "Partner - DK"), ("NO", "Partner - NO"), ("SE", "Partner - SE"),
-    ("FI", "Partner - FI")])
+    ("FI", "Partner - FI"), ("GSA", "Partner - GSA")])
 def test_partner_never_gets_recommended_show(region, campaign):
     # Recommended Show is ONLY for the real "Paramount + - {Region}" / "Pluto TV - {Region}"
     # campaigns. Partner runs on Pluto INVENTORY but is NOT the Pluto TV campaign, so it must
