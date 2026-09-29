@@ -4,6 +4,7 @@
 # which all carry [1 per 30 min, 20 per month].
 #
 #   adult, USA          -> 1 per 30 min  AND  20 per month
+#   adult, AU           -> 1 per 15 min
 #   adult, international -> 1 per 30 min
 #   kids, all regions    -> 1 per 15 min
 #
@@ -17,6 +18,8 @@ order_level:
       USA:
       - 1 per 30 min
       - 20 per month
+      AU:
+      - 1 per 15 min
   kids:
     default:
     - 1 per 15 min

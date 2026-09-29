@@ -1,6 +1,6 @@
 """Order-level frequency caps (a general rule on every IO's delivery.frequency_cap):
-adult USA -> 1/30min AND 20/month; adult international -> 1/30min; kids -> 1/15min.
-Verified against production USA adult IOs which carry [1/30min, 20/month]."""
+adult USA -> 1/30min AND 20/month; adult AU -> 1/15min; adult other international -> 1/30min;
+kids -> 1/15min. Verified against production USA adult IOs which carry [1/30min, 20/month]."""
 
 from __future__ import annotations
 
@@ -25,11 +25,19 @@ def test_adult_usa_gets_30min_and_20_per_month():
 
 def test_adult_international_gets_only_30min():
     for region, campaign in [("LATAM", "Paramount + - LATAM"), ("GSA", "Paramount + - GSA"),
-                             ("AU", "Paramount + - AU")]:
+                             ("UK", "Paramount + - UK")]:
         strs, fc = _io_caps(promoted_title="X", region=region,
                             campaign={"name": campaign}, durations=[30], genres=["Drama"])
         assert strs == ["1 per 30 min"], region
         assert fc == [{"value": "1", "type": "IMPRESSION", "period": "30"}], region
+
+
+def test_adult_au_gets_15min():
+    # Australia adult IOs run a hotter order-level cap: 1 per 15 min (not the 1/30 default).
+    strs, fc = _io_caps(promoted_title="X", region="AU",
+                        campaign={"name": "Paramount + - AU"}, durations=[30], genres=["Drama"])
+    assert strs == ["1 per 15 min"]
+    assert fc == [{"value": "1", "type": "IMPRESSION", "period": "15"}]
 
 
 def test_kids_gets_15min_everywhere():
