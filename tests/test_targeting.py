@@ -141,14 +141,18 @@ def test_promoted_show_excluded_from_every_placement():
 
 
 def test_tier1_audience_is_dda_only_no_aam():
-    # AAM segments are sunset: Tier 1 must resolve ONLY DDA (GL-DDA-1P-) items.
+    # AAM segments are sunset: Tier 1 must resolve ONLY DDA-1P items — the global GL-DDA-1P set
+    # PLUS the request-tool region buckets (US-/EU-UK-/APAC-DDA-1P). Never AAM / comScore.
+    DDA_1P = ("GL-DDA-1P", "US-DDA-1P", "EU/UK-DDA-1P", "EU-UK-DDA-1P",
+              "EU-DDA-1P", "UK-DDA-1P", "APAC-DDA-1P")
     plan = load_plan(FRISCO)
     targeting = TargetingEngine().build(plan, "remnant_video")
     tier1 = next(t for t in targeting.tiers if t.id == 1)
     seg_dim = next(d for d in tier1.dimensions if d.key == "audience_segments")
     names = [s["segment_name"] for s in seg_dim.resolved]
     assert names, "expected DDA segments resolved from the showlist"
-    assert all(n.upper().startswith("GL-DDA-1P") for n in names)
+    assert all(n.upper().startswith(DDA_1P) for n in names), names
+    assert not any(n.upper().startswith(("AAM", "COMSCORE")) for n in names), names
     # the sunset AAM grouping IDs must never appear
     ids = [s.get("segment_id") for s in seg_dim.resolved]
     assert "25995747" not in ids and "25995761" not in ids
