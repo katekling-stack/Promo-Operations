@@ -178,6 +178,31 @@ def _cmd_push(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_qa(args: argparse.Namespace) -> int:
+    """Pre-launch QA: fetch each live IO (+ its placements) and audit it against the tool's
+    brand/region/format/tier rules, flagging mistakes before it goes live."""
+    from .qa import QAAuditor
+    auditor = QAAuditor()
+    reports = []
+    for io_id in args.io:
+        rep = auditor.audit_io(str(io_id))
+        if args.only:
+            rep.findings = [f for f in rep.findings
+                            if args.only.lower() in f.placement.lower() or f.placement == "(order)"]
+        print(rep.text())
+        print()
+        reports.append(rep)
+    if args.out:
+        md = "\n\n---\n\n".join(r.markdown() for r in reports)
+        Path(args.out).write_text(md, encoding="utf-8")
+        print(f"Wrote QA report → {args.out}", file=sys.stderr)
+    any_err = any(r.error or r.by_level("error") for r in reports)
+    n_warn = sum(len(r.by_level("warn")) for r in reports)
+    print(f"\n{'❌ QA found errors' if any_err else '✅ No errors'}"
+          f"{f' · {n_warn} warning(s)' if n_warn else ''}.", file=sys.stderr)
+    return 1 if any_err else 0
+
+
 def _cmd_addons(args: argparse.Namespace) -> int:
     """Build the Video Domination + Takeover add-ons; optionally push the Pluto VD."""
     from dataclasses import asdict
@@ -734,6 +759,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_push.add_argument("--target", required=True, choices=["freewheel", "gam"])
     p_push.add_argument("--live", action="store_true", help="Actually create (default dry-run)")
     p_push.set_defaults(func=_cmd_push)
+
+    p_qa = sub.add_parser("qa", help="Pre-launch QA: audit a live IO's placements against the rules")
+    p_qa.add_argument("io", nargs="+", help="One or more Insertion Order IDs to review")
+    p_qa.add_argument("--only", help="Filter the report to placements whose name contains this text")
+    p_qa.add_argument("--out", help="Also write a shareable Markdown report to this path")
+    p_qa.set_defaults(func=_cmd_qa)
 
     p_addon = sub.add_parser("addons", help="Build Video Domination + Takeover add-ons from a plan")
     p_addon.add_argument("plan")

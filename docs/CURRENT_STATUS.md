@@ -31,6 +31,7 @@
 | **IE content ratings** | Ireland now resolves the UK/BBFC rating VGs; short rating labels (`15`/`18`) can no longer leak as raw VG ids. *(Fixed the Yellowjackets IE 422.)* |
 | **AU Tier 1** | AU uses the regular global GL-DDA-1P audience segment when a show/movie has one (plus its DWH segments). |
 | **Targeting Catalog** | Standalone searchable page of targeting options by region. |
+| **Pre-launch QA** | `promo-ops qa <IO id>` fetches a live IO + its placements and audits every one against the tool's rules (ad units + pre-roll/bumper drop, creative duration, time zone, targeting/relationships, frequency caps, priority, naming, geo), printing an error/warning report (and an optional shareable Markdown file via `--out`). Rules-based — needs only the IO id. |
 
 ## In flight / dependencies
 
