@@ -1414,6 +1414,18 @@ class FreeWheelClient:
         else:  # tier 4 — platform-constrained RON
             sets.append({"set_name": "Genre", **FreeWheelClient._content(
                 [main_subset()], base_exclude())})
+            # Brand-configured Tier 4 guarantee sets (e.g. Paramount + - AU's UFC argument:
+            # SG ParamountPlus AND VG Franchise: UFC). Added as ADDITIONAL (OR'd) arguments
+            # with NO excludes so they deliver regardless of the line's other restrictions.
+            # These target Paramount+ inventory, so they ride ONLY on the P+ lines — not the
+            # optional Network 10 breakout (which runs on Network 10 inventory).
+            serves_pplus = any(str(x).startswith("Paramount+")
+                               for x in getattr(p, "platforms", []))
+            if serves_pplus:
+                for sd in getattr(p, "tier4_extra_sets", None) or []:
+                    node = FreeWheelClient._content(sd.get("include", []))
+                    if node:
+                        sets.append({"set_name": sd.get("set_name", "Franchise"), **node})
         return sets
 
     @staticmethod

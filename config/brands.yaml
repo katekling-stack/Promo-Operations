@@ -652,6 +652,14 @@ brands:
         - Paramount House Preroll
     optional_formats:
     - network_10_remnant
+    # Tier 4 UFC guarantee (adult): every Tier 4 remnant line carries an extra argument
+    # targeting SG: Biz Div Endpts: Streaming: Global: ParamountPlus AND VG: Franchise: UFC.
+    # Added with NO excludes so UFC always delivers regardless of the line's other restrictions.
+    tier4_extra_sets:
+    - set_name: 'Franchise: UFC'
+      include:
+      - site_group: ['932583']
+      - video_group: ['1625229912']
   nick_au:
     display_name: Nick - Kids (AU)
     advertiser_name_contains:

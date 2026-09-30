@@ -365,6 +365,11 @@ class Placement:
     # plan) — e.g. Pluto En Español's "Targeting VOD" / "En Espanol" sets. Each item:
     # {set_name, include: [subset,...], exclude: {site_group:[...]}}. Built verbatim.
     static_relationship_sets: list[dict[str, Any]] = field(default_factory=list)
+    # Extra relationship sets appended to every TIER 4 adult remnant line for this brand
+    # (e.g. Paramount + - AU's guaranteed UFC set: SG ParamountPlus AND VG Franchise: UFC).
+    # Each item {set_name, include: [subset,...]} is added as an ADDITIONAL (OR'd) argument
+    # with no excludes, so it delivers regardless of the line's other restrictions.
+    tier4_extra_sets: list[dict[str, Any]] = field(default_factory=list)
     # Guaranteed placements (Premium Pre-Roll, Essential Bumper) are built from a
     # small set of explicit arguments rather than the tier stack, and live in an
     # existing guaranteed order rather than the new remnant IO.

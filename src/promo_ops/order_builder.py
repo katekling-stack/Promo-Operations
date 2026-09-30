@@ -671,6 +671,7 @@ class OrderBuilder:
                 is_pluto_brand=bool(brand_cfg.get("pluto_brand")),
                 is_pluto_tv_campaign=is_pluto_tv_brand,
                 is_pplus_brand=self._is_pplus(plan),
+                tier4_extra_sets=list(brand_cfg.get("tier4_extra_sets") or []),
                 # Movies can't carry a Recommended Show argument (Show-ID-only feature);
                 # their id rides only in the placement name ([MovieID:…]).
                 recommended_show_enabled=(plan.content_type or "show").lower() != "movie",
