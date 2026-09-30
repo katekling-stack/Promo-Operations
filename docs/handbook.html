@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ops — Team Handbook</title>
+<style>
+  :root{
+    --navy:#0a1f44; --blue:#1a56db; --blue2:#2f6bff; --ink:#1c2434; --muted:#5b6577;
+    --line:#e4e8f0; --bg:#f5f7fb; --card:#ffffff; --ok:#188a4e; --okbg:#e8f6ee;
+    --warn:#9a6a00; --warnbg:#fdf3dc; --err:#b42318; --errbg:#fdeceb; --info:#1a56db; --infobg:#eaf0ff;
+    --code:#0d1b3e; --codeink:#e8eefc; --chipA:#e8efff; --chipB:#eafbf1; --chipC:#f3ecff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.55;font-size:15.5px}
+  header{background:linear-gradient(135deg,var(--navy),#12306e);color:#fff;padding:34px 24px}
+  header .wrap{max-width:960px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px}
+  header p{margin:0;color:#c9d6f3;font-size:15px}
+  main{max-width:960px;margin:0 auto;padding:26px 24px 60px}
+  h2{font-size:19px;margin:34px 0 12px;color:var(--navy);display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+        background:var(--blue);color:#fff;font-size:14px;font-weight:700;flex:0 0 auto}
+  h3{font-size:15.5px;margin:18px 0 6px;color:var(--ink)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;
+        box-shadow:0 1px 2px rgba(16,32,64,.04)}
+  p{margin:8px 0}
+  ol,ul{margin:8px 0 8px 2px;padding-left:22px}
+  li{margin:5px 0}
+  code{background:#eef1f7;padding:1.5px 6px;border-radius:6px;font-size:13px;
+       font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  pre{background:var(--code);color:var(--codeink);padding:14px 16px;border-radius:11px;overflow:auto;
+      font-size:13px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;margin:10px 0;line-height:1.55}
+  pre .c{color:#8aa0d6}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:6px 0 4px}
+  .flow .step{flex:1 1 150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .flow .step b{display:block;color:var(--navy);font-size:13px;margin-bottom:2px}
+  .flow .step span{color:var(--muted);font-size:12.5px}
+  .flow .arrow{align-self:center;color:var(--blue);font-weight:700;font-size:18px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f0f4fb;color:var(--navy);font-size:13px;text-transform:uppercase;letter-spacing:.4px}
+  .callout{border-radius:12px;padding:14px 16px;margin:14px 0;border:1px solid}
+  .callout.ok{background:var(--okbg);border-color:#bfe6cd}
+  .callout.warn{background:var(--warnbg);border-color:#f0dca6}
+  .callout.info{background:var(--infobg);border-color:#c7d6fb}
+  .callout b{color:var(--ink)}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;vertical-align:middle}
+  .pill.a{background:var(--chipA);color:var(--blue)} .pill.b{background:var(--chipB);color:var(--ok)}
+  .pill.c{background:var(--chipC);color:#6b28d9}
+  .tip{font-size:13.5px;color:var(--muted);margin:6px 0}
+  .who td:first-child{white-space:nowrap;font-weight:600;color:var(--navy)}
+  .sev{display:inline-block;width:20px;text-align:center}
+  .lgnd td:first-child{white-space:nowrap;font-weight:700}
+  hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 2px}
+  .toc a{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px;text-decoration:none;
+         color:var(--navy);font-size:13.5px;font-weight:600}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:30px}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Promo Ops — Team Handbook</h1>
+  <p>Set up the tool · build &amp; push an order · QA it before it goes live.</p>
+</div></header>
+
+<main>
+
+  <div class="callout ok">
+    <b>The one thing to remember:</b> the tool only ever creates a <b>NOT_BOOKED draft</b> — nothing serves
+    until a Campaign Manager <b>books</b> it in FreeWheel. Every command below is safe in that sense.
+  </div>
+
+  <div class="toc">
+    <a href="#flow">The flow</a>
+    <a href="#setup">1 · Set up</a>
+    <a href="#push">2 · Build &amp; push</a>
+    <a href="#qa">3 · QA</a>
+    <a href="#ref">Command reference</a>
+  </div>
+
+  <h2 id="flow">How it all fits together</h2>
+  <div class="card">
+    <div class="flow">
+      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form, posts the plan file to Slack</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>2 · Ad Ops</b><span>Preview + push the NOT_BOOKED draft</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>3 · Ad Ops</b><span>QA the live IO (<code>promo-ops qa</code>)</span></div>
+      <div class="arrow">→</div>
+      <div class="step"><b>4 · Campaign Mgr</b><span>Reviews &amp; books it (goes live)</span></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────  1 · SETUP  ───────────────────────────── -->
+  <h2 id="setup"><span class="n">1</span> Set up the tool on your computer</h2>
+  <div class="callout info">
+    <b>You don’t copy files from someone else’s computer.</b> Everyone downloads (“clones”) the same code from
+    the shared <b>GitHub</b> repo — the single source of truth. Your <code>.env</code> (the FreeWheel login) is
+    personal and <b>never</b> stored in GitHub; you create it once on your own machine.
+  </div>
+  <div class="card">
+    <p>Do this <b>once</b> (~15–20 min, copy/paste — no coding). Full details:
+       <code>docs/CLONE_SETUP.md</code>.</p>
+    <ol>
+      <li><b>Get repo access</b> — the admin (Kate) invites you to the private GitHub repo
+          <code>katekling-stack/Promo-Operations</code>; accept the email invite.</li>
+      <li><b>Install Python 3.10+</b> — from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>
+          (on Windows tick “Add Python to PATH”).</li>
+      <li><b>Install Git</b> — Mac: <code>git --version</code> (click Install if prompted);
+          Windows: <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a>.</li>
+      <li><b>Sign in to GitHub</b> — easiest is the GitHub CLI:
+<pre>gh auth login          <span class="c"># choose GitHub.com → HTTPS → Login with a browser</span></pre>
+          <span class="tip">Or install <b>GitHub Desktop</b> and sign in there.</span></li>
+      <li><b>Clone the team branch</b> into an easy spot (e.g. Desktop):
+<pre>cd ~/Desktop
+git clone --branch claude/freewheel-order-placement-templates-p2rjzd \
+  https://github.com/katekling-stack/Promo-Operations.git
+cd Promo-Operations</pre></li>
+      <li><b>Create your <code>.env</code></b> (your FreeWheel login — the same <code>AdOps.api@520311</code>
+          access Ad Ops already uses):
+<pre>cp .env.example .env    <span class="c"># Windows: copy .env.example .env</span></pre>
+          Open <code>.env</code> and fill in <code>FREEWHEEL_NETWORK_ID</code>, <code>FREEWHEEL_USERNAME</code>,
+          <code>FREEWHEEL_PASSWORD</code>. <b>Never</b> share or commit this file.</li>
+      <li><b>Install the tool</b>:
+<pre>python -m pip install -e .   <span class="c"># Mac: python3 -m pip install -e .</span></pre></li>
+      <li><b>Test it</b>: <code>promo-ops --help</code> should list the commands.</li>
+    </ol>
+    <div class="callout warn">
+      <b>Keep it up to date</b> anytime with <code>./update.sh</code> — it pulls the latest tool + form.
+      Because it hard-resets to the shared branch, <b>don’t hand-edit files</b> in this folder
+      (only your git-ignored <code>.env</code> is left alone).
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────  2 · PUSH  ───────────────────────────── -->
+  <h2 id="push"><span class="n">2</span> Build &amp; push an order</h2>
+  <p>Run everything from inside the <code>Promo-Operations</code> folder. Use
+     <span class="pill a">Path A</span> for one campaign, <span class="pill b">Path B</span> for a batch.
+     Full details: <code>docs/TEAM_WORKFLOW.md</code>.</p>
+
+  <h3><span class="pill a">Path A</span> &nbsp;One campaign</h3>
+  <div class="card">
+    <p><b>Campaign Manager</b> — fill the form (<code>templates/campaign-plan/campaign-plan-form.html</code>),
+       click <b>Download plan file</b>, post the <code>…plan.json</code> to Slack
+       <b>#promo-order-automations-submissions</b>, and mark the Salesforce Case <b>Ready for Automation</b>.</p>
+    <p><b>Ad Ops</b> — grab the plan file from Slack, then:</p>
+<pre>cd ~/Desktop/Promo-Operations
+promo-ops preview ~/Downloads/tulsa-king-usa.plan.json                          <span class="c"># 1) eyeball it — creates nothing</span>
+promo-ops push    ~/Downloads/tulsa-king-usa.plan.json --target freewheel --live <span class="c"># 2) push the NOT_BOOKED draft</span></pre>
+    <div class="tip">Don’t type file paths — type <code>promo-ops push </code> then <b>drag the file from Finder
+       onto the Terminal</b>, then add <code>--target freewheel --live</code>.</div>
+  </div>
+
+  <h3><span class="pill b">Path B</span> &nbsp;A batch (many at once)</h3>
+  <div class="card">
+    <p>Campaign Managers click <b>Copy row for Sheet</b> and paste into the shared Google Sheet. When it’s time:</p>
+<pre>File → Download → Comma-separated values (.csv)            <span class="c"># in the Google Sheet</span>
+promo-ops batch ~/Downloads/promo-batch.csv --out results.csv         <span class="c"># preview ALL rows</span>
+promo-ops batch ~/Downloads/promo-batch.csv --live --out results.csv  <span class="c"># push ALL drafts</span></pre>
+    <p><code>results.csv</code> maps each Salesforce Case # to its FreeWheel draft link + status.</p>
+  </div>
+
+  <div class="callout ok">
+    <b>Golden rules:</b> always run the <b>preview / no-<code>--live</code></b> version first · <b>re-running is safe</b>
+    (existing drafts are reused, never duplicated) · if a command says “does not exist,” you’re not in the folder —
+    run <code>cd ~/Desktop/Promo-Operations</code> first.
+  </div>
+
+  <!-- ─────────────────────────────  3 · QA  ───────────────────────────── -->
+  <h2 id="qa"><span class="n">3</span> QA an order before it goes live</h2>
+  <div class="card">
+    <p>The push prints the new <b>IO id</b>. Run the pre-launch review on it to catch mistakes while it’s still a
+       draft. It only <b>reads</b> FreeWheel — nothing is changed. Full details: <code>docs/QA_GUIDE.md</code>.</p>
+<pre>promo-ops qa 80271357                  <span class="c"># review one IO</span>
+promo-ops qa 80271357 96525273         <span class="c"># several at once</span>
+promo-ops qa 80271357 --out qa.md      <span class="c"># + a shareable report file (paste in Slack / the case)</span>
+promo-ops qa 80271357 --only "Tier 4"  <span class="c"># focus on certain placements</span></pre>
+    <div class="tip">The <b>IO id</b> is the number in the FreeWheel URL: <code>…insertion_order_id=<b>80271357</b>…</code></div>
+
+    <h3>What it checks — every placement</h3>
+    <ul>
+      <li><b>Ad units</b> — correct group for the brand+format; pre-roll dropped at :30+; bumper units; never empty.</li>
+      <li><b>Creative duration</b> — the creative length matches the duration the line is named for.</li>
+      <li><b>Time zone</b> — the schedule is in the market’s time zone.</li>
+      <li><b>Targeting / relationships</b> — right main inventory; no Pluto in no-Pluto regions; Samsung excluded for
+          Pluto TV brands; Recommended Show only on P+/Pluto TV; AU Tier 4 UFC set present.</li>
+      <li><b>Frequency caps</b> — order-level (per region) + placement-level (per tier).</li>
+      <li><b>Priority / precedence</b>, <b>naming</b>, and <b>geo</b>.</li>
+    </ul>
+
+    <h3>How to read the report</h3>
+    <table class="lgnd">
+      <tr><th>Tag</th><th>Meaning</th></tr>
+      <tr><td><span class="sev">❌</span> error</td><td>Almost certainly wrong — fix before going live.</td></tr>
+      <tr><td><span class="sev">⚠️</span> warn</td><td>Likely wrong — check it.</td></tr>
+      <tr><td><span class="sev">ℹ️</span> info</td><td>Couldn’t read that field from FreeWheel — verify by hand.</td></tr>
+      <tr><td><span class="sev">✅</span> ok</td><td>Verified correct.</td></tr>
+    </table>
+    <p class="tip">The summary line gives the error/warning count. <b>0 errors</b> = the structure matches what the
+       tool would have built. Fix any ❌, then hand off to the CM to review and book.</p>
+  </div>
+
+  <!-- ─────────────────────────────  REFERENCE  ───────────────────────────── -->
+  <h2 id="ref">Command reference</h2>
+  <div class="card">
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>./update.sh</code></td><td>Get the latest tool + form</td></tr>
+      <tr><td><code>promo-ops preview &lt;file&gt;.plan.json</code></td><td>Show the tiers/targeting for one plan (creates nothing)</td></tr>
+      <tr><td><code>promo-ops push &lt;file&gt;.plan.json --target freewheel --live</code></td><td>Create one NOT_BOOKED draft</td></tr>
+      <tr><td><code>promo-ops batch &lt;file&gt;.csv --live --out results.csv</code></td><td>Create drafts for a whole sheet</td></tr>
+      <tr><td><code>promo-ops qa &lt;IO id&gt;</code></td><td>Audit a live order against the rules before booking</td></tr>
+      <tr><td><code>promo-ops doctor</code></td><td>Preflight check (login + data files) before pushing</td></tr>
+      <tr><td><code>promo-ops --help</code></td><td>List every command</td></tr>
+    </table>
+    <p class="tip">Written guides: <code>docs/README.md</code> (handbook index) · <code>docs/CLONE_SETUP.md</code> (setup) ·
+       <code>docs/TEAM_WORKFLOW.md</code> (build &amp; push) · <code>docs/QA_GUIDE.md</code> (QA) ·
+       <code>docs/AD_OPS_FORM_RUNBOOK.md</code> (the form).</p>
+  </div>
+
+  <div class="foot">Promo Ops — internal team handbook. Everything the tool creates is a NOT_BOOKED draft; a Campaign
+     Manager books the real go-live in FreeWheel.</div>
+
+</main>
+</body>
+</html>
