@@ -1,5 +1,9 @@
 # Promo Operations — FreeWheel / GAM Order Automation
 
+> 👋 **Team members:** for plain-language how-tos (set up the tool, build & push orders, QA a
+> live order before booking), start at the **[Team Handbook →
+> `docs/README.md`](docs/README.md)**.
+
 A tool to turn a **campaign support plan** (targeting inputs from a Salesforce Case
 or a planning sheet) into a fully-built **Order + Placements + tiered targeting**,
 and push it into **FreeWheel** and **Google Ad Manager** — following the Paramount

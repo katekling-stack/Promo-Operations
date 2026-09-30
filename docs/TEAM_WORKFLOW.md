@@ -41,7 +41,15 @@ promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --liv
 > **drag the downloaded file from Finder onto the Terminal window** — it pastes the path for
 > you — then type ` --target freewheel --live` and press Return.
 
-Then tell the CM the draft is in FreeWheel for review.
+**3) QA the draft before the CM books it.** The push prints the new **IO id** — run the
+pre-launch review on it to catch mistakes (ad units, creative duration, time zone, targeting,
+frequency caps, etc.) while it's still NOT_BOOKED:
+```
+promo-ops qa <IO id>                 # e.g. promo-ops qa 80271357
+promo-ops qa <IO id> --out qa.md     # optional: a shareable report to paste in Slack/the case
+```
+Fix anything flagged ❌, then tell the CM the draft is in FreeWheel for review. See
+[`QA_GUIDE.md`](QA_GUIDE.md) for how to read the report.
 
 ---
 
@@ -65,6 +73,8 @@ Then tell the CM the draft is in FreeWheel for review.
    ```
 3. `results.csv` maps each **Salesforce Case #** to its **FreeWheel draft link + status** —
    paste that back onto the cases so the CM knows what to review.
+4. **QA each draft** before the CMs book them — run `promo-ops qa <IO id>` on the IO ids from
+   `results.csv` (you can pass several at once: `promo-ops qa 111 222 333`).
 
 > Again: you download the sheet **as a file** and give the tool the *file*. You do **not**
 > copy rows out of the sheet into the terminal.
@@ -90,6 +100,9 @@ Then tell the CM the draft is in FreeWheel for review.
 | Push one draft | `promo-ops push <file>.plan.json --target freewheel --live` |
 | Preview a whole batch | `promo-ops batch <file>.csv --out results.csv` |
 | Push a whole batch | `promo-ops batch <file>.csv --live --out results.csv` |
+| **QA a live order** (before booking) | `promo-ops qa <IO id>` |
+| Set up the tool on a new computer | see [`CLONE_SETUP.md`](CLONE_SETUP.md) |
+| Get the latest version | `./update.sh` |
 
 *(`<file>` = the real name of the file you downloaded — drag the file onto Terminal instead
 of typing it.)*
