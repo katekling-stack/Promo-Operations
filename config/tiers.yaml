@@ -1,4 +1,13 @@
 tiers:
+# NOTE (confirmed with the team 2026-10-06): prior_season_viewer, home_carousel_recommendation,
+# pplus_user_state (Tier 1); ai_similar_title (Tier 2); network, geo, demographic (Tier 3); and
+# run_of_network_except_promoted (Tier 4) are intentionally MANUAL -- the CM sets these up
+# directly in FreeWheel (or a separate system, e.g. Periscope for the home carousel) rather than
+# the tool writing them. The targeting engine still computes a value for each so they surface in
+# `promo-ops preview`/`qa` as a checklist reminder, but only audience_segments, genre,
+# content_affinity_showlist, pluto_channel_list, and pluto_category are ever written to a live
+# FreeWheel placement (see OrderBuilder._ids_from_tier / _targeting_ids). Don't mistake the rest
+# for a bug -- that's by design.
 - id: 1
   name: Highest Priority
   # Tier 1 is included GLOBALLY for adult orders (update effective 2026-08-05): every
@@ -9,14 +18,14 @@ tiers:
     label: Audience targeting to capture viewership (DDA / Adobe Audience Manager)
     source: showlist
   - key: prior_season_viewer
-    label: Prior season viewer
+    label: Prior season viewer (manual -- CM sets up in FreeWheel)
     source: promoted_title
   - key: home_carousel_recommendation
     label: P+ (Global) & Pluto TV (Domestic) home page carousel recommendation (Key
-      Value)
+      Value) (manual -- CM sets up in FreeWheel / Periscope)
     source: promoted_title
   - key: pplus_user_state
-    label: New / Light / Medium / Heavy users (P+ only)
+    label: New / Light / Medium / Heavy users (P+ only) (manual -- CM sets up in FreeWheel)
     source: pplus_user_states
 - id: 2
   name: Medium Priority
@@ -29,14 +38,15 @@ tiers:
     label: Pluto TV Channel List
     source: pluto_channels
   - key: ai_similar_title
-    label: AI similar title recommendations via Periscope (AMLG-based)
+    label: AI similar title recommendations via Periscope (AMLG-based) (manual --
+      lives in Periscope, not FreeWheel)
     source: promoted_title
 - id: 3
   name: Lower Priority
   applies_to_regions: global
   dimensions:
   - key: network
-    label: Network / Brand
+    label: Network / Brand (manual -- CM sets up in FreeWheel)
     source: networks
   - key: genre
     label: Genre / Content
@@ -45,17 +55,21 @@ tiers:
     label: Pluto TV Category
     source: pluto_categories
   - key: geo
-    label: Geographic targeting
+    label: Geographic targeting (manual -- real geo targeting is set directly from
+      plan.geo_states/geo_dmas/geo_cities, not through this dimension)
     source: region
   - key: demographic
-    label: Demographic (age / gender)
+    label: Demographic (age / gender) (manual -- CM sets up in FreeWheel)
     source: demographics
 - id: 4
   name: Filler
   applies_to_regions: global
   dimensions:
   - key: run_of_network_except_promoted
-    label: Everywhere except the Channel or Title being promoted
+    label: Everywhere except the Channel or Title being promoted (this label itself
+      isn't written anywhere; the actual self-exclusion of the promoted show's own
+      series/audience/channel IS automated, via OrderBuilder._self_exclusions -- a
+      separate code path, not this dimension)
     source: promoted_title
 format_tier_defaults:
   remnant_video:
