@@ -64,12 +64,12 @@ def test_nick_au_network_10_opt_in():
     assert "Spongebob Squarepants - Generic - Kids - 15 (10 Streaming) - AU" in names
     assert ("Spongebob Squarepants - 10 Streaming After Mid-Roll Bumper - Kids - AU"
             in names)
-    # 10 Streaming remnant: Net10 pre-roll + house; Ten Play SG (1238405).
+    # 10 Streaming remnant: Net10 pre-roll + house; Ten Play SG (1238403).
     net = next(p for p in order.placements
                if "(10 Streaming)" in p.name and p.duration == 15)
     assert "70313" in net.ad_unit_ids
     sgs, _, _ = _kids_set(net)
-    assert sgs == {"932400", "1238405"}
+    assert sgs == {"932400", "1238403"}
     # Bumper is guaranteed, HIGHEST, Net10 bumper unit.
     bump = next(p for p in order.placements if "Bumper" in p.name)
     assert bump.guaranteed and bump.ad_unit_ids == ["70049"]

@@ -136,7 +136,8 @@ leaks across). Deactivated segments (name contains "deactivated") are never targ
   AU `[69304 INTL pre-roll, 71999 house pre-roll, 72000, 72001]`; house pre-roll drops
   at :30. Premium Pre-Roll + Basic Plan (UK-style "Basic", not "Essential") bumper.
 - **Include Network 10** (opt-in): adds `(10 Streaming)` **tiered** remnant lines on
-  main `[932591, 932592, 1238405 Ten Play]`, AU `[70313 Net10 Live pre-roll, house]`,
+  main `[1238403 Ten Play]` ONLY — no CBS Local / VCBS (those are the standard P+ AU
+  remnant's main SGs, not Network 10's), AU `[70313 Net10 Live pre-roll, house]`,
   `(10 Streaming)` after the tier. Sometimes ships **VG rating restrictions** — supplied
   per-case (`Rating_Restrictions__c` / "Rating Restrictions"), excluded on the 10
   Streaming sets only.
@@ -146,7 +147,7 @@ leaks across). Deactivated segments (name contains "deactivated") are never targ
   Standard line main = `932583 P+`, AU `[71999,72000,72001]` (drops pre-roll at :30).
   Kids remnant runs at **priority 1 (override −1) + cap 1 per 15 min** (not tier 4).
 - **Include Network 10** (opt-in): adds `(10 Streaming)` Kids remnant on main
-  `1238405 Ten Play`, AU `[70313, house]`, + a **10 Streaming After Mid-Roll Bumper**
+  `1238403 Ten Play`, AU `[70313, house]`, + a **10 Streaming After Mid-Roll Bumper**
   (guaranteed, HIGHEST, AU `70049 Net10_Brand_Bumper_Mid_Roll`).
 - Naming: `{title} - {msg} - Kids - {dur}[ (10 Streaming)] - AU` (audience before dur).
 

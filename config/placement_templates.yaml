@@ -360,10 +360,11 @@ formats:
     display_name: Network 10 (10 Streaming) Non-Guaranteed Video
     uses_durations: true
     tier_infix: (10 Streaming)
+    # Ten Play ONLY (SG: Biz Div Endpts-Brand: INTL Local: AU: Ten Play: Owned) — must
+    # NOT include the CBS Local (932591) / VCBS (932592) main SGs; those belong to the
+    # standard P+ AU remnant, not the Network 10 breakout.
     main_site_groups:
-    - '932591'
-    - '932592'
-    - '1238405'
+    - '1238403'
     targeting_kinds:
     - dda
     - series
@@ -417,7 +418,7 @@ formats:
     line_label: Generic
     duration_infix: (10 Streaming)
     kids_main_site_groups:
-    - '1238405'
+    - '1238403'
     drop_preroll_at_duration: 30
     drop_units:
     - Paramount House Preroll
@@ -440,7 +441,7 @@ formats:
     guaranteed_label: 10 Streaming After Mid-Roll Bumper - Kids
     precedence_level: HIGHEST
     kids_main_site_groups:
-    - '1238405'
+    - '1238403'
     nests_in: existing_guaranteed_order
     platforms:
     - Network 10

@@ -44,13 +44,14 @@ def test_network_10_main_sgs_and_ad_units():
     _, order = _order(include_network_10=True)
     net10 = [p for p in order.placements if "(10 Streaming)" in p.name]
 
-    # Ten Play (1238405) + CBS Local + VCBS main SGs on the tier-4 RON set.
+    # Ten Play (1238403) ONLY on the tier-4 RON set -- no CBS Local (932591) / VCBS
+    # (932592) leakage; those belong to the standard P+ AU remnant, not Network 10.
     t4 = next(p for p in net10 if p.tier == 4 and p.duration == 15)
     body = FreeWheelClient._placement_body(t4)
     inc = body["relationship_targeting"]["set"][0]["content_targeting"]["network_items"]["include"]
     subs = inc.get("set", [inc])
     main = set(next((s.get("site_group") for s in subs if s.get("site_group")), []))
-    assert main == {"932591", "932592", "1238405"}
+    assert main == {"1238403"}
 
     # Net10 Live pre-roll (70313) always on; Paramount House pre-roll drops at 30s.
     p15 = next(p for p in net10 if p.tier == 1 and p.duration == 15)
