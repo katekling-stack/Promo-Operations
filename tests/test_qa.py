@@ -162,3 +162,46 @@ def test_unknown_brand_is_a_warning_not_a_crash():
     rep = _audit(io, pls)
     assert rep.brand is None
     assert any(f.category == "brand" for f in rep.findings)
+
+
+# --- format-level main-SG overrides (Network 10 / My5 / kids) must be honored ---------- #
+def test_network_10_main_sgs_not_flagged_against_brand_default():
+    """Network 10 lines correctly target ONLY the Ten Play SG (1238403), which isn't one of
+    the brand's (paramount_plus_au) default main site groups. The auditor must check these
+    placements against the FORMAT's main_site_groups override, not the brand default, or it
+    will wrongly warn on every correctly-built Network 10 line -- the same blind spot that
+    let the old wrong Ten Play SG config ship unnoticed (it happened to overlap the brand
+    default, so the loose "any overlap" check passed on the wrong config)."""
+    plan = dict(AU_PLAN)
+    plan["product_overrides"] = {"network_10": True}
+    io, pls = _live(plan, "73850057")
+    rep = _audit(io, pls)
+    net10_warnings = [f for f in rep.findings
+                      if f.category == "targeting" and f.level == "warn"
+                      and "(10 Streaming)" in f.placement]
+    assert not net10_warnings, net10_warnings
+
+
+def test_network_10_wrong_sg_is_actually_caught():
+    """The flip side: if a Network 10 line is mutated to carry a wrong/extra site group (the
+    live shape of the old bug -- VCBS/CBS Local leaking in alongside Ten Play), the auditor
+    must flag it instead of silently passing because those extra ids happen to overlap the
+    brand default."""
+    plan = dict(AU_PLAN)
+    plan["product_overrides"] = {"network_10": True}
+    io, pls = _live(plan, "73850057")
+    pls = copy.deepcopy(pls)
+    for p in pls:
+        if "(10 Streaming)" not in p.get("name", ""):
+            continue
+        for s in (p.get("relationship_targeting") or {}).get("set", []):
+            sg = ((s.get("content_targeting") or {}).get("network_items", {})
+                  .get("include", {}).get("site_group"))
+            if isinstance(sg, list) and sg == ["1238403"]:
+                sg.remove("1238403")   # Ten Play dropped, nothing correct left targeted
+    rep = _audit(io, pls)
+    net10_missing_main = [f for f in rep.findings
+                          if f.category == "targeting" and f.level == "warn"
+                          and "(10 Streaming)" in f.placement
+                          and "none of the brand's main site groups" in f.message]
+    assert net10_missing_main, "expected a warning once the Ten Play SG is missing"

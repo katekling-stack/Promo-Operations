@@ -427,7 +427,7 @@ class QAAuditor:
         out += self._check_creative_duration(pv, name, duration)
         out += self._check_freq_cap(pv, name, fmt, tier, cfg)
         out += self._check_priority(pv, name, tier, duration, cfg)
-        out += self._check_targeting(pv, name, brand_key, cfg, region, tier)
+        out += self._check_targeting(pv, name, brand_key, cfg, region, tier, fmt)
         out += self._check_geo(pv, name, region)
         return out
 
@@ -550,15 +550,20 @@ class QAAuditor:
                             -exp, val)]
         return [Finding("ok", "priority", name, f"Tier {tier} priority {val} matches.")]
 
-    def _check_targeting(self, pv, name, brand_key, cfg, region, tier) -> list[Finding]:
+    def _check_targeting(self, pv, name, brand_key, cfg, region, tier, fmt=None) -> list[Finding]:
         out: list[Finding] = []
         inc_sgs = pv.all_site_groups("include")
         # no-Pluto regions must never target the Pluto platform SG
         if region and not self._region_has_pluto(region) and PLUTO_SG in inc_sgs:
             out.append(Finding("error", "targeting", name,
                                f"targets the Pluto SG {PLUTO_SG} in a no-Pluto region ({region})."))
-        # brand main site groups should appear somewhere in the includes (skip flat/no-set lines)
-        expected_main = self._expected_main_sgs(cfg, region)
+        # brand main site groups should appear somewhere in the includes (skip flat/no-set lines).
+        # A format can override the platform footprint entirely (Network 10 -> Ten Play, My5 ->
+        # Channel 5 inventory, kids -> kids_main_site_groups) -- check against THAT override when
+        # one applies, not the brand default, or every correctly-built overridden line gets
+        # wrongly warned on (and a wrong override that happens to overlap the brand default would
+        # pass silently -- exactly how the old Ten Play SG mistake shipped unnoticed).
+        expected_main = self._expected_main_sgs(cfg, region, fmt, self._is_kids(brand_key))
         if expected_main and pv.sets():
             if not (set(expected_main) & inc_sgs):
                 out.append(Finding("warn", "targeting", name,
@@ -608,8 +613,16 @@ class QAAuditor:
         overrides = ((cfg or {}).get("format_overrides", {}) or {}).get(fmt or "", {})
         return {**base, **overrides} if overrides else dict(base)
 
-    def _expected_main_sgs(self, cfg, region) -> list[str]:
-        main = list(cfg.get("main_site_groups", []) or [])
+    def _expected_main_sgs(self, cfg, region, fmt=None, is_kids=False) -> list[str]:
+        tmpl = self._tmpl(fmt, cfg) if fmt else {}
+        # Same precedence as OrderBuilder._build_placements: kids_main_site_groups (non-My5
+        # kids) > the format's main_site_groups override > the brand default.
+        if is_kids and tmpl.get("kids_main_site_groups") and not cfg.get("my5_brand"):
+            main = list(tmpl["kids_main_site_groups"])
+        elif tmpl.get("main_site_groups"):
+            main = list(tmpl["main_site_groups"])
+        else:
+            main = list(cfg.get("main_site_groups", []) or [])
         if region and not self._region_has_pluto(region):
             main = [sg for sg in main if sg != PLUTO_SG]
         return main
