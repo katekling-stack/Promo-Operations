@@ -15,6 +15,9 @@ Guaranteed P+ formats (Premium Pre-Roll, Essential Bumper) are named by content:
 
     {title} [ShowID:{id}]     (show)      {title} [MovieID:{id}]   (movie)
 
+The token is omitted entirely when the plan has no Show/Movie ID input (no empty
+"[ShowID:]" placeholder left for a CM to misread as a filled-in value).
+
 The result is a pure-data Order, ready for dry-run review or the FreeWheel client.
 """
 
@@ -400,25 +403,28 @@ class OrderBuilder:
         plan_label = tmpl.get("plan_label", "")
         audience = tmpl.get("audience_label", "")   # e.g. "Kids" -> "… - Kids - {region}"
         parts = ["Paramount +", unit, plan_label, plan.promoted_title, audience, plan.region]
-        return " - ".join(p for p in parts if p) + f" - [{label}:{plan.content_id or ''}]"
+        base = " - ".join(p for p in parts if p)
+        if not plan.content_id:          # no input -> no token (nothing for the CM to misread)
+            return base
+        return base + f" - [{label}:{plan.content_id}]"
 
     def _pplus_id_token(self, plan: SupportPlan, brand_key: Optional[str]) -> str:
         """The [ShowID:]/[MovieID:] token that rides on EVERY placement name for a
-        Paramount+ campaign (not just the guaranteed Plan lines). Mirrors the guaranteed
-        style: a blank id still stamps "[ShowID:]" so the CM fills it in the UI. Returns
+        Paramount+ campaign (not just the guaranteed Plan lines). Omitted entirely when
+        the plan has no Show/Movie ID input -- no empty "[ShowID:]" placeholder. Returns
         "" for non-Paramount+ campaigns, so nothing changes for other brands.
         """
         from .brand_sync import brand_signature
         sig = brand_signature((plan.campaign or {}).get("name", "") or "")
         is_pplus = ((sig and sig[0] == "paramount_plus")
                     or str(brand_key or "").startswith("paramount_plus"))
-        if not is_pplus:
+        if not is_pplus or not plan.content_id:
             return ""
         ctype = (plan.content_type or "show").lower()
         if ctype in ("na", "n/a", "none"):     # campaign doesn't need a Show/Movie ID
             return ""
         label = "MovieID" if ctype == "movie" else "ShowID"
-        return f" - [{label}:{plan.content_id or ''}]"
+        return f" - [{label}:{plan.content_id}]"
 
     # --- caps / priority ------------------------------------------------- #
 

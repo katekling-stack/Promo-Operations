@@ -407,7 +407,7 @@ datalist{display:none}
         <div class="hint">Pick <b>Content type</b> above (Show vs Movie) to set the tag.</div></div>
       <div class="field"><label>Recommended Show ID</label><input type="text" id="rec_show_id"></div>
     </div>
-    <div class="note hidden" id="pplusIdNudge">This is a <b>Paramount+</b> campaign — the <b>Show / Movie ID</b> above is stamped as <code>[ShowID:…]</code> / <code>[MovieID:…]</code> onto <b>every placement</b> in the order (all tiers), not just the Pre-Roll/Bumper. Left blank, it's stamped empty for the CM to fill in FreeWheel.</div>
+    <div class="note hidden" id="pplusIdNudge">This is a <b>Paramount+</b> campaign — the <b>Show / Movie ID</b> above is stamped as <code>[ShowID:…]</code> / <code>[MovieID:…]</code> onto <b>every placement</b> in the order (all tiers), not just the Pre-Roll/Bumper. Left blank, no token is added — fill it in here, or add it later once it's known.</div>
     <div class="field" id="kidsWrap"><label>Kids audience</label>
       <div class="seg" id="kidsSeg">
         <button type="button" data-k="older">Older</button>

@@ -25,9 +25,9 @@ def test_pplus_movie_uses_movieid():
     assert all(n.endswith("[MovieID:98765]") for n in names), names
 
 
-def test_pplus_blank_id_still_stamps_token_for_cm():
+def test_pplus_blank_id_omits_token_entirely():
     names = _names("Paramount + - IT", "IT")           # no content_id
-    assert all(n.endswith("[ShowID:]") for n in names), names
+    assert not any("ShowID" in n or "MovieID" in n for n in names), names
 
 
 def test_pplus_kids_also_stamped():
