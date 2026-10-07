@@ -16,11 +16,15 @@ targeted create — marked `# TODO(targeting)`.
 from __future__ import annotations
 
 import base64
+import contextlib
 import hashlib
 import json
+import os
 import re
 import secrets
+import tempfile
 import time
+from pathlib import Path
 from typing import Any, Optional
 from urllib.parse import parse_qs, urljoin, urlparse
 
@@ -36,6 +40,31 @@ REDIRECT_URI = "http://localhost/callback"
 
 def _b64url(raw: bytes) -> str:
     return base64.urlsafe_b64encode(raw).decode().rstrip("=")
+
+
+@contextlib.contextmanager
+def _atomic_csv_open(path: "Path | str"):
+    """Write a synced CSV atomically.
+
+    Every sync_* exporter below paginates a FreeWheel API and streams rows straight
+    into the destination file as it goes. If the sync dies partway through (auth
+    failure, network blip, an uncaught API error) a plain `path.open("w")` leaves the
+    file truncated to whatever was written so far -- silently destroying a previously
+    good, fully-synced snapshot. This builds the new file in a temp sibling and only
+    replaces the real path via `os.replace` (atomic on the same filesystem) once the
+    write completes without error; any exception leaves the existing file untouched.
+    """
+    path = Path(path)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    tmp_path = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as fh:
+            yield fh
+    except BaseException:
+        tmp_path.unlink(missing_ok=True)
+        raise
+    else:
+        os.replace(tmp_path, path)
 
 
 class FreeWheelClient:
@@ -287,7 +316,7 @@ class FreeWheelClient:
         out = _Path(out_dir) if out_dir else DATA_DIR
         out.mkdir(parents=True, exist_ok=True)
         path = out / "synced_audience_items.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["show", "segment_name", "segment_id", "platform", "region", "source"])
             page, total_pages, empty_retries = 1, None, 0
@@ -343,7 +372,7 @@ class FreeWheelClient:
             if not rows:
                 continue
             path = out / f"synced_{attr_type}.csv"
-            with path.open("w", encoding="utf-8", newline="") as fh:
+            with _atomic_csv_open(path) as fh:
                 w = _csv.writer(fh)
                 w.writerow(["type", "name", "id"])
                 for item in rows:
@@ -376,7 +405,7 @@ class FreeWheelClient:
         rows = [r for r in rows if r.get("id") and r.get("country_name")]
         rows.sort(key=lambda r: str(r["country_name"]).lower())
         path = out / "synced_countries.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["country_name", "id", "source"])
             for r in rows:
@@ -413,7 +442,7 @@ class FreeWheelClient:
         rows = [r for r in rows if r.get("id") and r.get("name")]
         rows.sort(key=lambda r: str(r["name"]).lower())
         path = out / "synced_ad_units.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["name", "id", "status", "source"])
             for r in rows:
@@ -458,7 +487,7 @@ class FreeWheelClient:
             page += 1
         kept.sort(key=lambda it: str(it.get("name", "")).lower())
         path = out / "synced_site_groups.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["name", "id", "status", "external_id", "source"])
             for it in kept:
@@ -482,7 +511,7 @@ class FreeWheelClient:
         out = _Path(out_dir) if out_dir else DATA_DIR
         out.mkdir(parents=True, exist_ok=True)
         path = out / "synced_series.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["id", "name", "status"])
             page, total_pages, n = 1, None, 0
@@ -530,7 +559,7 @@ class FreeWheelClient:
         out = _Path(out_dir) if out_dir else DATA_DIR
         out.mkdir(parents=True, exist_ok=True)
         path = out / "synced_genre_video_groups.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["id", "name", "status"])
             page, empty_streak = 1, 0
@@ -572,7 +601,7 @@ class FreeWheelClient:
         out = _Path(out_dir) if out_dir else DATA_DIR
         out.mkdir(parents=True, exist_ok=True)
         path = out / "synced_brand_video_groups.csv"
-        with path.open("w", encoding="utf-8", newline="") as fh:
+        with _atomic_csv_open(path) as fh:
             w = _csv.writer(fh)
             w.writerow(["id", "name", "status"])
             page, empty_streak = 1, 0
