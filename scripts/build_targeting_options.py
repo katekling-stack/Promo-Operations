@@ -49,8 +49,9 @@ AUDIENCE_STRUCTURES = [
     ("GL-DDA-1P", lambda s: s.startswith("GL-DDA-1P")),
     # Audience Segment Request tool (v3) region buckets: US-/EU-UK-/APAC-DDA-1P.
     # These roll out alongside the legacy GL-DDA-1P set — the push resolver already
-    # understands them (audience_segments.REGION_BUCKET_CONVENTION), so the form picker
-    # must surface them too or newly-requested segments look "missing".
+    # understands them (audience_segments.ALL_BUCKET_CONVENTIONS, matched for every
+    # region), so the form picker must surface them too or newly-requested segments
+    # look "missing".
     ("US-DDA-1P", lambda s: s.startswith("US-DDA-1P")),
     ("EU/UK-DDA-1P", lambda s: s.startswith("EU/UK-DDA-1P")
         or s.startswith("EU-UK-DDA-1P") or s.startswith("EU-DDA-1P")

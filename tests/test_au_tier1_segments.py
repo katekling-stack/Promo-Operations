@@ -1,6 +1,7 @@
 """AU Tier-1 audience segments: AU resolves the regular global GL-DDA-1P segment when a
 show/movie has one, AND its DWH "Summit" segments ("AU - DWH - <src> - ID - Summit - …").
-The AU Summit taxonomy never leaks into non-AU regions (they use GL-DDA-1P only).
+The AU Summit taxonomy never leaks into non-AU regions (they use GL-DDA-1P only, plus the
+region-agnostic -DDA-1P bucket conventions — see test_bucket_conventions_cross_all_regions).
 Deactivated segments are never targeted."""
 
 from __future__ import annotations
@@ -41,6 +42,26 @@ def test_non_au_uses_gl_dda_not_summit(tmp_path):
     r = _resolver(tmp_path)
     us = r.resolve("Tulsa King", region="USA")
     assert [rec.segment_id for rec in us.records] == ["1437993"]
-    # The AU Summit taxonomy never leaks into a non-AU region.
+    # The AU Summit taxonomy never leaks into a non-AU region — it's AU's own data
+    # warehouse and isn't a reusable bucket convention like the -DDA-1P sets below.
     assert r.resolve("Auto Buyers APAC", region="USA").records == []
     assert r.resolve("Auto Buyers APAC", region="AU").matched
+
+
+def test_bucket_conventions_cross_all_regions(tmp_path):
+    rows = [
+        ["show", "segment_name", "segment_id", "platform", "region", "source"],
+        ["", "US-DDA-1P_The_Impossible", "222", "DDA", "", "t"],
+        ["", "EU/UK-DDA-1P_INTL___The_Man_in_the_White_Van_eu", "999", "DDA", "", "t"],
+        ["", "APAC-DDA-1P_Some_Show", "333", "DDA", "", "t"],
+    ]
+    p = tmp_path / "segs.csv"
+    with p.open("w", newline="", encoding="utf-8") as fh:
+        csv.writer(fh).writerows(rows)
+    r = AudienceSegmentResolver(data_dir=tmp_path).load()
+    # A segment requested under one region's bucket (e.g. US) is commonly reusable for a
+    # campaign in a different region too — bucket conventions are no longer region-locked.
+    for region in ("USA", "UK", "AU", "CA", "GSA"):
+        assert {rec.segment_id for rec in r.resolve("The Impossible", region=region).records} == {"222"}
+        assert {rec.segment_id for rec in r.resolve("The Man in the White Van", region=region).records} == {"999"}
+        assert {rec.segment_id for rec in r.resolve("Some Show", region=region).records} == {"333"}

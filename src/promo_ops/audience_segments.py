@@ -82,30 +82,25 @@ TIER1_CONVENTIONS: dict[str, str] = {
 
 # The Audience Segment Request tool (v3) stamps NEW segments with a region-bucketed prefix
 # (US-/EU/UK-/APAC-DDA-1P-SERIES|MOVIE-<Title>), rolling out alongside the legacy GL-DDA-1P
-# SHOW set. So each region matches BOTH its legacy convention AND its new bucket convention.
-REGION_BUCKET_CONVENTION: dict[str, str] = {
-    "USA": "us dda 1p", "CA": "us dda 1p", "BR": "us dda 1p", "LATAM": "us dda 1p",
-    "AU": "apac dda 1p",
-    "UK": "eu uk dda 1p", "IE": "eu uk dda 1p", "FR": "eu uk dda 1p", "IT": "eu uk dda 1p",
-    "GSA": "eu uk dda 1p", "ES": "eu uk dda 1p", "FI": "eu uk dda 1p", "DK": "eu uk dda 1p",
-    "NO": "eu uk dda 1p", "SE": "eu uk dda 1p",
-}
+# SHOW set. A segment requested under one region's bucket is commonly reusable for a
+# campaign in a different region too, so every region matches ALL THREE buckets (plus its
+# own legacy convention, if any) rather than just the bucket it would have requested under.
 ALL_BUCKET_CONVENTIONS = ["us dda 1p", "eu uk dda 1p", "apac dda 1p"]
 
 
 def _conventions_for_region(region: Optional[str]) -> list[str]:
-    """Conventions a region's Tier 1 segments may use: the GLOBAL GL-DDA-1P convention FIRST
-    (so a show/movie's regular segment is used whenever it exists), PLUS any region-specific
-    legacy convention (e.g. AU's DWH segments) and its new request-tool bucket convention —
-    so regular, region-specific, and new segments all resolve."""
+    """Conventions a region's Tier 1 segments may use: the GLOBAL GL-DDA-1P convention,
+    EVERY Audience Segment Request tool (v3) bucket (US-/EU-UK-/APAC-DDA-1P) regardless of
+    the campaign's own region — a segment requested under one region's bucket is commonly
+    reusable for a campaign in a different region too, so narrowing to just the query
+    region's own bucket silently hid usable overlap — PLUS the region's own region-specific
+    LEGACY convention if it has one (e.g. AU's DWH "Summit" segments, which are AU's own
+    data warehouse and do NOT carry over to other regions)."""
     r = (region or "").upper()
-    out = [DEFAULT_TIER1_CONVENTION]
+    out = [DEFAULT_TIER1_CONVENTION, *ALL_BUCKET_CONVENTIONS]
     legacy = TIER1_CONVENTIONS.get(r)
     if legacy and legacy not in out:
         out.append(legacy)
-    b = REGION_BUCKET_CONVENTION.get(r)
-    if b and b not in out:
-        out.append(b)
     return out
 
 

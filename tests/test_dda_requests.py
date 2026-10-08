@@ -40,5 +40,8 @@ def test_recognizes_new_and_legacy_conventions():
     assert have and have[0]["segment_id"] == "999"
     have2, _ = r.missing_dda(["NCIS"], "USA")               # legacy GL still works
     assert have2 and have2[0]["segment_id"] == "111"
-    _, need = r.missing_dda(["The Impossible"], "UK")       # region isolation: US-bucket not in UK
-    assert need and need[0]["show"] == "The Impossible"
+    # Bucket conventions (US/EU-UK/APAC-DDA-1P) now cross regions: a segment requested
+    # under one region's bucket is commonly reusable elsewhere, so a US-bucket segment
+    # resolves for a UK query too (only AU's DWH Summit taxonomy stays region-locked).
+    have3, _ = r.missing_dda(["The Impossible"], "UK")
+    assert have3 and have3[0]["segment_id"] == "222"
