@@ -113,12 +113,22 @@ def test_guaranteed_plan_lines_carry_tier1_audience_and_recommended_show():
         assert "series" not in inc                                             # no showlist series
 
 
-def test_recommended_show_prebuilt_with_placeholder_when_blank():
-    # Blank Content ID / Recommended Show ID -> scaffolded with the placeholder.
+def test_recommended_show_omitted_entirely_when_blank():
+    # Blank Content ID / Recommended Show ID -> no Recommended Show set at all (no literal
+    # "TBD" stamped into the live custom key-value).
     order = _order()   # Frisco plan: no content_id
     t1 = next(p for p in order.placements if p.tier == 1 and p.format == "remnant_video")
-    kv = _sets(t1)["Recommended Show"]["custom_targeting"]["include"]["key_value"]
-    assert kv == "recommended_show=TBD"
+    assert "Recommended Show" not in _sets(t1)
+
+
+def test_guaranteed_plan_lines_omit_recommended_show_when_blank():
+    # Same blank-id omission on the guaranteed Premium Pre-Roll / Essential Bumper lines.
+    order = _order()   # Frisco plan: no content_id
+    for fmt in ("premium_preroll", "essential_bumper"):
+        p = next(p for p in order.placements if p.format == fmt)
+        s = _sets(p)
+        assert "Recommended Show" not in s, fmt
+        assert set(s) == {"Affinity Shows"}, fmt
 
 
 def test_test_channels_excluded_from_pluto():

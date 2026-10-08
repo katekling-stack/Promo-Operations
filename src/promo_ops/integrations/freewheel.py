@@ -1051,9 +1051,6 @@ class FreeWheelClient:
             if excl and include_sgs:
                 body["content_targeting"] = {"include": {"site_group": include_sgs},
                                              "exclude": excl}
-        if p.recommended_show_value in (None, "") and sets:
-            body["_cm_adds_in_ui"] = {
-                "recommended_show": "placeholder 'TBD' pre-built — replace with the ShowID"}
         # Rating INCLUDES: AND the market's rating VG(s) into every argument — each set's
         # content targeting for set-having lines, or the placement-level content targeting
         # for set-less flat lines. The promo then runs ONLY on that rating's content.
@@ -1213,7 +1210,6 @@ class FreeWheelClient:
         pplus = cfg.get("pplus_site_group", [])
         excl_sg = cfg.get("exclude_site_groups", [])
         excl_clips = cfg.get("exclude_video_groups", [])
-        rec_placeholder = cfg.get("recommended_show_placeholder", "TBD")
         # Recommended Show argument:
         #   P+ (and other non-Pluto adult): key "recommended_show", applied GLOBALLY.
         #   Pluto TV: key "recommended_shows" (plural), applied DOMESTICALLY only (the
@@ -1284,11 +1280,15 @@ class FreeWheelClient:
             return e or None
 
         def rec_show_set(platform_sg):
-            # Always pre-built; blank value -> placeholder for the CM to replace
-            # (FreeWheel rejects an empty key-value).
-            value = p.recommended_show_value or rec_placeholder
+            # No real id -> omit the set entirely rather than stamp a literal "TBD" (FreeWheel
+            # rejects an empty key-value, but a missing/wrong placeholder is worse than no
+            # argument at all -- it reads as a real, resolved value). The platform site-group
+            # scope this set would have carried already rides on the sibling Affinity Shows
+            # set, so skipping it loses no targeting.
+            if not p.recommended_show_value:
+                return None
             s = {"set_name": "Recommended Show",
-                 "custom_targeting": {"include": {"key_value": f"{rec_key}={value}"}}}
+                 "custom_targeting": {"include": {"key_value": f"{rec_key}={p.recommended_show_value}"}}}
             c = FreeWheelClient._content([{"site_group": platform_sg}], base_exclude())
             if c:
                 s.update(c)
@@ -1396,8 +1396,10 @@ class FreeWheelClient:
                 if c:
                     s.update(c)
                 sets.append(s)
-            if add_rec_show:   # guaranteed lines are P+ (non-Pluto) -> always add
-                sets.append(rec_show_set(pplus))
+            if add_rec_show:   # guaranteed lines are P+ (non-Pluto) -> always add when a real id exists
+                rs = rec_show_set(pplus)
+                if rs:
+                    sets.append(rs)
             return sets
 
         # Remnant video, per tier.

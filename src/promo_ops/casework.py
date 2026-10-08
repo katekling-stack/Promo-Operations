@@ -42,17 +42,10 @@ def cm_todos(order: Order) -> list[str]:
     placements = order.placements
     if any(p.recommended_show_value in (None, "") for p in placements
            if p.recommended_show_value is not None or getattr(p, "tier", None) == 1):
-        todos.append("Replace the Recommended Show 'TBD' key-value with the ShowID "
-                     "(or set Recommended Show ID on the Case).")
-    # Targeting the API can't write (surfaced per placement).
-    from .integrations.freewheel import FreeWheelClient
-    needs_ui = set()
-    for p in placements:
-        body = FreeWheelClient._placement_body(p)
-        for k in body.get("_cm_adds_in_ui", {}):
-            needs_ui.add(k)
-    for k in sorted(needs_ui):
-        todos.append(f"Add in the FreeWheel UI: {k}.")
+        todos.append("No Show ID was provided, so Recommended Show targeting wasn't built on "
+                     "the Tier 1/guaranteed lines — add it in FreeWheel (recommended_show= / "
+                     "recommended_shows=<ShowID>) once it's known, or set Recommended Show ID "
+                     "on the Case.")
     # Unmatched targeting notes from the engine.
     for p in placements:
         for tier in p.targeting.tiers:
