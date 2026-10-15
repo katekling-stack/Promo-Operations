@@ -189,7 +189,7 @@ show,segment_name,segment_id,platform,region,source
 ,US-LR-DM-Comscore-Network_Syfy,1310922,DDA,,audience_items
 ,US-LR-DM-Comscore-Network_TNT,1310923,DDA,,audience_items
 ,US-LR-DM-Comscore-Network_VH1,1310925,DDA,,audience_items
-,US-LR-DM-Comscore-SpanishLanguageTVWatchers,1310927,DDA,,audience_items
+,US-LR-DM-M-Comscore-SpanishLanguageTVWatchers,1310927,DDA,,audience_items
 ,US-LR-DM-ContextualGraph-FantasyMovies,1310929,DDA,,audience_items
 ,US-LR-DM-ContextualGraph-MusicTV,1310930,DDA,,audience_items
 ,US-LR-DM-M-Experian-FrequentMovieAttendee,1310931,DDA,,audience_items
@@ -780,7 +780,7 @@ show,segment_name,segment_id,platform,region,source
 ,US-LR-DM-DB_SmallBusinessOwnersSBO_Sep25,1375326,DDA,,audience_items
 ,US-LR-DM-Claritas_HELOC_Sep25,1375395,DDA,,audience_items
 ,US-LR-DM-CoreLogic_New-Purchase-Home-Loan_Sep25,1375396,DDA,,audience_items
-,US-LR-DM-Epsilon_Auto-Loan-Intender_Sep25,1375397,DDA,,audience_items
+,US-LR-DM-C-Epsilon-AutoLoan_Intender,1375397,DDA,,audience_items
 ,US-LR-DM-Transunion_MostLikely_ApplyForPersonalLoan_Sep25,1375585,DDA,,audience_items
 ,US-LR-DM-AlarisPeople_SellFirstOrNewHome_Next-12M_Sep25,1387881,DDA,,audience_items
 ,US-LR-DM-Acxiom_UniversalStudios_Sep25,1387886,DDA,,audience_items
@@ -1465,7 +1465,7 @@ show,segment_name,segment_id,platform,region,source
 ,US-LR-DM-Acxiom-BargainShoppers_Nov25,1413938,DDA,,audience_items
 ,US-LR-DM-AdSquare-RaisingCanes_Oct25,1413939,DDA,,audience_items
 ,US-LR-DM-M-TransUnion-VisitedAnyThemeParks_L12M,1413940,DDA,,audience_items
-,US-LR-DM-C-Acxiom-VacationInFlorida_Within12M,1413941,DDA,,audience_items
+,US-DDA-Direct-M-Acxiom-VacationInFlorida_Within12M,1413941,DDA,,audience_items
 ,US-LR-DM-M-Epsilon-FamilyVacationers,1413942,DDA,,audience_items
 ,US-DDA-Direct-M-Acxiom-DomesticTravel,1413943,DDA,,audience_items
 ,US-LR-DM-M-Epsilon-International_Travelers,1413944,DDA,,audience_items
@@ -3359,7 +3359,7 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,US-CR-Annalect-Boehringer_RealisticReggie_Jan26,1440379,DDA,,audience_items
 ,US-LR-DM-Acxiom-CoupleswithoutChildren-Jan26,1440400,DDA,,audience_items
 ,US-LR-DM-Acxiom-BasketballFan-Jan26,1440406,DDA,,audience_items
-,US-LR-DM-Alliant-CollegeBasketballFans,1440407,DDA,,audience_items
+,US-LR-DM-C-Alliant-CollegeBasketballFans,1440407,DDA,,audience_items
 ,US-LR-DM-SambaTV-BiographicalMusicianMovie-Jan26,1440408,DDA,,audience_items
 ,US-DDA-OAP-EndoPharmaceuticals_U6632054_1Q26,1440658,DDA,,audience_items
 ,US-DDA-OAP-Evereve_Evereve_Jan26,1440665,DDA,,audience_items
@@ -4869,7 +4869,7 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,US-LR-DM-Acxiom-Design_BuildAHome,1476462,DDA,,audience_items
 ,US-LR-DM-Datasys-HomeImprovement_KitchenRemodel,1476463,DDA,,audience_items
 ,US-LR-DM-Acxiom_LiquidInvestible_1M-2M deactivated at 2026-04-15 20:51:54 UTC,1476464,DDA,,audience_items
-,US-LR-DM-Acxiom-LiquidInvestible_500k-5Mplus,1476465,DDA,,audience_items
+,US-LR-DM-C-Acxiom-LiquidInvestible_500k-5Mplus,1476465,DDA,,audience_items
 ,US-DDA-QRM-SMB_20031305_40044966,1476529,DDA,,audience_items
 ,AU - DWH - PP - ID - Summit - Content - Blue Bloods Watchers deactivated at 2026-04-28 01:51:30 UTC,1476535,DDA,,audience_items
 ,AU - DWH - PP - ID - Summit - Content - CSI Watchers deactivated at 2026-04-28 01:51:18 UTC,1476537,DDA,,audience_items
@@ -6166,12 +6166,12 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20032321_40049402,1500403,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20032321_40049422,1500412,DDA,,audience_items
 ,US-LR-DM-M-Acxiom-MedicarePatrons,1500427,DDA,,audience_items
-,US-LR-DM-Epsilon-LikelyCreditUnionMembers,1500428,DDA,,audience_items
-,US-LR-DM-TransUnion-FinancialAccountsWithAnyFederalCreditUnion,1500429,DDA,,audience_items
-,US-LR-DM-Experian-InMarketCreditUnionLoan,1500430,DDA,,audience_items
-,US-LR-DM-Epsilon-LikelyAutoLoanPurchaseIntenders,1500432,DDA,,audience_items
-,US-LR-DM-Epsilon-LikelyHomeLoanIntenders,1500433,DDA,,audience_items
-,US-LR-DM-Epsilon-InterestedInInvestments,1500434,DDA,,audience_items
+,US-LR-DM-C-Epsilon-LikelyCreditUnionMembers,1500428,DDA,,audience_items
+,US-LR-DM-C-TransUnion-FinancialAccountsWithAnyFederalCreditUnion,1500429,DDA,,audience_items
+,US-LR-DM-C-Experian-InMarketCreditUnionLoan,1500430,DDA,,audience_items
+,US-LR-DM-C-Epsilon-LikelyAutoLoanPurchaseIntenders,1500432,DDA,,audience_items
+,US-LR-DM-C-Epsilon-LikelyHomeLoanIntenders,1500433,DDA,,audience_items
+,US-LR-DM-C-Epsilon-InterestedInInvestments,1500434,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20034315_40049414,1500439,DDA,,audience_items
 ,US-DDA-PMXLift-Chevrolet_704939_v1,1500446,DDA,,audience_items
 ,US-DDA-PMXLift-Chevrolet_704948_v4,1500447,DDA,,audience_items
@@ -6483,12 +6483,12 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,APAC-DDA-1P_Music_Video_au,1506167,DDA,,audience_items
 ,APAC-DDA-1P_Reality___Gameshow_au,1506168,DDA,,audience_items
 ,APAC-DDA-1P_Sci-Fi___Fantasy_au,1506169,DDA,,audience_items
-,US-LR-1PD-CRHD_Exclusion_AllModels_0to24Mo,1506192,DDA,,audience_items
-,US-LR-1PD-WDCH_Exclusion_AllModels_0to24Mo,1506193,DDA,,audience_items
+,US-LR-Direct-C-1PD-CRHD_Exclusion_AllModels_0to24Mo,1506192,DDA,,audience_items
+,US-LR-Direct-C-1PD-WDCH_Exclusion_AllModels_0to24Mo,1506193,DDA,,audience_items
 ,US-LR-Direct-C-1PD-HDOC_Exclusion_AllModels_0to24Mo,1506194,DDA,,audience_items
 ,US-LR-1PD-OH_Brown_Base_20260630,1506195,DDA,,audience_items
-,US-LR-Direct-1P-KEH_Exclusion_AllModelOwners_0to24Mo,1506207,DDA,,audience_items
-,US-LR-Direct-1P-NEH_Exclusion_AllModelOwners_0to24Mo,1506208,DDA,,audience_items
+,US-LR-Direct-C-1P-KEH_Exclusion_AllModelOwners_0to24Mo,1506207,DDA,,audience_items
+,US-LR-Direct-C-1P-NEH_Exclusion_AllModelOwners_0to24Mo,1506208,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20034887_40050602,1506211,DDA,,audience_items
 ,US-DDA-1P_Harlan_Coben_s_Final_Twist,1506212,DDA,,audience_items
 ,EU/UK-DDA-1P_Horror_eu,1506214,DDA,,audience_items
@@ -6577,7 +6577,7 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,US-DDA-1P_The_Gangster_The_Cop_The_Devil,1506681,DDA,,audience_items
 ,US-DDA-1P_The_Honey_Trap__A_True_Story_of_Love_Lies_and_the_FBI,1506682,DDA,,audience_items
 ,US-DDA-1P_America_s_Funniest_Home_Videos,1506683,DDA,,audience_items
-,US-LR-Direct-1P-BAHD_Exclusion_AllModelOwners_0to24Mo,1506684,DDA,,audience_items
+,US-LR-Direct-C-1P-BAHD_Exclusion_AllModelOwners_0to24Mo,1506684,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20035205_40050783,1506702,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_966389_40050780,1506713,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20031929_40050824,1506714,DDA,,audience_items
@@ -7145,13 +7145,13 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,US-LR-DM-Alliant-HomeValue_300-499k,1512890,DDA,,audience_items
 ,US-LR-DM-C-Acxiom-CarbonatedBeverages-CocaColaZero,1512894,DDA,,audience_items
 ,US-LR-DM-C-Acxiom-CarbonatedBeverages-DietCocaCola,1512895,DDA,,audience_items
-,US-LR-DM-Acxiom-CarbonatedBeverages-CocaCola,1512974,DDA,,audience_items
-,US-LR-DM-Alliant-CocaColaBuyerPropensity,1512975,DDA,,audience_items
-,US-LR-DM-Alliant_InterestPropensity_CocaCola,1512976,DDA,,audience_items
+,US-LR-DM-C-Acxiom-CarbonatedBeverages-CocaCola,1512974,DDA,,audience_items
+,US-LR-DM-C-Alliant-CocaColaBuyerPropensity,1512975,DDA,,audience_items
+,US-LR-DM-C--Alliant_InterestPropensity_CocaCola,1512976,DDA,,audience_items
 ,US-LR-DM-C-TU-InterestPropensity_DietCocaCola,1512977,DDA,,audience_items
 ,US-DDA-1P_That_Girl,1513015,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20035706_40051979,1513052,DDA,,audience_items
-,US-LR-DM-TransUnion_InterestPropensity_CocaCola,1513184,DDA,,audience_items
+,US-LR-DM-C-TransUnion_InterestPropensity_CocaCola,1513184,DDA,,audience_items
 ,US-DDA-SMB-LAL_smb_lal_20035703_40051971,1513215,DDA,,audience_items
 ,US-LR-Direct-C-1PD-CrossScreenMedia_CLF_IA03,1513231,DDA,,audience_items
 ,US-LR-Direct-C-1PD-CrossScreenMedia_CLF_IA01,1513232,DDA,,audience_items
@@ -7893,3 +7893,121 @@ Marshals,GL-DDA-1P-SHOW_Marshals,1438598,DDA,,audience_items
 ,AU - DWH - 10 - ID - Summit - Content - Sydney Harbour Cops watchers APAC,1518829,DDA,,audience_items
 ,AU - DWH - 10 - ID - Summit - Content - The Bill watchers APAC,1518830,DDA,,audience_items
 ,AU - DWH - 10 - ID - Summit - Content - Nathan For You watchers APAC,1518831,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-ParamountPictures_726266_v1,1518915,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-ParamountPictures_726268_v2,1518916,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-ParamountPictures_726272_v3,1518917,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-ParamountPictures_726281_v6,1518919,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-ParamountPictures_726289_v7,1518924,DDA,,audience_items
+,US-LR-DM-C-Acxiom-CoffeeEnthusiast,1518930,DDA,,audience_items
+,US-LR-DM-C-Experian-SeasonalHolidays,1518931,DDA,,audience_items
+,US-LR-DM-C-Experian-Seasonal_Decorations,1518932,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_OH_09,1518933,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_AZ_06,1518934,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_NC_01,1518935,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_NV_03,1518936,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_OH_CD07,1518937,DDA,,audience_items
+,US-DDA-1P_Shaft_2000,1518938,DDA,,audience_items
+,US-DDA-1P_INTL___Seeds,1518939,DDA,,audience_items
+,US-DDA-1P_INTL___Shaft,1518940,DDA,,audience_items
+,US-DDA-1P_INTL___Jerry_Maguire,1518941,DDA,,audience_items
+,US-DDA-1P_Jerry_Maguire,1518942,DDA,,audience_items
+,US-DDA-1P_Shaft,1518943,DDA,,audience_items
+,US-DDA-1P_Seeds,1518944,DDA,,audience_items
+,US-DDA-1P_The_Notebook,1518945,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_OH_15,1518946,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_PA_08,1518947,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_MI_07,1518949,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_MI_10,1518951,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_OH_01,1518952,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_VA_CD01,1518953,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_OH_10,1518954,DDA,,audience_items
+,US-LR-DM-C-Experian-MultigenerationalHH,1518994,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Lowes_726715_v1,1518998,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Lowes_726749_v7,1518999,DDA,,audience_items
+,US-LR-DM-C-Alliant-WineBuyerPropensity,1519002,DDA,,audience_items
+,US-LR-DM-C-Alliant-WineLoversPropensity,1519005,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Lowes_726755_v8,1519006,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725785_v39,1519018,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725798_v41,1519019,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725813_v44,1519020,DDA,,audience_items
+,EU/UK-DDA-1P_Jimmy_Carr_s_Am_I_The_Asshole__eu,1519021,DDA,,audience_items
+,EU/UK-DDA-1P_Sovereign_-_Das_Gesetz_bin_ich_eu,1519022,DDA,,audience_items
+,EU/UK-DDA-1P_INTL___Sovereign_eu,1519023,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725867_v58,1519036,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725871_v59,1519037,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725874_v60,1519045,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725877_v61,1519046,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725879_v62,1519047,DDA,,audience_items
+,US-DDA-PMXLift-C-Epsilon-Sanofi_725882_v63,1519048,DDA,,audience_items
+,US-DDA-QRM-SMB_940753_40053330,1519080,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_924944_40053412,1519081,DDA,,audience_items
+,AU - LR - Client - ID - Peak - Custom - ipg - RAMPIDUMVILLAGEROADSHOWT2THOUGHTLEADERSTXT,1519086,DDA,,audience_items
+,AU - LR - Client - ID - Peak - Custom - ipg - RAMPIDUMVILLAGEROADSHOWT2FILMDINERSTXT,1519087,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_924170_40053461,1519096,DDA,,audience_items
+,AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test8 APAC,1519152,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_943683_40053467,1519167,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20035423_40053473,1519168,DDA,,audience_items
+,APAC-DDA-1P_Mobland_au,1519304,DDA,,audience_items
+,US-LR-Direct-C-Acxiom-Home_Mortgage,1519329,DDA,,audience_items
+,US-LR-Direct-C-Acxiom-Money_Market_Account,1519330,DDA,,audience_items
+,US-LR-Direct-C-Acxiom-LikelyBankChannel_InPerson,1519331,DDA,,audience_items
+,US-DDA-AC-M-Acxiom-Age_A18+,1519332,DDA,,audience_items
+,US-DDA-EAE-M-Experian-Age_A18+,1519333,DDA,,audience_items
+,US-LR-Direct-C-Acxiom-Saving_Account_Financial,1519334,DDA,,audience_items
+,US-LR-Direct-C-Acxiom-Checking_Account_Financial,1519335,DDA,,audience_items
+,US-LR-Direct-C-Epsilon-Home_Loan_Intenders_Likely,1519336,DDA,,audience_items
+,US-LR-Direct-C-1P-CrossScreenMedia_DT_2026_GENERAL_BALLOT_VOTED,1519337,DDA,,audience_items
+,US-DDA-1P_Mrs__Doubtfire,1519381,DDA,,audience_items
+,EU/UK-DDA-1P_Halo_eu,1519382,DDA,,audience_items
+,EU/UK-DDA-1P_Mobland_eu,1519383,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20036634_40053484,1519384,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20034418_40053500,1519500,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_968961_40053518,1519501,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_942828_40044994,1519552,DDA,,audience_items
+,US-LR-DM-C-Dstillery_LocalEventsTravelGuide,1519601,DDA,,audience_items
+,US-LR-DM-C-Dstillery-HomeImprovement_Contractor,1519602,DDA,,audience_items
+,US-DDA-QRM-SMB_20034418_40053503,1519747,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20036306_40053434,1519748,DDA,,audience_items
+,US-DDA-QRM-SMB_20030964_40053573,1519749,DDA,,audience_items
+,EU/UK-DDA-1P_Final_Fight_eu,1519772,DDA,,audience_items
+,US-DDA-1P_White_Christmas,1519773,DDA,,audience_items
+,US-DDA-1P_Little_Women,1519774,DDA,,audience_items
+,EU/UK-DDA-1P_Numb3rs_eu,1519775,DDA,,audience_items
+,AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test9 APAC,1519808,DDA,,audience_items
+,AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test10 APAC,1519809,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20029822_40042336,1519811,DDA,,audience_items
+,US-LR-Direct-C-1PD-Sanofi_DTC_TestAud,1519875,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_916188_40053684,1519999,DDA,,audience_items
+,US-DDA-QRM-SMB_20034652_40053653,1520000,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_916188_40053665,1520001,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20033428_40053660,1520002,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20033574_40053661,1520003,DDA,,audience_items
+,US-LR-Direct-C-1PD-CrossScreenMedia_NoGoingBack_DRM_VA2,1520085,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20035580_40053709,1520101,DDA,,audience_items
+,US-LR-Direct-C-MRI-Toyota_Option_1_1259518810,1520116,DDA,,audience_items
+,US-LR-Direct-C-MRI-Toyota_Option_2_508191742,1520117,DDA,,audience_items
+,US-LR-Direct-C-Crossix-Sanofi_VC17007,1520118,DDA,,audience_items
+,US-LR-Direct-C-Crossix-Sanofi_VC17176,1520119,DDA,,audience_items
+,US-LR-Direct-C-Crossix-Sanofi_VC16939,1520120,DDA,,audience_items
+,AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test11 APAC,1520184,DDA,,audience_items
+,AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test13 APAC,1520190,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20035664_40051888,1520191,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20035580_40053726,1520192,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20036759_40053745,1520205,DDA,,audience_items
+,US-DDA-1P_UFC_at_the_White_House,1520293,DDA,,audience_items
+,US-DDA-1P_INTL___Top_Gun,1520294,DDA,,audience_items
+,APAC-DDA-1P_UFC_at_the_White_House_au,1520295,DDA,,audience_items
+,APAC-DDA-1P_INTL___Top_Gun_au,1520296,DDA,,audience_items
+,BETNickCannonAtNightQ426V1,1520334,DDA,,audience_items
+,CCBeavisButtheadQ426V1,1520335,DDA,,audience_items
+,EU/UK-DDA-1P_INTL___Top_Gun_eu,1520352,DDA,,audience_items
+,US-DDA-1P_Benny___Joon,1520353,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_940753_40053330,1520354,DDA,,audience_items
+,US-DDA-1P_SLEEPWALKER,1520355,DDA,,audience_items
+,US-DDA-1P_Vampires_of_the_Velvet_Lounge,1520356,DDA,,audience_items
+,EU/UK-DDA-1P_Treasure_Island_eu,1520357,DDA,,audience_items
+,US-DDA-1P_Treasure_Island,1520358,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_20030462_40053786,1520403,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_923694_40053789,1520404,DDA,,audience_items
+,AU - LR - CLIENT - ID - PEAK - CUSTOM - Hatched - MyDataVisionSuperDataVisionSuperY20260910,1520418,DDA,,audience_items
+,US-DDA-SMB-LAL_smb_lal_956114_40053800,1520481,DDA,,audience_items

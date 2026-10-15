@@ -208,6 +208,8 @@ APAC-DDA-1P_INTL___Avatar_Aang__The_Last_Airbender_au,APAC-DDA-1P
 APAC-DDA-1P_INTL___Kill_Bill_-_Volume_One_au,APAC-DDA-1P
 APAC-DDA-1P_INTL___Kill_Bill_-_Volume_Two_au,APAC-DDA-1P
 APAC-DDA-1P_INTL___Preschool_au,APAC-DDA-1P
+APAC-DDA-1P_INTL___Top_Gun_au,APAC-DDA-1P
+APAC-DDA-1P_Mobland_au,APAC-DDA-1P
 APAC-DDA-1P_Music_Video_au,APAC-DDA-1P
 APAC-DDA-1P_News___Politics_au,APAC-DDA-1P
 APAC-DDA-1P_Preschool_au,APAC-DDA-1P
@@ -221,6 +223,7 @@ APAC-DDA-1P_Team_Moms_-_Baseball_au,APAC-DDA-1P
 APAC-DDA-1P_Teen_Mom_UK_-_Next_Generation_au,APAC-DDA-1P
 APAC-DDA-1P_Teen_Mom_UK_au,APAC-DDA-1P
 APAC-DDA-1P_Thriller___Suspense_au,APAC-DDA-1P
+APAC-DDA-1P_UFC_at_the_White_House_au,APAC-DDA-1P
 AU - DWH - 10 - ID - Base - Demo - F18+ APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Base - Demo - F18-24 APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Base - Demo - F18-29 APAC,AU-DWH-Summit
@@ -509,10 +512,15 @@ AU - DWH - 10 - ID - Summit - Genre - Romance watchers APAC,AU-DWH-Summit
 AU - DWH - 10 - ID - Summit - Genre - Sports watchers APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Agricultural Forestry and Fishing Occupation APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test10 APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test11 APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test13 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test3 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test4 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test5 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test7 APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test8 APAC,AU-DWH-Summit
+AU - DWH - ABS - Geo - Peak - Custom - Mandarin Speaking Test9 APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Auto - Motor Vehicles APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Birthplace Elsewhere APAC,AU-DWH-Summit
 AU - DWH - ABS - Geo - Summit - Cultural - Indigenous APAC,AU-DWH-Summit
@@ -1220,10 +1228,12 @@ EU/UK-DDA-1P_EHF_Champions_League_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Educational___Documentary_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Ellis_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Entertainment_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Final_Fight_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Forever_Home_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_GLBT_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Gilmore_Girls_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Golden_Axe_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Halo_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Harlan_Coben_s_Shelter_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Heat_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Hobbies___Interests_eu,EU/UK-DDA-1P
@@ -1239,10 +1249,13 @@ EU/UK-DDA-1P_INTL___One_Mile__Chapter_One_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___One_Mile__Chapter_Two_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___Preschool_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___Redux_Redux_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_INTL___Sovereign_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___The_Man_in_the_White_Van_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_INTL___Top_Gun_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_INTL___Twisted_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Instinct_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Jackass__Best_and_Last_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Jimmy_Carr_s_Am_I_The_Asshole__eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Kebab_Date_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Keeping_Faith_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Killer_at_the_Crime_Scene_eu,EU/UK-DDA-1P
@@ -1263,10 +1276,12 @@ EU/UK-DDA-1P_Michael_Palin_in_Nigeria_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Michael_Palin_in_Venezuela_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Missed_Call_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Mission-_Impossible_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Mobland_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Music_Video_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Musical_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_News___Politics_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Nigel_Farage__Where_Does_the_Money_Come_From__eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Numb3rs_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Number_One_Fan_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Our_Great_Yorkshire_Life_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Paradise_Hotel_Sverige_eu,EU/UK-DDA-1P
@@ -1286,6 +1301,7 @@ EU/UK-DDA-1P_Sci-Fi___Fantasy_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Scream_7_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Secrets_of_the_Royal_Traditions_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Serial_Killer_Wives_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Sovereign_-_Das_Gesetz_bin_ich_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Sports_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Stand_Up_Comedy_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Talk_eu,EU/UK-DDA-1P
@@ -1310,6 +1326,7 @@ EU/UK-DDA-1P_The_Yorkshire_Vet_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Thriller___Suspense_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Tour_de_France_2026_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Traffic_Cops__Elite_Squad_One_eu,EU/UK-DDA-1P
+EU/UK-DDA-1P_Treasure_Island_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Walker_Texas_Ranger_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Walker_eu,EU/UK-DDA-1P
 EU/UK-DDA-1P_Wentworth_Prison_eu,EU/UK-DDA-1P
@@ -2268,6 +2285,7 @@ US-DDA-1P_Average_Joe,US-DDA-1P
 US-DDA-1P_BET_AWARDS_2026,US-DDA-1P
 US-DDA-1P_BET_Soul_Train_Awards_2023,US-DDA-1P
 US-DDA-1P_Bad_Teacher,US-DDA-1P
+US-DDA-1P_Benny___Joon,US-DDA-1P
 US-DDA-1P_Billy_Madison,US-DDA-1P
 US-DDA-1P_Burn_Notice,US-DDA-1P
 US-DDA-1P_Casa_Bonita_Mi_Amor_,US-DDA-1P
@@ -2303,6 +2321,7 @@ US-DDA-1P_INTL___Avatar_Aang__The_Last_Airbender,US-DDA-1P
 US-DDA-1P_INTL___Fuze,US-DDA-1P
 US-DDA-1P_INTL___Giant,US-DDA-1P
 US-DDA-1P_INTL___Hallow_Road,US-DDA-1P
+US-DDA-1P_INTL___Jerry_Maguire,US-DDA-1P
 US-DDA-1P_INTL___Jumanji__Welcome_To_The_Jungle,US-DDA-1P
 US-DDA-1P_INTL___My_Roommate_My_Murderer__The_Death_of_Stephanie_Hansen,US-DDA-1P
 US-DDA-1P_INTL___One_Mile__Chapter_One,US-DDA-1P
@@ -2311,6 +2330,8 @@ US-DDA-1P_INTL___Passenger,US-DDA-1P
 US-DDA-1P_INTL___Preschool,US-DDA-1P
 US-DDA-1P_INTL___Scary_Movie,US-DDA-1P
 US-DDA-1P_INTL___Scary_Movie_2,US-DDA-1P
+US-DDA-1P_INTL___Seeds,US-DDA-1P
+US-DDA-1P_INTL___Shaft,US-DDA-1P
 US-DDA-1P_INTL___Solo_Mio,US-DDA-1P
 US-DDA-1P_INTL___South_Park__Bigger_Longer___Uncut,US-DDA-1P
 US-DDA-1P_INTL___Suburban_Nightmare__Chris_Watts,US-DDA-1P
@@ -2318,6 +2339,7 @@ US-DDA-1P_INTL___The_Last_Rodeo,US-DDA-1P
 US-DDA-1P_INTL___The_Last_Victim,US-DDA-1P
 US-DDA-1P_INTL___The_Moonies__Married_to_the_Cult,US-DDA-1P
 US-DDA-1P_INTL___The_Real_Adolescence__Our_Killer_Kids,US-DDA-1P
+US-DDA-1P_INTL___Top_Gun,US-DDA-1P
 US-DDA-1P_INTL___Untitled_Home_Invasion_Romance,US-DDA-1P
 US-DDA-1P_I_Love_You_Man,US-DDA-1P
 US-DDA-1P_Ice_Cream_Man,US-DDA-1P
@@ -2326,6 +2348,7 @@ US-DDA-1P_Instructions_Not_Included,US-DDA-1P
 US-DDA-1P_Jack_and_Jill_vs__The_World,US-DDA-1P
 US-DDA-1P_Jackass__Best_and_Last,US-DDA-1P
 US-DDA-1P_Jane_the_Virgin,US-DDA-1P
+US-DDA-1P_Jerry_Maguire,US-DDA-1P
 US-DDA-1P_John_Wick,US-DDA-1P
 US-DDA-1P_John_Wick-_Chapter_2,US-DDA-1P
 US-DDA-1P_John_Wick-_Chapter_3_--_Parabellum,US-DDA-1P
@@ -2338,6 +2361,7 @@ US-DDA-1P_Kill_Bill-_Vol__2,US-DDA-1P
 US-DDA-1P_Kill_Bill__Volume_1,US-DDA-1P
 US-DDA-1P_Kill_Bill__Volume_2,US-DDA-1P
 US-DDA-1P_Lethal_Legacy,US-DDA-1P
+US-DDA-1P_Little_Women,US-DDA-1P
 US-DDA-1P_Love_Marry_Kill,US-DDA-1P
 US-DDA-1P_Love___Basketball,US-DDA-1P
 US-DDA-1P_Mars_Attacks_,US-DDA-1P
@@ -2345,6 +2369,7 @@ US-DDA-1P_Martin,US-DDA-1P
 US-DDA-1P_Mazatlan_Shore,US-DDA-1P
 US-DDA-1P_Mean_Girls_2,US-DDA-1P
 US-DDA-1P_Mean_Girls_2024,US-DDA-1P
+US-DDA-1P_Mrs__Doubtfire,US-DDA-1P
 US-DDA-1P_Murder_USA,US-DDA-1P
 US-DDA-1P_My_Boyfriend_Made_Me_Do_It,US-DDA-1P
 US-DDA-1P_My_Killer_Father_-_The_Green_Hollow_Murders,US-DDA-1P
@@ -2366,12 +2391,16 @@ US-DDA-1P_Resolutions,US-DDA-1P
 US-DDA-1P_Reunion,US-DDA-1P
 US-DDA-1P_Route_187,US-DDA-1P
 US-DDA-1P_Ruined,US-DDA-1P
+US-DDA-1P_SLEEPWALKER,US-DDA-1P
 US-DDA-1P_Scary_Movie_2026,US-DDA-1P
 US-DDA-1P_Scary_Movie_4,US-DDA-1P
 US-DDA-1P_Scary_Movie_5,US-DDA-1P
 US-DDA-1P_Scary_Movie_V,US-DDA-1P
 US-DDA-1P_Scream_7,US-DDA-1P
+US-DDA-1P_Seeds,US-DDA-1P
 US-DDA-1P_Serial_Killer_Wives,US-DDA-1P
+US-DDA-1P_Shaft,US-DDA-1P
+US-DDA-1P_Shaft_2000,US-DDA-1P
 US-DDA-1P_Soul_Train_Awards_2019,US-DDA-1P
 US-DDA-1P_Soul_Train_Awards_2020,US-DDA-1P
 US-DDA-1P_Soul_Train_Awards_2021,US-DDA-1P
@@ -2400,15 +2429,20 @@ US-DDA-1P_The_Impossible,US-DDA-1P
 US-DDA-1P_The_Jennifer_Hudson_Show,US-DDA-1P
 US-DDA-1P_The_King_of_Queens,US-DDA-1P
 US-DDA-1P_The_Mask_Of_Zorro,US-DDA-1P
+US-DDA-1P_The_Notebook,US-DDA-1P
 US-DDA-1P_The_Outer_Threat,US-DDA-1P
 US-DDA-1P_The_Program_-_Texas_Tech,US-DDA-1P
 US-DDA-1P_The_Rookie,US-DDA-1P
 US-DDA-1P_The_Varnell_Hill_Show,US-DDA-1P
 US-DDA-1P_Touched_By_An_Angel,US-DDA-1P
 US-DDA-1P_Trading_Places,US-DDA-1P
+US-DDA-1P_Treasure_Island,US-DDA-1P
 US-DDA-1P_Twisted,US-DDA-1P
+US-DDA-1P_UFC_at_the_White_House,US-DDA-1P
+US-DDA-1P_Vampires_of_the_Velvet_Lounge,US-DDA-1P
 US-DDA-1P_Wake,US-DDA-1P
 US-DDA-1P_Wardriver,US-DDA-1P
+US-DDA-1P_White_Christmas,US-DDA-1P
 US-DDA-1P_You_Don_t_Know_Where_I_m_From_Dawg,US-DDA-1P
 US-DDA-1P_Zoolander_2,US-DDA-1P
 comScore > Over-the-top & Gaming (US) > OTT Streaming > Amazon OTT Watchers,comScore
