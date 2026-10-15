@@ -29,6 +29,11 @@ def _order(region, campaign, ratings=None, includes=None):
         rating_restrictions=ratings or [], rating_inclusions=includes or [])))
 
 
+# Brand-configured Tier 4 guarantee sets (AU "Franchise: UFC") deliver regardless of the
+# line's other restrictions, so rating includes/excludes never touch them.
+_RATING_EXEMPT_SETS = {"Franchise: UFC"}
+
+
 def _every_set_ands_vg(order, vg):
     """True iff `vg` appears as an AND-ed content include subset in every targeting set
     (and, for set-less flat lines, in the placement-level content include)."""
@@ -40,6 +45,8 @@ def _every_set_ands_vg(order, vg):
         sets = b.get("relationship_targeting", {}).get("set", [])
         if sets:
             for s in sets:
+                if s.get("set_name") in _RATING_EXEMPT_SETS:
+                    continue
                 inc = (s.get("content_targeting") or {}).get("network_items", {}).get("include", {})
                 subs = inc.get("set", [inc])
                 if not any(vg in (x.get("video_group") or []) for x in subs):
@@ -164,3 +171,31 @@ def test_no_include_no_extra_and_subset():
     inc = (FreeWheelClient._placement_body(p3)["relationship_targeting"]["set"][0]
            ["content_targeting"]["network_items"]["include"])
     assert len(inc.get("set", [])) == 2
+
+
+def test_au_ufc_set_gets_no_rating_restrictions():
+    """The AU Tier 4 UFC guarantee argument must deliver regardless of rating settings: no
+    rating VG is AND-ed into its include and none is excluded on it, while every OTHER set
+    on the same line still carries the ratings."""
+    picks = ["M", "MA15+", "DNR - Adult Content Ratings", "R18+"]
+    order = _order("AU", "Paramount + - AU", ratings=["R18+"], includes=picks)
+    rating_vgs = set(RatingRestrictionResolver().load().resolve("AU", picks + ["R18+"]))
+    assert rating_vgs
+
+    ufc_sets = 0
+    for p in order.placements:
+        if p.tier != 4:
+            continue
+        b = FreeWheelClient._placement_body(p)
+        for s in b.get("relationship_targeting", {}).get("set", []):
+            ni = (s.get("content_targeting") or {}).get("network_items", {})
+            inc = ni.get("include", {})
+            inc_vgs = {v for x in inc.get("set", [inc]) for v in (x.get("video_group") or [])}
+            exc_vgs = set((ni.get("exclude") or {}).get("video_group", []))
+            if s.get("set_name") == "Franchise: UFC":
+                ufc_sets += 1
+                assert not (rating_vgs & inc_vgs), (p.name, rating_vgs & inc_vgs)
+                assert not (rating_vgs & exc_vgs), (p.name, rating_vgs & exc_vgs)
+            else:
+                assert rating_vgs & inc_vgs, (p.name, s.get("set_name"))   # still applied
+    assert ufc_sets, "expected the AU P+ Tier 4 lines to carry a Franchise: UFC set"

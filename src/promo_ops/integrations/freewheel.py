@@ -1055,9 +1055,16 @@ class FreeWheelClient:
         # content targeting for set-having lines, or the placement-level content targeting
         # for set-less flat lines. The promo then runs ONLY on that rating's content.
         rating_inc = sorted(set(getattr(p, "rating_include_video_groups", []) or []))
+        # Brand-configured Tier 4 guarantee sets (AU "Franchise: UFC") are built with no
+        # restrictions on purpose so they deliver regardless of the line's other settings --
+        # ratings must not be AND-ed into them either.
+        exempt = {sd.get("set_name") for sd in (getattr(p, "tier4_extra_sets", None) or [])
+                  if sd.get("set_name")}
         if rating_inc:
             if sets:
                 for st in sets:
+                    if st.get("set_name") in exempt:
+                        continue
                     holder = st.setdefault("content_targeting", {}).setdefault("network_items", {})
                     FreeWheelClient._and_rating_vgs(holder, rating_inc)
             else:
