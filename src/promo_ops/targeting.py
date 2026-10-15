@@ -96,7 +96,8 @@ class TargetingEngine:
             # 2. Segments auto-resolved from the showlist via the Audience Segments doc.
             #    EXACT per show (like the Tier-2 series affinity): 'CSI Miami' resolves only
             #    to its own segment, never the franchise family ('The Real CSI Miami').
-            matches = self.resolver.resolve_all_exact(plan.showlist, region=plan.region)
+            matches = self.resolver.resolve_all_exact(plan.showlist, region=plan.region,
+                                                    prefer_region=True)
             unresolved = []
             for m in matches:
                 if m.matched:

@@ -87,6 +87,27 @@ TIER1_CONVENTIONS: dict[str, str] = {
 # own legacy convention, if any) rather than just the bucket it would have requested under.
 ALL_BUCKET_CONVENTIONS = ["us dda 1p", "eu uk dda 1p", "apac dda 1p"]
 
+# Which request-tool bucket is a region's OWN (the one a new segment for that market is
+# requested under). Used only to PREFER the region-specific segment when targeting.
+REGION_BUCKET_CONVENTION: dict[str, str] = {
+    "USA": "us dda 1p", "CA": "us dda 1p", "BR": "us dda 1p", "LATAM": "us dda 1p",
+    "AU": "apac dda 1p",
+    "UK": "eu uk dda 1p", "IE": "eu uk dda 1p", "FR": "eu uk dda 1p", "IT": "eu uk dda 1p",
+    "GSA": "eu uk dda 1p", "ES": "eu uk dda 1p", "FI": "eu uk dda 1p", "DK": "eu uk dda 1p",
+    "NO": "eu uk dda 1p", "SE": "eu uk dda 1p",
+}
+
+
+def _preference_tiers(region: Optional[str]) -> list[list[str]]:
+    """Tier 1 conventions in the order they should be used, per show: the region's OWN
+    segments (its request-tool bucket + any legacy convention such as AU's DWH Summit), then
+    the standard GL-DDA-1P segment, then -- last resort -- another region's bucket, which is
+    commonly reusable. The first tier with a match for a show wins; lower tiers are not added."""
+    r = (region or "").upper()
+    own = [c for c in (TIER1_CONVENTIONS.get(r), REGION_BUCKET_CONVENTION.get(r)) if c]
+    others = [c for c in ALL_BUCKET_CONVENTIONS if c not in own]
+    return [t for t in (own, [DEFAULT_TIER1_CONVENTION], others) if t]
+
 
 def _conventions_for_region(region: Optional[str]) -> list[str]:
     """Conventions a region's Tier 1 segments may use: the GLOBAL GL-DDA-1P convention,
@@ -187,7 +208,8 @@ class AudienceSegmentResolver:
                 if c in want_conv and pat.search(n)]
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
-    def resolve_exact(self, show: str, region: Optional[str] = None) -> SegmentMatch:
+    def resolve_exact(self, show: str, region: Optional[str] = None,
+                      prefer_region: bool = False) -> SegmentMatch:
         """Only the segment(s) that ARE exactly this title — the SHOW-name portion of the
         segment (after the convention prefix + an optional "SHOW" token) must equal the
         query exactly. So "CSI Miami" matches "…SHOW-CSI_Miami" but NOT "…SHOW-NCIS_Hawaii"
@@ -219,15 +241,34 @@ class AudienceSegmentResolver:
                     recs.append(r)
             elif show_portion(r.segment_name) == kw:
                 recs.append(r)
+        if prefer_region and recs:
+            recs = self._prefer_region(recs, region)
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
+
+    def _prefer_region(self, recs: list[SegmentRecord], region: Optional[str]) -> list[SegmentRecord]:
+        """Keep only the highest-priority tier that has a match (region-specific, else
+        standard, else another region's bucket). Used for INCLUDE targeting; self-exclusion
+        deliberately doesn't use it, since it must cover every variant of the title."""
+        def tier_conv(rec: SegmentRecord) -> Optional[str]:
+            n = _dda_tokens(rec.segment_name)
+            return next((c for c in self._conventions() if n.startswith(c)), None)
+
+        convs = [(r, tier_conv(r)) for r in recs]
+        for tier in _preference_tiers(region):
+            hit = [r for r, c in convs if c in tier]
+            if hit:
+                return hit
+        return recs
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]
 
-    def resolve_all_exact(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
+    def resolve_all_exact(self, shows: list[str], region: Optional[str] = None,
+                          prefer_region: bool = False) -> list[SegmentMatch]:
         """Exact per show — each showlist entry resolves to ONLY its own segment(s), never
-        the wider franchise family (so 'CSI Miami' does not pull in 'The Real CSI Miami')."""
-        return [self.resolve_exact(s, region) for s in shows]
+        the wider franchise family (so 'CSI Miami' does not pull in 'The Real CSI Miami').
+        `prefer_region` keeps only the region-specific match per show when there is one."""
+        return [self.resolve_exact(s, region, prefer_region) for s in shows]
 
     def missing_dda(self, shows: list[str], region: Optional[str] = None
                     ) -> tuple[list[dict], list[dict]]:

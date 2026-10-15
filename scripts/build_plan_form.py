@@ -895,21 +895,18 @@ $("#region").addEventListener("change",()=>{
 // Which affinity shows will need a NEW DDA segment generated, so Tier 1 isn't silently
 // empty. Uses the baked-in audience library + the picked region. You still request them
 // through the audience form as usual — this just flags the gaps while you plan.
-const DDA_CONVENTIONS = {   // region -> accepted DDA name prefixes (normalized tokens)
-  USA:["gl dda 1p","us dda 1p"], CA:["gl dda 1p","us dda 1p"], BR:["gl dda 1p","us dda 1p"],
-  LATAM:["gl dda 1p","us dda 1p"], AU:["au dwh","apac dda 1p"],
-  UK:["gl dda 1p","eu uk dda 1p"], IE:["gl dda 1p","eu uk dda 1p"], FR:["gl dda 1p","eu uk dda 1p"],
-  IT:["gl dda 1p","eu uk dda 1p"], GSA:["gl dda 1p","eu uk dda 1p"], ES:["gl dda 1p","eu uk dda 1p"],
-  FI:["gl dda 1p","eu uk dda 1p"], DK:["gl dda 1p","eu uk dda 1p"], NO:["gl dda 1p","eu uk dda 1p"],
-  SE:["gl dda 1p","eu uk dda 1p"]
-};
+// Every Tier 1 bucket resolves for every region (a segment requested under one region's
+// bucket is commonly reusable elsewhere) -- mirror audience_segments._conventions_for_region.
+// AU additionally has its own DWH "Summit" segments.
+const ALL_DDA = ["gl dda 1p","us dda 1p","eu uk dda 1p","apac dda 1p"];
+const DDA_CONVENTIONS = { AU: ALL_DDA.concat(["au dwh"]) };
 function ddaToks(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
 let _ddaNorm=null;
 function ddaFlag(){
   const box=$("#ddaFlag"); if(!box) return;
   const shows=state.lists.showlist||[]; const region=$("#region").value;
   if(!shows.length){ box.classList.add("hidden"); return; }
-  const convs=DDA_CONVENTIONS[region]||["gl dda 1p"];
+  const convs=DDA_CONVENTIONS[region]||ALL_DDA;
   if(_ddaNorm===null) _ddaNorm=(APP.audienceSegments||[]).map(ddaToks);
   const missing=shows.filter(sh=>{ const kw=ddaToks(sh); if(!kw) return false;
     const has=_ddaNorm.some(n=> convs.some(c=>n.startsWith(c)) &&
