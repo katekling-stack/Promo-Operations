@@ -141,6 +141,15 @@ leaks across). Deactivated segments (name contains "deactivated") are never targ
   `(10 Streaming)` after the tier. Sometimes ships **VG rating restrictions** — supplied
   per-case (`Rating_Restrictions__c` / "Rating Restrictions"), excluded on the 10
   Streaming sets only.
+  - **Own targeting (optional):** the plan's `breakout_targeting.network_10` can carry its
+    own `showlist` / `genres` / `audience_segments` / `rating_restrictions` /
+    `rating_inclusions`. A field set there replaces the main value on the `(10 Streaming)`
+    lines only; a blank field inherits the main plan. UK's `(My5)` breakout works the same
+    way under `breakout_targeting.my5_breakout`. The form shows these as a "Breakout
+    targeting" card while the matching product is switched on.
+  - **10 Streaming only:** the form's "10 Streaming only" quick-select turns every other
+    product off (`remnant_video`, `premium_preroll`, `essential_bumper`, `pause_ads`) so
+    only the 8 `(10 Streaming)` Tier 1–4 lines are built.
 
 ### Nick / Nick Jr AU (Kids) — campaigns `80947033` / `80947027`
 - Flat Kids remnant (no tier stack): CT = (`VG kids` + `SG 932400 COPPA`) AND main SG.

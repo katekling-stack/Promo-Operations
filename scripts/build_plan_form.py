@@ -443,7 +443,7 @@ datalist{display:none}
 
   <div class="card">
     <h2>Products</h2><p class="sub">Each toggle is preset to this brand's standard set — every product that gets built is shown as <b>Yes</b>. Switch any to <b>No</b> to leave it out. Only the products this campaign can run appear.</p>
-    <div id="prodQuick" class="hint hidden" style="margin-bottom:8px">Quick select: <span id="prodPauseWrap"><a href="#" id="prodPauseOnly" class="toggle-adv">Pause Ads only</a> · </span><a href="#" id="prodReset" class="toggle-adv">Reset to defaults</a></div>
+    <div id="prodQuick" class="hint hidden" style="margin-bottom:8px">Quick select: <span id="prodPauseWrap"><a href="#" id="prodPauseOnly" class="toggle-adv">Pause Ads only</a> · </span><span id="prodN10Wrap" class="hidden"><a href="#" id="prodN10Only" class="toggle-adv">10 Streaming only</a> · </span><a href="#" id="prodReset" class="toggle-adv">Reset to defaults</a></div>
     <div id="products"></div>
   </div>
 
@@ -515,6 +515,39 @@ datalist{display:none}
       <label style="margin-top:10px">Exclude cities</label>
       <div class="chips" data-chips="geo_cities_exclude"><input type="text" placeholder="City, ST to exclude — e.g. Chicago, IL"></div>
     </details>
+  </div>
+
+  <div class="card hidden" id="breakoutCard">
+    <h2>Breakout targeting</h2>
+    <p class="sub">The separate placements you switched on in Products can carry their <b>own</b> targeting. Anything you fill in here replaces the main Targeting <b>on those placements only</b>; leave a field blank to use the main value.</p>
+    <div class="hidden" id="n10Wrap" style="margin-top:6px">
+      <h3 style="margin:14px 0 4px;font-size:15px">10 Streaming (Australia)</h3>
+      <div class="hint" style="margin-bottom:10px">Applies to the <b>(10 Streaming)</b> Tier 1–4 placements only.</div>
+      <div class="field"><label>Showlist</label>
+        <div class="chips" data-chips="n10_showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
+      <div class="field"><label>Genres</label>
+        <div class="chips" data-chips="n10_genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
+      <div class="field"><label>Audience Segments (Tier 1)</label>
+        <div class="chips" data-chips="n10_audience_segments" data-source="audience"><input type="text" placeholder="blank = auto-resolved from this section's showlist"></div></div>
+      <div class="field"><label>Content ratings to exclude</label>
+        <div class="chips" data-chips="n10_rating_restrictions" data-source="ratings"><input type="text" placeholder="type a rating to exclude…"></div></div>
+      <div class="field"><label>Content ratings to include (run ONLY on these)</label>
+        <div class="chips" data-chips="n10_rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require…"></div></div>
+    </div>
+    <div class="hidden" id="my5TargetWrap" style="margin-top:6px">
+      <h3 style="margin:14px 0 4px;font-size:15px">My5 (UK)</h3>
+      <div class="hint" style="margin-bottom:10px">Applies to the <b>(My5)</b> Tier 1–4 placements only.</div>
+      <div class="field"><label>Showlist</label>
+        <div class="chips" data-chips="my5_showlist" data-source="shows"><input type="text" placeholder="type to search a series…"></div></div>
+      <div class="field"><label>Genres</label>
+        <div class="chips" data-chips="my5_genres" data-source="genres"><input type="text" placeholder="type to search a genre…"></div></div>
+      <div class="field"><label>Audience Segments (Tier 1)</label>
+        <div class="chips" data-chips="my5_audience_segments" data-source="audience"><input type="text" placeholder="blank = auto-resolved from this section's showlist"></div></div>
+      <div class="field"><label>Content ratings to exclude</label>
+        <div class="chips" data-chips="my5_rating_restrictions" data-source="ratings"><input type="text" placeholder="type a rating to exclude…"></div></div>
+      <div class="field"><label>Content ratings to include (run ONLY on these)</label>
+        <div class="chips" data-chips="my5_rating_inclusions" data-source="ratings"><input type="text" placeholder="type a rating to require…"></div></div>
+    </div>
   </div>
 
   <div class="card">
@@ -590,6 +623,7 @@ function onCampaign(){
   syncMy5();   // My5 picker: after products render (its visibility can depend on them)
   $("#prodQuick").classList.toggle("hidden", !prods.length);
   $("#prodPauseWrap").classList.toggle("hidden", !prods.includes("pause_ads"));
+  $("#prodN10Wrap").classList.toggle("hidden", !prods.includes("network_10"));
   $("#plutoNudge").classList.toggle("hidden", !(c && c.sig && c.sig.startsWith("pluto")));
   // Content Type + Show/Movie ID are P+ only (the ID stamps the [ShowID:] name). Recommended
   // Show ID also shows for Pluto TV (non-kids) — it drives the Pluto recommended_shows= key on
@@ -692,6 +726,17 @@ function syncMy5(){
   const c=currentCampaign();
   const show = !!(c && (c.my5 || (c.my5Breakout && prodOn("my5_breakout"))));
   $("#my5Wrap").classList.toggle("hidden", !show);
+  syncBreakouts();
+}
+// Breakout targeting sections: shown only while that separate-placement product is on
+// (10 Streaming for AU, My5 breakout for UK non-My5 brands).
+function syncBreakouts(){
+  const c=currentCampaign();
+  const n10 = !!(c && prodOn("network_10"));
+  const my5 = !!(c && c.my5Breakout && prodOn("my5_breakout"));
+  $("#n10Wrap").classList.toggle("hidden", !n10);
+  $("#my5TargetWrap").classList.toggle("hidden", !my5);
+  $("#breakoutCard").classList.toggle("hidden", !(n10 || my5));
 }
 function setProd(fam, val){   // val "yes"/"no" — flip a product row's toggle
   const seg = document.querySelector('.prod[data-fam="'+fam+'"] .seg');
@@ -700,9 +745,17 @@ function setProd(fam, val){   // val "yes"/"no" — flip a product row's toggle
 // Quick-select: Pause Ads only (everything else No), or reset every product to its default.
 $("#prodPauseOnly").addEventListener("click",e=>{ e.preventDefault();
   document.querySelectorAll(".prod").forEach(r=>setProd(r.dataset.fam, r.dataset.fam==="pause_ads"?"yes":"no"));
+  syncMy5(); validate();
+});
+// 10 Streaming only (AU): just the (10 Streaming) Tier 1-4 lines -- no standard P+ remnant,
+// pre-roll, bumper or pause.
+$("#prodN10Only").addEventListener("click",e=>{ e.preventDefault();
+  document.querySelectorAll(".prod").forEach(r=>setProd(r.dataset.fam, r.dataset.fam==="network_10"?"yes":"no"));
+  syncMy5(); validate();
 });
 $("#prodReset").addEventListener("click",e=>{ e.preventDefault();
   document.querySelectorAll(".prod").forEach(r=>setProd(r.dataset.fam, r.dataset.default));
+  syncMy5(); validate();
 });
 // kids tri-state (multi)
 $("#kidsSeg").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
@@ -1008,6 +1061,15 @@ function buildPlan(){
   if(L.showlist.length) plan.showlist=L.showlist;
   if(L.my5_site_groups&&L.my5_site_groups.length) plan.my5_site_groups=L.my5_site_groups;
   if(L.audience_segments.length) plan.audience_segments=L.audience_segments;
+  // Breakout targeting (10 Streaming AU / My5 UK): only for a breakout product that is switched on.
+  const bt={};
+  [["network_10","n10"],["my5_breakout","my5"]].forEach(([prod,pre])=>{
+    if(!prodOn(prod)) return;
+    const o={};
+    ["showlist","genres","audience_segments","rating_restrictions","rating_inclusions"].forEach(f=>{
+      const v=L[pre+"_"+f]; if(v&&v.length) o[f]=v.slice(); });
+    if(Object.keys(o).length) bt[prod]=o; });
+  if(Object.keys(bt).length) plan.breakout_targeting=bt;
   const pl={}; if(L.pluto_categories.length)pl.categories=L.pluto_categories;
   if(L.pluto_channels.length)pl.channels=L.pluto_channels; if(Object.keys(pl).length)plan.pluto=pl;
   if(L.exclude_series.length) plan.exclude_series=L.exclude_series;
@@ -1160,6 +1222,11 @@ function loadPlan(plan){
   setChips("genres",plan.genres); setChips("showlist",plan.showlist);
   setChips("my5_site_groups",plan.my5_site_groups);
   setChips("audience_segments",plan.audience_segments);
+  const _bt=plan.breakout_targeting||{};
+  [["network_10","n10"],["my5_breakout","my5"]].forEach(([prod,pre])=>{
+    const o=_bt[prod]||{};
+    ["showlist","genres","audience_segments","rating_restrictions","rating_inclusions"].forEach(f=>
+      setChips(pre+"_"+f,o[f])); });
   setChips("pluto_categories",(plan.pluto||{}).categories);
   setChips("pluto_channels",(plan.pluto||{}).channels);
   setChips("exclude_series",plan.exclude_series);

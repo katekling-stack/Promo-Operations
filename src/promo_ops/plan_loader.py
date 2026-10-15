@@ -14,7 +14,7 @@ from typing import Any
 
 import yaml
 
-from .models import Flight, SupportPlan
+from .models import BREAKOUT_OVERRIDE_FIELDS, BREAKOUT_PRODUCTS, Flight, SupportPlan
 
 _TRUE_TEXT = {"true", "yes", "y", "1", "x", "✓"}
 
@@ -127,6 +127,24 @@ def _flatten_pluto(raw: dict[str, Any]) -> tuple[list[str], list[str]]:
     )
 
 
+def _breakout_targeting(raw: Any) -> dict[str, dict[str, list[str]]]:
+    """Keep only known breakout products and override fields, with blank entries dropped and
+    empty fields/breakouts removed (an empty field means 'inherit the main value')."""
+    out: dict[str, dict[str, list[str]]] = {}
+    if not isinstance(raw, dict):
+        return out
+    for product in BREAKOUT_PRODUCTS:
+        node = raw.get(product)
+        if not isinstance(node, dict):
+            continue
+        fields = {f: [str(v).strip() for v in (node.get(f) or []) if str(v).strip()]
+                  for f in BREAKOUT_OVERRIDE_FIELDS}
+        fields = {f: v for f, v in fields.items() if v}
+        if fields:
+            out[product] = fields
+    return out
+
+
 def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
     """Build a SupportPlan from a plain dict (YAML/JSON/sheet row/SF record)."""
     categories, channels = _flatten_pluto(raw)
@@ -171,6 +189,7 @@ def support_plan_from_dict(raw: dict[str, Any]) -> SupportPlan:
         kids_audience=list(raw.get("kids_audience") or []),
         rating_restrictions=list(raw.get("rating_restrictions") or []),
         rating_inclusions=list(raw.get("rating_inclusions") or []),
+        breakout_targeting=_breakout_targeting(raw.get("breakout_targeting")),
         geo_states=list(raw.get("geo_states") or []),
         geo_dmas=list(raw.get("geo_dmas") or []),
         geo_cities=list(raw.get("geo_cities") or []),

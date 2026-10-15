@@ -23,6 +23,7 @@ The result is a pure-data Order, ready for dry-run review or the FreeWheel clien
 
 from __future__ import annotations
 
+import dataclasses
 from typing import Optional
 
 from .config import (ad_units_config, brands_config, campaign_defaults_config,
@@ -30,7 +31,7 @@ from .config import (ad_units_config, brands_config, campaign_defaults_config,
                      placement_templates_config, priorities_config, regions_config)
 from .ad_units import AdUnitResolver
 from .geo import CountryResolver, GeoResolver
-from .models import Order, Placement, SupportPlan, TieredTargeting
+from .models import PRODUCT_FAMILIES, Order, Placement, SupportPlan, TieredTargeting
 from .series import SeriesResolver
 from .targeting import TargetingEngine
 from .video_groups import GenreVideoGroupResolver
@@ -856,6 +857,16 @@ class OrderBuilder:
                 placements.append(placement)
         return placements
 
+    @staticmethod
+    def _plan_for_format(plan: SupportPlan, fmt: str) -> SupportPlan:
+        """The plan as seen by one format. A (10 Streaming)/(My5) breakout format with its own
+        targeting gets a copy of the plan with those fields swapped in; every other format
+        (and a breakout with nothing set) gets the plan unchanged. Never mutates `plan`."""
+        for product, overrides in (plan.breakout_targeting or {}).items():
+            if overrides and fmt in PRODUCT_FAMILIES.get(product, []):
+                return dataclasses.replace(plan, **{f: list(v) for f, v in overrides.items()})
+        return plan
+
     def build(self, plan: SupportPlan) -> Order:
         brand_cfg = self._brand_cfg(plan.brand)
         # "Add to existing IO" must be a numeric FreeWheel IO ID. A name (e.g. the show
@@ -922,5 +933,6 @@ class OrderBuilder:
             # Scene Lifts are VIDEO ONLY — skip pause (and any non-video) formats.
             if plan.scene_lift and self._is_pause_format(fmt):
                 continue
-            order.placements.extend(self._placements_for_format(plan, fmt))
+            order.placements.extend(
+                self._placements_for_format(self._plan_for_format(plan, fmt), fmt))
         return order

@@ -54,6 +54,12 @@ PRODUCT_FAMILIES: dict[str, list[str]] = {
 }
 
 
+# Breakout products that may carry their own targeting, and the plan fields they may override.
+BREAKOUT_PRODUCTS = ("network_10", "my5_breakout")
+BREAKOUT_OVERRIDE_FIELDS = ("showlist", "genres", "audience_segments",
+                            "rating_restrictions", "rating_inclusions")
+
+
 @dataclass
 class Flight:
     start: Optional[str] = None
@@ -158,6 +164,11 @@ class SupportPlan:
     # (run ONLY on that rating's content). Raw VG ids pass through. Empty => none.
     rating_restrictions: list[str] = field(default_factory=list)
     rating_inclusions: list[str] = field(default_factory=list)
+    # Optional per-breakout targeting for the separately-toggled (10 Streaming) AU and (My5) UK
+    # lines: {"network_10"|"my5_breakout": {showlist|genres|audience_segments|
+    # rating_restrictions|rating_inclusions: [...]}}. A field set here REPLACES the main value
+    # on that breakout's lines only; an empty/absent field inherits the main plan's value.
+    breakout_targeting: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     # Sub-country geo overlay (optional). The CM narrows the buy to specific states,
     # Nielsen DMAs, and/or cities on top of the region's country targeting. States/cities
     # are scoped to the region's countries; DMA is US-only. Cities are entered "City, ST".
