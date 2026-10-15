@@ -205,3 +205,64 @@ def test_network_10_wrong_sg_is_actually_caught():
                           and "(10 Streaming)" in f.placement
                           and "none of the brand's main site groups" in f.message]
     assert net10_missing_main, "expected a warning once the Ten Play SG is missing"
+
+
+# --- Recommended Show placeholder / Tier 1 DDA resolution regressions ----------------- #
+def test_recommended_show_tbd_placeholder_is_flagged():
+    """A literal 'TBD' key-value reads as a resolved value, not a missing one -- the auditor
+    must catch any live placement still carrying the old placeholder."""
+    io, pls = _live(AU_PLAN, "73850057")
+    pls = copy.deepcopy(pls)
+    for p in pls:
+        if "(Tier 1)" in p.get("name", "") and "Pause" not in p.get("name", ""):
+            p.setdefault("relationship_targeting", {}).setdefault("set", []).append(
+                {"set_name": "Recommended Show",
+                 "custom_targeting": {"include": {"key_value": "recommended_show=TBD"}}})
+            break
+    rep = _audit(io, pls)
+    assert any(f.category == "targeting" and f.level == "error"
+               and "placeholder" in f.message for f in rep.findings)
+
+
+def test_recommended_show_real_id_is_not_flagged():
+    io, pls = _live(AU_PLAN, "73850057")
+    pls = copy.deepcopy(pls)
+    for p in pls:
+        if "(Tier 1)" in p.get("name", "") and "Pause" not in p.get("name", ""):
+            p.setdefault("relationship_targeting", {}).setdefault("set", []).append(
+                {"set_name": "Recommended Show",
+                 "custom_targeting": {"include": {"key_value": "recommended_show=62477657"}}})
+            break
+    rep = _audit(io, pls)
+    assert not any("placeholder" in f.message for f in rep.findings)
+
+
+def test_tier1_affinity_shows_empty_dda_is_flagged():
+    """Tier 1's Affinity Shows set structurally carries audience_targeting but resolves to
+    zero DDA segments -- the live symptom of the degraded audience-items sync found this
+    session. Must warn rather than pass silently."""
+    io, pls = _live(AU_PLAN, "73850057")
+    pls = copy.deepcopy(pls)
+    found = False
+    for p in pls:
+        if "(Tier 1)" not in p.get("name", "") or "Pause" in p.get("name", ""):
+            continue
+        for s in (p.get("relationship_targeting") or {}).get("set", []):
+            if s.get("set_name") == "Affinity Shows":
+                s["audience_targeting"] = {"include": {"audience_item": []}}
+                found = True
+    assert found, "expected AU_PLAN to produce a Tier 1 Affinity Shows set"
+    rep = _audit(io, pls)
+    assert any(f.category == "targeting" and f.level == "warn"
+               and "zero resolved DDA segments" in f.message for f in rep.findings)
+
+
+def test_tier1_no_showlist_at_all_is_not_flagged():
+    """A brand/plan with no showlist never attaches audience_targeting to Affinity Shows at
+    all -- that's a different, expected state and must NOT be confused with a resolution
+    failure (which only fires when audience_targeting is present but empty)."""
+    plan = dict(AU_PLAN)
+    plan["showlist"] = []
+    io, pls = _live(plan, "73850057")
+    rep = _audit(io, pls)
+    assert not any("zero resolved DDA segments" in f.message for f in rep.findings)

@@ -237,6 +237,31 @@ class PlacementView:
     def set_names(self) -> list[str]:
         return [str(s.get("set_name")) for s in self.sets() if s.get("set_name")]
 
+    def recommended_show_value(self) -> Optional[str]:
+        """The value half of the Recommended Show set's key_value ('recommended_show(s)=X' ->
+        'X'), or None if there's no Recommended Show set on this placement at all."""
+        for s in self.sets():
+            if s.get("set_name") != "Recommended Show":
+                continue
+            kv = str(((s.get("custom_targeting") or {}).get("include") or {}).get("key_value") or "")
+            if "=" in kv:
+                return kv.split("=", 1)[1].strip()
+        return None
+
+    def affinity_shows_audience_items(self) -> Optional[list[str]]:
+        """The 'Affinity Shows' set's audience_targeting.include.audience_item (Tier 1's
+        resolved DDA segments), or None if that set has no audience_targeting at all (meaning
+        Tier 1 audience targeting wasn't attempted on this line, not that it resolved empty)."""
+        for s in self.sets():
+            if s.get("set_name") != "Affinity Shows":
+                continue
+            at = s.get("audience_targeting")
+            if not isinstance(at, dict):
+                continue
+            items = (at.get("include") or {}).get("audience_item")
+            return [str(x) for x in items] if isinstance(items, list) else []
+        return None
+
     def geo_country_ids(self) -> Optional[list[str]]:
         # The builder writes geography_targeting.include.{country|region}; tolerate a couple of
         # shapes so a differently-expanded read payload still resolves.
@@ -584,6 +609,23 @@ class QAAuditor:
             out.append(Finding("error", "targeting", name,
                                "carries a Recommended Show set but this campaign isn't a "
                                "Paramount+ / Pluto TV campaign."))
+        # A literal "TBD" (or blank) placeholder reads as a real, resolved value -- it must be
+        # a real FreeWheel Show/Movie ID, or the set should be omitted entirely.
+        rec_value = pv.recommended_show_value()
+        if rec_value is not None and (not rec_value or rec_value.strip().upper() == "TBD"):
+            out.append(Finding("error", "targeting", name,
+                               f"Recommended Show is a placeholder ({rec_value!r}), not a real "
+                               "FreeWheel Show/Movie ID."))
+        # Tier 1's "Affinity Shows" set structurally carries audience_targeting but resolved to
+        # ZERO DDA segments -- almost always a broken/stale audience-items sync, not a brand with
+        # no showlist (that case omits audience_targeting entirely, which this doesn't flag).
+        if tier == 1:
+            dda = pv.affinity_shows_audience_items()
+            if dda is not None and not dda:
+                out.append(Finding("warn", "targeting", name,
+                                   "Tier 1 Affinity Shows set has audience targeting but zero "
+                                   "resolved DDA segments — check for a stale/broken audience "
+                                   "items sync."))
         # AU-style Tier 4 guarantee sets (e.g. UFC) must be present on P+ Tier 4 lines
         extras = cfg.get("tier4_extra_sets") or []
         if extras and tier == 4 and self._serves_pplus_line(pv):
