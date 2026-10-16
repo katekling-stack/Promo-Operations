@@ -19,13 +19,13 @@ copy (a "clone"). After this one-time setup, getting the latest fixes is a **sin
 
 ### 3. Clone the repo (make your connected copy)
 - **File ▸ Clone repository…** → **GitHub.com** tab.
-- In the list (or the filter box) pick **`katekling-stack/Promo-Operations`**.
+- In the list (or the filter box) pick **`cbsi-adtech/digital_promo_automation`**
+  (if it isn't listed, you're not in the `cbsi-adtech` GitHub organization yet — ask Kate).
 - **Local path:** leave it (defaults to `~/Documents/GitHub/Promo-Operations`) → **Clone**.
 
-### 4. Switch to our working branch
-- Top of the window: **Current branch** ▸ pick
-  **`claude/freewheel-order-placement-templates-p2rjzd`**.
-  (That's where all the latest work lives.)
+### 4. Make sure you're on `main`
+- Top of the window: **Current branch** should say **`main`** — that's where all the latest
+  work lives. If it says something else, click it and pick **`main`**.
 
 ### 5. Point the tool at the new folder (one time)
 Open **Terminal** and run:
@@ -45,7 +45,7 @@ That copies your saved FreeWheel login into the new copy and installs the tool f
 
 Whenever I ship a fix, just:
 1. Open **GitHub Desktop**.
-2. Make sure **Current branch** is `claude/freewheel-order-placement-templates-p2rjzd`.
+2. Make sure **Current branch** is `main`.
 3. Click **Fetch origin** → it turns into **Pull origin** → click it. Done — you're current.
 
 That's the entire update. (If a change ever touches dependencies, I'll tell you to re-run

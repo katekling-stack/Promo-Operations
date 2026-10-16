@@ -106,8 +106,10 @@
     <p>Do this <b>once</b> (~15–20 min, copy/paste — no coding). Full details:
        <code>docs/CLONE_SETUP.md</code>.</p>
     <ol>
-      <li><b>Get repo access</b> — the admin (Kate) invites you to the private GitHub repo
-          <code>katekling-stack/Promo-Operations</code>; accept the email invite.</li>
+      <li><b>Get repo access</b> — the code is in the private Paramount GitHub repo
+          <code>cbsi-adtech/digital_promo_automation</code>. You need a GitHub account that is a member of
+          the <code>cbsi-adtech</code> organization (ask Kate / your GitHub org admin), and you click
+          <b>Authorize</b> for its single sign-on the first time GitHub asks.</li>
       <li><b>Install Python 3.10+</b> — from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a>
           (on Windows tick “Add Python to PATH”).</li>
       <li><b>Install Git</b> — Mac: <code>git --version</code> (click Install if prompted);
@@ -115,10 +117,10 @@
       <li><b>Sign in to GitHub</b> — easiest is the GitHub CLI:
 <pre>gh auth login          <span class="c"># choose GitHub.com → HTTPS → Login with a browser</span></pre>
           <span class="tip">Or install <b>GitHub Desktop</b> and sign in there.</span></li>
-      <li><b>Clone the team branch</b> into an easy spot (e.g. Desktop):
+      <li><b>Clone the code</b> (the <code>main</code> branch) into an easy spot (e.g. Desktop):
 <pre>cd ~/Desktop
-git clone --branch claude/freewheel-order-placement-templates-p2rjzd \
-  https://github.com/katekling-stack/Promo-Operations.git
+git clone --branch main \
+  https://github.com/cbsi-adtech/digital_promo_automation.git Promo-Operations
 cd Promo-Operations</pre></li>
       <li><b>Create your <code>.env</code></b> (your FreeWheel login — the same <code>AdOps.api@520311</code>
           access Ad Ops already uses):

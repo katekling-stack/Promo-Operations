@@ -1,7 +1,7 @@
 # Promo Operations — Engineering Handoff
 
 *Prepared for the engineering hosting / "Suggest targeting" enablement discussion.*
-*Owner: Kate Kling (promo ad ops). Repo branch of record: `claude/freewheel-order-placement-templates-p2rjzd`.*
+*Owner: Kate Kling (promo ad ops). Repo: `github.com/cbsi-adtech/digital_promo_automation`, branch of record: `main`.*
 
 This document is the single starting point for the eng team. It covers **what the system
 is**, **what we're asking engineering to do** (host it + enable the Suggest helper), the

@@ -13,10 +13,13 @@ Do this **once**, ~15–20 minutes, copy/paste — no coding.
 
 ---
 
-## Step 0 — Admin grants repo access (one-time, done by Kate)
-The repo is **private**. Before a CM can clone it, add them on GitHub:
-`github.com/katekling-stack/Promo-Operations` → **Settings → Collaborators → Add people**
-(or add them to the team). They'll get an email invite to accept.
+## Step 0 — Make sure you have access (one-time)
+The code lives in the Paramount GitHub organization, in a **private** repo:
+`github.com/cbsi-adtech/digital_promo_automation`. To clone it you need:
+1. A GitHub account that is a **member of the `cbsi-adtech` organization** (if you can't see
+   the repo when signed in, ask Kate / your GitHub org admin to add you).
+2. To **authorize your login for the organization's single sign-on** — GitHub prompts you the
+   first time (Step 3). Click **Authorize** when it does.
 
 ---
 
@@ -43,18 +46,23 @@ Easiest option — **GitHub CLI** (handles login in your browser, no tokens to m
 *(Alternative: install **GitHub Desktop** (https://desktop.github.com), sign in, and use it to
 clone in Step 4 via File → Clone repository. Then continue in Terminal from Step 5.)*
 
-## Step 4 — Clone the code (get the working branch)
-Go somewhere easy to find first (e.g. your Desktop), then clone the **team's branch**:
+> **If you ever see "organization has enabled or enforced SAML SSO … re-authorize the OAuth
+> Application 'GitHub CLI'" or a 403:** your login just needs approving for the organization.
+> Open the link GitHub prints (or github.com → profile picture → Settings → Applications →
+> Authorized OAuth Apps → GitHub CLI → **Grant** next to `cbsi-adtech`), then try again.
+> GitHub Desktop avoids this because it handles the approval in its sign-in screen.
+
+## Step 4 — Clone the code
+Go somewhere easy to find first (e.g. your Desktop), then clone the repo's **`main`** branch:
 
 ```
 cd ~/Desktop
-git clone --branch claude/freewheel-order-placement-templates-p2rjzd https://github.com/katekling-stack/Promo-Operations.git
+git clone --branch main https://github.com/cbsi-adtech/digital_promo_automation.git Promo-Operations
 ```
 
 You'll now have a **`Promo-Operations`** folder on your Desktop.
 
-> The team currently runs the `claude/freewheel-order-placement-templates-p2rjzd` branch.
-> If that ever changes, Kate will share the new branch name.
+> The team runs the **`main`** branch. If that ever changes, Kate will share the new branch name.
 
 ## Step 5 — Go into the folder
 ```

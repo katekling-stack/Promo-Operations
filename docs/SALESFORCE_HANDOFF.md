@@ -2,8 +2,7 @@
 
 **One-page handoff for the team helping us finish the Salesforce piece (or find a workaround).**
 
-Repo: `github.com/katekling-stack/Promo-Operations` · working branch:
-`claude/freewheel-order-placement-templates-p2rjzd`
+Repo: `github.com/cbsi-adtech/digital_promo_automation` · working branch: `main`
 
 ---
 
