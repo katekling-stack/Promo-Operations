@@ -98,15 +98,43 @@ REGION_BUCKET_CONVENTION: dict[str, str] = {
 }
 
 
-def _preference_tiers(region: Optional[str]) -> list[list[str]]:
-    """Tier 1 conventions in the order they should be used, per show: the region's OWN
-    segments (its request-tool bucket + any legacy convention such as AU's DWH Summit), then
-    the standard GL-DDA-1P segment, then -- last resort -- another region's bucket, which is
-    commonly reusable. The first tier with a match for a show wins; lower tiers are not added."""
+def _segment_rank(norm: str, region: Optional[str], streaming10: bool) -> Optional[int]:
+    """Where a Tier 1 segment sits in the per-show preference order for INCLUDE targeting
+    (lower wins; None = never used for this line):
+      0  AU "AU - DWH - 10 - ..." Network 10 Summit segments -- (10 Streaming) lines only
+      1  the region's OWN segments: its request-tool bucket (US-/EU-UK-/APAC-DDA-1P) and, for
+         AU, the non-Network-10 DWH Summit segments (PP, ...)
+      2  the standard GL-DDA-1P segment
+      3  another region's bucket -- last resort, commonly reusable
+    The first rank that has a match for a show wins; lower ranks are not added."""
     r = (region or "").upper()
-    own = [c for c in (TIER1_CONVENTIONS.get(r), REGION_BUCKET_CONVENTION.get(r)) if c]
-    others = [c for c in ALL_BUCKET_CONVENTIONS if c not in own]
-    return [t for t in (own, [DEFAULT_TIER1_CONVENTION], others) if t]
+    if norm.startswith("au dwh"):
+        if r != "AU":
+            return None                              # AU Summit never leaks to other regions
+        if norm.split()[:3] == ["au", "dwh", "10"]:
+            return 0 if streaming10 else None
+        return 1
+    own = REGION_BUCKET_CONVENTION.get(r)
+    if own and norm.startswith(own):
+        return 1
+    if norm.startswith(DEFAULT_TIER1_CONVENTION):
+        return 2
+    return 3
+
+
+def _au_content_title(norm: str) -> str:
+    """The title inside an AU Summit content segment -- "au dwh <src> id summit content
+    <title> watchers apac" -> "<title>" -- or "" when the name isn't that shape. These names
+    never END with the bare title, so the generic trailing-title rule can't match them."""
+    toks = norm.split()
+    if "content" not in toks:
+        return ""
+    rest = toks[toks.index("content") + 1:]
+    if rest[-2:] == ["watchers", "apac"]:
+        rest = rest[:-2]
+    elif rest[-1:] == ["watchers"]:
+        rest = rest[:-1]
+    return " ".join(rest)
 
 
 def _conventions_for_region(region: Optional[str]) -> list[str]:
@@ -209,7 +237,7 @@ class AudienceSegmentResolver:
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
     def resolve_exact(self, show: str, region: Optional[str] = None,
-                      prefer_region: bool = False) -> SegmentMatch:
+                      prefer_region: bool = False, streaming10: bool = False) -> SegmentMatch:
         """Only the segment(s) that ARE exactly this title — the SHOW-name portion of the
         segment (after the convention prefix + an optional "SHOW" token) must equal the
         query exactly. So "CSI Miami" matches "…SHOW-CSI_Miami" but NOT "…SHOW-NCIS_Hawaii"
@@ -237,38 +265,35 @@ class AudienceSegmentResolver:
             n = _dda_tokens(r.segment_name)
             # AU DWH naming isn't "<conv> <type> <title>", so keep the trailing-title match.
             if n.startswith("au dwh"):
-                if n == kw or n.endswith(" " + kw):
+                if n == kw or n.endswith(" " + kw) or _au_content_title(n) == kw:
                     recs.append(r)
             elif show_portion(r.segment_name) == kw:
                 recs.append(r)
         if prefer_region and recs:
-            recs = self._prefer_region(recs, region)
+            recs = self._prefer_region(recs, region, streaming10)
         return SegmentMatch(show=show, matched=bool(recs), records=recs)
 
-    def _prefer_region(self, recs: list[SegmentRecord], region: Optional[str]) -> list[SegmentRecord]:
-        """Keep only the highest-priority tier that has a match (region-specific, else
-        standard, else another region's bucket). Used for INCLUDE targeting; self-exclusion
-        deliberately doesn't use it, since it must cover every variant of the title."""
-        def tier_conv(rec: SegmentRecord) -> Optional[str]:
-            n = _dda_tokens(rec.segment_name)
-            return next((c for c in self._conventions() if n.startswith(c)), None)
-
-        convs = [(r, tier_conv(r)) for r in recs]
-        for tier in _preference_tiers(region):
-            hit = [r for r, c in convs if c in tier]
-            if hit:
-                return hit
-        return recs
+    def _prefer_region(self, recs: list[SegmentRecord], region: Optional[str],
+                       streaming10: bool = False) -> list[SegmentRecord]:
+        """Keep only the best-ranked tier that has a match (see _segment_rank). Used for
+        INCLUDE targeting; self-exclusion deliberately doesn't use it, since it must cover
+        every variant of the title."""
+        ranked = [(_segment_rank(_dda_tokens(r.segment_name), region, streaming10), r) for r in recs]
+        ranked = [(k, r) for k, r in ranked if k is not None]
+        if not ranked:
+            return []
+        best = min(k for k, _ in ranked)
+        return [r for k, r in ranked if k == best]
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]
 
     def resolve_all_exact(self, shows: list[str], region: Optional[str] = None,
-                          prefer_region: bool = False) -> list[SegmentMatch]:
+                          prefer_region: bool = False, streaming10: bool = False) -> list[SegmentMatch]:
         """Exact per show — each showlist entry resolves to ONLY its own segment(s), never
         the wider franchise family (so 'CSI Miami' does not pull in 'The Real CSI Miami').
         `prefer_region` keeps only the region-specific match per show when there is one."""
-        return [self.resolve_exact(s, region, prefer_region) for s in shows]
+        return [self.resolve_exact(s, region, prefer_region, streaming10) for s in shows]
 
     def missing_dda(self, shows: list[str], region: Optional[str] = None
                     ) -> tuple[list[dict], list[dict]]:

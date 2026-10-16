@@ -19,7 +19,7 @@ from typing import Optional
 
 from .audience_segments import AudienceSegmentResolver
 from .config import pluto_config, regions_config, tiers_config
-from .models import SupportPlan, Tier, TargetingDimension, TieredTargeting
+from .models import PRODUCT_FAMILIES, SupportPlan, Tier, TargetingDimension, TieredTargeting
 from .series import SeriesResolver
 from .site_groups import SiteGroupResolver
 from .standard_attributes import DIMENSION_ATTRIBUTE_TYPE, StandardAttributeResolver
@@ -72,7 +72,8 @@ class TargetingEngine:
 
     # --- dimension building ---------------------------------------------- #
 
-    def _build_dimension(self, plan: SupportPlan, dim_cfg: dict) -> TargetingDimension:
+    def _build_dimension(self, plan: SupportPlan, dim_cfg: dict,
+                         fmt: Optional[str] = None) -> TargetingDimension:
         source = dim_cfg["source"]
         dim = TargetingDimension(
             key=dim_cfg["key"],
@@ -96,8 +97,9 @@ class TargetingEngine:
             # 2. Segments auto-resolved from the showlist via the Audience Segments doc.
             #    EXACT per show (like the Tier-2 series affinity): 'CSI Miami' resolves only
             #    to its own segment, never the franchise family ('The Real CSI Miami').
+            streaming10 = fmt in PRODUCT_FAMILIES.get("network_10", [])
             matches = self.resolver.resolve_all_exact(plan.showlist, region=plan.region,
-                                                    prefer_region=True)
+                                                    prefer_region=True, streaming10=streaming10)
             unresolved = []
             for m in matches:
                 if m.matched:
@@ -232,7 +234,7 @@ class TargetingEngine:
             for dim_cfg in tier_cfg.get("dimensions", []):
                 if dim_cfg["key"] in skip:            # e.g. My5 drops pplus_user_state
                     continue
-                dim = self._build_dimension(plan, dim_cfg)
+                dim = self._build_dimension(plan, dim_cfg, fmt)
                 # Keep audience_segments even when empty so its "needs to be added"
                 # note always surfaces — that surfacing is the point of Tier 1.
                 if not dim.is_empty or dim.key == "audience_segments":

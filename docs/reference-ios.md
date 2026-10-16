@@ -125,11 +125,20 @@ Re-read WITH relationship targeting — it's a **Pluto-only 3-tier remnant** (no
 
 AU has **no Pluto** and **no Samsung** excludes. Standard genres/VGs everywhere.
 
-### NOTE — Tier-1 audience segments use the DWH "Summit" convention
-Every AU campaign resolves Tier 1 against the **`AU - DWH - <src> - ID - Summit - ...`**
-audience segments — **not** the global `GL-DDA-1P-` DDA segments used everywhere else.
-Region-scoped in the resolver: AU → Summit, all other regions → GL-DDA-1P (neither
-leaks across). Deactivated segments (name contains "deactivated") are never targeted.
+### NOTE — Tier-1 audience segments: region-first, per show
+For each show in the showlist, Tier 1 uses the first of these that has a segment for it, and
+nothing from the lower tiers is added: **(1)** the region's own segments — AU: `APAC-DDA-1P-`
+and the `AU - DWH - PP - ID - Summit - Content - <Title> watchers APAC` Summit segments;
+Europe: `EU/UK-DDA-1P-`; Americas (US/CA/LATAM/BR): `US-DDA-1P-`; **(2)** the standard
+`GL-DDA-1P-` segment; **(3)** another region's bucket, as a last resort. The AU Summit
+taxonomy never leaks into other regions. Deactivated segments are never targeted.
+
+**(10 Streaming) lines** try the **`AU - DWH - 10 - ID - Summit - Content - <Title> watchers
+APAC`** segment first, then fall back to the order above. The `10` segments are Network 10
+audiences and are never used on the standard P+ AU lines.
+
+**Self-exclusion** (the promoted title's own audience) is not region-first: it excludes every
+variant of the title — all buckets, GL, and both the PP and 10 Summit segments.
 
 ### Paramount+ AU — campaign `73850057` (`Paramount + - AU`)
 - Tiered remnant on main `[932583 P+, 932591 CBS Local, 932592 VCBS]` (no Pluto).
