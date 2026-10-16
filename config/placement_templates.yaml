@@ -299,7 +299,10 @@ formats:
     tier_infix: (Pluto)
     main_site_groups:
     - '929392'
+    # dda: Tier 1 takes the showlist's audience segments (AND-ed with the Pluto SG), same as
+    # the P+ line. series is deliberately NOT here -- Tier 2 on this line stays channel-based.
     targeting_kinds:
+    - dda
     - channels
     - categories
     - genre_vgs
