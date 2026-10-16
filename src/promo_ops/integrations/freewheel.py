@@ -285,10 +285,30 @@ class FreeWheelClient:
                 break
         return None
 
-    def list_placements(self, io_id: str) -> list[dict[str, Any]]:
-        payload = self._invoke("sh_1_1_list-insertion-order-placements",
-                               insertion_order_id=int(io_id), per_page=50)
-        return self._rows(payload, "placements")
+    def list_placements(self, io_id: str, per_page: int = 50, max_pages: int = 40) -> list[dict[str, Any]]:
+        """Every placement row on an IO (id/name/status only -- see get_placement for the body).
+        Pages until a short page, and stops if the server repeats rows, so an IO with more than
+        one page of placements is never silently truncated."""
+        rows: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for page in range(1, max_pages + 1):
+            payload = self._invoke("sh_1_1_list-insertion-order-placements",
+                                   insertion_order_id=int(io_id), per_page=per_page, page=page)
+            batch = self._rows(payload, "placements")
+            fresh = [r for r in batch if str(r.get("id") or id(r)) not in seen]
+            if not fresh:
+                break
+            seen.update(str(r.get("id") or id(r)) for r in fresh)
+            rows += fresh
+            if len(batch) < per_page:
+                break
+        return rows
+
+    def get_placement(self, placement_id: Any) -> dict[str, Any]:
+        """One placement's FULL body (targeting, delivery, schedule, ad units, ...). The plain
+        read and the list call return only id/name/status; show=all returns everything."""
+        payload = self._invoke("sh_1_0_show-a-placement", placement_id=int(placement_id), show="all")
+        return ((payload or {}).get("data") or {}).get("placement") or {}
 
     def search_series(self, show: str, per_page: int = 50) -> list[dict[str, Any]]:
         """Keyword-search series by name; return ALL matches ({id, name}).

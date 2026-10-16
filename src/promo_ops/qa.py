@@ -372,8 +372,31 @@ class QAAuditor:
                 "(add the campaign's template_campaign_id to config/brands.yaml)."))
         report.findings += self._check_io(io, brand_key, region)
         for raw in placements:
-            report.findings += self._check_placement(PlacementView(raw), brand_key, region)
+            full, problem = self._full_placement(raw)
+            if problem is not None:      # can't read it -> say so; don't raise false errors
+                report.findings.append(problem)
+                continue
+            report.findings += self._check_placement(PlacementView(full), brand_key, region)
         return report
+
+    _BODY_KEYS = ("relationship_targeting", "content_targeting", "delivery", "ad_product", "schedule")
+
+    def _full_placement(self, raw: dict[str, Any]) -> tuple[dict[str, Any], Optional[Finding]]:
+        """The placement LIST returns only id/name/status, so fetch each one's full body --
+        otherwise every targeting/cap/ad-unit check reads nothing. A row that already carries
+        its body (or a client with no get_placement) is used as-is."""
+        pid = raw.get("id")
+        if pid is None or any(k in raw for k in self._BODY_KEYS) \
+                or not hasattr(self.client, "get_placement"):
+            return raw, None
+        try:
+            full = self.client.get_placement(pid)
+        except Exception as exc:  # noqa: BLE001
+            name = str(raw.get("name") or pid)
+            return raw, Finding("info", "read", name,
+                                f"couldn't fetch this placement's full details ({exc}) — "
+                                "verify by hand; its checks were skipped.")
+        return {**raw, **full}, None
 
     # -- resolution ------------------------------------------------------- #
     def _brand_from_io(self, io: dict[str, Any]) -> Optional[str]:
