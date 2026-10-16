@@ -15,8 +15,9 @@ Guaranteed P+ formats (Premium Pre-Roll, Essential Bumper) are named by content:
 
     {title} [ShowID:{id}]     (show)      {title} [MovieID:{id}]   (movie)
 
-The token is omitted entirely when the plan has no Show/Movie ID input (no empty
-"[ShowID:]" placeholder left for a CM to misread as a filled-in value).
+The token rides on every Paramount+ placement even when no Show/Movie ID is known yet:
+it is stamped empty ("[ShowID:]") for the CM to fill in -- never a "TBD" value, which a
+downstream parser could mistake for a real id. Content type "na" omits it entirely.
 
 The result is a pure-data Order, ready for dry-run review or the FreeWheel client.
 """
@@ -405,27 +406,28 @@ class OrderBuilder:
         audience = tmpl.get("audience_label", "")   # e.g. "Kids" -> "… - Kids - {region}"
         parts = ["Paramount +", unit, plan_label, plan.promoted_title, audience, plan.region]
         base = " - ".join(p for p in parts if p)
-        if not plan.content_id:          # no input -> no token (nothing for the CM to misread)
-            return base
-        return base + f" - [{label}:{plan.content_id}]"
+        if (plan.content_type or "show").lower() in ("na", "n/a", "none"):
+            return base                  # campaign needs no Show/Movie ID
+        return base + f" - [{label}:{plan.content_id or ''}]"
 
     def _pplus_id_token(self, plan: SupportPlan, brand_key: Optional[str]) -> str:
         """The [ShowID:]/[MovieID:] token that rides on EVERY placement name for a
-        Paramount+ campaign (not just the guaranteed Plan lines). Omitted entirely when
-        the plan has no Show/Movie ID input -- no empty "[ShowID:]" placeholder. Returns
-        "" for non-Paramount+ campaigns, so nothing changes for other brands.
+        Paramount+ campaign (not just the guaranteed Plan lines). Stamped empty
+        ("[ShowID:]") when the plan has no Show/Movie ID yet, so it is still on every
+        line for the CM to fill in. Returns "" for non-Paramount+ campaigns and for
+        content type "na", so nothing changes for other brands.
         """
         from .brand_sync import brand_signature
         sig = brand_signature((plan.campaign or {}).get("name", "") or "")
         is_pplus = ((sig and sig[0] == "paramount_plus")
                     or str(brand_key or "").startswith("paramount_plus"))
-        if not is_pplus or not plan.content_id:
+        if not is_pplus:
             return ""
         ctype = (plan.content_type or "show").lower()
         if ctype in ("na", "n/a", "none"):     # campaign doesn't need a Show/Movie ID
             return ""
         label = "MovieID" if ctype == "movie" else "ShowID"
-        return f" - [{label}:{plan.content_id}]"
+        return f" - [{label}:{plan.content_id or ''}]"
 
     # --- caps / priority ------------------------------------------------- #
 

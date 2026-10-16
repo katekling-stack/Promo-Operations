@@ -25,8 +25,24 @@ def test_pplus_movie_uses_movieid():
     assert all(n.endswith("[MovieID:98765]") for n in names), names
 
 
-def test_pplus_blank_id_omits_token_entirely():
+def test_pplus_blank_id_still_stamps_an_empty_token_on_every_placement():
+    # No ID yet: the token is still on EVERY placement (tiers, pause, guaranteed Plan lines),
+    # empty -- "[ShowID:]" -- so the CM has one obvious thing to fill in. Never a "TBD" value,
+    # which a downstream parser could mistake for a real id.
     names = _names("Paramount + - IT", "IT")           # no content_id
+    assert names
+    assert all(n.endswith("[ShowID:]") for n in names), names
+    assert not any("TBD" in n for n in names), names
+
+
+def test_pplus_blank_movie_id_stamps_empty_movieid():
+    names = _names("Paramount + - GSA", "GSA", content_type="movie")
+    assert names and all(n.endswith("[MovieID:]") for n in names), names
+
+
+def test_content_type_na_never_stamps_a_token():
+    # An explicit "this campaign needs no Show/Movie ID" is not the same as "ID not known yet".
+    names = _names("Paramount + - IT", "IT", content_type="na")
     assert not any("ShowID" in n or "MovieID" in n for n in names), names
 
 

@@ -82,18 +82,19 @@ def test_order_builder_per_tier_and_duration_naming():
     names = [p.name for p in order.placements]
     # remnant video: 4 tiers x 2 durations = 8; pause ads: 4 tiers; guaranteed: 2 -> 14
     assert len(order.placements) == 14
-    # Paramount+ would stamp a [ShowID:] tag, but this plan has no content_id -> omitted.
-    assert "Frisco King - Season 1 - 30 (Tier 1) - USA" in names
-    assert "Frisco King - Season 1 - Pause Ad (Tier 4) - USA" in names
-    assert "Frisco King - Season 1 - 15 (Tier 4) - USA" in names
-    assert not any("ShowID" in n for n in names)
+    # Paramount+ stamps the [ShowID:] tag on every placement; this plan has no content_id yet,
+    # so it rides empty for the CM to fill in.
+    assert "Frisco King - Season 1 - 30 (Tier 1) - USA - [ShowID:]" in names
+    assert "Frisco King - Season 1 - Pause Ad (Tier 4) - USA - [ShowID:]" in names
+    assert "Frisco King - Season 1 - 15 (Tier 4) - USA - [ShowID:]" in names
+    assert all(n.endswith("[ShowID:]") for n in names)
 
 
 def test_guaranteed_placement_named_by_content_id():
     plan = load_plan(FRISCO)
     order = OrderBuilder().build(plan)
     prem = next(p for p in order.placements if p.format == "premium_preroll")
-    assert prem.name == "Paramount + - Pre-Roll - Premium Plan - Frisco King - USA"
+    assert prem.name == "Paramount + - Pre-Roll - Premium Plan - Frisco King - USA - [ShowID:]"
 
     plan.content_type = "movie"; plan.content_id = "12345"
     order2 = OrderBuilder().build(plan)
