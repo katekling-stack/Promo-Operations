@@ -81,24 +81,32 @@ class SeriesResolver:
         hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if kw in r["norm"]]
         return SeriesMatch(show=show, series=hits[:limit])
 
-    def resolve_exact(self, show: str) -> SeriesMatch:
+    def resolve_exact(self, show: str, strict_underscores: bool = False) -> SeriesMatch:
         """Exact-name match (underscore-folded): only Video Series whose name IS the
         title — used for SELF-EXCLUSION so a promo never blocks unrelated shows that
         merely contain the title words. Catches both "MasterChef Australia" and
-        "masterchef_australia", but not "Junior MasterChef Australia"."""
+        "masterchef_australia", but not "Junior MasterChef Australia".
+
+        `strict_underscores` is for INCLUDE targeting: underscored series are the 10 Streaming
+        catalog's spelling, so each pick resolves to ONLY the spelling it was typed in —
+        "Dutton Ranch" does not pull in "dutton_ranch", and a distinctly selected
+        "dutton_ranch" does not pull in "Dutton Ranch"."""
         if not self._loaded:
             self.load()
         kw = _norm_series(show)
         if not kw:
             return SeriesMatch(show=show)
-        hits = [{"id": r["id"], "name": r["name"]} for r in self._rows if r["norm"] == kw]
+        want_underscore = "_" in show
+        hits = [{"id": r["id"], "name": r["name"]} for r in self._rows
+                if r["norm"] == kw
+                and (not strict_underscores or ("_" in r["name"]) == want_underscore)]
         return SeriesMatch(show=show, series=hits)
 
     def resolve_all(self, shows: list[str]) -> list[SeriesMatch]:
         return [self.resolve(s) for s in shows]
 
-    def resolve_all_exact(self, shows: list[str]) -> list[SeriesMatch]:
+    def resolve_all_exact(self, shows: list[str], strict_underscores: bool = False) -> list[SeriesMatch]:
         """Exact-name match for a whole showlist — used for Tier 2 content-affinity
         TARGETING so picking 'Scream' selects only the 'Scream' series, not the whole
         'Scream 2/3/4' family. Mirrors the picklist: what you select is what you get."""
-        return [self.resolve_exact(s) for s in shows]
+        return [self.resolve_exact(s, strict_underscores) for s in shows]

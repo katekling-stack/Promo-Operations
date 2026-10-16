@@ -128,7 +128,7 @@ class TargetingEngine:
         # match only: picking "Scream" targets the "Scream" series, not the whole
         # "Scream 2/3/4" family (what you select in the picklist is what you get).
         if dim_cfg["key"] == "content_affinity_showlist" and dim.values:
-            matches = self.series_resolver.resolve_all_exact(dim.values)
+            matches = self.series_resolver.resolve_all_exact(dim.values, strict_underscores=True)
             dim.resolved = [
                 {"show": m.show, "id": s["id"], "series_name": s["name"]}
                 for m in matches for s in m.series

@@ -14,15 +14,15 @@ class _FakeSeries:
         from promo_ops.series import SeriesMatch
         return SeriesMatch(show=show, series=[{"id": "555001", "name": show}])
 
-    def resolve_exact(self, show):
+    def resolve_exact(self, show, strict_underscores=False):
         from promo_ops.series import SeriesMatch
         return SeriesMatch(show=show, series=[{"id": "555001", "name": show}])
 
     def resolve_all(self, shows):
         return [self.resolve(s) for s in shows]
 
-    def resolve_all_exact(self, shows):
-        return [self.resolve_exact(s) for s in shows]
+    def resolve_all_exact(self, shows, strict_underscores=False):
+        return [self.resolve_exact(s, strict_underscores) for s in shows]
 
 
 def test_self_exclusion_series_is_exact_not_substring():
