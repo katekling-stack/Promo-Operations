@@ -146,6 +146,14 @@ class QAReport:
 # --------------------------------------------------------------------------- #
 #  A tolerant reader over a live placement / IO body (mirrors the write shape)
 # --------------------------------------------------------------------------- #
+def _as_list(value: Any) -> list:
+    """FreeWheel returns a one-item collection (one ad unit, one set, one country...) as a bare
+    object/string rather than a one-item list. Normalize both shapes to a list."""
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]
+
+
 class PlacementView:
     """Defensive accessors over a raw FreeWheel placement dict. Unknown/missing fields return
     None or [] rather than raising, so a check can emit INFO ("couldn't read X") not a crash."""
@@ -194,15 +202,15 @@ class PlacementView:
         nodes = ap.get("ad_unit_node")
         if nodes is None:
             return None
-        return [str(n.get("ad_unit_id")) for n in nodes if isinstance(n, dict) and n.get("ad_unit_id")]
+        return [str(n.get("ad_unit_id")) for n in _as_list(nodes)
+                if isinstance(n, dict) and n.get("ad_unit_id")]
 
     def schedule_timezone(self) -> Optional[str]:
         return (self.raw.get("schedule") or {}).get("time_zone")
 
     def sets(self) -> list[dict[str, Any]]:
         rt = self.raw.get("relationship_targeting") or {}
-        s = rt.get("set")
-        return [x for x in s if isinstance(x, dict)] if isinstance(s, list) else []
+        return [x for x in _as_list(rt.get("set")) if isinstance(x, dict)]
 
     def all_site_groups(self, which: str) -> set[str]:
         """Every site_group id under include/exclude ('include'|'exclude') across all sets and
@@ -218,8 +226,8 @@ class PlacementView:
         def walk(node: Any) -> None:
             if isinstance(node, dict):
                 for k, v in node.items():
-                    if k == key and isinstance(v, list):
-                        found.update(str(x) for x in v)
+                    if k == key and isinstance(v, (list, str, int)):
+                        found.update(str(x) for x in _as_list(v))
                     else:
                         walk(v)
             elif isinstance(node, list):
@@ -258,8 +266,7 @@ class PlacementView:
             at = s.get("audience_targeting")
             if not isinstance(at, dict):
                 continue
-            items = (at.get("include") or {}).get("audience_item")
-            return [str(x) for x in items] if isinstance(items, list) else []
+            return [str(x) for x in _as_list((at.get("include") or {}).get("audience_item"))]
         return None
 
     def geo_country_ids(self) -> Optional[list[str]]:
@@ -273,9 +280,9 @@ class PlacementView:
                 continue
             inc = root.get("include") or {}
             for key in ("country", "region"):
-                node = inc.get(key)
-                if isinstance(node, list) and node:
-                    return [str(x) for x in node]
+                vals = _as_list(inc.get(key))
+                if vals:
+                    return [str(x) for x in vals]
         return None
 
     def frequency_cap_keys(self) -> Optional[set[tuple[str, str]]]:
@@ -338,6 +345,11 @@ def _human_cap(value: str, period_minutes: str) -> str:
 # --------------------------------------------------------------------------- #
 #  The auditor
 # --------------------------------------------------------------------------- #
+# Name markers for a Network 10 line: the current "(10 Streaming)" plus the "(10Play)" older
+# seasons on a live IO were named with.
+NETWORK_10_MARKERS = ("(10 Streaming)", "(10Play)", "Network 10")
+
+
 class QAAuditor:
     def __init__(self, client: Optional[FreeWheelClient] = None,
                  order_builder: Optional[OrderBuilder] = None):
@@ -704,7 +716,7 @@ class QAAuditor:
     def _serves_pplus_line(self, pv: PlacementView) -> bool:
         # The UFC-style sets target P+ inventory; they ride only P+ lines, not Network 10 / My5.
         n = pv.name
-        return not any(tag in n for tag in ("(My5)", "(10 Streaming)", "Network 10"))
+        return not any(tag in n for tag in ("(My5)", *NETWORK_10_MARKERS))
 
     def _samsung_sgs(self, region) -> list[str]:
         from .config import relationship_targeting_config
@@ -733,7 +745,7 @@ class QAAuditor:
                 or "pplus_uk_remnant_pluto"
         if "(My5)" in name:
             return "my5_remnant" if "my5_remnant" in all_formats else None
-        if "(10 Streaming)" in name or "Network 10" in name:
+        if any(tag in name for tag in NETWORK_10_MARKERS):
             return next((f for f in all_formats if "network_10" in f), None)
         # the brand's primary remnant format (first non-guaranteed, non-variant)
         for f in all_formats:
