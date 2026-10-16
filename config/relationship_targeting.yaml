@@ -36,6 +36,10 @@ kids:
   content_site_group: '932400'
   older_video_group: '73408862'
   younger_video_group: '73408864'
+  # Asking to target an audience also EXCLUDES this VG on every placement of the Kids order
+  # (every set, guaranteed lines too), in every region -- independent of the include VGs above.
+  older_exclude_video_group: '165055190'
+  younger_exclude_video_group: '165056324'
 us_pluto_dnr:
   site_group: '951172'
   except_brands:

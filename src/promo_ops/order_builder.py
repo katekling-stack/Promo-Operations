@@ -28,7 +28,7 @@ import dataclasses
 from typing import Optional
 
 from .config import (ad_units_config, brands_config, campaign_defaults_config,
-                     kids_targeting_config, kids_video_groups,
+                     kids_exclude_video_groups, kids_targeting_config, kids_video_groups,
                      placement_templates_config, priorities_config, regions_config)
 from .ad_units import AdUnitResolver
 from .geo import CountryResolver, GeoResolver
@@ -552,6 +552,13 @@ class OrderBuilder:
         region_code = region_cfg.get("code") or plan.region
         if plan.rating_restrictions:
             for vg in self.rating_resolver.resolve(region_code, plan.rating_restrictions):
+                if vg not in excl_vgs:
+                    excl_vgs.append(vg)
+        # Kids audience (Older/Younger): selecting an audience also EXCLUDES that audience's
+        # dedicated VG on every set of every placement of the Kids order, in every region --
+        # separate from the include VGs the audience layers on (kids_video_groups below).
+        if brand_cfg.get("kids"):
+            for vg in kids_exclude_video_groups(plan.kids_audience):
                 if vg not in excl_vgs:
                     excl_vgs.append(vg)
         # Rating INCLUDES: resolve to the market's rating VGs, AND-ed into every set (the

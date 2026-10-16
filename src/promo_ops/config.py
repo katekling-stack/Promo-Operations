@@ -112,6 +112,20 @@ def kids_video_groups(audience: list[str] | None) -> list[str]:
     return [v for v in vgs if v]
 
 
+def kids_exclude_video_groups(audience: list[str] | None) -> list[str]:
+    """The Video Groups to EXCLUDE on every placement for a Kids audience selection:
+    "older" -> older_exclude_video_group, "younger" -> younger_exclude_video_group. Only the
+    selected audiences contribute; empty selection -> []."""
+    audience = [str(a).strip().lower() for a in (audience or []) if str(a).strip()]
+    cfg = kids_targeting_config()
+    vgs = []
+    if "older" in audience:
+        vgs.append(cfg.get("older_exclude_video_group"))
+    if "younger" in audience:
+        vgs.append(cfg.get("younger_exclude_video_group"))
+    return [str(v) for v in vgs if v]
+
+
 def brand_for_campaign(campaign: dict[str, Any]) -> str | None:
     """Derive the brand key from a plan's campaign (id or name).
 

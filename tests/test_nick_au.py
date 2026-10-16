@@ -77,16 +77,17 @@ def test_nick_au_network_10_opt_in():
 
 
 def test_nick_au_kids_vg_symmetry():
-    # Older-only excludes Nick Jr (younger); younger-only excludes Nick (older).
+    # Older-only excludes Nick Jr (younger); younger-only excludes Nick (older). Each selected
+    # audience also excludes its own dedicated VG (older 165055190 / younger 165056324).
     _, older = _order(kids=("older",))
     _, vgs, exc = _kids_set(older.placements[0])
     assert "73408862" in vgs and "73408864" not in vgs
-    assert exc == {"73408864"}
+    assert exc == {"73408864", "165055190"}
 
     _, younger = _order(kids=("younger",))
     _, vgs, exc = _kids_set(younger.placements[0])
     assert "73408864" in vgs and "73408862" not in vgs
-    assert exc == {"73408862"}
+    assert exc == {"73408862", "165056324"}
 
 
 def test_nick_jr_au_routes_to_its_own_campaign():
