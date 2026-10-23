@@ -23,7 +23,7 @@ def _zero_placement_order():
 def test_live_push_refuses_to_create_empty_io():
     order = _zero_placement_order()
     c = FreeWheelClient.__new__(FreeWheelClient)          # bypass __init__ (no env/network)
-    c._ensure_io_brand = lambda o: None
+    c._ensure_io_brand = lambda o, campaign_id=None: None
     c.resolve_campaign_id = lambda n: "999"
     touched = {"api": False}
     c._invoke = lambda *a, **k: touched.__setitem__("api", True) or {}

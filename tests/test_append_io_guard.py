@@ -23,7 +23,7 @@ def _order(existing_io_id):
 def _client(campaign_id, io_exists):
     c = FreeWheelClient.__new__(FreeWheelClient)              # bypass __init__ (no env/network)
     brand = {"n": 0}
-    c._ensure_io_brand = lambda o: brand.__setitem__("n", brand["n"] + 1) or None
+    c._ensure_io_brand = lambda o, campaign_id=None: brand.__setitem__("n", brand["n"] + 1) or None
     c.resolve_campaign_id = lambda n: campaign_id
     c.get_insertion_order = lambda io: ({"data": {"insertion_order": {"id": str(io)}}}
                                         if io_exists else {"ok": False})

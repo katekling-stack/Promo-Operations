@@ -716,7 +716,7 @@ class FreeWheelClient:
 
         # find-or-create the IO Brand (if the CM picked/typed one that isn't already resolved)
         # BEFORE building the plan, so exclusivity carries it.
-        brand_note = None if dry_run else self._ensure_io_brand(order)
+        brand_note = None if dry_run else self._ensure_io_brand(order, campaign_id=campaign_id)
         plan = self.to_freewheel_plan(order)
         if dry_run:
             return {"dry_run": True, "planned_calls": plan}
@@ -749,16 +749,31 @@ class FreeWheelClient:
             out["brand"] = brand_note
         return out
 
-    def _ensure_io_brand(self, order: Order) -> Optional[dict[str, Any]]:
+    def _campaign_advertiser(self, campaign_id: Any) -> Optional[str]:
+        """The advertiser that owns a campaign (read-only), or None if it can't be read."""
+        try:
+            r = self._invoke("sh_1_1_show-a-campaign", campaign_id=int(campaign_id))
+        except Exception:
+            return None
+        camp = ((r or {}).get("data") or {}).get("campaign") or {}
+        adv = camp.get("advertiser_id")
+        return str(adv) if adv else None
+
+    def _ensure_io_brand(self, order: Order, campaign_id: Any = None) -> Optional[dict[str, Any]]:
         """Live find-or-create of the IO Brand when the CM picked/typed one that isn't
         already resolved to a synced brand_id. Sets order.brand_id and returns a note
         (created?, and whether the Global Mapping is missing so the team must create the
-        global brand via 'Create a Brand in FW'). Returns None when there's nothing to do."""
+        global brand via 'Create a Brand in FW'). Returns None when there's nothing to do.
+
+        The Brand is created under the advertiser that OWNS the campaign the IO is going into
+        (FreeWheel rejects an IO whose Brand belongs to another advertiser). The region/kids
+        mapping is only the fallback, when no campaign is given or it can't be read."""
         if not getattr(order, "io_brand", None) or order.brand_id:
             return None
         from .freewheel_mrm import FreeWheelMRMClient
         from ..brands_resolver import BrandResolver
-        adv = BrandResolver().load().advertiser_for(order.region, bool(order.io_brand_kids))
+        adv = (self._campaign_advertiser(campaign_id) if campaign_id else None) \
+            or BrandResolver().load().advertiser_for(order.region, bool(order.io_brand_kids))
         if not adv:
             return {"name": order.io_brand,
                     "warning": f"No (Promo) advertiser mapping for {order.region} "
