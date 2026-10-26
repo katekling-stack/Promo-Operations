@@ -7,7 +7,7 @@ from promo_ops.order_builder import OrderBuilder
 
 
 def _order(**over):
-    raw = {"promoted_title": "Frisco King", "region": "USA",
+    raw = {"promoted_title": "Zzxq Nonexistent Promo Title", "region": "USA",
            "campaign": {"name": "Paramount + - USA"}, "durations": [30],
            "showlist": ["Yellowstone"], "genres": ["Drama"], **over}
     return OrderBuilder().build(support_plan_from_dict(raw))
@@ -33,7 +33,8 @@ def test_exclude_channels_add_site_group_to_every_placement():
 
 def test_no_excludes_is_a_no_op():
     order = _order()
-    # Frisco King isn't a real series -> self-exclusion empty, no extra excludes.
+    # The promoted title isn't a real series (a deliberately fictional one -- a real-sounding
+    # title can become a real FreeWheel series any day) -> self-exclusion empty, no extra excludes.
     assert all(p.exclude_series == [] for p in order.placements)
 
 
