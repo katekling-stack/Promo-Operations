@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo Ad Ops: Automation &amp; QA Tools</title>
+<style>
+  :root{--navy:#0A1730;--blue:#2A5CFF;--ink:#141B2C;--soft:#5B6478;--line:#E3E6ED;--paper:#F6F7FA;--card:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Helvetica,Arial,sans-serif}
+  header{background:linear-gradient(135deg,#0A1730,#122550);color:#fff;padding:26px 24px 24px}
+  .wrap{max-width:860px;margin:0 auto}
+  h1{margin:0 0 4px;font-size:26px;letter-spacing:.2px}
+  header p{margin:0;color:#A8B4D6;font-size:14.5px}
+  main{padding:26px 20px 70px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+  a.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;
+         text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s}
+  a.card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(10,23,48,.08)}
+  a.card b{display:block;font-size:17px;color:var(--navy);margin-bottom:4px}
+  a.card span{font-size:14px;color:var(--soft)}
+  h2{font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--soft);margin:30px 0 10px}
+  .note{font-size:13.5px;color:var(--soft);margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+  code{font:13px 'SF Mono',Consolas,monospace;background:#ECEFF6;padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Promo Ad Ops: Automation &amp; QA Tools</h1>
+  <p>Global Promo Digital Ad Operations &amp; Marketing &middot; internal</p>
+</div></header>
+<main><div class="wrap">
+  <h2>Build</h2>
+  <div class="grid">
+    <a class="card" href="Promo-Operations/templates/campaign-plan/campaign-plan-form.html">
+      <b>Campaign Plan Form</b><span>Fill in a campaign, then download the plan file for the tool.</span></a>
+  </div>
+
+  <h2>Check</h2>
+  <div class="grid">
+    <a class="card" href="qa-checklist.html">
+      <b>FreeWheel QA / Review Checklist</b><span>What to look at in FreeWheel before an order from the tool goes live.</span></a>
+    <a class="card" href="setup-guide.html">
+      <b>QA tool setup guide (Mac)</b><span>Install <code>promo-ops</code> once, then run <code>promo-ops qa &lt;IO id&gt;</code> on any order.</span></a>
+  </div>
+
+  <h2>Learn</h2>
+  <div class="grid">
+    <a class="card" href="Promo-Operations/docs/handbook.html">
+      <b>Team handbook</b><span>Setup, build and push, and QA in one place.</span></a>
+  </div>
+
+  <p class="note">The tool itself (<code>promo-ops</code>) runs on your own computer, because it signs in to FreeWheel.
+  The code lives in the <b>cbsi-adtech/digital_promo_automation</b> repository on GitHub.
+  These pages are refreshed automatically each morning.</p>
+</div></main>
+</body>
+</html>

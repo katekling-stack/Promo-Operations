@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FreeWheel QA / Review Checklist</title>
+<style>
+  :root{
+    --navy:#0A1730;
+    --navy-2:#122550;
+    --blue:#2A5CFF;
+    --blue-dim:#E8EDFF;
+    --green:#12996B;
+    --green-dim:#E4F6EE;
+    --amber:#B8790C;
+    --paper:#F6F7FA;
+    --card:#FFFFFF;
+    --line:#E3E6ED;
+    --ink:#141B2C;
+    --ink-soft:#5B6478;
+    --mono: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:var(--sans); background:var(--paper); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* Header */
+  header{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    color:#fff; padding:22px 28px; position:sticky; top:0; z-index:20;
+    box-shadow:0 2px 14px rgba(10,23,48,0.25);
+  }
+  .header-top{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:conic-gradient(from 220deg, #2A5CFF, #7FA6FF, #2A5CFF);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#0A1730;
+    flex:none;
+  }
+  h1{font-size:19px; margin:0; letter-spacing:0.2px; font-weight:700;}
+  .tagline{font-size:12.5px; color:#A8B4D6; margin-top:2px;}
+
+  .campaign-box{
+    display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:6px 10px;
+  }
+  .campaign-box label{font-size:11px; color:#A8B4D6; white-space:nowrap;}
+  .campaign-box input{
+    background:transparent; border:none; outline:none; color:#fff; font-size:13.5px;
+    font-family:var(--sans); width:210px; padding:4px 2px;
+  }
+  .campaign-box input::placeholder{color:#7C89AD;}
+  .icon-btn{
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#DCE3F5;
+    border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer; font-family:var(--sans);
+    transition:background .15s;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.18);}
+
+  /* Progress */
+  .progress-wrap{padding:14px 28px 16px 28px; background:var(--navy-2);}
+  .progress-row{display:flex; align-items:center; gap:12px;}
+  .progress-track{flex:1; height:8px; background:rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,#2A5CFF,#5CE0C6); border-radius:6px; transition:width .3s ease;}
+  .progress-label{font-size:12px; color:#C6CFE8; white-space:nowrap; font-variant-numeric:tabular-nums;}
+
+  main{max-width:900px; margin:0 auto; padding:22px 20px 80px 20px;}
+
+  .section{
+    background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:14px;
+    overflow:hidden;
+  }
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between; padding:14px 16px;
+    cursor:pointer; user-select:none;
+  }
+  .section-head:hover{background:#FAFBFD;}
+  .section-title{font-size:14.5px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:10px;}
+  .section-sub{font-size:12px; font-weight:500; color:var(--ink-soft); margin-left:22px;}
+  .chevron{transition:transform .2s; color:var(--ink-soft); font-size:11px;}
+  .section.collapsed .chevron{transform:rotate(-90deg);}
+  .section-count{
+    font-size:11.5px; font-weight:700; color:var(--ink-soft); background:var(--paper);
+    border:1px solid var(--line); border-radius:20px; padding:2px 9px; font-variant-numeric:tabular-nums;
+    flex:none;
+  }
+  .section-count.done{color:var(--green); background:var(--green-dim); border-color:transparent;}
+  .section-body{padding:0 16px 14px 16px;}
+  .section.collapsed .section-body{display:none;}
+
+  ul.items{list-style:none; margin:0; padding:0;}
+  .item{
+    display:flex; align-items:flex-start; gap:10px; padding:8px 4px; border-radius:8px;
+  }
+  .item:hover{background:#FAFBFD;}
+  .check{
+    flex:none; width:19px; height:19px; border-radius:6px; border:2px solid #C9CFDD; margin-top:1px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .12s;
+  }
+  .check:hover{border-color:var(--blue);}
+  .check.checked{background:var(--green); border-color:var(--green);}
+  .check.checked::after{content:"✓"; color:#fff; font-size:12px; font-weight:800; line-height:1;}
+  .item-text{font-size:13.5px; line-height:1.55; cursor:pointer; padding-top:1px;}
+  .item.done .item-text{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:#C9CFDD;}
+
+  footer.tool-footer{
+    max-width:900px; margin:0 auto; padding:0 20px 40px 20px; font-size:12px; color:var(--ink-soft);
+  }
+  .reset-row{display:flex; justify-content:flex-end; margin-top:6px;}
+  .reset-btn{
+    background:none; border:1px solid var(--line); color:var(--ink-soft); font-size:11.5px;
+    padding:5px 10px; border-radius:7px; cursor:pointer;
+  }
+  .reset-btn:hover{border-color:#D9534F; color:#D9534F;}
+
+  .empty-state{
+    text-align:center; padding:60px 20px; color:var(--ink-soft);
+  }
+  .empty-state .big{font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px;}
+
+  .save-pill{
+    position:fixed; bottom:18px; right:18px; background:var(--navy); color:#fff; font-size:12px;
+    padding:8px 14px; border-radius:20px; opacity:0; transform:translateY(6px); transition:all .25s; pointer-events:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  }
+  .save-pill.show{opacity:1; transform:translateY(0);}
+
+  @media (max-width:640px){
+    .campaign-box input{width:140px;}
+    header{padding:16px 14px;}
+    .progress-wrap{padding:12px 14px 14px 14px;}
+    main{padding:18px 12px 60px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-mark">FW</div>
+      <div>
+        <h1>FreeWheel QA / Review Checklist</h1>
+        <div class="tagline">A quick gut-check before you activate anything the automation tool built</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <div class="campaign-box">
+        <label for="campaignInput">Title / campaign</label>
+        <input id="campaignInput" list="campaignSuggestions" placeholder="e.g. Landman S2" autocomplete="off">
+        <datalist id="campaignSuggestions"></datalist>
+      </div>
+      <button class="icon-btn" id="switchBtn" title="Save &amp; load this title's checklist">Load</button>
+    </div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0 complete</div>
+  </div>
+</div>
+
+<main id="mainContent">
+  <div class="empty-state" id="emptyState">
+    <div class="big">Pop in a title or campaign name above to get started</div>
+    <div>Each campaign gets its own checklist saved right here on this device — come back anytime and pick up where you left off.</div>
+  </div>
+  <div id="checklistArea" style="display:none;">
+    <div id="sectionsContainer"></div>
+    <div class="reset-row">
+      <button class="reset-btn" id="resetBtn">Reset this checklist</button>
+    </div>
+  </div>
+</main>
+
+<footer class="tool-footer">
+  Heads up — this only saves in your browser, so it won't show up for teammates or follow you to another computer.
+</footer>
+
+<div class="save-pill" id="savePill">Saved</div>
+
+<script>
+// ---------- CONTENT DATA ----------
+
+const SECTIONS = [
+  { id:"io-setup", title:"IO / Order-Level Setup", sub:"Brand, trafficker, caps, draft status", items:[
+    { id:"io1", html:"IO name matches our naming convention (Title [- Kids] - Region)" },
+    { id:"io2", html:"IO Brand is set right — heads up, MRM creds aren't hooked up yet so the tool usually leaves this blank. Set it by hand" },
+    { id:"io3", html:"Primary Trafficker is set to the right person" },
+    { id:"io4", html:"Frequency caps at the order level look right (kids vs. adult, any region overrides)" },
+    { id:"io5", html:"Currency's correct and the order's still sitting in <strong>NOT_BOOKED</strong>/draft — make sure nothing got activated by accident" },
+    { id:"io6", html:"If you added placements to an existing IO, double check you used the actual <strong>IO ID</strong> — not the Campaign ID (easy mix-up)" }
+  ]},
+  { id:"placement-structure", title:"Placement Structure & Naming", sub:"Count, naming convention, ad units", items:[
+    { id:"ps1", html:"Placement count matches the tier × duration plan — nothing missing, nothing duplicated" },
+    { id:"ps2", html:"Placement names follow the convention (Title, Season, Duration, Tier, Region)" },
+    { id:"ps3", html:"ShowID/MovieID tag shows up correctly in every placement name" },
+    { id:"ps4", html:"No weird leftover text in the names (like a stray &ldquo;(P+/Pluto)&rdquo; that shouldn't be there)" },
+    { id:"ps5", html:"Ad unit IDs are assigned correctly for each platform" }
+  ]},
+  { id:"priority-freqcap", title:"Priority & Frequency Capping", sub:"Tier, priority type, cap values", items:[
+    { id:"pf1", html:"Priority type (Preemptible/Guaranteed) matches the tier each placement's supposed to be" },
+    { id:"pf2", html:"Priority/tier numbers match the plan and haven't gotten swapped (watch out for P+ Plan HIGH vs. HIGHEST mix-ups)" },
+    { id:"pf3", html:"Frequency cap value and period look right — worth eyeballing directly in the FreeWheel UI since the parsing behind it can be finicky" },
+    { id:"pf4", html:"Kids vs. adult frequency caps are actually different where they should be" }
+  ]},
+  { id:"flight-scheduling", title:"Flight & Scheduling", sub:"Dates, timezone, dayparts", items:[
+    { id:"fs1", html:"Every placement has both a start and end date — nothing half-filled" },
+    { id:"fs2", html:"Start hour/timezone matches the region (e.g. USA kicks off 3am ET)" },
+    { id:"fs3", html:"Dayparts are applied if the plan called for them" }
+  ]},
+  { id:"targeting-exclusions", title:"Targeting & Exclusions", sub:"Geo, self-exclusion, ratings, audience", items:[
+    { id:"te1", html:"Geo targeting landed on the right countries/states/DMAs/cities" },
+    { id:"te2", html:"<strong>The show is actually excluding its own series/audience/channel</strong> — this can silently fail if the title doesn't match FreeWheel's data, so go check it directly instead of just trusting the plan" },
+    { id:"te3", html:"Samsung TV Plus / DNR / Promo-Block exclusions are in there" },
+    { id:"te4", html:"Rating VG and Kids VG are set up correctly and match each other" },
+    { id:"te5", html:"Showlist/genre/network/Pluto targeting matches what the brief asked for" },
+    { id:"te6", html:"Any extra geo overlay (states/DMAs/cities) got applied right, if it was called for" }
+  ]},
+  { id:"creative-recshow", title:"Creative & Recommended Show", sub:"Rec-show ID, content ID, special selections", items:[
+    { id:"cr1", html:"Recommended Show ID is filled in, or left blank on purpose for the CM to add in the UI" },
+    { id:"cr2", html:"Content/ShowID/MovieID matches up in both targeting and the placement name" },
+    { id:"cr3", html:"Scene Lift / Video Domination / Takeover shows up correctly if it was selected" },
+    { id:"cr4", html:"Click-through URL is added to every creative that's running — not just the placeholder/test one" },
+    { id:"cr5", html:"Creative library params are updated for the market if needed (e.g. My5 renditions for UK)" },
+    { id:"cr6", html:"Pause Ads have a :30 duration added at the creative library level" },
+    { id:"cr7", html:"If new promos need pitching for STB, submit through Matrix MDC Outgoing with the right ISCI naming and log the codes in the DAI doc" }
+  ]},
+  { id:"final-review", title:"Final Review Before Activation", sub:"Draft status, orphans, plan cross-check", items:[
+    { id:"fr1", html:"Order/placements are still sitting in draft (NOT_BOOKED) — don't want anything going live before review's done" },
+    { id:"fr2", html:"No orphaned or duplicate placements hanging around — check the FreeWheel UI directly, since the tool can't hard-delete through the API" },
+    { id:"fr3", html:"Placement count and names cross-checked against the original plan, line by line" },
+    { id:"fr4", html:"Ticket/tracker updated and marked done" }
+  ]}
+];
+
+// ---------- STATE ----------
+let currentCampaign = "";
+let checkedState = {}; // {itemId: true}
+let saveTimer = null;
+
+function slugify(name){
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'untitled';
+}
+function storageKey(campaignSlug){
+  return `fw-qa-checklist:${campaignSlug}`;
+}
+
+// ---------- RENDER ----------
+function allItemIds(){
+  const ids = [];
+  SECTIONS.forEach(sec => sec.items.forEach(it => ids.push(it.id)));
+  return ids;
+}
+
+function itemRowHtml(item){
+  const checked = !!checkedState[item.id];
+  return `<li class="item ${checked?'done':''}" data-id="${item.id}">
+    <div class="check ${checked?'checked':''}" data-id="${item.id}"></div>
+    <div class="item-text" data-id="${item.id}">${item.html}</div>
+  </li>`;
+}
+
+function sectionHtml(section){
+  const allIds = section.items.map(it => it.id);
+  const doneCount = allIds.filter(id => checkedState[id]).length;
+  const complete = doneCount === allIds.length && allIds.length>0;
+  let body = `<ul class="items">` + section.items.map(itemRowHtml).join('') + `</ul>`;
+  return `<div class="section" data-section="${section.id}">
+    <div class="section-head" data-toggle="${section.id}">
+      <div class="section-title"><span class="chevron">▾</span>${section.title}
+        <span class="section-sub">${section.sub}</span>
+      </div>
+      <div class="section-count ${complete?'done':''}">${doneCount}/${allIds.length}</div>
+    </div>
+    <div class="section-body">${body}</div>
+  </div>`;
+}
+
+function renderSections(){
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = SECTIONS.map(sectionHtml).join('');
+  attachItemHandlers();
+  attachSectionToggles();
+  renderProgress();
+}
+
+function attachSectionToggles(){
+  document.querySelectorAll('[data-toggle]').forEach(el => {
+    el.addEventListener('click', () => {
+      el.closest('.section').classList.toggle('collapsed');
+    });
+  });
+}
+
+function attachItemHandlers(){
+  document.querySelectorAll('.check, .item-text').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const id = el.getAttribute('data-id');
+      if(e.target.tagName === 'A') return;
+      toggleItem(id);
+    });
+  });
+}
+
+function toggleItem(id){
+  checkedState[id] = !checkedState[id];
+  renderSections();
+  scheduleSave();
+}
+
+function renderProgress(){
+  const ids = allItemIds();
+  const done = ids.filter(id => checkedState[id]).length;
+  const pct = ids.length ? Math.round((done/ids.length)*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${ids.length} complete`;
+}
+
+// ---------- STORAGE (local to this browser — no backend/account needed) ----------
+// Wrapped in try/catch because some embed contexts (locked-down iframes, private
+// browsing) block localStorage entirely. In that case the tool still works,
+// it just won't remember state between visits.
+const localStore = {
+  get(key){
+    try{
+      const raw = window.localStorage.getItem(key);
+      return raw === null ? null : raw;
+    }catch(e){ return null; }
+  },
+  set(key, value){
+    try{
+      window.localStorage.setItem(key, value);
+      return true;
+    }catch(e){ return false; }
+  }
+};
+
+function loadCampaign(name){
+  currentCampaign = name;
+  const slug = slugify(name);
+  const raw = localStore.get(storageKey(slug));
+  checkedState = raw ? (JSON.parse(raw).checked || {}) : {};
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('checklistArea').style.display = 'block';
+  renderSections();
+  addCampaignToIndex(name);
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveCurrent, 300);
+}
+
+function saveCurrent(){
+  if(!currentCampaign) return;
+  const slug = slugify(currentCampaign);
+  const ok = localStore.set(storageKey(slug), JSON.stringify({checked: checkedState, updated: Date.now()}));
+  if(ok) showSavePill();
+}
+
+function showSavePill(){
+  const pill = document.getElementById('savePill');
+  pill.classList.add('show');
+  clearTimeout(showSavePill._t);
+  showSavePill._t = setTimeout(()=>pill.classList.remove('show'), 1200);
+}
+
+function addCampaignToIndex(name){
+  const raw = localStore.get('fw-qa-campaigns-index');
+  let list = raw ? JSON.parse(raw) : [];
+  if(!list.includes(name)){
+    list.unshift(name);
+    list = list.slice(0,50);
+    localStore.set('fw-qa-campaigns-index', JSON.stringify(list));
+  }
+  populateDatalist(list);
+}
+
+function populateDatalistFromIndex(){
+  const raw = localStore.get('fw-qa-campaigns-index');
+  const list = raw ? JSON.parse(raw) : [];
+  populateDatalist(list);
+}
+
+function populateDatalist(list){
+  const dl = document.getElementById('campaignSuggestions');
+  dl.innerHTML = list.map(n => `<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+}
+
+function resetCurrentChecklist(){
+  if(!currentCampaign) return;
+  if(!confirm(`Reset the checklist for "${currentCampaign}"? This can't be undone.`)) return;
+  checkedState = {};
+  renderSections();
+  saveCurrent();
+}
+
+// ---------- INIT ----------
+document.getElementById('switchBtn').addEventListener('click', () => {
+  const name = document.getElementById('campaignInput').value.trim();
+  if(name) loadCampaign(name);
+});
+document.getElementById('campaignInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    const name = e.target.value.trim();
+    if(name) loadCampaign(name);
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', resetCurrentChecklist);
+
+populateDatalistFromIndex();
+</script>
+</body>
+</html>

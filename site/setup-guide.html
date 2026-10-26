@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promo-Ops QA Tool: Setup Guide (Mac)</title>
+<style>
+  :root{--navy:#0A1730;--blue:#2A5CFF;--ink:#141B2C;--soft:#5B6478;--line:#E3E6ED;--paper:#F6F7FA;
+        --mono:'SF Mono','JetBrains Mono',Consolas,monospace;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Helvetica,Arial,sans-serif}
+  header{background:linear-gradient(135deg,#0A1730,#122550);color:#fff;padding:18px 24px}
+  header a{color:#A8B4D6;text-decoration:none;font-size:14px}
+  header a:hover{color:#fff}
+  main{max-width:760px;margin:0 auto;padding:26px 20px 80px}
+  h1{font-size:28px;margin:6px 0 10px}
+  h2{font-size:19px;margin:34px 0 6px;color:var(--navy);border-top:1px solid var(--line);padding-top:22px}
+  pre{background:#0F1A33;color:#B7F0D6;padding:12px 14px;border-radius:8px;overflow-x:auto;font:13.5px/1.5 var(--mono);margin:10px 0}
+  code{font-family:var(--mono);font-size:.9em;background:#ECEFF6;padding:1px 5px;border-radius:4px}
+  pre code{background:none;padding:0}
+  li{margin:5px 0}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<header><a href="index.html">&larr; Promo Ad Ops tools</a></header>
+<main>
+<h1>Promo-Ops QA Tool: Setup Guide (Mac)</h1>
+<p>This sets up the <b>promo-ops</b> tool on your computer so you can check a FreeWheel order <b>before it goes live</b>. You give it an Insertion Order (IO) number and it reports anything that looks wrong. <b>It only reads from FreeWheel. It never changes anything.</b></p>
+<p>Plan on about 15 minutes. You only do this once. Copy and paste each command (the lines in typewriter-style text) into Terminal and press Enter.</p>
+
+<h2>Before you start</h2>
+<ul>
+<li>A GitHub account that has access to the <b>cbsi-adtech/digital_promo_automation</b> repo.</li>
+<li>Your <b>FreeWheel API login</b> (username and password), the same one Ad Ops already uses for this tool. Ask whoever sent you this guide. Please don't email the password in plain text.</li>
+<li>Windows instead of Mac? Use PowerShell, type <code>python</code> instead of <code>python3</code>, and follow <code>docs/INSTALL_CHECKLIST.md</code> inside the downloaded folder.</li>
+</ul>
+
+<h2>Step 1: Open Terminal and check Python</h2>
+<p>Press <b>Cmd + Space</b>, type <b>Terminal</b>, press Enter. Then run:</p>
+<pre>python3 --version</pre>
+<p>If it says <b>Python 3.10</b> or higher, you're set. If not, download Python from python.org/downloads, install it, and run the command again.</p>
+
+<h2>Step 2: Make a GitHub token</h2>
+<p>The code is private, so GitHub won't accept your normal password on the command line. It needs a token instead.</p>
+<ol>
+<li>Go to github.com and click your profile picture (top right), then <b>Settings</b>.</li>
+<li>In the left menu, scroll to the bottom and click <b>Developer settings</b>.</li>
+<li>Click <b>Personal access tokens</b>, then <b>Tokens (classic)</b>.</li>
+<li>Click <b>Generate new token</b>, then <b>Generate new token (classic)</b>.</li>
+<li>Name it (for example "Promo-Operations"), pick an expiration, and tick the <b>repo</b> box.</li>
+<li>Click <b>Generate token</b>, then <b>copy the token right away</b> (it starts with <code>ghp_</code>). GitHub only shows it once. Save it in your password manager.</li>
+<li><b>Important:</b> on the token list, click <b>Configure SSO</b> next to your new token, then <b>Authorize</b> next to <b>cbsi-adtech</b>. Without this step the download in Step 3 will be refused.</li>
+</ol>
+<p>Never paste your token into a chat or email.</p>
+
+<h2>Step 3: Download the code</h2>
+<p>This puts a folder called <b>Promo-Operations</b> in the folder Terminal is currently in. To put it on your Desktop, first run <code>cd ~/Desktop</code>.</p>
+<pre>git clone https://github.com/cbsi-adtech/digital_promo_automation.git Promo-Operations</pre>
+<p>When it asks for a <b>Username</b>, type your GitHub username. When it asks for a <b>Password</b>, paste your <b>token</b> (not your GitHub password). Nothing shows on screen as you paste. That's normal.</p>
+
+<h2>Step 4: Go into the folder</h2>
+<pre>cd Promo-Operations</pre>
+<p>(If you used the Desktop tip, it's <code>cd ~/Desktop/Promo-Operations</code>.) Every command below must be run from inside this folder.</p>
+
+<h2>Step 5: Install the tool</h2>
+<pre>python3 -m pip install -e .</pre>
+<p>It prints a lot of lines. That's normal. When it finishes, check it worked:</p>
+<pre>promo-ops --help</pre>
+<p>You should see a list of commands.</p>
+
+<h2>Step 6: Add your FreeWheel login</h2>
+<p>Make your own settings file from the template:</p>
+<pre>cp .env.example .env</pre>
+<p>Open it in TextEdit:</p>
+<pre>open -e .env</pre>
+<p>Fill in <b>FREEWHEEL_USERNAME</b> and <b>FREEWHEEL_PASSWORD</b> with your FreeWheel API login. Make sure <b>FREEWHEEL_NETWORK_ID=520311</b>. Leave everything else as it is, then save and close. Never share or email this file. It contains your password.</p>
+
+<h2>Step 7: Check everything is connected</h2>
+<pre>promo-ops doctor</pre>
+<p>You should see a green check for each item. If the only problem is about "MRM" and you only plan to run QA, that's fine.</p>
+
+<h2>Step 8: Run a QA check</h2>
+<p>Find the IO number in the FreeWheel address bar. It's the number after <code>insertion_order_id=</code>. Then run:</p>
+<pre>promo-ops qa 86085716</pre>
+<p>(Use your own IO number.) Useful extras:</p>
+<ul>
+<li>Only look at the current season: add <code>--only "Season 4"</code> to the end.</li>
+<li>Save a shareable report: add <code>--out qa.md</code> to the end.</li>
+</ul>
+<p><b>How to read the results:</b></p>
+<ul>
+<li><b>error:</b> almost certainly wrong. Fix it before going live.</li>
+<li><b>warn:</b> likely wrong. Take a look.</li>
+<li><b>info:</b> the tool couldn't read that field. Check it by hand in FreeWheel.</li>
+<li><b>ok:</b> checked and correct.</li>
+</ul>
+<p>The tool is new. A warning is a prompt to look, not always a real mistake. If something seems off, ask before changing anything.</p>
+
+<h2>Getting updates later</h2>
+<p>From inside the Promo-Operations folder, run:</p>
+<pre>./update.sh</pre>
+<p>It downloads the latest version of the tool. It replaces any changes you've made inside the folder, so don't edit files there.</p>
+
+<h2>If something goes wrong</h2>
+<ul>
+<li><b>"Password authentication is not supported"</b>: you typed your GitHub password. Paste the token instead.</li>
+<li><b>"organization has enabled or enforced SAML SSO" or a 403 error</b>: the token isn't authorized yet. Do the Configure SSO part of Step 2.</li>
+<li><b>"Repository not found"</b>: your GitHub account doesn't have access yet. Ask whoever sent you this guide.</li>
+<li><b>"command not found: promo-ops"</b>: run Step 5 again from inside the folder. If it still fails, close Terminal, reopen it, and <code>cd</code> back into the folder.</li>
+<li><b>"command not found: python3"</b>: install Python (Step 1).</li>
+<li><b>A login or 401 error from FreeWheel</b>: reopen <code>.env</code> and re-check your username, password, and network ID.</li>
+</ul>
+</main>
+</body>
+</html>
