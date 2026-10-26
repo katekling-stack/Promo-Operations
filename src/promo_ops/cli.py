@@ -124,7 +124,7 @@ def _print_preview(order: Order) -> None:
                     print(f"      • {d.key}: {len(d.resolved)} segment(s) resolved"
                           f"{' [' + ', '.join(ids) + ']' if ids else ''}")
                     if d.notes:
-                        print(f"          ! {d.notes}")
+                        print("          ! " + d.notes.replace("\n", "\n          ! "))
                 else:
                     preview = ", ".join(str(v) for v in d.values[:6])
                     more = f" (+{len(d.values) - 6} more)" if len(d.values) > 6 else ""
@@ -135,7 +135,7 @@ def _print_preview(order: Order) -> None:
                         suffix = f'  [e.g. "{d.resolved[0]["segment_name"]}"]'
                     print(f"      • {d.key}: {preview}{more}{suffix}")
                     if d.notes and d.key != "audience_segments":
-                        print(f"          ! {d.notes}")
+                        print("          ! " + d.notes.replace("\n", "\n          ! "))
 
 
 def _push_target(order: Order, target: str, live: bool) -> dict[str, Any]:
@@ -148,9 +148,29 @@ def _push_target(order: Order, target: str, live: bool) -> dict[str, Any]:
     raise ValueError(f"Unknown target: {target}")
 
 
+def _print_audience_alerts(order: Order) -> None:
+    """Print the Tier 1 audience alerts (regional segment missing, nothing regional at all,
+    hand-picked segments from another region) once, up front, so they can't be missed in a push
+    -- they're otherwise only visible in `promo-ops preview`."""
+    seen: list[str] = []
+    for p in order.placements:
+        for tier in p.targeting.tiers:
+            for d in tier.dimensions:
+                if d.key == "audience_segments" and d.notes:
+                    for line in d.notes.split("\n"):
+                        if line not in seen:
+                            seen.append(line)
+    if seen:
+        print("\n⚠️  Tier 1 audience alerts for this plan:", file=sys.stderr)
+        for line in seen:
+            print(f"   • {line}", file=sys.stderr)
+        print(file=sys.stderr)
+
+
 def _cmd_push(args: argparse.Namespace) -> int:
     plan = load_plan(args.plan)
     order = OrderBuilder().build(plan)
+    _print_audience_alerts(order)
     try:
         result = _push_target(order, args.target, args.live)
     except TransientAPIError as e:
@@ -722,6 +742,12 @@ def _cmd_dda_requests(args: argparse.Namespace) -> int:
         print("NEED A DDA SEGMENT GENERATED (request via the audience form):")
         for n in need:
             print(f"  • {n['show']}")
+    cov = AudienceSegmentResolver().load().region_coverage(shows, region)
+    if cov["fallback"]:
+        print(f"\nNO {region} SEGMENT YET — a standard / other-region one is used for Tier 1 "
+              f"(request a {region} segment to target these regionally):")
+        for f in cov["fallback"]:
+            print(f"  • {f['show']}  [using {f['using']}]")
     out = Path(args.out) if args.out else (Path(args.plan).with_suffix(".dda-needed.csv")
                                            if args.plan else Path("dda-needed.csv"))
     with out.open("w", newline="", encoding="utf-8") as fh:

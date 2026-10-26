@@ -26,11 +26,15 @@ def test_adult_excludes_promoted_audience_segment_on_every_set():
 
 def test_audience_exclude_merges_with_tier1_dda_include():
     # Tier 1 targets DDA (include) AND excludes the promoted segment — both nodes present.
+    # Tier 1 is region-only, so the showlist needs a title that has a US-bucket segment.
+    from promo_ops.audience_segments import AudienceSegmentResolver
+    idx = AudienceSegmentResolver().load().title_families()
+    us_title = sorted(t for t, fams in idx.items() if "us" in fams)[0]
     order = _order(promoted_title="Tulsa King", region="USA", campaign={"name": "Paramount + - USA"},
-                   durations=[30], showlist=["NCIS"])
+                   durations=[30], showlist=[us_title])
     t1 = [p for p in order.placements if "(Tier 1)" in p.name and "Pause" not in p.name][0]
     at = FreeWheelClient._placement_body(t1)["relationship_targeting"]["set"][0]["audience_targeting"]
-    assert at["include"]["audience_item"]                       # NCIS DDA include
+    assert at["include"]["audience_item"]                       # the US-bucket DDA include
     assert set(order.promoted_audience_items) & set(at["exclude"]["audience_item"])
 
 
@@ -52,7 +56,10 @@ def test_exact_title_only_not_the_franchise_family():
     family = {x.segment_id for x in AudienceSegmentResolver().load().resolve("NCIS", "USA").records
               if x.segment_id}
     assert len(family) > 1                              # the family is genuinely larger
-    assert order.promoted_audience_items == ["1437926"]  # only the exact NCIS segment
+    # Only the exact NCIS segments: the standard one (GL-DDA-1P-SHOW-NCIS) and the US-bucket one
+    # (US-DDA-1P_Series_NCIS_us -- the trailing "_us" is the request tool's region code, not part
+    # of the title). Never NCIS: Hawaii / Sydney / ...
+    assert sorted(order.promoted_audience_items) == ["1437926", "1521524"]
 
 
 def test_unresolved_title_has_no_audience_items():

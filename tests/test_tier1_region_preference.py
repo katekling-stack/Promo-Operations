@@ -1,6 +1,8 @@
-"""Tier 1 audience segments prefer the campaign's REGION-SPECIFIC segment for each show and
-fall back to the standard (GL-DDA-1P) one only when there isn't one. Preference applies to
-INCLUDE targeting only -- self-exclusion must still see every variant of the title."""
+"""Tier 1 audience segments are REGION-ONLY: a show is targeted only through a segment that
+carries the campaign's own region (its request-tool bucket; for AU also the AU Summit ones).
+The standard GL-DDA-1P segment and other regions' buckets are NOT used (team policy), and the
+tool alerts instead. This applies to INCLUDE targeting only -- self-exclusion must still see
+every variant of the title."""
 
 from __future__ import annotations
 
@@ -47,18 +49,19 @@ def test_region_specific_wins_over_standard(tmp_path):
     assert _ids(r.resolve_exact("Gamma", "UK", prefer_region=True)) == {"7"}
 
 
-def test_falls_back_to_standard_when_no_region_specific(tmp_path):
+def test_no_fallback_to_the_standard_segment(tmp_path):
     r = _resolver(tmp_path)
-    assert _ids(r.resolve_exact("Delta", "AU", prefer_region=True)) == {"8"}
-    # AU has no Gamma segment of its own -> standard, not the US/EU buckets.
-    assert _ids(r.resolve_exact("Gamma", "AU", prefer_region=True)) == {"5"}
+    # Delta only has a standard GL segment; Gamma has none in AU's own bucket. Neither is used.
+    assert not r.resolve_exact("Delta", "AU", prefer_region=True).matched
+    assert not r.resolve_exact("Gamma", "AU", prefer_region=True).matched
 
 
-def test_last_resort_is_another_regions_bucket(tmp_path):
+def test_another_regions_bucket_is_not_used(tmp_path):
     r = _resolver(tmp_path)
-    # Beta only exists in the US bucket; an AU campaign can still reuse it rather than
-    # reporting the show as unresolved.
-    assert _ids(r.resolve_exact("Beta", "AU", prefer_region=True)) == {"4"}
+    # Beta only exists in the US bucket: US campaigns use it, nobody else does.
+    assert _ids(r.resolve_exact("Beta", "USA", prefer_region=True)) == {"4"}
+    for region in ("AU", "UK", "FR"):
+        assert not r.resolve_exact("Beta", region, prefer_region=True).matched
 
 
 def test_default_is_unchanged_so_self_exclusion_sees_every_variant(tmp_path):
@@ -72,13 +75,33 @@ def test_unknown_show_is_still_unresolved(tmp_path):
     assert not r.resolve_exact("Nope", "AU", prefer_region=True).matched
 
 
-def test_tier1_targeting_uses_region_preference(tmp_path):
-    engine = TargetingEngine(resolver=_resolver(tmp_path))
+def _dim(engine, plan_extra):
     plan = support_plan_from_dict({
         "promoted_title": "Zeta", "region": "AU", "campaign": {"name": "Paramount + - AU"},
-        "durations": [30], "showlist": ["Alpha", "Delta", "Beta"], "genres": ["Drama"]})
-    dim = engine._build_dimension(
+        "durations": [30], "genres": ["Drama"], **plan_extra})
+    return engine._build_dimension(
         plan, {"key": "audience_segments", "label": "Audience Segments",
                "source": "audience_segments"})
-    got = {s["segment_id"] for s in dim.resolved}
-    assert got == {"2", "3", "8", "4"}      # Alpha->AU, Delta->standard, Beta->last resort
+
+
+def test_tier1_targeting_is_region_only_and_alerts_on_the_rest(tmp_path):
+    dim = _dim(TargetingEngine(resolver=_resolver(tmp_path)),
+               {"showlist": ["Alpha", "Delta", "Beta", "Nope"]})
+    assert {s["segment_id"] for s in dim.resolved} == {"2", "3"}      # Alpha's AU segments only
+    notes = dim.notes
+    assert "NOT targeted" in notes and "Delta [GL-DDA-1P]" in notes and "Beta [US-DDA-1P]" in notes
+    assert "need their Tier 1 DDA audience item" in notes and "Nope" in notes
+    assert "NO audience" not in notes          # Alpha still gives Tier 1 an audience
+
+
+def test_tier1_with_nothing_regional_warns_it_would_run_platform_wide(tmp_path):
+    dim = _dim(TargetingEngine(resolver=_resolver(tmp_path)), {"showlist": ["Delta", "Beta"]})
+    assert not dim.resolved
+    assert "NO audience targeting" in dim.notes and "whole platform" in dim.notes
+
+
+def test_hand_picked_non_regional_segments_are_kept_but_flagged(tmp_path):
+    dim = _dim(TargetingEngine(resolver=_resolver(tmp_path)),
+               {"showlist": ["Alpha"], "audience_segments": ["GL-DDA-1P-SHOW_Delta"]})
+    assert {s["segment_id"] for s in dim.resolved} == {"2", "3", "8"}   # the CM's pick is kept
+    assert "hand-picked segment(s) aren't AU segments" in dim.notes and "GL-DDA-1P-SHOW_Delta" in dim.notes

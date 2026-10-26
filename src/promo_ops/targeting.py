@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .audience_segments import AudienceSegmentResolver
+from .audience_segments import AudienceSegmentResolver, is_region_segment, region_own_label
 from .config import pluto_config, regions_config, tiers_config
 from .models import PRODUCT_FAMILIES, SupportPlan, Tier, TargetingDimension, TieredTargeting
 from .series import SeriesResolver
@@ -108,12 +108,38 @@ class TargetingEngine:
                     unresolved.append(m.show)
             dim.resolved = resolved
             dim.values = [s["segment_name"] for s in resolved]
-            if unresolved:
-                dim.notes = (
-                    f"{len(unresolved)} show(s) need their Tier 1 DDA audience item "
+            notes = []
+            cov = self.resolver.region_coverage(plan.showlist, plan.region)
+            # REGION-ONLY policy: Tier 1 targets only the campaign's own region's segments.
+            # ALERT shows that only have a standard / other-region segment (not used).
+            if cov["elsewhere"]:
+                notes.append(
+                    f"{len(cov['elsewhere'])} show(s) have no {plan.region} Tier 1 segment "
+                    f"({region_own_label(plan.region)}) — NOT targeted: only a standard / other-"
+                    f"region segment exists, and those aren't used. Request a {plan.region} "
+                    f"segment: " + ", ".join(f"{f['show']} [{f['using']}]" for f in cov["elsewhere"]))
+            if cov["none"]:
+                notes.append(
+                    f"{len(cov['none'])} show(s) need their Tier 1 DDA audience item "
                     f"(convention 'GL-DDA-1P-SHOW_<Show>'; search 'DDA + show' in FreeWheel "
-                    f"Audience Items or run sync-audience-items): {', '.join(unresolved)}"
-                )
+                    f"Audience Items or run sync-audience-items): {', '.join(cov['none'])}")
+            # Segments the CM picked by hand are kept, but flagged if they aren't this region's.
+            picked_other = sorted({r["segment_name"] for r in resolved
+                                   if r.get("segment_name") in set(plan.audience_segments or [])
+                                   and not is_region_segment(r["segment_name"], plan.region)})
+            if picked_other:
+                notes.append(
+                    f"{len(picked_other)} hand-picked segment(s) aren't {plan.region} segments "
+                    f"(Tier 1 is region-only) — kept because you chose them: "
+                    + ", ".join(picked_other))
+            if (plan.showlist or plan.audience_segments) and not any(
+                    r.get("segment_id") for r in resolved):
+                notes.append(
+                    f"Tier 1 would have NO audience targeting for {plan.region} — it would run "
+                    f"across the whole platform. Don't push until a {plan.region} segment exists "
+                    f"for at least one show.")
+            if notes:
+                dim.notes = "\n".join(notes)
             return dim
 
         if dim_cfg["key"] == "run_of_network_except_promoted":

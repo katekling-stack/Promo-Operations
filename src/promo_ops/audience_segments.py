@@ -99,14 +99,14 @@ REGION_BUCKET_CONVENTION: dict[str, str] = {
 
 
 def _segment_rank(norm: str, region: Optional[str], streaming10: bool) -> Optional[int]:
-    """Where a Tier 1 segment sits in the per-show preference order for INCLUDE targeting
-    (lower wins; None = never used for this line):
+    """Whether (and how well) a Tier 1 segment fits a campaign's region for INCLUDE targeting
+    (lower wins; None = never used for this line). REGION-ONLY policy: a segment is used only
+    if it carries the campaign's own region --
       0  AU "AU - DWH - 10 - ..." Network 10 Summit segments -- (10 Streaming) lines only
       1  the region's OWN segments: its request-tool bucket (US-/EU-UK-/APAC-DDA-1P) and, for
          AU, the non-Network-10 DWH Summit segments (PP, ...)
-      2  the standard GL-DDA-1P segment
-      3  another region's bucket -- last resort, commonly reusable
-    The first rank that has a match for a show wins; lower ranks are not added."""
+    The standard GL-DDA-1P segments and other regions' buckets are NOT used. (A region we have
+    no own bucket for keeps the old behavior: GL = 2, another bucket = 3.)"""
     r = (region or "").upper()
     if norm.startswith("au dwh"):
         if r != "AU":
@@ -117,6 +117,8 @@ def _segment_rank(norm: str, region: Optional[str], streaming10: bool) -> Option
     own = REGION_BUCKET_CONVENTION.get(r)
     if own and norm.startswith(own):
         return 1
+    if own:
+        return None                                  # region-only: no GL / other-region segment
     if norm.startswith(DEFAULT_TIER1_CONVENTION):
         return 2
     return 3
@@ -135,6 +137,99 @@ def _au_content_title(norm: str) -> str:
     elif rest[-1:] == ["watchers"]:
         rest = rest[:-1]
     return " ".join(rest)
+
+
+# Segment "families" -- which naming convention a segment belongs to. The coverage rule below
+# works on these, and the campaign form gets the same codes, so the builder's alert, the
+# `promo-ops dda` list and the form's flag can never disagree.
+FAMILY_LABEL = {"gl": "GL-DDA-1P", "us": "US-DDA-1P", "eu": "EU/UK-DDA-1P", "apac": "APAC-DDA-1P"}
+_BUCKET_FAMILY = {"us dda 1p": "us", "eu uk dda 1p": "eu", "apac dda 1p": "apac"}
+_FALLBACK_ORDER = ("gl", "us", "eu", "apac")      # standard first, then another region's bucket
+
+
+# What can wrap a show's title inside a segment name, none of which is part of the title:
+# a type marker after the prefix (SHOW / SERIES / MOVIE / INTL) and, in the request-tool
+# buckets, the region code the tool appends ("..._eu", "..._au", "..._us").
+_TITLE_MARKERS = {"show", "series", "movie", "intl"}
+_BUCKET_REGION_CODE = {"us dda 1p": "us", "eu uk dda 1p": "eu", "apac dda 1p": "au"}
+
+
+def _show_portion(norm: str, conv: str) -> str:
+    """The title inside a (non-AU-Summit) segment name: after the convention prefix, with the
+    leading type markers and the bucket's trailing region code removed.
+    "eu uk dda 1p series the yorkshire vet eu" -> "the yorkshire vet"."""
+    parts = norm[len(conv):].split()
+    while parts and parts[0] in _TITLE_MARKERS:
+        parts = parts[1:]
+    code = _BUCKET_REGION_CODE.get(conv)
+    if code and len(parts) > 1 and parts[-1] == code:
+        parts = parts[:-1]
+    return " ".join(parts)
+
+
+def _family_of(norm: str) -> Optional[str]:
+    """gl | us | eu | apac | au (AU Summit PP etc.) | au_10 (AU Summit Network 10), or None."""
+    if norm.startswith("au dwh"):
+        return "au_10" if norm.split()[:3] == ["au", "dwh", "10"] else "au"
+    for prefix, fam in (("gl dda 1p", "gl"), ("us dda 1p", "us"),
+                        ("eu uk dda 1p", "eu"), ("apac dda 1p", "apac")):
+        if norm.startswith(prefix):
+            return fam
+    return None
+
+
+def region_bucket_family(region: Optional[str]) -> Optional[str]:
+    """The family of a region's OWN request-tool bucket (us/eu/apac), or None if unmapped."""
+    return _BUCKET_FAMILY.get(REGION_BUCKET_CONVENTION.get((region or "").upper(), ""))
+
+
+def region_own_label(region: Optional[str]) -> str:
+    """Human label for what counts as the region's own segment (for alerts)."""
+    fam = region_bucket_family(region)
+    label = FAMILY_LABEL.get(fam, "")
+    if (region or "").upper() == "AU":
+        return f"{label} or AU Summit"
+    return label
+
+
+def classify_families(fams, region: Optional[str]) -> tuple[str, Optional[str]]:
+    """The single Tier 1 coverage rule for ONE show, given the families that have a segment for
+    it. REGION-ONLY policy: only the campaign's own region's segments are ever targeted.
+    Returns (kind, label):
+      ("own", None)         the region's own segment exists -> it is used
+      ("elsewhere", label)  a segment exists ONLY outside the region (the standard GL-DDA-1P or
+                            another region's bucket; label says which) -> NOT used; a regional
+                            one has to be requested
+      ("none", None)        no segment anywhere -> one has to be requested
+    AU Summit segments only count for AU; the Network 10 ones only ever serve (10 Streaming)
+    lines, so they never count here. A region we don't know the own bucket of never alerts."""
+    r = (region or "").upper()
+    usable = set(fams or ())
+    usable.discard("au_10")
+    if r != "AU":
+        usable.discard("au")
+    if not usable:
+        return ("none", None)
+    own = region_bucket_family(r)
+    if own is None:
+        return ("own", None)
+    if own in usable or (r == "AU" and "au" in usable):
+        return ("own", None)
+    for fam in _FALLBACK_ORDER:
+        if fam in usable:
+            return ("elsewhere", FAMILY_LABEL[fam])
+    return ("none", None)
+
+
+def segment_family(segment_name: str) -> Optional[str]:
+    """The family (gl/us/eu/apac/au/au_10) a segment NAME belongs to, or None."""
+    return _family_of(_dda_tokens(segment_name))
+
+
+def is_region_segment(segment_name: str, region: Optional[str]) -> bool:
+    """True when a segment carries the campaign's own region (region-only policy)."""
+    fam = segment_family(segment_name)
+    return bool(fam) and classify_families({fam}, region)[0] == "own"
 
 
 def _conventions_for_region(region: Optional[str]) -> list[str]:
@@ -248,16 +343,11 @@ class AudienceSegmentResolver:
             return m
         kw = _dda_tokens(show)
         want = _conventions_for_region(region)
-        drop = {"show", "series", "movie"}   # the type token after the convention prefix
-
         def show_portion(seg_name: str) -> str:
             n = _dda_tokens(seg_name)
             for conv in want:
                 if n.startswith(conv):
-                    parts = n[len(conv):].split()
-                    while parts and parts[0] in drop:
-                        parts = parts[1:]
-                    return " ".join(parts)
+                    return _show_portion(n, conv)
             return n
 
         recs = []
@@ -284,6 +374,58 @@ class AudienceSegmentResolver:
             return []
         best = min(k for k, _ in ranked)
         return [r for k, r in ranked if k == best]
+
+    def title_families(self) -> dict[str, set[str]]:
+        """{normalized title -> {families with a segment for it}}, built with the SAME matching
+        resolve_exact uses (so a title is "covered" exactly when the builder would resolve it).
+        Non-AU names: the title is what follows the convention prefix (+ optional SHOW/SERIES/
+        MOVIE). AU Summit names: any trailing run of tokens, or the "<title> watchers APAC"
+        content title. Region-independent; classify_families applies the region."""
+        if not self._loaded:
+            self.load()
+        cached = getattr(self, "_title_families", None)
+        if cached is not None:
+            return cached
+        idx: dict[str, set[str]] = {}
+        for r, n, conv in zip(self._records, self._norm, self._conv):
+            fam = _family_of(n)
+            if fam is None:
+                continue
+            keys: set[str] = set()
+            if n.startswith("au dwh"):
+                toks = n.split()
+                keys.update(" ".join(toks[i:]) for i in range(len(toks)))
+                ct = _au_content_title(n)
+                if ct:
+                    keys.add(ct)
+            else:
+                title = _show_portion(n, conv)
+                if title:
+                    keys.add(title)
+            for k in keys:
+                idx.setdefault(k, set()).add(fam)
+        self._title_families = idx
+        return idx
+
+    def region_coverage(self, shows: list[str], region: Optional[str] = None) -> dict[str, list]:
+        """Group a showlist by Tier 1 coverage in `region` (region-only policy): "own" (a
+        regional segment exists and is used), "elsewhere" ({"show", "using"} -- a segment exists
+        only outside the region, so it is NOT used; a regional one must be requested) and "none"
+        (no segment anywhere)."""
+        idx = self.title_families()
+        out: dict[str, list] = {"own": [], "elsewhere": [], "none": []}
+        seen: set[str] = set()
+        for s in shows:
+            key = _dda_tokens(s or "")
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            kind, label = classify_families(idx.get(key), region)
+            if kind == "elsewhere":
+                out["elsewhere"].append({"show": s, "using": label})
+            else:
+                out[kind].append(s)
+        return out
 
     def resolve_all(self, shows: list[str], region: Optional[str] = None) -> list[SegmentMatch]:
         return [self.resolve(s, region) for s in shows]

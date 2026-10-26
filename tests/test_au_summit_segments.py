@@ -76,7 +76,9 @@ def test_10_streaming_falls_back_to_the_normal_order_when_no_10_segment(tmp_path
 
 def test_summit_never_leaks_to_other_regions(tmp_path):
     r = _resolver(tmp_path)
-    assert _ids(r.resolve_exact("Alpha", "USA", prefer_region=True)) == {"14"}   # standard only
+    # Alpha has a standard segment and AU Summit ones; USA has no US-bucket segment for it, so the
+    # region-only rule leaves a USA campaign with nothing (and the AU Summit never leaks in).
+    assert not r.resolve_exact("Alpha", "USA", prefer_region=True).matched
     assert not r.resolve_exact("Gogglebox", "USA", prefer_region=True).matched
 
 

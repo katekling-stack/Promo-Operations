@@ -145,6 +145,26 @@ def _my5_site_group_names() -> list:
     return sorted(out)
 
 
+def _segment_coverage_data(show_names: list, segment_names: list) -> dict:
+    """What the form needs to flag Tier 1 coverage by region WITHOUT re-implementing the
+    matching: for every pickable show that has any segment, the segment families that exist for
+    it (computed by the SAME resolver the builder uses), the region -> own-bucket map, and the
+    family of every pickable segment. The form's JS only applies the region to these."""
+    from promo_ops.audience_segments import (AudienceSegmentResolver, REGION_BUCKET_CONVENTION,
+                                             _dda_tokens, region_bucket_family, segment_family)
+    idx = AudienceSegmentResolver().load().title_families()
+    fams = {}
+    for n in show_names:
+        f = idx.get(_dda_tokens(n))
+        if f:
+            fams[n] = sorted(f)
+    return {
+        "ddaFamilies": fams,
+        "ddaRegionBucket": {r: region_bucket_family(r) for r in REGION_BUCKET_CONVENTION},
+        "audienceFamilies": {n: segment_family(n) for n in segment_names if segment_family(n)},
+    }
+
+
 def _targeting_options() -> dict:
     """Real FreeWheel option lists for the form's type-to-search pickers, from the
     same generator that feeds templates/targeting-options/."""
@@ -178,6 +198,7 @@ def _targeting_options() -> dict:
         "brandsByRegion": {r: v for r, v in brands.items() if v},
         "audienceSegments": [n for n, _ in bto.audience_segments()],
         "shows": [n for _, n in bto.shows()],
+        **_segment_coverage_data([n for _, n in bto.shows()], [n for n, _ in bto.audience_segments()]),
         **_geo_options(),
     }
 
@@ -489,7 +510,7 @@ datalist{display:none}
     <div class="field"><label>Pluto channels</label><div class="chips" data-chips="pluto_channels" data-source="channels"><input type="text" placeholder="type to search a channel…"></div></div>
     <div class="field"><label>Audience Segments (Tier 1)</label>
       <div class="chips" data-chips="audience_segments" data-source="audience"><input type="text" placeholder="usually blank — auto-resolved from the showlist"></div>
-      <div class="hint">Tier 1 is standard across all markets. Usually left blank (auto-resolved from the showlist) — add specific DDA segments only if needed.</div>
+      <div class="hint">Usually left blank — Tier 1 is auto-resolved from the showlist using <b>only segments for this campaign's region</b> (standard <code>GL-DDA-1P</code> and other regions' segments are not used). Add specific segments here only if needed; a segment from another region is kept but flagged.</div>
       <div style="margin-top:11px">
         <a href="AUDIENCE_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
@@ -944,34 +965,59 @@ $("#region").addEventListener("change",()=>{
 });
 ["title","existing_io_id"].forEach(id=>$("#"+id).addEventListener("input",validate));
 
-// --- Flag showlist shows with no DDA segment yet (heads-up, not a submission) ------- //
-// Which affinity shows will need a NEW DDA segment generated, so Tier 1 isn't silently
-// empty. Uses the baked-in audience library + the picked region. You still request them
-// through the audience form as usual — this just flags the gaps while you plan.
-// Every Tier 1 bucket resolves for every region (a segment requested under one region's
-// bucket is commonly reusable elsewhere) -- mirror audience_segments._conventions_for_region.
-// AU additionally has its own DWH "Summit" segments.
-const ALL_DDA = ["gl dda 1p","us dda 1p","eu uk dda 1p","apac dda 1p"];
-const DDA_CONVENTIONS = { AU: ALL_DDA.concat(["au dwh"]) };
-function ddaToks(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
-let _ddaNorm=null;
+// --- Tier 1 segment coverage for the picked region (REGION-ONLY policy) ------------- //
+// Tier 1 targets ONLY segments that carry the campaign's own region: its request-tool bucket
+// (US- / EU-UK- / APAC-DDA-1P; AU also its DWH Summit ones). The standard GL-DDA-1P segment and
+// other regions' buckets are NOT used. APP.ddaFamilies says which segment families exist for
+// each show, computed by the SAME resolver the builder uses (audience_segments.classify_families);
+// this only applies the region to them, so the form and the builder can't disagree.
+const DDA_LABEL={gl:"GL-DDA-1P",us:"US-DDA-1P",eu:"EU/UK-DDA-1P",apac:"APAC-DDA-1P"};
+let _ddaLc=null;
+function ddaFamsFor(show){
+  const m=APP.ddaFamilies||{};
+  if(m[show]) return m[show];
+  if(_ddaLc===null){ _ddaLc={}; for(const k in m) _ddaLc[k.toLowerCase()]=m[k]; }
+  return _ddaLc[(show||"").toLowerCase()]||[];
+}
+function ddaClassifyFams(fams, region){          // mirrors audience_segments.classify_families
+  const usable=fams.filter(f=>f!=="au_10" && (f!=="au" || region==="AU"));
+  if(!usable.length) return ["none",null];
+  const own=(APP.ddaRegionBucket||{})[region];
+  if(!own) return ["own",null];
+  if(usable.includes(own) || (region==="AU" && usable.includes("au"))) return ["own",null];
+  for(const f of ["gl","us","eu","apac"]) if(usable.includes(f)) return ["elsewhere",DDA_LABEL[f]];
+  return ["none",null];
+}
 function ddaFlag(){
   const box=$("#ddaFlag"); if(!box) return;
   const shows=state.lists.showlist||[]; const region=$("#region").value;
-  if(!shows.length){ box.classList.add("hidden"); return; }
-  const convs=DDA_CONVENTIONS[region]||ALL_DDA;
-  if(_ddaNorm===null) _ddaNorm=(APP.audienceSegments||[]).map(ddaToks);
-  const missing=shows.filter(sh=>{ const kw=ddaToks(sh); if(!kw) return false;
-    const has=_ddaNorm.some(n=> convs.some(c=>n.startsWith(c)) &&
-      (n===kw || n.endsWith(" "+kw) || n.includes(" "+kw+" ")));
-    return !has; });
-  if(!missing.length){ box.classList.add("hidden"); return; }
-  const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  const many=missing.length>1;
-  box.innerHTML="⚠️ <b>"+missing.length+" show"+(many?"s":"")+(many?" don't":" doesn't")+
-    " have a DDA segment yet</b> — request "+(many?"these":"this")+
-    " through the audience form so Tier 1 can target "+(many?"them":"it")+":<br>• "+
-    missing.map(esc).join("<br>• ");
+  const picked=state.lists.audience_segments||[];
+  if(!region || (!shows.length && !picked.length)){ box.classList.add("hidden"); return; }
+  const elsewhere=[], none=[]; let own=0;
+  shows.forEach(sh=>{ const r=ddaClassifyFams(ddaFamsFor(sh),region);
+    if(r[0]==="elsewhere") elsewhere.push([sh,r[1]]); else if(r[0]==="none") none.push(sh); else own++; });
+  // hand-picked segments are kept, but flagged when they aren't this region's
+  const other=picked.filter(n=>{ const f=(APP.audienceFamilies||{})[n];
+    return !f || ddaClassifyFams([f],region)[0]!=="own"; });
+  if(!elsewhere.length && !none.length && !other.length){ box.classList.add("hidden"); return; }
+  const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const ownLabel = region==="AU" ? "APAC-DDA-1P or AU Summit" : (DDA_LABEL[(APP.ddaRegionBucket||{})[region]]||"");
+  const parts=[];
+  if(elsewhere.length) parts.push("⚠️ <b>"+elsewhere.length+" show"+(elsewhere.length>1?"s":"")+
+    " ha"+(elsewhere.length>1?"ve":"s")+" no "+esc(region)+" Tier 1 segment ("+esc(ownLabel)+")</b> — "+
+    (elsewhere.length>1?"they":"it")+" will <b>not</b> be targeted: only a standard / other-region segment exists, "+
+    "and those aren't used. Request a "+esc(region)+" segment:<br>• "+
+    elsewhere.map(x=>esc(x[0])+" <span style='opacity:.7'>["+esc(x[1])+"]</span>").join("<br>• "));
+  if(none.length) parts.push("⚠️ <b>"+none.length+" show"+(none.length>1?"s":"")+
+    " ha"+(none.length>1?"ve":"s")+" no DDA segment at all</b> — request "+(none.length>1?"these":"this")+
+    " through the audience form so Tier 1 can target "+(none.length>1?"them":"it")+":<br>• "+
+    none.map(esc).join("<br>• "));
+  if(other.length) parts.push("ℹ️ <b>"+other.length+" hand-picked segment"+(other.length>1?"s aren't":" isn't")+" a "+
+    esc(region)+" segment</b> (Tier 1 is region-only) — kept because you chose "+(other.length>1?"them":"it")+
+    ":<br>• "+other.map(esc).join("<br>• "));
+  if(shows.length && !own && !picked.length) parts.push("🚫 <b>Tier 1 would have no audience at all</b> — it "+
+    "would run across the whole platform. Don't submit until a "+esc(region)+" segment exists for at least one show.");
+  box.innerHTML=parts.join("<br><br>");
   box.classList.remove("hidden");
 }
 function validate(){

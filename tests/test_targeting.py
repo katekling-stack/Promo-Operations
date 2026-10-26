@@ -209,7 +209,10 @@ def test_tier1_dda_audience_item_resolves():
     t1 = next(t for t in TargetingEngine().build(plan, "remnant_video").tiers if t.id == 1)
     seg = next(d for d in t1.dimensions if d.key == "audience_segments")
     names = {s["segment_name"]: s.get("segment_id") for s in seg.resolved}
-    assert names.get("GL-DDA-1P-SHOW_Tulsa_King") == "1437993"
+    # Tier 1 is region-only: a USA plan targets Tulsa King through its US-bucket segment, and the
+    # standard GL-DDA-1P one is NOT used.
+    assert names.get("US-DDA-1P_Series_Tulsa_King_us") == "1521226"
+    assert "GL-DDA-1P-SHOW_Tulsa_King" not in names
 
 
 def test_pluto_channel_and_category_resolve_to_site_groups():
