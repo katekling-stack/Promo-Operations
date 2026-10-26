@@ -2785,65 +2785,26 @@ brands:
     - remnant_video
     pluto_brand: true
     _cloned_from: pluto_tv_uk
+  # Standard Pluto TV Kids setup -- identical to FR / IT / DK ... It was first scaffolded from the
+  # Spanish-language US clone (pluto_es_kids), which left it un-flagged as kids, on the Spanish
+  # remnant format, and carrying hand-written targeting sets with US-only site groups.
   pluto_tv_kids_br:
-    display_name: Pluto TV - Kids (BR)
     advertiser_name_contains:
     - VCBS
-    - Spanish
     template_campaign_id: '72285933'
     campaign_name: Pluto TV - Kids - BR
+    display_name: Pluto TV Kids (BR)
+    kids: true
     formats:
-    - pluto_es_remnant
+    - pplus_kids_remnant
     ad_unit_groups:
-      pluto_es_remnant: pplus_cbs_pluto_vcbs
-    placement_name_suffix: Kids
-    relationship_sets:
-    - set_name: Set One
-      include:
-      - site_group:
+      pplus_kids_remnant: pplus_cbs_pluto_vcbs
+    format_overrides:
+      pplus_kids_remnant:
+        kids_main_site_groups:
         - '929392'
-      - site_group:
-        - '932215'
-      - video_group:
-        - '73408862'
-        - '86471529'
-        site_group:
-        - '932400'
-      exclude:
-        site_group:
-        - '932411'
-        - '932412'
-    - set_name: Set Two
-      include:
-      - video_group:
-        - '75279406'
-      - video_group:
-        - '73408862'
-        - '73408864'
-        - '86471529'
-        site_group:
-        - '932400'
-      - site_group:
-        - '929392'
-      exclude:
-        site_group:
-        - '932411'
-        - '932412'
-        - '1237515'
-    - set_name: Kids Channels
-      include:
-      - video_group:
-        - '86471529'
-        site_group:
-        - '932400'
-      - site_group:
-        - '932063'
-      exclude:
-        site_group:
-        - '932411'
-        - '932412'
+        duration_infix: ''
     pluto_brand: true
-    _cloned_from: pluto_es_kids
   pluto_tv_kids_french_ca:
     display_name: Pluto TV - Kids - French (CA)
     advertiser_name_contains:
