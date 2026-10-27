@@ -1417,6 +1417,11 @@ class FreeWheelClient:
                 # Fold the promoted show's own series into each static set's exclude too,
                 # so the self-exclusion holds on every argument here as well.
                 exclude = dict(sd.get("exclude") or {})
+                # The placement's own extra excluded video groups (e.g. the Older/Younger Kids
+                # audience exclusions) hold on fixed sets too.
+                extra_vgs = [str(v) for v in (getattr(p, "extra_exclude_video_groups", None) or [])]
+                if extra_vgs:
+                    exclude["video_group"] = sorted(set([str(v) for v in exclude.get("video_group", [])] + extra_vgs))
                 if excl_series:
                     exclude["series"] = sorted(set(exclude.get("series", []) + excl_series))
                 node = FreeWheelClient._content(sd.get("include", []), exclude or None)

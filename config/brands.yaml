@@ -198,6 +198,7 @@ brands:
     pluto_brand: true
   pluto_es_kids:
     display_name: Pluto TV - En Español - Kids
+    kids: true
     advertiser_name_contains:
     - VCBS
     - Spanish
@@ -1870,6 +1871,7 @@ brands:
     _cloned_from: mtve_dk
   mtve_kids_es:
     display_name: MTVE - Kids (ES)
+    kids: true
     advertiser_name_contains:
     - VCBS
     - MTV
@@ -1885,6 +1887,7 @@ brands:
     _cloned_from: mtve_dk
   mtve_kids_gsa:
     display_name: MTVE - Kids (GSA)
+    kids: true
     advertiser_name_contains:
     - VCBS
     - MTV
@@ -1900,6 +1903,7 @@ brands:
     _cloned_from: mtve_dk
   mtve_kids_latam:
     display_name: MTVE - Kids (LATAM)
+    kids: true
     advertiser_name_contains:
     - VCBS
     - MTV
@@ -2807,6 +2811,7 @@ brands:
     pluto_brand: true
   pluto_tv_kids_french_ca:
     display_name: Pluto TV - Kids - French (CA)
+    kids: true
     advertiser_name_contains:
     - VCBS
     - Spanish
@@ -2866,6 +2871,7 @@ brands:
     _cloned_from: pluto_es_kids
   pluto_tv_kids_latam:
     display_name: Pluto TV - Kids (LATAM)
+    kids: true
     advertiser_name_contains:
     - VCBS
     - Spanish

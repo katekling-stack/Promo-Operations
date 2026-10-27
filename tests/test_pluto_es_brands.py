@@ -11,6 +11,7 @@ def _order(title: str, campaign: str):
     plan = support_plan_from_dict({
         "promoted_title": title, "region": "USA",
         "campaign": {"name": campaign}, "durations": [15, 30],
+        **({"kids_audience": ["younger"]} if "Kids" in campaign else {}),   # Kids campaigns need an audience
     })
     return plan, OrderBuilder().build(plan)
 
