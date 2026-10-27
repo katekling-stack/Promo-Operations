@@ -729,26 +729,26 @@ def _cmd_dda_requests(args: argparse.Namespace) -> int:
     else:
         shows = [s.strip() for s in (args.shows or "").split(";") if s.strip()]
         region = args.region
-    have, need = AudienceSegmentResolver().load().missing_dda(shows, region)
-    print(f"Region {region} — {len(have)} show(s) already have a DDA segment; "
-          f"{len(need)} need one generated.\n")
-    if need:
-        print("NEED A DDA SEGMENT GENERATED (request via the audience form):")
-        for n in need:
-            print(f"  • {n['show']}")
     cov = AudienceSegmentResolver().load().region_coverage(shows, region)
-    if cov["fallback"]:
-        print(f"\nNO {region} SEGMENT YET — a standard / other-region one is used for Tier 1 "
-              f"(request a {region} segment to target these regionally):")
-        for f in cov["fallback"]:
-            print(f"  • {f['show']}  [using {f['using']}]")
+    gaps = [(n, "no segment anywhere", "") for n in cov["none"]] + \
+           [(f["show"], "only in another region", f["using"]) for f in cov["elsewhere"]]
+    print(f"Region {region} — {len(cov['own'])} show(s) already have a {region} segment; "
+          f"{len(gaps)} need one requested.\n")
+    if cov["none"]:
+        print("NO SEGMENT ANYWHERE (request a new DDA segment via the audience form):")
+        for n in cov["none"]:
+            print(f"  • {n}")
+    if cov["elsewhere"]:
+        print(f"\nONLY IN ANOTHER REGION (not used in {region} — request a {region} segment):")
+        for f in cov["elsewhere"]:
+            print(f"  • {f['show']}  [exists as {f['using']}]")
     out = Path(args.out) if args.out else (Path(args.plan).with_suffix(".dda-needed.csv")
                                            if args.plan else Path("dda-needed.csv"))
     with out.open("w", newline="", encoding="utf-8") as fh:
-        w = _csv.writer(fh); w.writerow(["show", "region"])
-        for n in need:
-            w.writerow([n["show"], region])
-    print(f"\nWrote {out} ({len(need)} shows needing a segment)")
+        w = _csv.writer(fh); w.writerow(["show", "region", "status", "exists_as"])
+        for show, status, using in gaps:
+            w.writerow([show, region, status, using])
+    print(f"\nWrote {out} ({len(gaps)} shows needing a segment)")
     return 0
 
 
