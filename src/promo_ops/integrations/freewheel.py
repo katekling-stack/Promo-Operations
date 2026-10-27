@@ -311,6 +311,26 @@ class FreeWheelClient:
         payload = self._invoke("sh_1_0_show-a-placement", placement_id=int(placement_id), show="all")
         return ((payload or {}).get("data") or {}).get("placement") or {}
 
+    def list_creative_instances(self, ad_id: Any) -> list[dict[str, Any]]:
+        """The creatives assigned to one Ad (every page). Each row carries creative_id,
+        placement_id and status; FreeWheel can only filter this list by ad / creative / date."""
+        rows: list[dict[str, Any]] = []
+        for page in range(1, 21):
+            payload = self._invoke("sh_1_0_list-creative-instances", ad_id=int(ad_id),
+                                   per_page=50, page=page)
+            coll = ((payload or {}).get("data") or {}).get("creative_instances") or {}
+            got = coll.get("creative_instance") if isinstance(coll, dict) else None
+            got = got if isinstance(got, list) else ([got] if isinstance(got, dict) else [])
+            rows += got
+            if page >= int(str((coll or {}).get("@total_pages") or 1) or 1):
+                break
+        return rows
+
+    def get_creative(self, creative_id: Any) -> dict[str, Any]:
+        """One creative's name / duration (seconds) / status."""
+        payload = self._invoke("sh_1_0_show-creatives-and-renditions", creative_id=int(creative_id))
+        return ((payload or {}).get("data") or {}).get("creative") or {}
+
     def search_series(self, show: str, per_page: int = 50) -> list[dict[str, Any]]:
         """Keyword-search series by name; return ALL matches ({id, name}).
 

@@ -316,8 +316,12 @@ class PlacementView:
         return out
 
     def creative_durations(self) -> Optional[list[int]]:
-        """Best-effort assigned-creative durations (seconds). Read shape varies by expand flags;
-        try the common keys. None -> not present in this payload (audit by hand)."""
+        """Assigned-creative durations (seconds). When the auditor read the line's creatives, only
+        ACTIVE ones count and an empty list means none are attached. Otherwise best-effort from the
+        payload; None -> not readable (audit by hand)."""
+        read = self.raw.get("_creatives")
+        if isinstance(read, list):
+            return sorted({int(c["duration"]) for c in read if c.get("active") and c.get("duration")})
         out: list[int] = []
         for key in ("creatives", "creative", "ad_product"):
             node = self.raw.get(key)
@@ -399,6 +403,7 @@ class QAAuditor:
                 "couldn't map this IO to a known brand — brand-specific checks skipped "
                 "(add the campaign's template_campaign_id to config/brands.yaml)."))
         report.findings += self._check_io(io, brand_key, region)
+        creative_cache: dict = {}
         for raw in placements:
             # A placement that has already finished running can't be fixed any more, and old
             # seasons were built to older rules -- auditing them only adds noise.
@@ -409,8 +414,40 @@ class QAAuditor:
             if problem is not None:      # can't read it -> say so; don't raise false errors
                 report.findings.append(problem)
                 continue
+            creatives = self._read_creatives(full, creative_cache)
+            if creatives is not None:
+                full = {**full, "_creatives": creatives}
             report.findings += self._check_placement(PlacementView(full), brand_key, region)
         return report
+
+    def _read_creatives(self, placement: dict[str, Any], cache: dict) -> Optional[list[dict[str, Any]]]:
+        """The creatives on this placement's Ad: [{id, name, duration, active}], [] when none are
+        found, None when they can't be read (the old "confirm by hand" note then applies).
+        FreeWheel gives the Ad the placement's id + 1; every row is checked to belong to this
+        placement, so a wrong guess finds nothing rather than someone else's creatives."""
+        if not (hasattr(self.client, "list_creative_instances") and hasattr(self.client, "get_creative")):
+            return None
+        try:
+            pid = int(placement.get("id"))
+        except (TypeError, ValueError):
+            return None
+        try:
+            rows = [r for r in self.client.list_creative_instances(pid + 1)
+                    if str(r.get("placement_id")) == str(pid)]
+            out = []
+            for r in rows:
+                cid = str(r.get("creative_id"))
+                if cid not in cache:
+                    cache[cid] = self.client.get_creative(cid)
+                c = cache[cid] or {}
+                dur = c.get("duration")
+                out.append({"id": cid, "name": c.get("name"),
+                            "duration": int(float(dur)) if dur not in (None, "") else None,
+                            "active": str(r.get("status") or "").upper() == "ACTIVE"
+                                      and str(c.get("status") or "").upper() == "ACTIVE"})
+            return out
+        except Exception:  # noqa: BLE001 - a failed read must not become a false error
+            return None
 
     _BODY_KEYS = ("relationship_targeting", "content_targeting", "delivery", "ad_product", "schedule")
 
@@ -575,6 +612,11 @@ class QAAuditor:
             return [Finding("info", "creative_duration", name,
                             f"named for :{duration} — couldn't read assigned-creative durations "
                             "from the payload; confirm a :%d creative is attached." % duration)]
+        if not durs:
+            return [Finding("warn", "creative_duration", name,
+                            f"named for :{duration} but no active creatives were found on this "
+                            "line's ad — attach a :%d creative (or check by hand if the ad is set "
+                            "up differently)." % duration)]
         if duration not in durs:
             return [Finding("error", "creative_duration", name,
                             f"named for :{duration} but no matching creative length is attached.",
