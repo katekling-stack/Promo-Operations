@@ -254,7 +254,8 @@ def test_tier1_affinity_shows_empty_dda_is_flagged():
     assert found, "expected AU_PLAN to produce a Tier 1 Affinity Shows set"
     rep = _audit(io, pls)
     assert any(f.category == "targeting" and f.level == "warn"
-               and "zero resolved DDA segments" in f.message for f in rep.findings)
+               and "no audience segments to include" in f.message
+               and "whole platform" in f.message for f in rep.findings)
 
 
 def test_tier1_no_showlist_at_all_is_not_flagged():

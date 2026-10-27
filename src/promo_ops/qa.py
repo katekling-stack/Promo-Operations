@@ -72,6 +72,7 @@ class QAReport:
     region: Optional[str] = None
     findings: list[Finding] = field(default_factory=list)
     placement_count: int = 0
+    completed_skipped: int = 0       # already-finished placements not audited (--all includes them)
     error: Optional[str] = None      # set when the IO itself couldn't be audited
 
     def by_level(self, level: str) -> list[Finding]:
@@ -98,7 +99,11 @@ class QAReport:
             out.append(f"\n❌ {self.error}")
             return "\n".join(out)
         n_err, n_warn = len(self.by_level("error")), len(self.by_level("warn"))
-        out.append(f"  {n_err} error(s), {n_warn} warning(s)\n")
+        out.append(f"  {n_err} error(s), {n_warn} warning(s)")
+        if self.completed_skipped:
+            out.append(f"  ({self.completed_skipped} completed placement(s) not checked — they've "
+                       "already finished running; add --all to include them)")
+        out.append("")
         # group by placement, preserving first-seen order, placements with errors first
         groups: dict[str, list[Finding]] = {}
         for f in self.findings:
@@ -127,7 +132,11 @@ class QAReport:
             lines.append(f"\n> ❌ {self.error}")
             return "\n".join(lines)
         lines.append(f"\n**{len(self.by_level('error'))} error(s), "
-                     f"{len(self.by_level('warn'))} warning(s)**\n")
+                     f"{len(self.by_level('warn'))} warning(s)**")
+        if self.completed_skipped:
+            lines.append(f"\n_{self.completed_skipped} completed placement(s) not checked: they've "
+                         "already finished running._")
+        lines.append("")
         lines.append("| Level | Placement | Check | Detail |")
         lines.append("|---|---|---|---|")
         order = sorted(self.findings, key=lambda f: (_LEVEL_RANK[f.level], f.placement))
@@ -152,6 +161,10 @@ def _as_list(value: Any) -> list:
     if value is None:
         return []
     return value if isinstance(value, list) else [value]
+
+
+# Set names whose site groups are Pluto channels / categories rather than the platform's main SG.
+_CHANNEL_SETS = {"Channels", "Pluto Categories"}
 
 
 class PlacementView:
@@ -212,15 +225,16 @@ class PlacementView:
         rt = self.raw.get("relationship_targeting") or {}
         return [x for x in _as_list(rt.get("set")) if isinstance(x, dict)]
 
-    def all_site_groups(self, which: str) -> set[str]:
+    def all_site_groups(self, which: str, skip_sets: tuple = ()) -> set[str]:
         """Every site_group id under include/exclude ('include'|'exclude') across all sets and
-        the placement-level content_targeting (set-less flat lines)."""
-        return self._collect("site_group", which)
+        the placement-level content_targeting (set-less flat lines). `skip_sets` leaves out sets
+        by name (e.g. the channel/category sets, whose site groups are channels, not the platform)."""
+        return self._collect("site_group", which, skip_sets)
 
     def all_video_groups(self, which: str) -> set[str]:
         return self._collect("video_group", which)
 
-    def _collect(self, key: str, which: str) -> set[str]:
+    def _collect(self, key: str, which: str, skip_sets: tuple = ()) -> set[str]:
         found: set[str] = set()
 
         def walk(node: Any) -> None:
@@ -235,6 +249,8 @@ class PlacementView:
                     walk(v)
         # relationship set include/exclude
         for s in self.sets():
+            if s.get("set_name") in skip_sets:
+                continue
             ni = (s.get("content_targeting") or {}).get("network_items") or {}
             walk(ni.get(which))
         # placement-level content_targeting (set-less flat lines)
@@ -359,7 +375,7 @@ class QAAuditor:
         self.regions = regions_config().get("regions", {})
 
     # -- public ----------------------------------------------------------- #
-    def audit_io(self, io_id: str) -> QAReport:
+    def audit_io(self, io_id: str, include_completed: bool = False) -> QAReport:
         report = QAReport(io_id=str(io_id))
         try:
             io = _unwrap(self.client.get_insertion_order(io_id), "insertion_order")
@@ -384,6 +400,11 @@ class QAAuditor:
                 "(add the campaign's template_campaign_id to config/brands.yaml)."))
         report.findings += self._check_io(io, brand_key, region)
         for raw in placements:
+            # A placement that has already finished running can't be fixed any more, and old
+            # seasons were built to older rules -- auditing them only adds noise.
+            if not include_completed and str(raw.get("status") or "").upper() == "COMPLETED":
+                report.completed_skipped += 1
+                continue
             full, problem = self._full_placement(raw)
             if problem is not None:      # can't read it -> say so; don't raise false errors
                 report.findings.append(problem)
@@ -468,8 +489,10 @@ class QAAuditor:
             tz = (io.get("schedule") or {}).get("time_zone")
             exp_tz = FreeWheelClient._region_timezone(region)
             if tz and exp_tz and tz != exp_tz:
-                out.append(Finding("warn", "timezone", "(order)",
-                                   "IO schedule time zone doesn't match the market.", exp_tz, tz))
+                out.append(Finding("info", "timezone", "(order)",
+                                   "IO-level time zone is the network default; the tool never sets "
+                                   "it — each placement carries the market's time zone, which is "
+                                   "what delivery follows.", exp_tz, tz))
         return out
 
     # -- placement-level checks ------------------------------------------ #
@@ -624,7 +647,12 @@ class QAAuditor:
         # wrongly warned on (and a wrong override that happens to overlap the brand default would
         # pass silently -- exactly how the old Ten Play SG mistake shipped unnoticed).
         expected_main = self._expected_main_sgs(cfg, region, fmt, self._is_kids(brand_key))
-        if expected_main and pv.sets():
+        # A Pluto channel / category set targets the CHANNELS' site groups, not the platform's main
+        # one. A line made only of such sets (Tier 2 channels, Tier 3 categories) has no main SG to
+        # find, so the check only applies to the other sets.
+        channel_only = bool(set(pv.set_names()) & _CHANNEL_SETS) and not pv.all_site_groups(
+            "include", skip_sets=tuple(_CHANNEL_SETS))
+        if expected_main and pv.sets() and not channel_only:
             if not (set(expected_main) & inc_sgs):
                 out.append(Finding("warn", "targeting", name,
                                    "none of the brand's main site groups are targeted.",
@@ -658,9 +686,10 @@ class QAAuditor:
             dda = pv.affinity_shows_audience_items()
             if dda is not None and not dda:
                 out.append(Finding("warn", "targeting", name,
-                                   "Tier 1 Affinity Shows set has audience targeting but zero "
-                                   "resolved DDA segments — check for a stale/broken audience "
-                                   "items sync."))
+                                   "Tier 1 has no audience segments to include, so it would run across the "
+                                   "whole platform. Either no show in the plan has a segment in this "
+                                   "region (the build alerts say which), or the audience-items sync is "
+                                   "stale/broken."))
         # AU-style Tier 4 guarantee sets (e.g. UFC) must be present on P+ Tier 4 lines
         extras = cfg.get("tier4_extra_sets") or []
         if extras and tier == 4 and self._serves_pplus_line(pv):
@@ -727,6 +756,8 @@ class QAAuditor:
         """Best-effort map a live placement to one of the brand's formats, by name markers and
         guaranteed/remnant shape. Used to look up the expected ad-unit group + caps."""
         name = pv.name
+        if "pause ad" in name.lower():       # Pause lines use the Pause ad unit, not the video ones
+            return "pause_ads"
         all_formats = list(cfg.get("formats", []) or []) + list(cfg.get("optional_formats", []) or [])
         if pv.guaranteed:
             low = name.lower()

@@ -15,7 +15,12 @@ promo-ops qa 80271357                  # review one IO
 promo-ops qa 80271357 96525273         # review several at once
 promo-ops qa 80271357 --out qa.md      # also save a shareable report file (qa.md)
 promo-ops qa 80271357 --only "Tier 4"  # only show placements whose name contains this text
+promo-ops qa 80271357 --all            # also check placements that have already finished running
 ```
+
+By default placements that have **already finished running** (status COMPLETED) are skipped and
+counted at the top of the report — there's nothing left to fix on them, and old seasons were built
+to older rules.
 
 The **IO ID** is the number in the FreeWheel URL for the order, e.g.
 `…/insertion_order_id=80271357…` → `80271357`.
@@ -42,7 +47,7 @@ Each line is tagged:
 |---|---|
 | ❌ **error** | Almost certainly wrong — fix before going live. |
 | ⚠️ **warn** | Likely wrong — check it. |
-| ℹ️ **info** | Couldn't read that field from FreeWheel — verify by hand. |
+| ℹ️ **info** | Worth knowing, or couldn't read that field — verify by hand. (For example: the IO-level time zone is the network default; each placement carries the market's.) |
 | ✅ **ok** | Verified correct. |
 
 The summary line at the bottom says how many errors/warnings were found. If there are **0

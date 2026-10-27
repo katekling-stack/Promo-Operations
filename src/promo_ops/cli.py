@@ -205,7 +205,7 @@ def _cmd_qa(args: argparse.Namespace) -> int:
     auditor = QAAuditor()
     reports = []
     for io_id in args.io:
-        rep = auditor.audit_io(str(io_id))
+        rep = auditor.audit_io(str(io_id), include_completed=bool(getattr(args, "all", False)))
         if args.only:
             rep.findings = [f for f in rep.findings
                             if args.only.lower() in f.placement.lower() or f.placement == "(order)"]
@@ -790,6 +790,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_qa.add_argument("io", nargs="+", help="One or more Insertion Order IDs to review")
     p_qa.add_argument("--only", help="Filter the report to placements whose name contains this text")
     p_qa.add_argument("--out", help="Also write a shareable Markdown report to this path")
+    p_qa.add_argument("--all", action="store_true",
+                      help="Also audit placements that have already finished running (skipped by default)")
     p_qa.set_defaults(func=_cmd_qa)
 
     p_addon = sub.add_parser("addons", help="Build Video Domination + Takeover add-ons from a plan")
