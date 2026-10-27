@@ -50,7 +50,8 @@ KNOWN_HOSTS = Path(os.environ.get("SKY_PAGES_KNOWN_HOSTS", "~/.ssh/known_hosts_s
 MANIFEST = Path(os.environ.get("SKY_PAGES_MANIFEST",
                                "~/.cache/promo-ops/site_manifest.json")).expanduser()
 
-APP_USER = os.environ.get("SKY_PAGES_APP_USER", "site-key-PENDING-set-SKY_PAGES_APP_USER")
+APP_USER = os.environ.get("SKY_PAGES_APP_USER",
+                          "site-key-promo-ops-app-source-24bc1d981b30")
 APP_KEY = Path(os.environ.get("SKY_PAGES_APP_KEY", "~/.ssh/skydance_pages_promo_ops_app")).expanduser()
 APP_MANIFEST = Path(os.environ.get("SKY_PAGES_APP_MANIFEST",
                                    "~/.cache/promo-ops/app_manifest.json")).expanduser()

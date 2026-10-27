@@ -30,7 +30,7 @@ cd "$PROJECT" || { echo "$(date)  ERROR: project folder not found at $PROJECT" >
   python3 -c "from scripts.build_plan_form import build; print('form rebuilt ->', build())" || echo "!! form rebuild failed"
   echo "-- 4/4 publish to the team site (Skydance Pages; needs the VPN)…"
   python3 scripts/publish_site.py || echo "!! site publish did not finish (VPN off?) — everything above is unaffected; it retries on the next run"
-  if [ -n "${SKY_PAGES_APP_USER:-}" ]; then
+  if [ -f "$HOME/.ssh/skydance_pages_promo_ops_app" ]; then
     echo "-- 4b/4 publish the hosted app's source (same fresh data)…"
     python3 scripts/publish_site.py --app || echo "!! app publish did not finish (VPN off?) — retries on the next run"
   fi

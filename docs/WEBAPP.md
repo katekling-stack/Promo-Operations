@@ -29,8 +29,8 @@ Code: `src/promo_ops/webapp.py`. Tests: `tests/test_webapp.py` (no network, fake
 1. **New site** (Source: *Off / storage only*), e.g. `promo-ops-app-source`. This only holds the files.
 2. On that site: **Deploy keys** -> add the public key of a **new** key pair:
    `ssh-keygen -t ed25519 -N "" -f ~/.ssh/skydance_pages_promo_ops_app`, paste the `.pub` line.
-   The portal shows a `site-key-...` account name. Then on your Mac (and put it in your shell profile):
-   `export SKY_PAGES_APP_USER=site-key-...`
+   The portal shows a `site-key-...` account name; it is the default in `scripts/publish_site.py`
+   (override with `SKY_PAGES_APP_USER`).
 3. Connect once so the host key is known (same as the first site, see `SITE_PUBLISHING.md`).
 4. Publish the files: `python3 scripts/publish_site.py --app` (add `--dry-run` first to see the list).
 5. **New App** on a site of its own (Source: *Python, from a site*, pointing at the source site above).
@@ -45,7 +45,7 @@ Code: `src/promo_ops/webapp.py`. Tests: `tests/test_webapp.py` (no network, fake
 ## Keeping it current
 
 `scripts/refresh_data.sh` (7am) republishes the app source after refreshing the data, as long as
-`SKY_PAGES_APP_USER` is set. Pages redeploys when the files change. By hand:
+the app's deploy key (`~/.ssh/skydance_pages_promo_ops_app`) exists on that Mac. Pages redeploys when the files change. By hand:
 `python3 scripts/publish_site.py --app`.
 
 What goes in the bundle (tested): `app.py`, `requirements.txt`, `src/`, `config/`, `data/`, the form,
