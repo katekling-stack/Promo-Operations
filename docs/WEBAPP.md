@@ -9,6 +9,7 @@ stays on the command line for now.
 | Page | What it does |
 |---|---|
 | `/` | two buttons: QA, form |
+| `/review` | **Review a plan:** upload (or paste) a `.plan.json`, or click **Review in tool** on the form, and see exactly what a push would build: placements, tiers, targeting counts, and the Tier 1 audience alerts. Creates nothing and never calls FreeWheel |
 | `/qa` | paste up to 5 IO ids, optional "include finished placements", get the report; "Copy report" copies it as markdown |
 | `/form` | the campaign plan form, served by the app so Suggest works (no API key in the browser) |
 | `/healthz` | "ok" (for the platform's health check) |
@@ -21,6 +22,8 @@ Code: `src/promo_ops/webapp.py`. Tests: `tests/test_webapp.py` (no network, fake
 - Every run is logged as one JSON line with **who** ran it (`X-Pages-User`): `qa_start`, `qa_done`
   (error/warning counts), `qa_failed`, `suggest`, `denied`. The pasted brief text is never logged.
 - Results are shown as plain text only (never built into HTML), with a strict content policy.
+- The home page shows who you're signed in as **and the groups the platform sent**, so you can copy the
+  exact group name (e.g. `Promo Operations Team`) before turning the allow-list on.
 - Optional extra lock: set `PROMO_ALLOWED_GROUPS` (`;`-separated group names). Anyone whose
   `X-Pages-Groups` doesn't include one gets 403. The portal's own access setting is the main lock.
 
@@ -34,7 +37,8 @@ Code: `src/promo_ops/webapp.py`. Tests: `tests/test_webapp.py` (no network, fake
 3. Connect once so the host key is known (same as the first site, see `SITE_PUBLISHING.md`).
 4. Publish the files: `python3 scripts/publish_site.py --app` (add `--dry-run` first to see the list).
 5. **New App** on a site of its own (Source: *Python, from a site*, pointing at the source site above).
-   Size: Medium (QA uses about 170 MB). Entry point is `app.py` (already at the top of the bundle).
+   Size: Medium (QA uses about 170 MB). **Set the maximum instances to 1**: QA runs are tracked in the
+   app's memory, so a second copy of the app would not know about a run started on the first. Entry point is `app.py` (already at the top of the bundle).
 6. **Settings -> secrets** on the App: `FREEWHEEL_USERNAME`, `FREEWHEEL_PASSWORD`,
    `FREEWHEEL_NETWORK_ID` (and `FREEWHEEL_HUB_URL` / `FREEWHEEL_ENVIRONMENT` only if yours differ from
    the defaults). Use a read-only FreeWheel user if one exists. Optional: `ANTHROPIC_API_KEY`

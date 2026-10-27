@@ -602,6 +602,7 @@ datalist{display:none}
   <button class="btn ghost" id="loadBtn" type="button" title="Upload a plan file you downloaded earlier to keep editing it">Load a saved plan</button>
   <button class="btn ghost" id="copyBtn">Copy JSON</button>
   <button class="btn ghost" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
+  <button class="btn ghost" id="reviewBtn" disabled hidden title="Check what this plan would build before it goes to FreeWheel (nothing is created)">Review in tool</button>
   <button class="btn ghost" id="dlBtn" disabled>Download plan file</button>
   <button class="btn primary" id="slackBtn" disabled title="Download the plan file and open the #promo-order-automations-submissions Slack channel to post it">Download &amp; post to Slack</button>
 </div></div>
@@ -1041,7 +1042,7 @@ function validate(){
   const fs=($("#flight_start").value||"").trim(), fe=($("#flight_end").value||"").trim();
   const flightHalf = (!!fs)!==(!!fe);
   const ok = core && anyProduct && durOk && !ioBad && !flightHalf;
-  $("#dlBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
+  $("#dlBtn").disabled = !ok; $("#reviewBtn").disabled = !ok; $("#rowBtn").disabled = !ok; $("#slackBtn").disabled = !ok;
   // Keep the mirror ("Download mirrored plan(s)") button in sync on EVERY field change,
   // not just on market-chip clicks — enabled once the plan is valid AND a market is ticked.
   const mb=$("#mirrorBtn");
@@ -1131,6 +1132,10 @@ function downloadPlan(){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname(); a.click();
 }
 $("#dlBtn").addEventListener("click",()=>{ if(!validate())return; downloadPlan(); });
+// "Review in tool" exists only when this page is served by the team app (its /form address).
+if(/\/form$/.test(location.pathname)){ $("#reviewBtn").hidden=false;
+  $("#reviewBtn").addEventListener("click",()=>{ if(!validate())return;
+    sessionStorage.setItem("promo_plan",JSON.stringify(buildPlan())); location.href="review"; }); }
 // Download the plan file, then open the submissions Slack channel so the CM can drag the
 // just-downloaded file into the message. URL is APP.slackSubmitUrl (set in build_plan_form.py).
 $("#slackBtn").addEventListener("click",()=>{

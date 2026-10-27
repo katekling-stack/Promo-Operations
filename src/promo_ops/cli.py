@@ -152,14 +152,8 @@ def _print_audience_alerts(order: Order) -> None:
     """Print the Tier 1 audience alerts (regional segment missing, nothing regional at all,
     hand-picked segments from another region) once, up front, so they can't be missed in a push
     -- they're otherwise only visible in `promo-ops preview`."""
-    seen: list[str] = []
-    for p in order.placements:
-        for tier in p.targeting.tiers:
-            for d in tier.dimensions:
-                if d.key == "audience_segments" and d.notes:
-                    for line in d.notes.split("\n"):
-                        if line not in seen:
-                            seen.append(line)
+    from .review import audience_alerts
+    seen = audience_alerts(order)
     if seen:
         print("\n⚠️  Tier 1 audience alerts for this plan:", file=sys.stderr)
         for line in seen:

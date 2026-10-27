@@ -35,6 +35,7 @@ MAX_IOS = 5                      # IO ids per run
 MAX_QUEUED = 4                   # runs waiting + running before we say "busy"
 MAX_QA_BODY = 16 * 1024
 MAX_SUGGEST_BODY = 512 * 1024
+MAX_REVIEW_BODY = 2 * 1024 * 1024
 JOB_TTL = 3600                   # seconds a finished result stays available
 MAX_JOBS = 200
 
@@ -227,6 +228,14 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError:
             n = -1
         if n < 0 or n > limit:
+            # read (and discard) a bounded amount first, so the sender sees the 413 instead of a reset
+            left = min(max(n, 0), 16 * 1024 * 1024)
+            while left > 0:
+                chunk = self.rfile.read(min(65536, left))
+                if not chunk:
+                    break
+                left -= len(chunk)
+            self.close_connection = True
             self._send(413, {"error": "That request is too large."})
             return None
         try:
@@ -250,9 +259,11 @@ class Handler(BaseHTTPRequestHandler):
         if not self._allowed():
             return
         if path == "/":
-            return self._send(200, _home_html(self._user()), "text/html; charset=utf-8", _CSP_QA)
+            return self._send(200, _home_html(self._user(), parse_groups(self.headers.get("X-Pages-Groups"))), "text/html; charset=utf-8", _CSP_QA)
         if path == "/qa":
             return self._send(200, QA_PAGE, "text/html; charset=utf-8", _CSP_QA)
+        if path == "/review":
+            return self._send(200, REVIEW_PAGE, "text/html; charset=utf-8", _CSP_QA)
         if path in ("/form", "/index.html"):
             from .suggest_server import FORM
             if not FORM.exists():
@@ -268,13 +279,29 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = self.path.split("?")[0].rstrip("/")
-        if path not in ("/api/qa", "/suggest"):
+        if path not in ("/api/qa", "/api/review", "/suggest"):
             return self._send(404, {"error": "not found"})
         if not self._allowed():
             return
         if path == "/api/qa":
             return self._post_qa()
+        if path == "/api/review":
+            return self._post_review()
         return self._post_suggest()
+
+    def _post_review(self) -> None:
+        body = self._read_json(MAX_REVIEW_BODY)
+        if body is None:
+            return
+        plan = body.get("plan")
+        if not isinstance(plan, dict) or not plan:
+            return self._send(400, {"error": "Send the plan file's contents as {\"plan\": {...}}."})
+        from .review import review_plan
+        result = review_plan(plan)
+        self.server.log({"event": "review", "user": self._user(), "ok": bool(result["ok"]),
+                         "placements": len(result["placements"]), "region": plan.get("region"),
+                         "ts": time.time()})
+        self._send(200, result)
 
     def _post_qa(self) -> None:
         body = self._read_json(MAX_QA_BODY)
@@ -355,13 +382,17 @@ button[disabled]{opacity:.5;cursor:default} button.ghost{background:#fff;color:#
 """
 
 
-def _home_html(user: str) -> str:
-    who = "" if user == "anonymous" else f'<p class="muted">Signed in as {html.escape(user)}</p>'
+def _home_html(user: str, groups=()) -> str:
+    who = ""
+    if user != "anonymous":
+        grp = ", ".join(html.escape(g) for g in groups) or "none"
+        who = f'<p class="muted">Signed in as {html.escape(user)} &middot; groups: {grp}</p>'
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Promo Ad Ops tools</title>
 <style>{_STYLE}</style></head><body><main>
 <h1>Promo Ad Ops tools</h1><p class="sub">Check an order, or plan a campaign. Nothing here changes FreeWheel.</p>
 {who}
+<a class="card" href="review"><b>Review a plan</b>Check a campaign plan before anything is created: what it would build, and any Tier 1 audience alerts.</a>
 <a class="card" href="qa"><b>QA an order</b>Paste an IO id and get the same QA report the command line gives you.</a>
 <a class="card" href="form"><b>Campaign plan form</b>Fill out a plan and use ✨ Suggest targeting. Download the plan file when you're done.</a>
 </main></body></html>"""
@@ -439,6 +470,79 @@ $("go").onclick = async () => {
   } catch(e){ setStatus(""); banner("Couldn't reach the tool. Are you on the VPN?"); }
   busy = false; $("go").disabled = false;
 };
+</script></main></body></html>"""
+
+
+REVIEW_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Review a plan</title>
+<style>""" + _STYLE + """
+details{margin:8px 0;border:1px solid #e3e7f1;border-radius:8px;padding:8px 12px;background:#fbfcff}
+summary{cursor:pointer;font-weight:600} .tier{margin:8px 0 0 10px;font-size:14px}
+.dim{margin:2px 0 0 14px;font-size:13px;color:#2b3446}.note{color:#7a5200;margin-left:28px;font-size:13px;white-space:pre-wrap}
+</style></head><body><main>
+<p class="muted"><a href=".">&larr; All tools</a></p>
+<h1>Review a plan</h1>
+<p class="sub">This shows what pushing the plan would build and any Tier 1 audience alerts.
+<b>Nothing is created in FreeWheel.</b></p>
+<div id="src"></div>
+<div class="row"><input type="file" id="file" accept=".json,application/json">
+<span class="muted">or paste the plan file's contents:</span></div>
+<textarea id="paste" rows="3" placeholder='{"promoted_title": ...}'></textarea>
+<div class="row"><button id="go">Review</button><span class="muted" id="status"></span></div>
+<div id="out"></div>
+<script>
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+function setStatus(t){ $("status").textContent = t; }
+function banner(t){ $("out").prepend(el("div","banner",t)); }
+function render(r){
+  const out = $("out"); out.textContent = "";
+  if (!r.ok){
+    const b = el("div","banner","This plan can't be pushed yet:"); b.appendChild(document.createElement("br"));
+    r.problems.forEach(p => { b.appendChild(el("div", null, "\\u2022 " + p)); }); out.appendChild(b); return;
+  }
+  const s = r.summary, box = el("div","io");
+  box.appendChild(el("h2", null, s.io_name));
+  box.appendChild(el("div","muted",[s.advertiser && ("advertiser: " + s.advertiser), "campaign: " + s.campaign, "brand: " + s.brand, "region: " + s.region, "flight: " + s.flight].filter(Boolean).join(" \\u00b7 ")));
+  box.appendChild(el("div",null,s.placements + " placement(s) would be added to " + s.destination + "."));
+  const pills = el("div"); pills.style.margin = "10px 0";
+  pills.appendChild(el("span","pill " + (r.alerts.length ? "warn" : "ok"), r.alerts.length ? r.alerts.length + " Tier 1 audience alert(s)" : "No Tier 1 audience alerts"));
+  box.appendChild(pills);
+  r.alerts.forEach(a => box.appendChild(el("div","f","\\u26a0 " + a)));
+  out.appendChild(box);
+  r.placements.forEach(p => {
+    const d = el("details"); d.appendChild(el("summary", null, p.name));
+    const meta = ["format: " + p.format, p.priority != null && ("priority: " + p.priority), p.frequency_cap && ("cap: " + JSON.stringify(p.frequency_cap)), p.guaranteed && "guaranteed", p.exclusions.length && ("excludes: " + p.exclusions.join(", "))].filter(Boolean).join(" \\u00b7 ");
+    d.appendChild(el("div","muted",meta));
+    p.tiers.forEach(t => {
+      const tb = el("div","tier"); tb.appendChild(el("b", null, "Tier " + t.id + " \\u2014 " + t.name));
+      t.dimensions.forEach(x => {
+        tb.appendChild(el("div","dim", x.key + ": " + x.count + (x.preview.length ? " [" + x.preview.join(", ") + (x.more ? " +" + x.more + " more" : "") + "]" : "")));
+        if (x.notes) tb.appendChild(el("div","note",x.notes));
+      });
+      d.appendChild(tb);
+    });
+    out.appendChild(d);
+  });
+}
+async function review(plan){
+  $("out").textContent = ""; setStatus("Checking\\u2026"); $("go").disabled = true;
+  try {
+    const res = await fetch("api/review", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({plan})});
+    const d = await res.json();
+    if (!res.ok) banner(d.error || ("Error " + res.status)); else render(d);
+    setStatus("");
+  } catch(e){ setStatus(""); banner("Couldn't reach the tool. Are you on the VPN?"); }
+  $("go").disabled = false;
+}
+function fromText(t){
+  let plan; try { plan = JSON.parse(t); } catch(e){ banner("That isn't a plan file (it should be the .plan.json from the form)."); return; }
+  review(plan);
+}
+$("file").onchange = () => { const f = $("file").files[0]; if (f) f.text().then(fromText); };
+$("go").onclick = () => { const t = $("paste").value.trim(); if (t) fromText(t); else setStatus("Choose a plan file or paste it first."); };
+const saved = sessionStorage.getItem("promo_plan");
+if (saved){ $("src").appendChild(el("p","muted","Reviewing the plan you just filled out in the form.")); sessionStorage.removeItem("promo_plan"); fromText(saved); }
 </script></main></body></html>"""
 
 

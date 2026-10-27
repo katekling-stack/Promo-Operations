@@ -313,3 +313,88 @@ def test_suggest_answers_in_the_shape_the_form_expects(make):
     ev = next(e for e in events if e["event"] == "suggest")
     assert ev["user"] == "kate.kling@paramount.com" and ev["region"] == "UK"
     assert "brief" not in ev                                  # the pasted brief itself is never logged
+
+
+# --- the Review step ----------------------------------------------------------------------------- #
+
+def _plan():
+    from test_qa_noise import UK_PLAN
+    return dict(UK_PLAN)
+
+
+def test_review_page_is_relative_safe_and_never_builds_html(make):
+    srv, _, _ = make()
+    st, hdr, body = call(srv, "GET", "/review")
+    html = body.decode()
+    assert st == 200 and "text/html" in hdr["Content-Type"]
+    assert not re.search(r'(?:href|src|action)="/', html) and 'fetch("/' not in html
+    assert "innerHTML" not in html and "document.write" not in html and "eval(" not in html
+    assert 'fetch("api/review"' in html and "sessionStorage" in html
+    assert "default-src 'none'" in hdr["Content-Security-Policy"]
+
+
+def test_the_home_page_links_to_review(make):
+    srv, _, _ = make()
+    assert 'href="review"' in call(srv, "GET", "/")[2].decode()
+
+
+def test_review_returns_the_preview_and_never_calls_freewheel(make, monkeypatch):
+    from promo_ops.integrations.freewheel import FreeWheelClient
+
+    def boom(*a, **k):
+        raise AssertionError("review must not touch FreeWheel")
+    monkeypatch.setattr(FreeWheelClient, "__init__", boom)
+    srv, aud, events = make()
+    st, _, body = call(srv, "POST", "/api/review", {"plan": _plan()},
+                       {"X-Pages-User": "kate.kling@paramount.com"})
+    data = json.loads(body)
+    assert st == 200 and data["ok"] and data["summary"]["brand"] == "paramount_plus_uk" and data["placements"]
+    assert aud.calls == []
+    ev = next(e for e in events if e["event"] == "review")
+    assert ev["user"] == "kate.kling@paramount.com" and ev["ok"] is True and ev["placements"] > 0
+    assert "Frasier" not in json.dumps(events) and "showlist" not in json.dumps(events)   # no plan content logged
+
+
+def test_review_reports_plan_problems_as_data_not_errors(make):
+    srv, _, _ = make()
+    st, _, body = call(srv, "POST", "/api/review", {"plan": {**_plan(), "promoted_title": ""}})
+    data = json.loads(body)
+    assert st == 200 and data["ok"] is False and any("Promoted Title" in p for p in data["problems"])
+
+
+@pytest.mark.parametrize("payload", [{}, {"plan": "x"}, {"plan": [1]}, {"plan": None}])
+def test_review_needs_a_plan_object(make, payload):
+    srv, _, _ = make()
+    st, _, body = call(srv, "POST", "/api/review", payload)
+    assert st == 400 and "plan" in json.loads(body)["error"].lower()
+
+
+def test_review_refuses_oversized_and_malformed_bodies(make):
+    srv, _, _ = make()
+    assert call(srv, "POST", "/api/review", b"x" * (webapp.MAX_REVIEW_BODY + 10),
+                {"Content-Type": "application/json"})[0] == 413
+    assert call(srv, "POST", "/api/review", b"{nope", {"Content-Type": "application/json"})[0] == 400
+
+
+def test_review_respects_the_group_allow_list(make):
+    srv, _, _ = make(allowed_groups=["Promo Operations Team"])
+    assert call(srv, "POST", "/api/review", {"plan": _plan()})[0] == 403
+    assert call(srv, "GET", "/review")[0] == 403
+    ok = {"X-Pages-Groups": '"Promo Operations Team"'}
+    assert call(srv, "POST", "/api/review", {"plan": _plan()}, ok)[0] == 200
+
+
+def test_home_shows_who_you_are_and_your_groups_so_the_group_name_can_be_checked(make):
+    srv, _, _ = make()
+    st, _, body = call(srv, "GET", "/", headers={"X-Pages-User": "kate@x.com",
+                                                 "X-Pages-Groups": '"Promo Operations Team", "<b>x</b>"'})
+    html = body.decode()
+    assert "kate@x.com" in html and "Promo Operations Team" in html
+    assert "<b>x</b>" not in html and "&lt;b&gt;x&lt;/b&gt;" in html
+
+
+def test_the_form_offers_review_only_when_served_by_the_app():
+    from promo_ops.config import REPO_ROOT
+    form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
+    assert 'id="reviewBtn"' in form and 'sessionStorage.setItem("promo_plan"' in form
+    assert r"/\/form$/" in form                      # hidden everywhere except the app's /form
