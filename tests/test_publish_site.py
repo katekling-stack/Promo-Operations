@@ -113,3 +113,37 @@ def test_the_private_key_contents_are_never_read_by_the_script():
     import re
     src = (REPO_ROOT / "scripts" / "publish_site.py").read_text(encoding="utf-8")
     assert not re.search(r"KEY\.(read|open|write)|open\(\s*KEY|read_(bytes|text)\(\s*KEY", src)
+
+
+# --- the hosted app's own source site ---------------------------------------------------------- #
+
+def test_app_bundle_has_exactly_what_the_app_runs_and_nothing_else(tmp_path):
+    _tree(tmp_path, {
+        "webapp/app.py": "x", "webapp/requirements.txt": "PyYAML",
+        "src/promo_ops/webapp.py": "w", "src/promo_ops/__init__.py": "",
+        "config/brands.yaml": "b", "data/series/a.csv": "s",
+        "templates/campaign-plan/campaign-plan-form.html": "form",
+        "templates/targeting-options/shows.csv": "x", "templates/targeting-options/targeting-catalog.html": "big",
+        "templates/batch/notes.md": "n",
+        "tests/test_x.py": "t", "docs/a.md": "d", "site/index.html": "h", "scripts/x.py": "s",
+        "plans/p.yaml": "p", "examples/e.json": "e", "logs/refresh.log": "l", ".env": "SECRET=1",
+        "refresh.sh": "r", "update.sh": "u", "README.md": "r", "pyproject.toml": "p",
+    })
+    got = {r for r, _ in ps.collect_app(tmp_path)}
+    assert got == {"/app.py", "/requirements.txt", "/src/promo_ops/webapp.py", "/src/promo_ops/__init__.py",
+                   "/config/brands.yaml", "/data/series/a.csv",
+                   "/templates/campaign-plan/campaign-plan-form.html",
+                   "/templates/targeting-options/shows.csv"}
+
+
+@pytest.mark.parametrize("rel", ["config/.env", "data/.secret", "config/id_ed25519", "data/x.pem",
+                                 "src/promo_ops/__pycache__/a.pyc", "data/known_hosts"])
+def test_app_bundle_never_carries_secrets_or_junk(tmp_path, rel):
+    _tree(tmp_path, {"webapp/app.py": "x", rel: "nope"})
+    assert not any(rel.split("/")[-1] in r for r, _ in ps.collect_app(tmp_path))
+
+
+def test_app_target_uses_its_own_account_key_and_manifest():
+    t = ps.target("app")
+    assert t.manifest != ps.target("site").manifest and t.key != ps.target("site").key
+    assert t.user != ps.target("site").user

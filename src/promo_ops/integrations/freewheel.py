@@ -18,6 +18,7 @@ from __future__ import annotations
 import base64
 import contextlib
 import hashlib
+import html
 import json
 import os
 import re
@@ -738,6 +739,15 @@ class FreeWheelClient:
             io = self._invoke("sh_1_1_create-an-insertion-order",
                               campaign_id=int(campaign_id), body=plan["insertion_order_body"])
             io_id = ((io.get("data") or {}).get("insertion_order") or {}).get("id")
+            if not io_id:
+                # Stop here: placements need an IO to live in, and "id 0" placements only add noise.
+                why = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(str(
+                    (io or {}).get("error") or io)))).strip()[:300]
+                raise RuntimeError(
+                    f"FreeWheel couldn't create the Insertion Order under campaign {campaign_id} "
+                    f"(HTTP {(io or {}).get('status_code', '?')}: {why}). Nothing else was created. "
+                    "If it keeps happening, create the IO by hand in FreeWheel and put its id in "
+                    "'Add to existing IO', then push again.")
 
         placements = []
         for body in plan["placement_bodies"]:

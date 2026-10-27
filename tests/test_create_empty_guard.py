@@ -39,3 +39,27 @@ def test_dry_run_still_returns_plan_even_if_empty():
     c = FreeWheelClient.__new__(FreeWheelClient)
     out = c.create_order(order, dry_run=True)
     assert out["dry_run"] is True and out["planned_calls"]["placement_bodies"] == []
+
+
+def test_live_push_stops_when_freewheel_refuses_to_create_the_io():
+    # Regression: FreeWheel answered the create-IO call with a 400, io id came back empty, and the
+    # tool carried on creating every placement against "Insertion Order id 0".
+    order = OrderBuilder().build(support_plan_from_dict(dict(
+        promoted_title="Frasier", region="UK", campaign={"name": "Paramount + - UK"},
+        durations=[30], genres=["Comedy"], showlist=[], flight={"start": "2026-10-01", "end": "2026-11-01"})))
+    assert order.placements
+    c = FreeWheelClient.__new__(FreeWheelClient)
+    c._ensure_io_brand = lambda o, campaign_id=None: None
+    c.resolve_campaign_id = lambda n: "999"
+    calls = []
+
+    def fake_invoke(tool, **kw):
+        calls.append(tool)
+        return {"ok": False, "status_code": 400,
+                "error": "<errors><error>expected element type &lt;insertion_order&gt; but have &lt;IO&gt;</error></errors>"}
+    c._invoke = fake_invoke
+
+    with pytest.raises(RuntimeError, match="couldn't create the Insertion Order") as exc:
+        c.create_order(order, dry_run=False)
+    assert "expected element type" in str(exc.value)
+    assert calls == ["sh_1_1_create-an-insertion-order"]       # no placement was attempted

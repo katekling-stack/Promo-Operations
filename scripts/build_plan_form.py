@@ -1449,7 +1449,7 @@ async function runSuggest(){
   H.textContent=""; R.innerHTML='<span class="hint">✨ Thinking — layering brief, AI &amp; historicals, grounding to real inventory…</span>';
   let res;
   try{
-    res=await fetch("/suggest",{method:"POST",headers:{"Content-Type":"application/json"},
+    res=await fetch("suggest",{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({title,description:desc,brief_text:brief,region})});
   }catch(e){ R.innerHTML='<span style="color:#a00">Couldn\'t reach the helper.</span><br>'+suggestOfflineMsg(); return; }
   if(!res.ok){ let j={}; try{ j=await res.json(); }catch(_){}
