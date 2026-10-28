@@ -55,6 +55,35 @@ the app's deploy key (`~/.ssh/skydance_pages_promo_ops_app`) exists on that Mac.
 What goes in the bundle (tested): `app.py`, `requirements.txt`, `src/`, `config/`, `data/`, the form,
 and the `templates/targeting-options/*.csv` lists. Never `.env`, hidden files, keys, logs or plans.
 
+
+## The daily data refresh as a Pages Job (moves the 7am refresh off the Mac)
+
+`jobs/refresh.py` (code in `src/promo_ops/refresh_job.py`) does what the Mac's 7am job does: sync
+FreeWheel (series, audience items, attributes), rebuild the picker lists and the form. It works in a
+**scratch copy**, checks the result (audience list, series list, segment list and form must all be
+complete), and uploads **only the files that changed** to the app's source site, where the app rebuilds
+on its own. If a check fails it uploads nothing and the app keeps yesterday's data.
+
+One-time setup in the Pages portal (button names follow the Pages docs; tell me if one differs):
+
+1. **Jobs -> Create.** Name it `promo-ops-refresh`. Source: **Python, from a site**, pointing at
+   `promo-ops-app-source` (the same site the app uses). Command: `python jobs/refresh.py`.
+2. **Schedule:** `0 7 * * *` with time zone **America/Denver** (7am Mountain).
+3. **Settings -> secrets** on the *Job* (it has its own, separate from the app's): `FREEWHEEL_USERNAME`,
+   `FREEWHEEL_PASSWORD`, `FREEWHEEL_NETWORK_ID`. Size: Medium.
+4. **Let the Job update the source site.** Open the site `promo-ops-app-source` -> **Access** -> **Give
+   access** -> **An app or a job of Pages** -> pick `promo-ops-refresh` as an **editor**.
+5. **Give the Job its token.** Open the Job -> **Identity** tab -> under **Acting on Pages** press
+   **Mount**. Every run then carries a short-lived token at `/var/run/secrets/pages/token`.
+6. **Run now**, then read the run's log: it ends with either "Published N file(s)" or "the app's data is
+   already current". Anything starting with `!!` says why nothing was published.
+
+Settings the job reads (all optional): `PAGES_API_BASE` (default `https://skydancepages.cloud`),
+`PAGES_SITE` (default `promo-ops-app-source`), `PAGES_TOKEN_FILE`.
+
+Keep the Mac's 7am job as a backup for about a week. After that, remove step 4b (the app publish) from
+`scripts/refresh_data.sh` so two writers don't compete.
+
 ## If something's off
 
 - **"The FreeWheel login isn't set up on this app yet"** -> step 6 secrets are missing.

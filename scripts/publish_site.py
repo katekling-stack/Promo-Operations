@@ -110,6 +110,11 @@ def collect_app(repo: Path = REPO) -> list[tuple[str, Path]]:
         if base.is_dir():
             for rel, path in _walk(base):
                 out.append((f"/{top}/{rel.as_posix()}", path))
+    # the daily refresh Job (jobs/refresh.py) rebuilds the pickers and the form itself
+    for rel in ("jobs/refresh.py", "scripts/build_targeting_options.py", "scripts/build_plan_form.py"):
+        f = repo / rel
+        if f.is_file():
+            out.append((f"/{rel}", f))
     form = repo / "templates" / "campaign-plan" / "campaign-plan-form.html"
     if form.is_file():
         out.append(("/templates/campaign-plan/campaign-plan-form.html", form))
