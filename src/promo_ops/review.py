@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import Any
+from pathlib import Path
+from typing import Any, Optional
 
+from .config import REPO_ROOT
 from .models import Order
 
 
@@ -26,11 +28,33 @@ def audience_alerts(order: Order) -> list[str]:
     return seen
 
 
+AUDIENCE_ITEMS_FILE = REPO_ROOT / "data" / "audience_segments" / "synced_audience_items.csv"
+MIN_AUDIENCE_ITEMS = 1000          # the real list has thousands; far fewer means the sync was degraded
+
+
+def audience_data_problem() -> Optional[str]:
+    """None when the FreeWheel audience list on this machine looks complete; otherwise a message.
+    Without the list no segment can get an id, so every plan would look like it has no audience."""
+    try:
+        with AUDIENCE_ITEMS_FILE.open("r", encoding="utf-8", errors="replace") as fh:
+            rows = max(0, sum(1 for _ in fh) - 1)
+    except OSError:
+        rows = 0
+    if rows >= MIN_AUDIENCE_ITEMS:
+        return None
+    return (f"The audience data on this computer is incomplete ({rows} segments loaded; there are normally "
+            "thousands), so no segment can be matched. This isn't about your plan. Run ./update.sh to restore "
+            "the data, then try again.")
+
+
 def blocking_problems(order: Order) -> list[str]:
     """Reasons this order must NOT be pushed (each once). Today: Tier 1 with no audience at all --
     the plan names shows but none has a segment in the order's region, so Tier 1 would run across
     the whole platform at the top priority. Cleared by requesting a regional segment for at least
     one show."""
+    data = audience_data_problem()
+    if data:
+        return [data]          # say the real cause, not "request a segment"
     problems: list[str] = []
     for p in order.placements:
         for tier in p.targeting.tiers:

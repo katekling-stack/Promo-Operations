@@ -551,9 +551,21 @@ def _cmd_sync_all(args: argparse.Namespace) -> int:
     from .integrations.freewheel import FreeWheelClient
     fw = FreeWheelClient()
     print("Refreshing all FreeWheel data snapshots…")
-    print("  1/3 series (~229k, a few minutes)…"); fw.sync_series()
-    print("  2/3 audience items…");                fw.sync_audience_items()
-    print("  3/3 standard attributes…");           fw.sync_standard_attributes()
+    steps = [("series (~229k, a few minutes)", fw.sync_series), ("audience items", fw.sync_audience_items),
+             ("standard attributes", fw.sync_standard_attributes)]
+    kept: list[str] = []
+    for i, (label, fn) in enumerate(steps, 1):
+        print(f"  {i}/{len(steps)} {label}…")
+        try:
+            fn()
+        except Exception as exc:  # noqa: BLE001 - one bad step must not skip the others
+            kept.append(f"{label}: {exc}")
+    if kept:
+        print("\n⚠️  Some data was NOT updated: KEPT the previous data (the new sync was incomplete or failed):", file=sys.stderr)
+        for k in kept:
+            print(f"   • {k}", file=sys.stderr)
+        print("   Everything else refreshed. Run the sync again later.", file=sys.stderr)
+        return 1
     print("Done. (Segments sync separately via `promo-ops sync-segments` if you use a sheet.)")
     print("Tip: rebuild the form to match — python scripts/build_targeting_options.py && "
           "python -c \"from scripts.build_plan_form import build; build()\"")

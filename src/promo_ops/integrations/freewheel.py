@@ -43,6 +43,19 @@ def _b64url(raw: bytes) -> str:
     return base64.urlsafe_b64encode(raw).decode().rstrip("=")
 
 
+DEGRADED_MIN_ROWS = 200       # only protect lists that are really lists
+DEGRADED_MIN_RATIO = 0.5      # a new snapshot under half the old one is treated as degraded
+
+
+class DegradedSyncError(RuntimeError):
+    """A sync finished without error but returned far less data than the snapshot it would replace."""
+
+
+def _row_count(path: "Path") -> int:
+    with Path(path).open("r", encoding="utf-8", errors="replace") as fh:
+        return max(0, sum(1 for _ in fh) - 1)          # minus the header row
+
+
 @contextlib.contextmanager
 def _atomic_csv_open(path: "Path | str"):
     """Write a synced CSV atomically.
@@ -65,6 +78,16 @@ def _atomic_csv_open(path: "Path | str"):
         tmp_path.unlink(missing_ok=True)
         raise
     else:
+        # A sync can "succeed" yet return almost nothing (FreeWheel degraded, partial pages). That
+        # must not replace a good snapshot: refuse a header-only result, or one under half the
+        # previous size, when the previous file is a real list (Oct 13 and Oct 28 lost the audience
+        # list this way and every plan then came back with no segment ids).
+        new_rows, old_rows = _row_count(tmp_path), (_row_count(path) if path.exists() else 0)
+        if old_rows >= DEGRADED_MIN_ROWS and (new_rows == 0 or new_rows < old_rows * DEGRADED_MIN_RATIO):
+            tmp_path.unlink(missing_ok=True)
+            raise DegradedSyncError(
+                f"{path.name}: the new sync returned {new_rows} rows against {old_rows} before, which looks "
+                "like a degraded FreeWheel response, so I kept the previous file. Run the sync again later.")
         os.replace(tmp_path, path)
 
 
@@ -263,7 +286,9 @@ class FreeWheelClient:
         return list(seen.values())
 
     def get_insertion_order(self, io_id: str) -> dict[str, Any]:
-        return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id))
+        """One IO's FULL record. The plain read omits the delivery block (the order-level frequency
+        cap), so ask for everything (show=all), as get_placement does."""
+        return self._invoke("sh_1_1_get-a-insertion-order", insertion_order_id=int(io_id), show="all")
 
     def find_insertion_order_by_name(self, campaign_id: str, name: str,
                                      max_pages: int = 6, per_page: int = 100) -> Optional[str]:

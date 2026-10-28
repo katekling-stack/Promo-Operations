@@ -82,3 +82,19 @@ def test_the_create_call_itself_refuses_so_no_other_caller_can_skip_the_check():
         c.create_order(order, dry_run=False)
     assert touched == []
     assert c.create_order(order, dry_run=True)["dry_run"] is True          # previewing is still fine
+
+
+def test_empty_audience_data_is_reported_as_a_data_problem_not_as_missing_segments(tmp_path, monkeypatch):
+    empty = tmp_path / "synced_audience_items.csv"
+    empty.write_text("show,segment_name,segment_id,platform,region,source\n", encoding="utf-8")
+    monkeypatch.setattr(review, "AUDIENCE_ITEMS_FILE", empty)
+    problems = review.blocking_problems(_order(UK_PLAN))
+    assert len(problems) == 1
+    assert "audience data" in problems[0].lower() and "update.sh" in problems[0]
+    assert "request" not in problems[0].lower()
+    r = review.review_plan(UK_PLAN)
+    assert r["ok"] is False and "audience data" in r["problems"][0].lower()
+
+
+def test_healthy_audience_data_adds_no_data_problem():
+    assert review.audience_data_problem() is None
