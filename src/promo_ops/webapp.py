@@ -214,12 +214,14 @@ class Handler(BaseHTTPRequestHandler):
         allowed = self.server.allowed_groups
         if not allowed:
             return True
-        mine = set(parse_groups(self.headers.get("X-Pages-Groups")))
+        got = parse_groups(self.headers.get("X-Pages-Groups"))
+        mine = set(got)
         if mine & set(allowed):
             return True
         self.server.log({"event": "denied", "user": self._user(), "path": self.path.split("?")[0],
-                         "ts": time.time()})
-        self._send(403, {"error": "You're not in a group that can use this tool. Ask the tool owner."})
+                         "groups": got, "ts": time.time()})
+        self._send(403, {"error": "You're not in a group that can use this tool. Ask the tool owner.",
+                         "received_groups": got, "required_groups": list(allowed)})
         return False
 
     def _read_json(self, limit: int) -> Optional[dict]:

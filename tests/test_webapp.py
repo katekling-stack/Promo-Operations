@@ -425,3 +425,15 @@ def test_review_page_offers_the_csv_and_neutralises_spreadsheet_formulas(make):
     assert "Download request list" in html and "text/csv" in html
     assert "innerHTML" not in html
     assert r"/^[=+\-@\t\r]/" in html          # a show name starting with = + - @ can't run as a formula
+
+
+def test_the_denied_page_says_which_groups_the_app_actually_received(make):
+    srv, _, events = make(allowed_groups=["Promo Operations Team"])
+    st, _, body = call(srv, "GET", "/qa", headers={"X-Pages-User": "kate@x.com",
+                                                   "X-Pages-Groups": '"Promo Ops", "<i>x</i>"'})
+    data = json.loads(body)
+    assert st == 403
+    assert data["received_groups"] == ["Promo Ops", "<i>x</i>"] and data["required_groups"] == ["Promo Operations Team"]
+    denied = next(e for e in events if e["event"] == "denied")
+    assert denied["groups"] == ["Promo Ops", "<i>x</i>"]
+    assert call(srv, "GET", "/qa")[0] == 403           # no header at all: still denied, with an empty list
