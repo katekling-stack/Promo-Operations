@@ -766,6 +766,21 @@ class FreeWheelClient:
             if blocked:      # checked before the Brand or anything else is created
                 raise RuntimeError("BLOCKED, nothing was created: " + " ".join(blocked))
 
+        # Every excluded video id must exist in FreeWheel -- else the IO gets created and then every
+        # placement fails ("Asset item doesn't exist"), leaving an empty IO behind. Checked before anything.
+        if not dry_run:
+            missing = self._missing_videos(order)
+            if missing:
+                raise RuntimeError(
+                    "Nothing was created. These 'Exclude videos' ids don't exist in FreeWheel: "
+                    + ", ".join(missing) + ". Check each id (FreeWheel > Videos > the video's ID column) "
+                    "and fix it in the form, then push again.")
+
+        # The Brand on an IO must belong to the advertiser that owns the campaign (FreeWheel refuses it
+        # otherwise): swap a wrong-advertiser Brand (e.g. the Adult one picked for a Kids campaign) for
+        # the same title's Brand under the right advertiser, before anything is created.
+        swapped = None if dry_run else self._align_brand_to_campaign(order, campaign_id)
+
         # find-or-create the IO Brand (if the CM picked/typed one that isn't already resolved)
         # BEFORE building the plan, so exclusivity carries it.
         brand_note = None if dry_run else self._ensure_io_brand(order, campaign_id=campaign_id)
@@ -808,6 +823,8 @@ class FreeWheelClient:
         out = {"campaign_id": campaign_id, "insertion_order": io, "placements": placements}
         if brand_note:
             out["brand"] = brand_note
+        if swapped:
+            out["brand_swapped"] = swapped
         return out
 
     def _campaign_advertiser(self, campaign_id: Any) -> Optional[str]:
@@ -819,6 +836,38 @@ class FreeWheelClient:
         camp = ((r or {}).get("data") or {}).get("campaign") or {}
         adv = camp.get("advertiser_id")
         return str(adv) if adv else None
+
+    def _missing_videos(self, order: Order) -> list[str]:
+        """Excluded video ids that FreeWheel says don't exist. A lookup that can't be made (network, 5xx)
+        is NOT counted as missing: we only block on a clear "doesn't exist"."""
+        ids = sorted({str(v).strip() for p in order.placements for v in (getattr(p, "exclude_videos", None) or [])
+                      if str(v).strip()})[:60]
+        missing: list[str] = []
+        for vid in ids:
+            try:
+                res = self._invoke("sh_1_0_show-a-video", video_id=int(vid))
+            except Exception:  # noqa: BLE001 - can't check -> don't block
+                continue
+            if isinstance(res, dict) and res.get("ok") is False and str(res.get("status_code", "")).startswith("4"):
+                missing.append(vid)
+        return missing
+
+    def _align_brand_to_campaign(self, order: Order, campaign_id: Any) -> Optional[dict[str, Any]]:
+        """If the order's resolved Brand belongs to a different advertiser than the campaign, replace it
+        with the same title's Brand under the campaign's advertiser (or clear it, so the find-or-create
+        step makes it there). Returns a note of what changed, else None. Never guesses on unknowns."""
+        if not getattr(order, "brand_id", None) or not campaign_id:
+            return None
+        from ..brands_resolver import BrandResolver
+        resolver = BrandResolver().load()
+        have = resolver.advertiser_of(str(order.brand_id))
+        want = self._campaign_advertiser(campaign_id)
+        if not have or not want or str(have) == str(want):
+            return None
+        old_id = str(order.brand_id)
+        order.brand_id = resolver.find_for_advertiser(order.region, getattr(order, "io_brand", "") or "", str(want))
+        return {"was": old_id, "now": order.brand_id,
+                "why": f"Brand {old_id} belongs to advertiser {have}, but the campaign belongs to {want}."}
 
     def _ensure_io_brand(self, order: Order, campaign_id: Any = None) -> Optional[dict[str, Any]]:
         """Live find-or-create of the IO Brand when the CM picked/typed one that isn't

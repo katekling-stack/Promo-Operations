@@ -186,7 +186,15 @@ def _cmd_push(args: argparse.Namespace) -> int:
               "or the tool. Wait a few minutes and re-run the exact same command.",
               file=sys.stderr)
         return 2
+    except RuntimeError as e:
+        # A refusal we wrote ourselves (FreeWheel said no, or a safety check): the message, not a traceback.
+        print(f"\n❌ {e}", file=sys.stderr)
+        return 2
     print(json.dumps(result, indent=2, ensure_ascii=False))
+    sw = isinstance(result, dict) and result.get("brand_swapped")
+    if sw:
+        print(f"\n🏷️  Brand changed to match the campaign's advertiser: {sw['was']} → {sw['now'] or '(created new)'}. "
+              f"{sw['why']}", file=sys.stderr)
     brand = isinstance(result, dict) and result.get("brand")
     if brand:
         if brand.get("warning"):

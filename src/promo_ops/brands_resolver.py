@@ -27,6 +27,9 @@ class BrandResolver:
         self._index: dict[str, dict[str, str]] = {}
         # (region, kids) -> advertiser_id, for find-or-create of a new brand
         self._advertiser: dict[tuple[str, bool], str] = {}
+        # brand_id -> advertiser_id, and (region, advertiser_id) -> {norm_name: brand_id}
+        self._adv_of: dict[str, str] = {}
+        self._by_adv: dict[tuple[str, str], dict[str, str]] = {}
         self._loaded = False
 
     def load(self) -> "BrandResolver":
@@ -44,6 +47,8 @@ class BrandResolver:
                     self._index.setdefault(region, {})[_norm(name)] = bid
                     if adv:
                         self._advertiser.setdefault((region, kids), adv)
+                        self._adv_of[bid] = adv
+                        self._by_adv.setdefault((region, adv), {})[_norm(name)] = bid
         self._loaded = True
         return self
 
@@ -51,6 +56,25 @@ class BrandResolver:
         """The VCBS (Promo) advertiser id for a region + kids/adult, from the synced data."""
         self._ensure()
         return self._advertiser.get((region, bool(kids)))
+
+    def advertiser_of(self, brand_id: str) -> str | None:
+        """The advertiser a synced brand belongs to (None if the brand isn't in the synced list)."""
+        self._ensure()
+        return self._adv_of.get(str(brand_id))
+
+    def find_for_advertiser(self, region: str, name: str, advertiser_id: str) -> str | None:
+        """The brand for `name` that lives under `advertiser_id`: the same name, or the same title with
+        " - Kids" added / removed before " (Promo)" (Kids and Adult brands of a title differ that way).
+        None when that advertiser has no such brand (the caller then creates it there)."""
+        self._ensure()
+        index = self._by_adv.get((region, str(advertiser_id)), {})
+        base = _norm(name)
+        kids_form = base.replace(" (promo)", " - kids (promo)", 1) if " - kids (promo)" not in base else base
+        adult_form = base.replace(" - kids (promo)", " (promo)", 1)
+        for cand in (base, kids_form, adult_form):
+            if cand in index:
+                return index[cand]
+        return None
 
     def _ensure(self):
         if not self._loaded:
