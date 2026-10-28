@@ -24,6 +24,8 @@ class BrandResolver:
         self.data_file = Path(data_file)
         # region -> list[(brand_name, brand_id)]  and  region -> {norm_name: brand_id}
         self._by_region: dict[str, list[tuple[str, str]]] = {}
+        # (region, kids) -> list[(brand_name, brand_id)]: Kids brands live under the Kids advertiser
+        self._by_kind: dict[tuple[str, bool], list[tuple[str, str]]] = {}
         self._index: dict[str, dict[str, str]] = {}
         # (region, kids) -> advertiser_id, for find-or-create of a new brand
         self._advertiser: dict[tuple[str, bool], str] = {}
@@ -44,6 +46,7 @@ class BrandResolver:
                     kids = str(row.get("kids") or "0").strip() in ("1", "true", "True")
                     adv = (row.get("advertiser_id") or "").strip()
                     self._by_region.setdefault(region, []).append((name, bid))
+                    self._by_kind.setdefault((region, kids), []).append((name, bid))
                     self._index.setdefault(region, {})[_norm(name)] = bid
                     if adv:
                         self._advertiser.setdefault((region, kids), adv)
@@ -80,10 +83,13 @@ class BrandResolver:
         if not self._loaded:
             self.load()
 
-    def brands_for(self, region: str) -> list[str]:
-        """Distinct brand names available for a region, sorted."""
+    def brands_for(self, region: str, kids: bool | None = None) -> list[str]:
+        """Distinct brand names available for a region, sorted. kids=True/False limits it to the Kids /
+        Adult advertiser's brands; None (default) returns both."""
         self._ensure()
-        return sorted({n for n, _ in self._by_region.get(region, [])}, key=str.lower)
+        rows = (self._by_region.get(region, []) if kids is None
+                else self._by_kind.get((region, bool(kids)), []))
+        return sorted({n for n, _ in rows}, key=str.lower)
 
     def resolve(self, region: str, name_or_id: str) -> str | None:
         """A picked brand name (or a raw numeric brand_id) -> brand_id for the region."""

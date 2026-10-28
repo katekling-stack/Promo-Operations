@@ -190,12 +190,15 @@ def _targeting_options() -> dict:
     from promo_ops.brands_resolver import BrandResolver
     br = BrandResolver().load()
     brands = {region: br.brands_for(region) for region in br.regions()}
+    brands_by_kind = {region: {"adult": br.brands_for(region, kids=False), "kids": br.brands_for(region, kids=True)}
+                      for region in br.regions()}
     return {
         "genres": [v for v, _ in bto.genres()],
         "categoriesByRegion": cats,
         "channelsByRegion": chans,
         "ratingsByRegion": {r: v for r, v in ratings.items() if v},
         "brandsByRegion": {r: v for r, v in brands.items() if v},
+        "brandsByKind": {r: v for r, v in brands_by_kind.items() if v["adult"] or v["kids"]},
         "audienceSegments": [n for n, _ in bto.audience_segments()],
         "shows": [n for _, n in bto.shows()],
         **_segment_coverage_data([n for _, n in bto.shows()], [n for n, _ in bto.audience_segments()]),
@@ -392,7 +395,8 @@ datalist{display:none}
       <div id="brandChip"></div>
       <div class="field" style="margin-top:11px"><label>Brand (IO-level, for Custom Exclusivity)</label>
         <div class="chips" data-chips="brand_pick" data-source="brands" data-single="1" data-allow-new="1"><input type="text" placeholder="type to search — or type a new name to create it…"></div>
-        <div class="hint">Pick <b>one</b> existing Brand (region-filtered) — or <b>type a new name</b> (e.g. <code>{Title} (Promo) ({CC})</code>, or <code>… - Kids (Promo) (CC)</code>) and it'll be <b>created on the live push</b> under the advertiser (kids get Industry <b>Rating: G</b>). New adult titles may also need a Global Brand created via the button below.</div></div>
+        <div class="hint" id="brandPickHint" style="color:#a15c00"></div>
+        <div class="hint">Pick <b>one</b> existing Brand (region- and Kids/Adult-filtered) — or <b>type a new name</b> (e.g. <code>{Title} (Promo) ({CC})</code>, or <code>… - Kids (Promo) (CC)</code>) and it'll be <b>created on the live push</b> under the advertiser (kids get Industry <b>Rating: G</b>). New adult titles may also need a Global Brand created via the button below.</div></div>
       <div style="margin-top:11px">
         <a href="BRAND_REQUEST_URL_PLACEHOLDER" target="_blank" rel="noopener"
            style="display:inline-flex;align-items:center;gap:8px;background:#eef4ff;color:var(--blue);
@@ -622,6 +626,15 @@ $("#takeover").innerHTML = '<option value="">None</option>' +
 
 function currentCampaign(){ return APP.campaigns.find(c=>c.name===$("#campaign").value); }
 
+// The Brand list for a region, limited to the selected campaign's kind: Kids campaigns take Kids
+// brands, adult campaigns take Adult brands (FreeWheel refuses a Brand from the other advertiser).
+function brandListFor(app, rc, campaign){
+  const all=(app.brandsByRegion||{})[rc]||[];
+  const kinds=(app.brandsByKind||{})[rc];
+  if(!campaign || !kinds) return all;
+  return campaign.kids ? (kinds.kids||[]) : (kinds.adult||[]);
+}
+
 $("#region").addEventListener("change", ()=>{
   const rc = $("#region").value;
   const cs = APP.campaigns.filter(c=>c.region===rc);
@@ -634,6 +647,16 @@ $("#campaign").addEventListener("change", onCampaign);
 
 function onCampaign(){
   const c = currentCampaign();
+  { // a Brand picked for the other kind of campaign no longer applies: clear it and say so
+    const picked=(state.lists.brand_pick||[])[0], rc=$("#region").value;
+    const hint=$("#brandPickHint");
+    if(hint) hint.textContent="";
+    if(picked && c && ((APP.brandsByRegion||{})[rc]||[]).includes(picked) && !brandListFor(APP, rc, c).includes(picked)){
+      state.lists.brand_pick=[];
+      const box=document.querySelector('[data-chips="brand_pick"]'); if(box && box._render) box._render();
+      if(hint) hint.textContent="Brand cleared: \u201c"+picked+"\u201d is the "+(c.kids?"Adult":"Kids")+" brand. Pick "+(c.kids?"a Kids":"an Adult")+" one for this campaign.";
+    }
+  }
   $("#brandChip").innerHTML = c ? `<span class="derived">Brand: ${c.brand}</span>` : "";
   $("#kidsWrap").classList.toggle("hidden", !(c && c.kids));
   // products
@@ -859,7 +882,7 @@ function sourceList(name){
   if(name==="categories") return (APP.categoriesByRegion||{})[rc]||[];
   if(name==="channels") return (APP.channelsByRegion||{})[rc]||[];
   if(name==="ratings") return (APP.ratingsByRegion||{})[rc]||[];
-  if(name==="brands") return (APP.brandsByRegion||{})[rc]||[];
+  if(name==="brands") return brandListFor(APP, rc, currentCampaign());
   if(name==="states") return (APP.statesByRegion||{})[rc]||[];
   if(name==="dmas") return (APP.dmasByRegion||{})[rc]||[];
   return null;
