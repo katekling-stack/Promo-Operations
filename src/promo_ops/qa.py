@@ -522,14 +522,6 @@ class QAAuditor:
                 out.append(Finding("ok", "freq_cap", "(order)",
                                    f"order-level frequency cap {_keys_human(actual)} matches "
                                    "the region rule."))
-            # IO schedule time zone (informational; placement tz is authoritative)
-            tz = (io.get("schedule") or {}).get("time_zone")
-            exp_tz = FreeWheelClient._region_timezone(region)
-            if tz and exp_tz and tz != exp_tz:
-                out.append(Finding("info", "timezone", "(order)",
-                                   "IO-level time zone is the network default; the tool never sets "
-                                   "it — each placement carries the market's time zone, which is "
-                                   "what delivery follows.", exp_tz, tz))
         return out
 
     # -- placement-level checks ------------------------------------------ #

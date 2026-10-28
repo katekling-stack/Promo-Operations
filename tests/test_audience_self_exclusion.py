@@ -59,7 +59,15 @@ def test_exact_title_only_not_the_franchise_family():
     # Only the exact NCIS segments: the standard one (GL-DDA-1P-SHOW-NCIS) and the US-bucket one
     # (US-DDA-1P_Series_NCIS_us -- the trailing "_us" is the request tool's region code, not part
     # of the title). Never NCIS: Hawaii / Sydney / ...
-    assert sorted(order.promoted_audience_items) == ["1437926", "1521524"]
+    # Other regions' versions of the SAME title (e.g. APAC-DDA-1P_Series_NCIS_au) are also the title
+    # itself, so they are excluded too -- the list grows as FreeWheel adds regional segments.
+    got = set(order.promoted_audience_items)
+    assert {"1437926", "1521524"} <= got
+    import re
+    names = {x.segment_id: x.segment_name for x in
+             AudienceSegmentResolver().load().resolve("NCIS", "USA").records if x.segment_id}
+    for sid in got:
+        assert re.search(r"NCIS(_[a-z]{2})?$", names[sid]), names[sid]      # exactly NCIS, never Hawaii/Sydney/...
 
 
 def test_unresolved_title_has_no_audience_items():

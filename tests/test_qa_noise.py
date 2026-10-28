@@ -105,14 +105,23 @@ def test_active_placements_are_always_audited():
 
 # --- IO-level time zone ------------------------------------------------------------------- #
 
-def test_io_time_zone_is_information_not_a_warning():
+def test_the_io_level_time_zone_is_not_reported_at_all():
+    # The tool never sets the IO's time zone and delivery follows each placement's, so a note about
+    # the network-default IO zone is pure noise on every order. Placement zones are still checked.
     io, pls = _live(UK_PLAN, UK_CID)
     io = {**io, "schedule": {**(io.get("schedule") or {}), "time_zone": "(GMT-05:00) America - New York"}}
     rep = _audit(io, pls)
-    tz = [f for f in rep.findings if f.category == "timezone" and f.placement == "(order)"]
-    assert tz and all(f.level == "info" for f in tz)
-    assert "placement" in tz[0].message.lower()
+    assert not [f for f in rep.findings if f.category == "timezone" and f.placement == "(order)"]
     assert not rep.by_level("warn")
+
+
+def test_a_wrong_placement_time_zone_is_still_caught():
+    io, pls = _live(UK_PLAN, UK_CID)
+    pls = copy.deepcopy(pls)
+    pls[0]["schedule"]["time_zone"] = "(GMT-05:00) America - New York"
+    rep = _audit(io, pls)
+    assert [f for f in rep.findings if f.category == "timezone" and f.placement == pls[0]["name"]
+            and f.level in ("warn", "error")]
 
 
 # --- Tier 2 Pluto channel lines ------------------------------------------------------------- #
