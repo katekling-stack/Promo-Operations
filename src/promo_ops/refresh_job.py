@@ -31,10 +31,12 @@ MIN_AUDIENCE_ROWS = 1000
 MIN_SERIES_ROWS = 100_000
 MIN_SEGMENT_ROWS = 1000
 MIN_FORM_BYTES = 1_000_000
+MIN_BRAND_ROWS = 3000
 
 AUDIENCE_FILE = "data/audience_segments/synced_audience_items.csv"
 SERIES_FILE = "data/series/synced_series.csv"
 SEGMENTS_FILE = "templates/targeting-options/audience-segments.csv"
+BRANDS_FILE = "data/brands/synced_brands.csv"
 FORM_FILE = "templates/campaign-plan/campaign-plan-form.html"
 
 DEFAULT_BASE = "https://skydancepages.cloud"
@@ -90,7 +92,8 @@ def health_problems(root: Path) -> list[str]:
     problems: list[str] = []
     for rel, minimum, label in ((AUDIENCE_FILE, MIN_AUDIENCE_ROWS, "audience list"),
                                 (SERIES_FILE, MIN_SERIES_ROWS, "series list"),
-                                (SEGMENTS_FILE, MIN_SEGMENT_ROWS, "segment picker list")):
+                                (SEGMENTS_FILE, MIN_SEGMENT_ROWS, "segment picker list"),
+                                (BRANDS_FILE, MIN_BRAND_ROWS, "brand list")):
         n = _rows(root / rel)
         if n is None:
             problems.append(f"The {label} is missing ({rel}).")
@@ -145,6 +148,8 @@ def default_runner(cmd, cwd, env) -> int:
 
 STEPS = (
     ("sync FreeWheel (series, audience items, attributes)", lambda: [sys.executable, "-m", "promo_ops.cli", "sync-all"], False),
+    # needs FREEWHEEL_MRM_CLIENT_ID / _SECRET on the Job; without them the Brand list simply keeps its last copy
+    ("sync (Promo) Brands (MRM)", lambda: [sys.executable, "scripts/sync_brands.py"], False),
     ("rebuild the picker lists", lambda: [sys.executable, "scripts/build_targeting_options.py"], True),
     ("rebuild the campaign form", lambda: [sys.executable, "scripts/build_plan_form.py"], True),
 )

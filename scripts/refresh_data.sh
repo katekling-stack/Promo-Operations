@@ -24,6 +24,8 @@ cd "$PROJECT" || { echo "$(date)  ERROR: project folder not found at $PROJECT" >
   echo "==================== refresh started $(date) ===================="
   echo "-- 1/4 sync FreeWheel data (series + audience items + attributes)…"
   python3 -m promo_ops.cli sync-all || echo "!! sync-all failed"
+  echo "-- 1b/4 sync the (Promo) Brand list (needs the MRM login in .env)…"
+  python3 scripts/sync_brands.py || echo "!! brand sync failed (MRM login missing?) — the Brand list keeps its last copy"
   echo "-- 2/4 rebuild targeting-option lists…"
   python3 scripts/build_targeting_options.py || echo "!! build_targeting_options failed"
   echo "-- 3/4 rebuild the campaign form…"

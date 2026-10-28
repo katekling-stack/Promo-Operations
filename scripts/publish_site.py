@@ -111,7 +111,8 @@ def collect_app(repo: Path = REPO) -> list[tuple[str, Path]]:
             for rel, path in _walk(base):
                 out.append((f"/{top}/{rel.as_posix()}", path))
     # the daily refresh Job (jobs/refresh.py) rebuilds the pickers and the form itself
-    for rel in ("jobs/refresh.py", "scripts/build_targeting_options.py", "scripts/build_plan_form.py"):
+    for rel in ("jobs/refresh.py", "scripts/build_targeting_options.py", "scripts/build_plan_form.py",
+                "scripts/sync_brands.py"):
         f = repo / rel
         if f.is_file():
             out.append((f"/{rel}", f))

@@ -17,10 +17,11 @@ def _rows(path: Path, n: int, header="a,b\n"):
     path.write_text(header + "".join(f"{i},x\n" for i in range(n)), encoding="utf-8")
 
 
-def _tree(root: Path, audience=1500, series=120_000, segments=1500, form_bytes=2_000_000):
+def _tree(root: Path, audience=1500, series=120_000, segments=1500, form_bytes=2_000_000, brands=5000):
     _rows(root / "data/audience_segments/synced_audience_items.csv", audience)
     _rows(root / "data/series/synced_series.csv", series)
     _rows(root / "templates/targeting-options/audience-segments.csv", segments)
+    _rows(root / "data/brands/synced_brands.csv", brands)
     form = root / "templates/campaign-plan/campaign-plan-form.html"
     form.parent.mkdir(parents=True, exist_ok=True)
     form.write_bytes(b"x" * form_bytes)
@@ -41,6 +42,7 @@ def test_only_data_lists_and_the_form_are_tracked(tmp_path):
     (tmp_path / "logs/x.log").write_text("x")
     got = set(rj.snapshot(tmp_path))
     assert got == {"data/audience_segments/synced_audience_items.csv", "data/series/synced_series.csv",
+                   "data/brands/synced_brands.csv",
                    "templates/targeting-options/audience-segments.csv",
                    "templates/campaign-plan/campaign-plan-form.html"}
 
@@ -64,7 +66,8 @@ def test_a_healthy_refresh_has_no_problems(tmp_path):
 
 
 @pytest.mark.parametrize("kw,word", [({"audience": 0}, "audience"), ({"series": 5000}, "series"),
-                                     ({"segments": 20}, "segment"), ({"form_bytes": 1000}, "form")])
+                                     ({"segments": 20}, "segment"), ({"form_bytes": 1000}, "form"),
+                                     ({"brands": 50}, "brand")])
 def test_a_degraded_refresh_is_caught(tmp_path, kw, word):
     problems = rj.health_problems(_tree(tmp_path, **kw))
     assert problems and word in " ".join(problems).lower()
@@ -162,7 +165,8 @@ def test_the_steps_run_in_the_scratch_copy_in_order(tmp_path):
     r = _runner()
     _job(tmp_path, r)
     cmds = [" ".join(c[0]) for c in r.calls]
-    assert "sync-all" in cmds[0] and "build_targeting_options.py" in cmds[1] and "build_plan_form.py" in cmds[2]
+    assert "sync-all" in cmds[0] and "sync_brands.py" in cmds[1]
+    assert "build_targeting_options.py" in cmds[2] and "build_plan_form.py" in cmds[3]
     assert all(c[1] == tmp_path / "work" for c in r.calls)
     assert all(str(tmp_path / "work" / "src") in c[2]["PYTHONPATH"] for c in r.calls)
 
@@ -203,3 +207,11 @@ def test_a_refused_upload_fails_the_run(tmp_path):
     put = FakePut(fail_on="synced_series")
     code, _ = _job(tmp_path, _runner(mutate=lambda w: _rows(w / "data/series/synced_series.csv", 125_000)), put)
     assert code == 1
+
+
+def test_the_brand_sync_failing_does_not_stop_the_refresh(tmp_path):
+    # e.g. the MRM credentials aren't set on the Job: Brands keep their previous list, the rest goes on
+    put = FakePut()
+    code, _ = _job(tmp_path, _runner(mutate=lambda w: _rows(w / "data/series/synced_series.csv", 125_000),
+                                     rc_by_step={"sync_brands": 1}), put)
+    assert code == 0 and [c[2] for c in put.calls] == ["synced_series.csv"]

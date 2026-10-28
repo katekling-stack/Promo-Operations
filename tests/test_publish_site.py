@@ -120,7 +120,7 @@ def test_the_private_key_contents_are_never_read_by_the_script():
 def test_app_bundle_has_exactly_what_the_app_runs_and_nothing_else(tmp_path):
     _tree(tmp_path, {
         "webapp/app.py": "x", "webapp/requirements.txt": "PyYAML",
-        "jobs/refresh.py": "j", "scripts/build_targeting_options.py": "b", "scripts/build_plan_form.py": "f",
+        "jobs/refresh.py": "j", "scripts/build_targeting_options.py": "b", "scripts/build_plan_form.py": "f", "scripts/sync_brands.py": "sb",
         "src/promo_ops/webapp.py": "w", "src/promo_ops/__init__.py": "",
         "config/brands.yaml": "b", "data/series/a.csv": "s",
         "templates/campaign-plan/campaign-plan-form.html": "form",
@@ -132,7 +132,7 @@ def test_app_bundle_has_exactly_what_the_app_runs_and_nothing_else(tmp_path):
     })
     got = {r for r, _ in ps.collect_app(tmp_path)}
     assert got == {"/app.py", "/requirements.txt", "/jobs/refresh.py", "/scripts/build_targeting_options.py",
-                   "/scripts/build_plan_form.py", "/src/promo_ops/webapp.py", "/src/promo_ops/__init__.py",
+                   "/scripts/build_plan_form.py", "/scripts/sync_brands.py", "/src/promo_ops/webapp.py", "/src/promo_ops/__init__.py",
                    "/config/brands.yaml", "/data/series/a.csv",
                    "/templates/campaign-plan/campaign-plan-form.html",
                    "/templates/targeting-options/shows.csv"}
