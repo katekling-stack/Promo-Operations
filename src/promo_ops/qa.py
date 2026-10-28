@@ -625,6 +625,9 @@ class QAAuditor:
                         f":{duration} creative attached as named.")]
 
     def _check_freq_cap(self, pv, name, fmt, tier, cfg) -> list[Finding]:
+        # Premium Pre-Roll caps are allowed to differ line to line -- nothing to compare.
+        if pv.guaranteed and "pre-roll" in name.lower():
+            return []
         actual = pv.frequency_cap_keys()
         if actual is None:
             return [Finding("info", "freq_cap", name,
@@ -637,6 +640,8 @@ class QAAuditor:
         try:
             if pv.guaranteed:
                 exp_str = self._tmpl(fmt, cfg).get("frequency_cap") or self.ob._freq_cap(None, fmt)
+            elif tier is None and "(my5)" in name.lower():
+                exp_str = "1 per hr"          # untiered My5 lines (like the "5 - UK" campaign's): 1 per hour
             else:
                 exp_str = self.ob._freq_cap(tier, fmt)
         except Exception:  # noqa: BLE001

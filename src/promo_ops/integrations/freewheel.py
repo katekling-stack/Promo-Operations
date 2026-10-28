@@ -735,6 +735,12 @@ class FreeWheelClient:
             if append_io:
                 self._validate_append_io(append_io, str(campaign_id), order.campaign.get("name", ""))
 
+        if not dry_run:
+            from ..review import blocking_problems
+            blocked = blocking_problems(order)
+            if blocked:      # checked before the Brand or anything else is created
+                raise RuntimeError("BLOCKED, nothing was created: " + " ".join(blocked))
+
         # find-or-create the IO Brand (if the CM picked/typed one that isn't already resolved)
         # BEFORE building the plan, so exclusivity carries it.
         brand_note = None if dry_run else self._ensure_io_brand(order, campaign_id=campaign_id)

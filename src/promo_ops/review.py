@@ -26,6 +26,36 @@ def audience_alerts(order: Order) -> list[str]:
     return seen
 
 
+def blocking_problems(order: Order) -> list[str]:
+    """Reasons this order must NOT be pushed (each once). Today: Tier 1 with no audience at all --
+    the plan names shows but none has a segment in the order's region, so Tier 1 would run across
+    the whole platform at the top priority. Cleared by requesting a regional segment for at least
+    one show."""
+    problems: list[str] = []
+    for p in order.placements:
+        for tier in p.targeting.tiers:
+            for d in tier.dimensions:
+                if getattr(d, "blocking", False):
+                    msg = (f"Tier 1 has no {order.region} audience segment for any show in this plan, so it "
+                           f"would run across the whole platform. Request a {order.region} segment for at "
+                           "least one show (see the request list), then push again.")
+                    if msg not in problems:
+                        problems.append(msg)
+    return problems
+
+
+def segment_requests(shows: list[str], region: str) -> list[dict[str, str]]:
+    """Shows that still need a REGIONAL Tier 1 segment requested: {show, region, status, exists_as}.
+    Status is "no segment anywhere" or "only in another region" (a standard / other-region segment
+    exists but isn't used). Same classification the Tier 1 alerts and `promo-ops dda-requests` use."""
+    from .audience_segments import AudienceSegmentResolver
+    cov = AudienceSegmentResolver().load().region_coverage(list(shows or []), region)
+    rows = [{"show": n, "region": region, "status": "no segment anywhere", "exists_as": ""} for n in cov["none"]]
+    rows += [{"show": f["show"], "region": region, "status": "only in another region",
+              "exists_as": f["using"]} for f in cov["elsewhere"]]
+    return rows
+
+
 def plan_fingerprint(raw: Any) -> str:
     return hashlib.sha256(json.dumps(raw, sort_keys=True, default=str).encode("utf-8")).hexdigest()
 
@@ -49,8 +79,8 @@ def _placement(p) -> dict[str, Any]:
 
 
 def _refused(*problems: str) -> dict[str, Any]:
-    return {"ok": False, "problems": list(problems), "summary": {}, "alerts": [], "placements": [],
-            "plan_hash": None}
+    return {"ok": False, "blocked": False, "problems": list(problems), "summary": {}, "alerts": [],
+            "placements": [], "requests": [], "plan_hash": None}
 
 
 def review_plan(raw: Any) -> dict[str, Any]:
@@ -80,8 +110,9 @@ def review_plan(raw: Any) -> dict[str, Any]:
 
     existing = order.scene_lift_io_id or getattr(order, "existing_io_id", None)
     flight = order.flight
+    blocked = blocking_problems(order)
     return {
-        "ok": True, "problems": [], "plan_hash": plan_fingerprint(raw),
+        "ok": not blocked, "blocked": bool(blocked), "problems": blocked, "plan_hash": plan_fingerprint(raw),
         "summary": {
             "io_name": order.name, "brand": order.brand, "region": order.region,
             "advertiser": order.advertiser.get("name") or order.advertiser.get("name_contains"),
@@ -91,5 +122,6 @@ def review_plan(raw: Any) -> dict[str, Any]:
             "destination": f"existing IO {existing}" if existing else "a new IO",
         },
         "alerts": audience_alerts(order),
+        "requests": segment_requests(plan.showlist, order.region),
         "placements": [_placement(p) for p in order.placements],
     }

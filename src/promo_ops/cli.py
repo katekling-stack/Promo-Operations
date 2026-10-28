@@ -165,6 +165,16 @@ def _cmd_push(args: argparse.Namespace) -> int:
     plan = load_plan(args.plan)
     order = OrderBuilder().build(plan)
     _print_audience_alerts(order)
+    from .review import blocking_problems
+    blocked = blocking_problems(order)
+    if blocked and args.live:
+        for line in blocked:
+            print(f"\n⛔ BLOCKED — nothing was created: {line}", file=sys.stderr)
+        print("\nList of shows to request:  promo-ops dda-requests " + str(args.plan), file=sys.stderr)
+        return 2
+    if blocked:
+        for line in blocked:
+            print(f"\n⛔ This plan would be BLOCKED on a live push: {line}", file=sys.stderr)
     try:
         result = _push_target(order, args.target, args.live)
     except TransientAPIError as e:

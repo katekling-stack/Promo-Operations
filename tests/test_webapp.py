@@ -398,3 +398,30 @@ def test_the_form_offers_review_only_when_served_by_the_app():
     form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
     assert 'id="reviewBtn"' in form and 'sessionStorage.setItem("promo_plan"' in form
     assert r"/\/form$/" in form                      # hidden everywhere except the app's /form
+
+
+# --- request list + block, as the site shows them -------------------------------------------------- #
+
+def test_review_carries_the_request_list_for_shows_without_a_regional_segment(make):
+    from test_qa_noise import UK_PLAN
+    srv, _, _ = make()
+    plan = {**UK_PLAN, "showlist": ["Zzz Not A Real Show"]}
+    data = json.loads(call(srv, "POST", "/api/review", {"plan": plan})[2])
+    assert data["blocked"] is True and data["ok"] is False
+    assert data["requests"] == [{"show": "Zzz Not A Real Show", "region": "UK",
+                                 "status": "no segment anywhere", "exists_as": ""}]
+    assert data["placements"] and data["summary"]["io_name"]        # still shows the whole plan
+
+
+def test_a_fully_covered_plan_has_an_empty_request_list(make):
+    srv, _, _ = make()
+    data = json.loads(call(srv, "POST", "/api/review", {"plan": _plan()})[2])
+    assert data["ok"] is True and data["blocked"] is False and data["requests"] == []
+
+
+def test_review_page_offers_the_csv_and_neutralises_spreadsheet_formulas(make):
+    srv, _, _ = make()
+    html = call(srv, "GET", "/review")[2].decode()
+    assert "Download request list" in html and "text/csv" in html
+    assert "innerHTML" not in html
+    assert r"/^[=+\-@\t\r]/" in html          # a show name starting with = + - @ can't run as a formula

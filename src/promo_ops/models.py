@@ -237,6 +237,8 @@ class TargetingDimension:
     # For audience_segments: the resolved FW segment records (name/id + match info).
     resolved: list[dict[str, Any]] = field(default_factory=list)
     notes: Optional[str] = None
+    # True when this dimension makes the plan unsafe to push (e.g. Tier 1 with no audience at all).
+    blocking: bool = False
 
     @property
     def is_empty(self) -> bool:

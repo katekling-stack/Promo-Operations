@@ -136,8 +136,9 @@ class TargetingEngine:
                     r.get("segment_id") for r in resolved):
                 notes.append(
                     f"Tier 1 would have NO audience targeting for {plan.region} — it would run "
-                    f"across the whole platform. Don't push until a {plan.region} segment exists "
-                    f"for at least one show.")
+                    f"across the whole platform. The push is BLOCKED until a {plan.region} segment "
+                    f"exists for at least one show.")
+                dim.blocking = True
             if notes:
                 dim.notes = "\n".join(notes)
             return dim

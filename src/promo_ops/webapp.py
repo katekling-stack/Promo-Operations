@@ -497,9 +497,10 @@ function setStatus(t){ $("status").textContent = t; }
 function banner(t){ $("out").prepend(el("div","banner",t)); }
 function render(r){
   const out = $("out"); out.textContent = "";
-  if (!r.ok){
-    const b = el("div","banner","This plan can't be pushed yet:"); b.appendChild(document.createElement("br"));
-    r.problems.forEach(p => { b.appendChild(el("div", null, "\\u2022 " + p)); }); out.appendChild(b); return;
+  if (r.problems && r.problems.length){
+    const b = el("div","banner",r.blocked ? "Blocked \\u2014 this plan can't be pushed yet:" : "This plan can't be pushed yet:");
+    r.problems.forEach(p => { b.appendChild(el("div", null, "\\u2022 " + p)); }); out.appendChild(b);
+    if (!r.summary || !r.summary.io_name) return;
   }
   const s = r.summary, box = el("div","io");
   box.appendChild(el("h2", null, s.io_name));
@@ -509,6 +510,11 @@ function render(r){
   pills.appendChild(el("span","pill " + (r.alerts.length ? "warn" : "ok"), r.alerts.length ? r.alerts.length + " Tier 1 audience alert(s)" : "No Tier 1 audience alerts"));
   box.appendChild(pills);
   r.alerts.forEach(a => box.appendChild(el("div","f","\\u26a0 " + a)));
+  if (r.requests && r.requests.length){
+    const dl = el("button","ghost","Download request list (" + r.requests.length + " shows)"); dl.style.marginTop = "12px";
+    dl.onclick = () => downloadRequests(r.requests);
+    box.appendChild(dl);
+  }
   out.appendChild(box);
   r.placements.forEach(p => {
     const d = el("details"); d.appendChild(el("summary", null, p.name));
@@ -524,6 +530,18 @@ function render(r){
     });
     out.appendChild(d);
   });
+}
+function csvCell(v){
+  let t = String(v == null ? "" : v);
+  if (/^[=+\\-@\\t\\r]/.test(t)) t = "'" + t;          // a show name can't run as a spreadsheet formula
+  return '"' + t.replace(/"/g, '""') + '"';
+}
+function downloadRequests(rows){
+  const lines = [["show","region","status","exists_as"].map(csvCell).join(",")]
+    .concat(rows.map(x => [x.show, x.region, x.status, x.exists_as].map(csvCell).join(",")));
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([lines.join("\\r\\n") + "\\r\\n"], {type: "text/csv"}));
+  a.download = "segments-to-request.csv"; a.click();
 }
 async function review(plan){
   $("out").textContent = ""; setStatus("Checking\\u2026"); $("go").disabled = true;
