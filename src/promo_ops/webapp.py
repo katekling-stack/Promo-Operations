@@ -613,6 +613,11 @@ function render(r){
     if (!r.summary || !r.summary.io_name) return;
   }
   const s = r.summary, box = el("div","io");
+  if (lastPlan){
+    const back = el("button","ghost","Back to the form to edit"); back.style.float = "right";
+    back.onclick = () => { sessionStorage.setItem("promo_plan_back", JSON.stringify(lastPlan)); location.href = "form"; };
+    box.appendChild(back);
+  }
   box.appendChild(el("h2", null, s.io_name));
   box.appendChild(el("div","muted",[s.advertiser && ("advertiser: " + s.advertiser), "campaign: " + s.campaign, "brand: " + s.brand, "region: " + s.region, "flight: " + s.flight].filter(Boolean).join(" \\u00b7 ")));
   box.appendChild(el("div",null,s.placements + " placement(s) would be added to " + s.destination + "."));

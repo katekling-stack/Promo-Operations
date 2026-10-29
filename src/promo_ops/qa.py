@@ -634,6 +634,8 @@ class QAAuditor:
                 exp_str = self._tmpl(fmt, cfg).get("frequency_cap") or self.ob._freq_cap(None, fmt)
             elif tier is None and "(my5)" in name.lower():
                 exp_str = "1 per hr"          # untiered My5 lines (like the "5 - UK" campaign's): 1 per hour
+            elif tier is None and self._tmpl(fmt, cfg).get("frequency_cap"):
+                exp_str = self._tmpl(fmt, cfg)["frequency_cap"]    # flat lines with a fixed cap (Kids remnant: 1 per 15)
             else:
                 exp_str = self.ob._freq_cap(tier, fmt)
         except Exception:  # noqa: BLE001

@@ -606,7 +606,7 @@ datalist{display:none}
   <button class="btn ghost" id="loadBtn" type="button" title="Upload a plan file you downloaded earlier to keep editing it">Load a saved plan</button>
   <button class="btn ghost" id="copyBtn">Copy JSON</button>
   <button class="btn ghost" id="rowBtn" disabled title="Copy this campaign as one row, then paste it into the next empty line of the batch Sheet">Copy row for Sheet</button>
-  <button class="btn ghost" id="reviewBtn" disabled hidden title="Check what this plan would build before it goes to FreeWheel (nothing is created)">Review in tool</button>
+  <button class="btn primary" id="reviewBtn" disabled hidden title="Check what this plan would build, then create it in FreeWheel from the next page">Review &amp; create in tool</button>
   <button class="btn ghost" id="dlBtn" disabled>Download plan file</button>
   <button class="btn primary" id="slackBtn" disabled title="Download the plan file and open the #promo-order-automations-submissions Slack channel to post it">Download &amp; post to Slack</button>
 </div></div>
@@ -1157,6 +1157,8 @@ function downloadPlan(){
 $("#dlBtn").addEventListener("click",()=>{ if(!validate())return; downloadPlan(); });
 // "Review in tool" exists only when this page is served by the team app (its /form address).
 if(/\/form$/.test(location.pathname)){ $("#reviewBtn").hidden=false;
+  // On the app, Review & create replaces the terminal workaround (download file / post to Slack).
+  $("#dlBtn").hidden=true; $("#slackBtn").hidden=true;
   $("#reviewBtn").addEventListener("click",()=>{ if(!validate())return;
     sessionStorage.setItem("promo_plan",JSON.stringify(buildPlan())); location.href="review"; }); }
 // Download the plan file, then open the submissions Slack channel so the CM can drag the
@@ -1493,6 +1495,9 @@ async function runSuggest(){
 }
 $("#suggestBtn").addEventListener("click", runSuggest);
 
+// Coming back from the Review page ("Back to the form to edit"): put the plan back in the form.
+(function(){ const back=sessionStorage.getItem("promo_plan_back");
+  if(back){ sessionStorage.removeItem("promo_plan_back"); try{ loadPlan(JSON.parse(back)); }catch(e){} } })();
 validate();
 </script>
 </body></html>

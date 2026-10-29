@@ -437,3 +437,21 @@ def test_the_denied_page_says_which_groups_the_app_actually_received(make):
     denied = next(e for e in events if e["event"] == "denied")
     assert denied["groups"] == ["Promo Ops", "<i>x</i>"]
     assert call(srv, "GET", "/qa")[0] == 403           # no header at all: still denied, with an empty list
+
+
+def test_the_form_button_says_it_can_create_and_the_review_can_go_back_to_edit(make):
+    from promo_ops.config import REPO_ROOT
+    form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
+    assert "Review &amp; create in tool" in form
+    assert 'sessionStorage.getItem("promo_plan_back")' in form and "loadPlan(JSON.parse(back))" in form
+    srv, _, _ = make()
+    html = call(srv, "GET", "/review")[2].decode()
+    assert 'sessionStorage.setItem("promo_plan_back"' in html and 'location.href = "form"' in html
+
+
+def test_on_the_app_the_review_and_create_button_replaces_the_download_and_slack_buttons():
+    from promo_ops.config import REPO_ROOT
+    form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
+    block = form[form.index('if(/\\/form$/.test(location.pathname))'):][:700]
+    assert '$("#dlBtn").hidden=true' in block and '$("#slackBtn").hidden=true' in block
+    assert 'id="dlBtn"' in form and 'id="slackBtn"' in form          # still there for the standalone copy
