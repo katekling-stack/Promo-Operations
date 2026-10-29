@@ -34,3 +34,24 @@ def test_the_same_logos_ship_with_the_team_site():
     from promo_ops.config import REPO_ROOT
     for name in ("skydance-white.svg", "skydance-black.svg"):
         assert (REPO_ROOT / "site" / "logos" / name).read_text() == (webapp.ASSETS / name).read_text()
+
+
+import pytest as _pytest
+
+SITE_PAGES = ["index.html", "create-an-order.html", "qa-checklist.html", "setup-guide.html"]
+
+
+@_pytest.mark.parametrize("page", SITE_PAGES)
+def test_every_team_site_page_has_the_logo_and_the_brand_header(page):
+    from promo_ops.config import REPO_ROOT
+    html = (REPO_ROOT / "site" / page).read_text(encoding="utf-8")
+    assert 'src="logos/skydance-white.svg"' in html and 'alt="Skydance"' in html
+    assert "#12123F" in html and "linear-gradient(135deg,#0A1730" not in html
+
+
+def test_the_form_header_carries_the_logo_as_embedded_data_and_the_brand_colors():
+    from promo_ops.config import REPO_ROOT
+    form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
+    assert 'class="hlogo"' in form and 'src="data:image/svg+xml;base64,' in form
+    assert "--navy:#12123F" in form and "#0B3D91" not in form
+    assert "LOGO_DATA_URI_PLACEHOLDER" not in form

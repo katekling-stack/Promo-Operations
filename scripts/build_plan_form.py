@@ -13,6 +13,7 @@ the live config, so the form can't drift. Run:  python scripts/build_plan_form.p
 """
 from __future__ import annotations
 
+import base64
 import json
 from pathlib import Path
 
@@ -235,6 +236,8 @@ def build(out: Path | None = None) -> Path:
     html = TEMPLATE.replace("/*APP_DATA*/", json.dumps(app_data(), ensure_ascii=False))
     html = html.replace("AUDIENCE_REQUEST_URL_PLACEHOLDER", AUDIENCE_REQUEST_URL)
     html = html.replace("BRAND_REQUEST_URL_PLACEHOLDER", BRAND_REQUEST_URL)
+    logo = (REPO / "src" / "promo_ops" / "assets" / "skydance-white.svg").read_bytes()
+    html = html.replace("LOGO_DATA_URI_PLACEHOLDER", "data:image/svg+xml;base64," + base64.b64encode(logo).decode("ascii"))
     out = out or OUT
     out.write_text(html, encoding="utf-8")
     return out
@@ -245,16 +248,17 @@ TEMPLATE = r"""<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paramount Promo — Campaign Plan</title>
 <style>
-:root{--navy:#0B3D91;--blue:#1F6FEB;--bg:#eef2f9;--card:#fff;--ink:#1a2540;--muted:#6b7690;
- --line:#e2e8f4;--ok:#1a9d63;--no:#d0453b;--chip:#e8eefb;--focus:rgba(31,111,235,.25);}
+:root{--navy:#12123F;--blue:#343468;--bg:#eef2f9;--card:#fff;--ink:#1a2540;--muted:#6b7690;
+ --line:#e2e8f4;--ok:#1a9d63;--no:#d0453b;--chip:#e8eefb;--focus:rgba(52,52,104,.25);}
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,#e9eef8,#eef2f9);color:var(--ink);
  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
 .wrap{max-width:760px;margin:0 auto;padding:0 18px 200px}
 header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;
- padding:16px 18px;box-shadow:0 4px 18px rgba(11,61,145,.28)}
+ padding:16px 18px;box-shadow:0 4px 18px rgba(18,18,63,.28)}
 .hwrap{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
 header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
+.hlogo{height:22px;width:auto;margin-right:6px;padding-right:16px;border-right:1px solid #343468}
 header p{margin:2px 0 0;font-size:12.5px;opacity:.85}
 .spacer{flex:1}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
@@ -337,6 +341,7 @@ datalist{display:none}
 </style></head>
 <body>
 <header><div class="hwrap">
+  <img class="hlogo" alt="Skydance" src="LOGO_DATA_URI_PLACEHOLDER">
   <div><h1>Campaign Plan</h1><p>Paramount Promo — Digital Ad Operations</p></div>
   <div class="spacer"></div>
 </div></header>
