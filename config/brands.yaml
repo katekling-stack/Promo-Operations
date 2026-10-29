@@ -2775,6 +2775,29 @@ brands:
       pictures_remnant: pplus_cbs_pluto_vcbs
       pause_ads: pause_ads
     _cloned_from: paramount_pictures_latam
+  paramount_games_usa:
+    display_name: Paramount Games (USA)
+    advertiser_name_contains:
+    - VCBS
+    - English - USA - Adult
+    template_campaign_id: '95537948'
+    campaign_name: Paramount Games - USA
+    main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    pause_main_site_groups:
+    - '929392'
+    - '932591'
+    - '932592'
+    formats:
+    - pictures_remnant
+    - pause_ads
+    ad_unit_groups:
+      pictures_remnant: pplus_cbs_pluto_vcbs
+      pause_ads: pause_ads
+    _cloned_from: paramount_pictures_usa
+    template_io_id: '95537959'
   pluto_tv_ie:
     display_name: Pluto TV (IE)
     advertiser_name_contains:
