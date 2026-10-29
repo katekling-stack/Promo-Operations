@@ -15,6 +15,10 @@ commands; a NOT_BOOKED draft appears in FreeWheel for review.
 
 ---
 
+> **Update:** orders are now created from the Promo Ops tool (https://promo-ops-tools.skydancepages.cloud/form):
+> fill the form, press **Review & create in tool**, type the IO name, **Create in FreeWheel**. The Terminal steps
+> below are the backup path. See `site/create-an-order.html`.
+
 ## Who does what
 | Step | Who | What |
 |---|---|---|

@@ -88,11 +88,11 @@
     </div>
     <table class="who">
       <tr><th>Role</th><th>Does</th></tr>
-      <tr><td>Campaign Manager</td><td>Fills out the campaign <b>form</b> (one per campaign), posts the plan file
-          to Slack <b>#promo-order-automations-submissions</b>, and marks the Salesforce
+      <tr><td>Campaign Manager</td><td>Fills out the campaign <b>form</b> in the Promo Ops tool (one per campaign), reviews it and
+          <b>creates the draft</b> in FreeWheel, and marks the Salesforce
           <b>Case Status as Ready for Automation</b>; later <b>reviews + books</b> the draft in FreeWheel (the real “go live”)</td></tr>
-      <tr><td>Ad Ops</td><td>Picks the file up from Slack, runs <code>promo-ops</code> to <b>push the draft</b> into
-          FreeWheel, and <b>comments on the Salesforce case</b> once the draft is ready</td></tr>
+      <tr><td>Ad Ops</td><td><b>QA’s the new IO</b> (the tool’s QA page) and <b>comments on the Salesforce case</b>
+          once the draft is ready for review</td></tr>
     </table>
   </div>
 
@@ -102,34 +102,22 @@
 
   <h3><span class="pill a">Path A</span> &nbsp;One campaign</h3>
   <div class="card">
-    <p><b>Campaign Manager</b></p>
+    <p><b>Campaign Manager</b> (no Terminal, no plan file, no Slack)</p>
     <ol>
-      <li><a href="https://drive.google.com/drive/u/0/folders/1dhz0MvGVkBoOdLK2j0jFnCylidlCIYG7" target="_blank" rel="noopener">Open the Campaign Form</a>
-          (Drive folder → open <code>Promo Campaign Automation Form.html</code> → <b>Download</b> → open the downloaded file).
-          <span class="tip">Or a local copy: <code>templates/campaign-plan/campaign-plan-form.html</code>.</span></li>
+      <li>Open the tool’s form: <b>https://promo-ops-tools.skydancepages.cloud/form</b> (VPN on).
+          <span class="tip">Step by step: <a href="../create-an-order.html">How to create an order</a>.</span></li>
       <li>Fill it in — Region, Campaign, Promoted Title, durations, flight, targeting.
-          <span class="tip">Need an audience segment that isn’t in the list yet?
-          <a href="https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec" target="_blank" rel="noopener">Request a new segment ↗</a> — it’ll be applied once created.</span></li>
-      <li>Click <b>Download &amp; post to Slack</b> → it saves the <code>…plan.json</code> to Downloads and opens
-          <b>#promo-order-automations-submissions</b>. Drag the just-downloaded file into the message and send.
-          <span class="tip">(Or use <b>Download plan file</b> and post it to the channel manually.)</span></li>
+          <span class="tip">Need an audience segment that isn’t in the list yet? The review has a
+          <b>Download request list</b> button, or use
+          <a href="https://script.google.com/a/macros/paramount.com/s/AKfycbxknwofz4GTldgrDuXbg3G7Z_ijmz5TIvZPIl8rkHyfjhGMOT-CENRxSO5xFrsbiUOr/exec" target="_blank" rel="noopener">Request a new segment ↗</a>.</span></li>
+      <li>Press <b>Review &amp; create in tool</b>, read the review, type the IO name to confirm, and press
+          <b>Create in FreeWheel</b>. You get the new <b>IO id</b>.</li>
       <li>In the linked <b>Salesforce case</b>, mark the <b>Case Status as Ready for Automation</b>.
-          <span class="tip">Ad Ops comments on the case once the draft is built and ready to review.</span></li>
+          <span class="tip">Ad Ops comments on the case once the draft has been QA’d and is ready to review.</span></li>
     </ol>
-    <p><b>Ad Ops</b> — grab the plan file from <b>#promo-order-automations-submissions</b> (download it to your
-       Downloads folder), then in Terminal:</p>
-<pre><span class="c"># be in the project folder first</span>
-cd ~/Desktop/Promo-Operations
-
-<span class="c"># 1) sanity-check (creates nothing)</span>
-promo-ops preview  ~/Downloads/tulsa-king-usa.plan.json
-
-<span class="c"># 2) push the NOT_BOOKED draft to FreeWheel</span>
-promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --live</pre>
-    <p class="tip">💡 Don’t type long file paths. Type <code>promo-ops push </code> (with a space), then
-       <b>drag the file from Finder onto the Terminal window</b> — it fills in the path — then add
-       <code> --target freewheel --live</code> and press Return.</p>
-    <p>Then tell the CM the draft is in FreeWheel for review.</p>
+    <p><b>Ad Ops</b> — paste the IO id into <b>QA an order</b> on the tool, check for 0 errors, then tell the CM the
+       draft is ready for review.</p>
+    <p style="color:#5b6478;font-size:14px">Terminal (<code>promo-ops preview</code> / <code>push</code>) still works as a backup, but the app is the normal way.</p>
   </div>
 
   <h3><span class="pill b">Path B</span> &nbsp;Many at once (the batch sheet)</h3>

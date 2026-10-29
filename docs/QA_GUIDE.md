@@ -59,11 +59,11 @@ errors**, the structure matches what the tool would have built.
 
 ## Does it have to be in Terminal?
 
-**For now, yes** — it's a command-line tool, run the same way as the build/push commands. It has
-to run on a machine that holds the FreeWheel API login (that login can't live in a web browser),
-which is why it's a terminal command today. A web page where you paste an IO ID is on the
-roadmap for when the tool is hosted on a shared server — the QA engine is already written so it
-can sit behind that page later with no rework.
+**No, not anymore.** Open the Promo Ops tool (https://promo-ops-tools.skydancepages.cloud/, VPN on), go to
+**QA an order**, paste the IO id and run it. It gives the same report as `promo-ops qa`, with a
+**Copy report** button. Nothing to install: the tool signs in to FreeWheel for you.
+
+Terminal (`promo-ops qa <IO id>`) still works if you want it, and the rest of this page describes that.
 
 ---
 

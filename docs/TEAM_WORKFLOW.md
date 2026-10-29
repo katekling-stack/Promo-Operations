@@ -4,17 +4,17 @@ Plain-English, end-to-end. There are **two ways** to submit campaigns. Use **Pat
 one-off; use **Path B** when you have a bunch at once. Both end the same way: a **NOT_BOOKED
 draft** appears in FreeWheel, and a **Campaign Manager reviews and books it**.
 
-> **Key idea:** the terminal always works on a **file** — either one downloaded plan file
-> (Path A) or one downloaded spreadsheet saved as CSV (Path B). You **never paste rows into
-> the terminal.** You paste rows into the *spreadsheet*; the terminal reads the *file*.
+> **Key idea:** for a single campaign (Path A) you now work entirely in the **Promo Ops tool**
+> (https://promo-ops-tools.skydancepages.cloud/form, VPN on): no Terminal, no plan file, no Slack.
+> Batches (Path B) still use a spreadsheet saved as CSV and the terminal.
 
 ---
 
 ## Who does what
 | Role | Does |
 |---|---|
-| **Campaign Manager** | Fills out the campaign **form** (one per campaign), posts the plan file to Slack **#promo-order-automations-submissions**, marks the **Case Status as Ready for Automation**, and later **reviews + books** the draft in FreeWheel (the actual "go live") |
-| **Ad Ops (you)** | Picks the file up from Slack, runs `promo-ops` to **push the draft** into FreeWheel, and **comments on the Salesforce case** once the draft is ready |
+| **Campaign Manager** | Fills out the campaign **form** in the Promo Ops tool (one per campaign), reviews it and **creates the draft**, marks the **Case Status as Ready for Automation**, and later **reviews + books** the draft in FreeWheel (the actual "go live") |
+| **Ad Ops (you)** | **QA's the new IO** on the tool's QA page, and **comments on the Salesforce case** once the draft is ready |
 
 **What "push the draft" means:** the tool only ever creates a **NOT_BOOKED draft** — nothing
 serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
@@ -23,33 +23,19 @@ serves. Booking/going-live is done by the CM in FreeWheel, never by this tool.
 
 ## Path A — one campaign at a time
 
-**Campaign Manager**
-1. Open the form: `templates/campaign-plan/campaign-plan-form.html` (double-click it).
+**Campaign Manager** (step by step: [How to create an order](../site/create-an-order.html))
+1. Open the form: **https://promo-ops-tools.skydancepages.cloud/form** (VPN on).
 2. Fill it out.
-3. Click **Download plan file** → a file lands in Downloads, e.g. `tulsa-king-usa.plan.json`.
-4. Post that plan file to the Slack channel **#promo-order-automations-submissions**.
-5. In the linked **Salesforce case**, mark the **Case Status as Ready for Automation**. (Ad Ops comments on the case once the draft is ready.)
+3. Press **Review & create in tool**, read the review, type the IO name to confirm, and press **Create in FreeWheel**. You get the new **IO id**.
+4. In the linked **Salesforce case**, mark the **Case Status as Ready for Automation**. (Ad Ops comments on the case once the draft is ready.)
 
-**Ad Ops (you)** — grab the plan file from **#promo-order-automations-submissions** (download to your
-Downloads folder), then in Terminal:
-```
-cd /Users/klemley/Desktop/Promo-Operations          # be in the folder first
-promo-ops preview  ~/Downloads/tulsa-king-usa.plan.json                         # 1) eyeball it (creates nothing)
-promo-ops push     ~/Downloads/tulsa-king-usa.plan.json --target freewheel --live   # 2) push the NOT_BOOKED draft
-```
-> **Tip — don't type file paths.** In step 2, type `promo-ops push ` (with a space), then
-> **drag the downloaded file from Finder onto the Terminal window** — it pastes the path for
-> you — then type ` --target freewheel --live` and press Return.
+**Ad Ops (you)** — paste the **IO id** into **QA an order** on the tool (https://promo-ops-tools.skydancepages.cloud/qa)
+and check for **0 errors** while the draft is still NOT_BOOKED. Fix anything flagged ❌, then tell the CM the
+draft is in FreeWheel for review. See [`QA_GUIDE.md`](QA_GUIDE.md) for how to read the report. Orders usually show
+"no active creatives" right after creation; that's expected until the creatives are attached.
 
-**3) QA the draft before the CM books it.** The push prints the new **IO id** — run the
-pre-launch review on it to catch mistakes (ad units, creative duration, time zone, targeting,
-frequency caps, etc.) while it's still NOT_BOOKED:
-```
-promo-ops qa <IO id>                 # e.g. promo-ops qa 80271357
-promo-ops qa <IO id> --out qa.md     # optional: a shareable report to paste in Slack/the case
-```
-Fix anything flagged ❌, then tell the CM the draft is in FreeWheel for review. See
-[`QA_GUIDE.md`](QA_GUIDE.md) for how to read the report.
+> Terminal still works as a backup (`promo-ops preview`, `promo-ops push ... --live`, `promo-ops qa <IO id>`),
+> but the app is the normal way.
 
 ---
 

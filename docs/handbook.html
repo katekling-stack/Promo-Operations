@@ -85,11 +85,11 @@
   <h2 id="flow">How it all fits together</h2>
   <div class="card">
     <div class="flow">
-      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form, posts the plan file to Slack</span></div>
+      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form in the Promo Ops tool, presses Review &amp; create</span></div>
       <div class="arrow">→</div>
-      <div class="step"><b>2 · Ad Ops</b><span>Preview + push the NOT_BOOKED draft</span></div>
+      <div class="step"><b>2 · Promo Ops tool</b><span>Creates the NOT_BOOKED draft in FreeWheel</span></div>
       <div class="arrow">→</div>
-      <div class="step"><b>3 · Ad Ops</b><span>QA the live IO (<code>promo-ops qa</code>)</span></div>
+      <div class="step"><b>3 · Ad Ops</b><span>QA the new IO (the tool's QA page)</span></div>
       <div class="arrow">→</div>
       <div class="step"><b>4 · Campaign Mgr</b><span>Reviews &amp; books it (goes live)</span></div>
     </div>
@@ -144,17 +144,15 @@ cd Promo-Operations</pre></li>
      <span class="pill a">Path A</span> for one campaign, <span class="pill b">Path B</span> for a batch.
      Full details: <code>docs/TEAM_WORKFLOW.md</code>.</p>
 
-  <h3><span class="pill a">Path A</span> &nbsp;One campaign</h3>
+  <h3><span class="pill a">Path A</span> &nbsp;One campaign (no Terminal)</h3>
   <div class="card">
-    <p><b>Campaign Manager</b> — fill the form (<code>templates/campaign-plan/campaign-plan-form.html</code>),
-       click <b>Download plan file</b>, post the <code>…plan.json</code> to Slack
-       <b>#promo-order-automations-submissions</b>, and mark the Salesforce Case <b>Ready for Automation</b>.</p>
-    <p><b>Ad Ops</b> — grab the plan file from Slack, then:</p>
-<pre>cd ~/Desktop/Promo-Operations
-promo-ops preview ~/Downloads/tulsa-king-usa.plan.json                          <span class="c"># 1) eyeball it — creates nothing</span>
-promo-ops push    ~/Downloads/tulsa-king-usa.plan.json --target freewheel --live <span class="c"># 2) push the NOT_BOOKED draft</span></pre>
-    <div class="tip">Don’t type file paths — type <code>promo-ops push </code> then <b>drag the file from Finder
-       onto the Terminal</b>, then add <code>--target freewheel --live</code>.</div>
+    <p>Open <b>https://promo-ops-tools.skydancepages.cloud/form</b> (VPN on), fill the form, and press
+       <b>Review &amp; create in tool</b>. Read the review, type the IO name to confirm, and press
+       <b>Create in FreeWheel</b>. Then paste the new IO id into <b>QA an order</b> to check it.
+       Step by step: <a href="../create-an-order.html">How to create an order</a>.</p>
+    <div class="tip">Nothing to install, no plan file to download or post to Slack. Every create is recorded with who made it.</div>
+    <p style="color:#5b6478;font-size:14px">Still want Terminal? <code>promo-ops preview</code> / <code>promo-ops push</code> still work for Ad Ops
+       (see the <a href="../setup-guide.html">Terminal setup guide</a>), but the app is the normal way now.</p>
   </div>
 
   <h3><span class="pill b">Path B</span> &nbsp;A batch (many at once)</h3>
