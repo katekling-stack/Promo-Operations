@@ -28,9 +28,11 @@ import sys
 import threading
 import time
 import uuid
+from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable, Optional
 
+ASSETS = Path(__file__).resolve().parent / "assets"
 MAX_IOS = 5                      # IO ids per run
 MAX_QUEUED = 4                   # runs waiting + running before we say "busy"
 MAX_QA_BODY = 16 * 1024
@@ -512,22 +514,62 @@ def make_server(host: str, port: int, auditor_factory: Optional[Callable[[], Any
 #  pages (relative links only; results rendered with textContent only)
 # --------------------------------------------------------------------------- #
 _STYLE = """
-body{font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;margin:0;color:#1d2433;background:#f6f7fb}
-main{max-width:920px;margin:0 auto;padding:28px 20px 60px}
-h1{font-size:22px;margin:0 0 4px} p.sub{color:#5b667a;margin:0 0 22px}
-a.card{display:block;background:#fff;border:1px solid #dde2ee;border-radius:10px;padding:16px 18px;margin:0 0 12px;
-text-decoration:none;color:inherit} a.card:hover{border-color:#0064ff} a.card b{display:block;font-size:16px;color:#0050cc}
-textarea,input[type=text]{width:100%;box-sizing:border-box;border:1px solid #c8cfdf;border-radius:8px;padding:10px;font:inherit}
-button{background:#0064ff;color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;cursor:pointer}
-button[disabled]{opacity:.5;cursor:default} button.ghost{background:#fff;color:#0050cc;border:1px solid #c8cfdf}
-.row{display:flex;gap:12px;align-items:center;margin:12px 0} .muted{color:#5b667a;font-size:13px}
-.io{background:#fff;border:1px solid #dde2ee;border-radius:10px;padding:16px 18px;margin:16px 0}
-.io h2{font-size:17px;margin:0 0 2px} .pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:12px;margin-right:6px}
-.error{background:#fde8e8;color:#9b1c1c}.warn{background:#fff3d6;color:#7a5200}.info{background:#e6efff;color:#1d4ba3}
-.ok{background:#e3f6e8;color:#1a6b34} .pl{margin:12px 0 0;font-weight:600;font-size:14px}
-.f{margin:3px 0 0 14px;font-size:14px} .f small{color:#5b667a}
-.banner{background:#fde8e8;color:#9b1c1c;border-radius:8px;padding:10px 14px;margin:12px 0}
+:root{--navy:#12123F;--navy2:#1E1E54;--navy3:#343468;--slate:#465477;--mist:#8C94AB;--gold:#AF9651;--line:#E1E4EE;--paper:#F5F6FA}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:#1B1B3A;font:14.5px/1.65 Gordita,Poppins,Verdana,sans-serif}
+header.top{background:var(--navy);padding:0 28px;display:flex;align-items:center;gap:26px;min-height:66px;flex-wrap:wrap}
+.brandlock{display:flex;align-items:center;gap:16px;text-decoration:none}
+.logo{height:24px;width:auto;display:block}
+.dept{color:#fff;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;border-left:1px solid var(--navy3);padding-left:16px;line-height:1.3}
+header nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+header nav a{color:#C9CEDF;text-decoration:none;padding:23px 14px 20px;font-size:13.5px;border-bottom:3px solid transparent}
+header nav a:hover{color:#fff}
+header nav a.on{color:#fff;border-bottom-color:var(--gold)}
+main{max-width:980px;margin:0 auto;padding:30px 24px 70px}
+h1{font-size:25px;font-weight:500;margin:0 0 4px;color:var(--navy);letter-spacing:-.01em}
+p.sub{color:var(--slate);margin:0 0 22px}
+a{color:var(--navy3)}
+a.card{display:block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:0 0 14px;
+text-decoration:none;color:inherit;box-shadow:0 1px 2px rgba(18,18,63,.06);transition:box-shadow .15s,border-color .15s}
+a.card:hover{border-color:var(--navy3);box-shadow:0 8px 22px rgba(18,18,63,.10)}
+a.card.primary{border-top:3px solid var(--gold)}
+a.card b{display:block;font-size:16px;font-weight:500;color:var(--navy);margin-bottom:3px}
+textarea,input[type=text]{width:100%;border:1px solid #CBD0E0;border-radius:10px;padding:11px 12px;font:inherit;background:#fff}
+textarea:focus,input[type=text]:focus{outline:2px solid var(--navy3);outline-offset:1px;border-color:var(--navy3)}
+button{background:var(--navy2);color:#fff;border:0;border-radius:10px;padding:11px 22px;font:inherit;font-weight:500;cursor:pointer}
+button:hover{background:var(--navy3)} button[disabled]{opacity:.5;cursor:default}
+button.ghost{background:#fff;color:var(--navy2);border:1px solid #CBD0E0} button.ghost:hover{background:#EEF0F7}
+.row{display:flex;gap:12px;align-items:center;margin:12px 0} .muted{color:var(--slate);font-size:13px}
+.io{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:16px 0;box-shadow:0 1px 2px rgba(18,18,63,.05)}
+.io h2{font-size:17px;font-weight:500;margin:0 0 2px;color:var(--navy)}
+.pill{display:inline-block;border-radius:99px;padding:1px 11px;font-size:12px;margin-right:6px}
+.error{background:#FBE9EA;color:#8F1D2C}.warn{background:#FFF4D9;color:#7A5200}.info{background:#E8ECF7;color:#2F3E67}
+.ok{background:#E4F3EA;color:#1E6B3A} .pl{margin:12px 0 0;font-weight:500;font-size:14px}
+.f{margin:3px 0 0 14px;font-size:14px} .f small{color:var(--slate)}
+.banner{background:#FBE9EA;color:#8F1D2C;border-radius:10px;padding:11px 15px;margin:12px 0}
+footer.foot{max-width:980px;margin:0 auto;padding:0 24px 30px;color:var(--mist);font-size:12px}
 """
+
+
+def _read_logo() -> str:
+    try:
+        svg = (ASSETS / "skydance-white.svg").read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+    return svg.replace("<svg ", '<svg class="logo" role="img" aria-label="Skydance" ', 1)
+
+
+_LOGO = _read_logo()
+
+
+def _header(active: str = "") -> str:
+    """The shared top bar: Skydance logo (white, on the dark brand purple) + department name + navigation."""
+    def link(key, href, label):
+        return f'<a href="{href}"' + (' class="on"' if key == active else "") + f">{label}</a>"
+    return ('<header class="top"><a class="brandlock" href=".">' + _LOGO +
+            '<span class="dept">Promo Ad<br>Operations</span></a><nav>' +
+            link("form", "form", "Create an order") + link("review", "review", "Review a plan") +
+            link("qa", "qa", "QA an order") + "</nav></header>")
 
 
 def _home_html(user: str, groups=()) -> str:
@@ -537,19 +579,18 @@ def _home_html(user: str, groups=()) -> str:
         who = f'<p class="muted">Signed in as {html.escape(user)} &middot; groups: {grp}</p>'
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Promo Ad Ops tools</title>
-<style>{_STYLE}</style></head><body><main>
-<h1>Promo Ad Ops tools</h1><p class="sub">Check an order, or plan a campaign. Nothing here changes FreeWheel.</p>
+<style>{_STYLE}</style></head><body>{_header()}<main>
+<h1>Promo Ad Ops tools</h1><p class="sub">Plan a campaign, create the order in FreeWheel, and check it.</p>
 {who}
-<a class="card" href="form"><b>Campaign plan form: create an order</b>Fill out a plan, review what it will build, and create it in FreeWheel. Start here for a new order.</a>
+<a class="card primary" href="form"><b>Campaign plan form: create an order</b>Fill out a plan, review what it will build, and create it in FreeWheel. Start here for a new order.</a>
 <a class="card" href="review"><b>Review a plan</b>Check a plan file before anything is created: what it would build, and any Tier 1 audience alerts.</a>
 <a class="card" href="qa"><b>QA an order</b>Paste an IO id and get the QA report, same as the command line gives.</a>
-</main></body></html>"""
+</main><footer class="foot">Promo Ad Operations &middot; VPN required &middot; questions? Ask Kate</footer></body></html>"""
 
 
 QA_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>QA an order</title>
-<style>""" + _STYLE + """</style></head><body><main>
-<p class="muted"><a href=".">&larr; All tools</a></p>
+<style>""" + _STYLE + """</style></head><body>""" + _header("qa") + """<main>
 <h1>QA an order</h1>
 <p class="sub">Paste the IO id (the number in the FreeWheel URL). Up to 5, one per line or separated by commas.
 A big order can take a few minutes; leave this page open.</p>
@@ -618,7 +659,7 @@ $("go").onclick = async () => {
   } catch(e){ setStatus(""); banner("Couldn't reach the tool. Are you on the VPN?"); }
   busy = false; $("go").disabled = false;
 };
-</script></main></body></html>"""
+</script></main><footer class="foot">Promo Ad Operations &middot; VPN required &middot; questions? Ask Kate</footer></body></html>"""
 
 
 REVIEW_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -627,8 +668,7 @@ REVIEW_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 details{margin:8px 0;border:1px solid #e3e7f1;border-radius:8px;padding:8px 12px;background:#fbfcff}
 summary{cursor:pointer;font-weight:600} .tier{margin:8px 0 0 10px;font-size:14px}
 .dim{margin:2px 0 0 14px;font-size:13px;color:#2b3446}.note{color:#7a5200;margin-left:28px;font-size:13px;white-space:pre-wrap}
-</style></head><body><main>
-<p class="muted"><a href=".">&larr; All tools</a></p>
+</style></head><body>""" + _header("review") + """<main>
 <h1>Review a plan</h1>
 <p class="sub">This shows what pushing the plan would build and any Tier 1 audience alerts.
 <b>Nothing is created in FreeWheel.</b></p>
@@ -757,7 +797,7 @@ $("file").onchange = () => { const f = $("file").files[0]; if (f) f.text().then(
 $("go").onclick = () => { const t = $("paste").value.trim(); if (t) fromText(t); else setStatus("Choose a plan file or paste it first."); };
 const saved = sessionStorage.getItem("promo_plan");
 if (saved){ $("src").appendChild(el("p","muted","Reviewing the plan you just filled out in the form.")); sessionStorage.removeItem("promo_plan"); fromText(saved); }
-</script></main></body></html>"""
+</script></main><footer class="foot">Promo Ad Operations &middot; VPN required &middot; questions? Ask Kate</footer></body></html>"""
 
 
 def main(argv: Optional[list[str]] = None) -> int:
