@@ -34,6 +34,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Iterable, Iterator, NamedTuple
 
@@ -171,6 +172,22 @@ def chunked(items: list, size: int) -> Iterator[list]:
         yield items[i:i + size]
 
 
+def chunked_by_size(items: list[tuple[str, Path]], max_files: int = CHUNK, max_bytes: int = 10_000_000) -> Iterator[list]:
+    """Groups of files for one sftp session: at most `max_files`, and about `max_bytes` in total, so a
+    big refresh isn't one long session that the server may drop. A single huge file goes alone."""
+    group: list = []
+    size = 0
+    for remote, local in items:
+        n = Path(local).stat().st_size
+        if group and (len(group) >= max_files or size + n > max_bytes):
+            yield group
+            group, size = [], 0
+        group.append((remote, local))
+        size += n
+    if group:
+        yield group
+
+
 def sftp_batch(items: list[tuple[str, str]]) -> str:
     """An sftp batch file: create each parent folder (a leading '-' ignores 'already exists'),
     parents first, then put each file keeping its timestamp. No delete/rename/chmod, ever."""
@@ -191,6 +208,18 @@ def _sftp(batch: str, tgt: Target) -> subprocess.CompletedProcess:
            "-o", f"UserKnownHostsFile={KNOWN_HOSTS}", "-o", "ConnectTimeout=20", "-b", "-",
            f"{tgt.user}@{HOST}"]
     return subprocess.run(cmd, input=batch, capture_output=True, text=True, timeout=900)
+
+
+def _sftp_retrying(batch: str, tgt: Target, attempts: int = 3) -> subprocess.CompletedProcess:
+    """Run one sftp session, retrying a dropped connection. VPN-off and key problems aren't retried."""
+    res = _sftp(batch, tgt)
+    for n in range(1, attempts):
+        err = (res.stderr or "") + (res.stdout or "")
+        if res.returncode == 0 or "Could not resolve" in err or "Permission denied" in err:
+            break
+        time.sleep(3 * n)
+        res = _sftp(batch, tgt)
+    return res
 
 
 def load_manifest(path: Path = MANIFEST) -> dict:
@@ -238,10 +267,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     failed = 0
-    for chunk in chunked(todo, CHUNK):
+    for chunk in chunked_by_size(todo):
         batch = sftp_batch([(remote, str(local)) for remote, local in chunk])
         try:
-            res = _sftp(batch, tgt)
+            res = _sftp_retrying(batch, tgt)
         except (OSError, subprocess.TimeoutExpired) as exc:
             print(f"!! sftp could not run: {exc}", file=sys.stderr)
             failed += len(chunk)

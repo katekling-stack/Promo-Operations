@@ -149,3 +149,47 @@ def test_app_target_uses_its_own_account_key_and_manifest():
     t = ps.target("app")
     assert t.manifest != ps.target("site").manifest and t.key != ps.target("site").key
     assert t.user != ps.target("site").user
+
+
+# --- retrying a dropped connection -------------------------------------------------------------------- #
+
+class _Res:
+    def __init__(self, rc, err=""):
+        self.returncode, self.stderr, self.stdout = rc, err, ""
+
+
+def test_a_dropped_connection_is_retried_and_then_succeeds(monkeypatch):
+    results = [_Res(255, "Connection closed"), _Res(255, "Connection closed"), _Res(0)]
+    calls = []
+    monkeypatch.setattr(ps, "_sftp", lambda batch, tgt: calls.append(batch) or results.pop(0))
+    monkeypatch.setattr(ps.time, "sleep", lambda s: None)
+    res = ps._sftp_retrying("batch", ps.target("site"))
+    assert res.returncode == 0 and len(calls) == 3
+
+
+def test_it_gives_up_after_three_tries(monkeypatch):
+    calls = []
+    monkeypatch.setattr(ps, "_sftp", lambda b, t: calls.append(1) or _Res(255, "Connection closed"))
+    monkeypatch.setattr(ps.time, "sleep", lambda s: None)
+    assert ps._sftp_retrying("b", ps.target("site")).returncode == 255 and len(calls) == 3
+
+
+@pytest.mark.parametrize("err", ["ssh: Could not resolve hostname x", "Permission denied (publickey)"])
+def test_vpn_and_key_problems_are_not_retried(monkeypatch, err):
+    calls = []
+    monkeypatch.setattr(ps, "_sftp", lambda b, t: calls.append(1) or _Res(255, err))
+    monkeypatch.setattr(ps.time, "sleep", lambda s: None)
+    assert ps._sftp_retrying("b", ps.target("site")).returncode == 255 and len(calls) == 1
+
+
+def test_uploads_are_split_by_size_so_a_big_batch_does_not_ride_one_session(tmp_path):
+    files = []
+    for i in range(6):
+        f = tmp_path / f"f{i}.bin"
+        f.write_bytes(b"x" * 4_000_000)
+        files.append((f"/d/f{i}.bin", f))
+    chunks = list(ps.chunked_by_size(files, max_files=40, max_bytes=10_000_000))
+    assert [len(c) for c in chunks] == [2, 2, 2]
+    one_big = tmp_path / "big.bin"
+    one_big.write_bytes(b"x" * 30_000_000)
+    assert [len(c) for c in ps.chunked_by_size([("/big.bin", one_big)], 40, 10_000_000)] == [1]
