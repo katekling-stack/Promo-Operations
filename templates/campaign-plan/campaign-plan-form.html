@@ -915,8 +915,9 @@ function downloadPlan(){
 $("#dlBtn").addEventListener("click",()=>{ if(!validate())return; downloadPlan(); });
 // "Review in tool" exists only when this page is served by the team app (its /form address).
 if(/\/form$/.test(location.pathname)){ $("#reviewBtn").hidden=false;
-  // On the app, Review & create replaces the terminal workaround (download file / post to Slack).
-  $("#dlBtn").hidden=true; $("#slackBtn").hidden=true;
+  // On the app, Review & create is the main path. "Download plan file" stays (the team asked for it back);
+  // the Slack post step is retired.
+  $("#slackBtn").hidden=true;
   $("#reviewBtn").addEventListener("click",()=>{ if(!validate())return;
     sessionStorage.setItem("promo_plan",JSON.stringify(buildPlan())); location.href="review"; }); }
 else{ // an old/standalone copy (bookmark, Drive, the old team-site page): point people at the real tool

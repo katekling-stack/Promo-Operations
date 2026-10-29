@@ -449,12 +449,13 @@ def test_the_form_button_says_it_can_create_and_the_review_can_go_back_to_edit(m
     assert 'sessionStorage.setItem("promo_plan_back"' in html and 'location.href = "form"' in html
 
 
-def test_on_the_app_the_review_and_create_button_replaces_the_download_and_slack_buttons():
+def test_on_the_app_review_and_create_is_the_main_button_download_stays_and_slack_goes():
     from promo_ops.config import REPO_ROOT
     form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
     block = form[form.index('if(/\\/form$/.test(location.pathname))'):][:700]
-    assert '$("#dlBtn").hidden=true' in block and '$("#slackBtn").hidden=true' in block
-    assert 'id="dlBtn"' in form and 'id="slackBtn"' in form          # still there for the standalone copy
+    assert '$("#slackBtn").hidden=true' in block              # the Slack post step is retired
+    assert '$("#dlBtn").hidden=true' not in block             # the team wanted Download plan file back
+    assert 'id="dlBtn"' in form and 'id="slackBtn"' in form
 
 
 def test_a_standalone_copy_of_the_form_tells_people_where_the_real_tool_is():
