@@ -508,9 +508,9 @@ def _home_html(user: str, groups=()) -> str:
 <style>{_STYLE}</style></head><body><main>
 <h1>Promo Ad Ops tools</h1><p class="sub">Check an order, or plan a campaign. Nothing here changes FreeWheel.</p>
 {who}
-<a class="card" href="review"><b>Review a plan</b>Check a campaign plan before anything is created: what it would build, and any Tier 1 audience alerts.</a>
-<a class="card" href="qa"><b>QA an order</b>Paste an IO id and get the same QA report the command line gives you.</a>
-<a class="card" href="form"><b>Campaign plan form</b>Fill out a plan and use ✨ Suggest targeting. Download the plan file when you're done.</a>
+<a class="card" href="form"><b>Campaign plan form: create an order</b>Fill out a plan, review what it will build, and create it in FreeWheel. Start here for a new order.</a>
+<a class="card" href="review"><b>Review a plan</b>Check a plan file before anything is created: what it would build, and any Tier 1 audience alerts.</a>
+<a class="card" href="qa"><b>QA an order</b>Paste an IO id and get the QA report, same as the command line gives.</a>
 </main></body></html>"""
 
 

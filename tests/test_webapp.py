@@ -473,3 +473,10 @@ def test_the_form_address_with_a_trailing_slash_goes_to_the_form(make):
     conn.request("GET", "/form/")
     resp = conn.getresponse()
     assert resp.status == 302 and resp.getheader("Location") == "../form" or resp.getheader("Location") == "/form"
+
+
+def test_the_home_page_leads_with_the_form_where_orders_are_created(make):
+    srv, _, _ = make()
+    html = call(srv, "GET", "/")[2].decode()
+    assert html.index('href="form"') < html.index('href="review"') < html.index('href="qa"')
+    assert "create" in html[html.index('href="form"'):html.index('href="review"')].lower()
