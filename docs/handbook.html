@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Promo Ops — Team Handbook</title>
+<title>Promo Ops: Team Handbook</title>
 <style>
   :root{
-    --navy:#0a1f44; --blue:#1a56db; --blue2:#2f6bff; --ink:#1c2434; --muted:#5b6577;
+    --navy:#12123F; --blue:#343468; --blue2:#465477; --ink:#1c2434; --muted:#5b6577;
     --line:#e4e8f0; --bg:#f5f7fb; --card:#ffffff; --ok:#188a4e; --okbg:#e8f6ee;
-    --warn:#9a6a00; --warnbg:#fdf3dc; --err:#b42318; --errbg:#fdeceb; --info:#1a56db; --infobg:#eaf0ff;
+    --warn:#9a6a00; --warnbg:#fdf3dc; --err:#b42318; --errbg:#fdeceb; --info:#343468; --infobg:#E8ECF7;
     --code:#0d1b3e; --codeink:#e8eefc; --chipA:#e8efff; --chipB:#eafbf1; --chipC:#f3ecff;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        color:var(--ink);background:var(--bg);line-height:1.55;font-size:15.5px}
-  header{background:linear-gradient(135deg,var(--navy),#12306e);color:#fff;padding:34px 24px}
+  header{background:var(--navy);color:#fff;padding:34px 24px}
   header .wrap{max-width:960px;margin:0 auto}
   header h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px}
-  header p{margin:0;color:#c9d6f3;font-size:15px}
+  header p{margin:0;color:#C9CEDF;font-size:15px}
   main{max-width:960px;margin:0 auto;padding:26px 24px 60px}
   h2{font-size:19px;margin:34px 0 12px;color:var(--navy);display:flex;align-items:center;gap:10px}
   h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
@@ -59,42 +59,133 @@
          color:var(--navy);font-size:13.5px;font-weight:600}
   .foot{color:var(--muted);font-size:12.5px;margin-top:30px}
   a{color:var(--blue)}
+  header .hlogo{height:26px;width:auto;display:block;margin:0 0 16px}
+  details.term{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 20px;margin:26px 0}
+  details.term>summary{cursor:pointer;font-weight:600;font-size:17px;color:var(--navy);padding:12px 0;list-style:none}
+  details.term>summary::before{content:"\25B8  "} details.term[open]>summary::before{content:"\25BE  "}
+  .mini{font-size:13.5px;color:var(--muted)}
 </style>
 </head>
 <body>
 <header><div class="wrap">
-  <h1>Promo Ops — Team Handbook</h1>
-  <p>Set up the tool · build &amp; push an order · QA it before it goes live.</p>
+  <img class="hlogo" alt="Skydance" src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyODg4IDY4MiI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgICAgZmlsbC1ydWxlOiBldmVub2RkOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8ZyBpZD0iTWluaW9uLWV4cF9oYW5kX3NrZXdfRV93aWRlcl9TX2ZpeF8tMl9jdXJ2ZV9maXgiPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI3NTcuNCw0NjQuNjRsLS43LDEuNjNjLTcuNDYsMTcuMy0xNS4xLDI5LjczLTIyLjczLDM2Ljk2LTguODQsOC42MS0yMS4wNSwxMC4wMS00OC40LDUuNTgtMTYuNDQtMi42Ny00My4zOS01LjAyLTUyLjgyLTEyLTYuNzMtNS4xNC05LjE0LTEzLjc0LTkuMTQtMzQuNjZsLS4xNC0xMTkuODEsNDguOTQsMi44NWMzNi44MSwzLjE4LDM5LjI5LDUuMTIsNDQuMjEsMzQuNjVsLjMyLDEuOTMsMTguODMsMS42My45OC04OS44Mi0xOC44MS0xLjYyLS4zNywxLjg1Yy01LjY1LDI3Ljk0LTcuOTksMjguOTEtNDQuODksMjYuNjVsLTQ5LjIxLTIuOTV2LTEzMy45YzAtOC4yMSw0LjY4LTEyLjMyLDE0LjAzLTEyLjMyaDQzLjM4YzI1LjU5LDAsMzYuOTMsMi43MSw0My4zOCwxMC4zNyw2LjQ2LDcuNjgsMTEuNSwxOS40OCwxNS40MiwzNi4wNWwuNDksMi4wNiwxOC44My0yLjc3LTEuMzctMTkuODFjLTEuNDEtMjAuMjQtMi43NC0zOS4zNi0zLjA3LTQ1Ljk3bC0uMTEtMi4xOWgtMjIxLjEydjE4LjYzbDIuMTIuMTdjMjkuOTksMi40NywzMy4xMywyLjczLDMzLjEzLDM5Ljg4bC4zMiwyNDcuNTRjMCwzNC4zMi0yLjU2LDM2LjU0LTM5LjAyLDM0LjAybC0yLjExLS4xNHYxOC4yMWwyMzEuOTQsMzUuMzMuNDktMS41N2MzLjktMTIuNDUsMTIuNS01MS4yMywxNS4wNy02OC4wMmwuMzMtMi4xNi0xOC4xNy02LjI2LS4wMy0uMDJaTTI0MzEuNDEsNDA4LjI1Yy0yMy4xMyw0My44NC00OC4xMyw2MS40Mi04My42LDU4Ljc3LTYwLjE3LTQuNDktMTAyLjItNzcuMDktMTAyLjItMTU4Ljg1LDAtNjIuNDYsMzAuMzQtMTQzLjM1LDk4LjQ2LTE0My4zNSw0MS45LDAsNjcuNzUsMjAuODMsNzkuMDIsNjMuNjlsLjU1LDIuMSwxOS4yNy0zLjg2LS4yNS0yLjEyYy0yLjQ2LTIwLjcxLTQuOTUtMzcuNy03LjU5LTU1LjY5bC0yLjEtMTQuMzctMS41NS0uMzVjLTEuNy0uMzgtMy44Mi0uOS02LjMtMS41LTE0LjU1LTMuNTYtNDEuNjItMTAuMTctNzEuNTctMTAuMTctMTAyLjQzLDAtMTcwLjMyLDcyLjU3LTE3MC4zMiwxNjkuODIsMCw3NC4zMyw1MC4zLDE2OS4yMywxNjAuNzUsMTc3LjQ3LDI5Ljg3LDIuMjMsNjcuMzktMy4zNiw4MC4xNS01LjI2bDEuMDctLjE2LjQ4LS45NGM3LjA2LTEzLjY2LDE3LjQ2LTQ0LjA5LDI0LjE0LTY2LjU4bC41OS0xLjk4LTE4LjAzLTguNDgtLjk0LDEuOGgtLjAzWk0xOTk5Ljc4LDE2Ny4yOGwyLjE4LjEyYzMxLjgyLDEuNzcsMzguMTgsOS4xOCw0MC4zOSwyNC45N2wuNSw2LjdjLjk5LDEyLjgxLDIuNSw1MS43MSwyLjUsODQuMXY4MS4yOWwtMTY3LjczLTIxNS40NWgtNzcuMzF2MTguMTlsMi4xLjE5YzE5LjQ5LDEuNzMsMjcuNDIsNS4xMSwzNS40LDE1LjA5LDcuNTMsOS4xMiw4LjA3LDE0LjQ4LDguMDcsNDMuNzJ2MTAyLjMxYzAsMzQuNzItMS43Nyw1My45Ny0zLjA2LDY3LjgxbC0uMzcsMy45NGMtMS45NSwxNy40OS0xMC4zMSwyMy4zMi0zNC40MSwyMy45NmwtMi4xNC4wNXYxOC4yM2wxMDguNjUsNC44NHYtMTguMjZsLTIuMTgtLjIyYy0zMC45Ni0zLjEtMzcuMTYtMTAuMTctMzkuMS0yOC41LTEuMDUtMTAuNTUtMy0zMC40Ny0zLTcwLjc4di0xMDcuNWwxNzguMDIsMjM1LjE4LDIxLjQ0Ljk2di0xNzMuOThjMC00MS4wOSwxLjk1LTgxLjE0LDMuNDMtOTIuMjMsMS45NS0xNy41OSw5LjU4LTIzLjM1LDMyLjY1LTI0LjYzbDIuMTgtLjEydi0xOC4yNmgtMTA4LjIxdjE4LjI4Wk0xNjg4LjUxLDM3MS4xNGMtMTcuMjEtNDQuNzYtMzMuODItOTIuNDgtNTAuMTYtMTM3LjgyLTEwLjc4LTI5LjkxLTIxLjU0LTU5Ljc4LTMyLjM3LTg5LjI1bC0uNzMtMS45OS0yMi4wNyw2LjAyLTg5LjI0LDIyNC43NmMtMTQuNDYsMzYuNjItMTkuMywzOS4xNC00Ni4zMiw0Mi41OWwtMS45OS4yNXYxOC4xbDk5LjU5LDEuMDl2LTE4LjEzbC0yLjAyLS4yN2MtMTYuMzgtMi4yLTIzLjc4LTQuNjUtMjYuMzgtOC43My0yLjUxLTMuOTQtMS4xNC0xMC42MiwyLjA5LTIwLjg2LDQuMTUtMTMuODIsOS42LTI4LjQ5LDE0LjE5LTQxLjQzbDIuNzEtNy42Nmg4Mi4zMmM4LjExLDIxLjcsMTQuOSw0MS40MywxOS4xOCw1NC4yOCwyLjg2LDguNTksMy4zMSwxNS40NCwxLjU4LDE4LjIxLTIuMTUsMy40NS04LjU1LDUuNTQtMjIuMDksNy4yMWwtMS45Ni4yNHYxOC4wN2wxMjEuMTEsMy4yM3YtMTguMTJsLTIuMDItLjMxYy0yNS45Ny0zLjk0LTMwLjQzLTEwLjIxLTQ1LjQyLTQ5LjV2LjAyWk0xNTQ0LjM4LDMxMi4xMmM1LjI0LTE0LjEyLDEwLjQtMjguNDcsMTUuNjEtNDIuOTIsNS44Mi0xNi4xOSwxMS42OS0zMi41LDE3Ljc2LTQ4LjcybDMxLjQ0LDkxLjY0aC02NC44MSwwWk0xMzY3LjgyLDE4Ni42N2MtMjYuNTctMjUuMzMtNjcuMTctMzcuNjUtMTI0LjExLTM3LjY1aC0xMjguNjl2MTguNjNsMi4xMi4xN2MyOS44NiwyLjQ2LDMzLjEzLDMuOTMsMzMuMTMsMzkuODh2MTcwLjY5YzAsMzUuNjktMy4xMyw0MC4wMi0zNy4wMSw0My45OWwtMi4xMS4yNXYxOC4ybDEwOS43Ny0zLjVjNTUuNjQtMS43Nyw5OS42NS0xMy4zOSwxMzAuOC0zNy40LDM1LjQ3LTI3LjEsNTQuMjEtNzAuMjMsNTQuMjEtMTE5LjUxLDAtMzcuMzQtMTMuNTQtNzAuNjQtMzguMTEtOTMuNzd2LjAyWk0xMjQyLjQzLDQxNC4zOWMtMjguODkuOTItMzcuMjQtOC43Ni0zNy4yNC0zOS4wMXYtMTc3LjU4YzAtMTMuMjUsMS4xNC0xOS41NSwzLjk0LTIyLjM2LDMuMDEtMi42NCwxMS45OS01LjQ1LDI4LjE0LTUuNDUsMjguNjYsMCw1MS4zOCw3LjU2LDY5LjUsMjMuMTcsMjQuNjYsMTkuNTgsMzguMjUsNTMuMzMsMzguMjUsOTUuMDIsMCw3NC42Ny00MC4yNywxMjQuMjMtMTAyLjU5LDEyNi4yMmgwWk05MzAuNTEsMTY3LjZsMi4wNi4yMmMxNi42NCwxLjc4LDI0LjMxLDQuMDEsMjYuNDcsNy43LDEuODEsMy4xLjEyLDguNDUtMy40MywxNi42Ny05LjM3LDIyLjktMjguNzYsNjYuMTMtNDEuMyw5Mi4xM2wtMy40Niw2LjQ3LTMuNzEtNi43Yy0xNS44NS0yOS45LTMzLTY3LjQyLTQ2LjY0LTk1LjUzLTMuMjktNi44Ny01LjExLTEwLjkyLTMuNzktMTMuNDYsMS42NC0zLjE2LDguNjQtNS40MSwyMi42OC03LjNsMi0uMjd2LTE4LjUzaC0xMTkuODJ2MTguNTVsMi4wMi4yNWMyMy44NiwyLjk0LDMwLjQ0LDYuNjEsNDUuNTYsMzQuOTksMjIuMzMsNDMuMjksMzkuOTEsODAuNTIsNTMuMjUsMTA1LjksNS4wMSwxMC4wNCw2LjYzLDE0LjA4LDYuNjMsMjMuNXY2Mi45N2MwLDM1Ljk1LTIuNTMsMzguOC0zOC42OSw0My43M2wtMi4xNS4yOXYxOC4yM2wxMzcuNDUtOS4xNHYtMTguMjJsLTIuMTItLjAzYy0zOC4xMy0uNDMtNDAtMi4yMy00MC0zOC41di02NC41MWMwLTEyLjE1LDEuNTktMTYuODMsNy40Ny0yNy43NywyMS4xNy00MC42MSwzMy4zNS02Ni43OCw1MC4yMi05Ny4yNSwxNC4xMS0yNS44NSwyMS44OS0zMS4yNCw0OS44Ny0zNC4yMWwyLjA2LS4yMnYtMTguNTloLTEwMi42MnYxOC42M1pNNjUzLjM2LDQyMy44OWMtNDEuMTItNTUuNjktNjYuMjQtOTAuMTEtOTQuNjItMTMzLjc0bDcuMDYtOS4wMWMxNy41Ni0yMi41Miw0MC4wOS01NC42Nyw1OC41OC03Ny40NSwyMS40LTI1LjYzLDM4Ljk3LTMzLjI3LDY3LjQ0LTM1Ljg3bDIuMS0uMTl2LTE4LjYyaC0xMTIuOTR2MTguNTlsMTAuMTgsMS4wOGM4LjcxLDEuMTEsMTMuNjIsMi44NiwxNC41Nyw1LjE5LDEuMjEsMi45Ny0yLjIxLDEyLjc4LTYuNjUsMTkuMzktMTcuNjIsMjYuODktNDEuNDgsNjMuMTYtNjUuMTIsOTAuMDktOS43MiwxMS4yNi0xOC45MiwxNi45OC0yNy4wNSwyMS40OXYtOTAuMzhjMC0zNi43NywzLjI4LTQ0LjE4LDMzLjEzLTQ2LjY0bDIuMTItLjE3di0xOC42M2gtMTI1LjQxdjE4LjY0bDIuMTMuMTdjMzEuODksMi40OSwzNC44NSw5LjY5LDM0Ljg1LDQ2LjY0djIyMS40OGMwLDM2LjEyLTMuODEsMzguMy0zMy41OSw0NC40NWwtMi4wOS40M3YxOC4xOGwxMjYuNy0xNHYtMTguMTlsLTIuMS4wNWMtMzIuMi42Ni0zNS43My0uNDgtMzUuNzMtMzYuNzl2LTEwNy4wMmguMjFjNC42MiwwLDkuOTQsMy4wOSwxNy41NiwxNC4yOSwzNC41NSw1MS44OSw3Mi40NiwxMDcuMzksOTUuMDIsMTM4LjA1bC42OS43OSw4Mi41LTcuMjh2LTE4LjA5bC0xLjk5LS4xYy0xNi45Mi0uODctMjkuMjMtMy4xMy00Ny41NC0yNi44M2gtLjAxWk0yMzUuMDEsMzA5LjIyYy00MC4yOS0yNi4yNC02My43NC00Ny4wNC02My43NC03Ny43NSwwLTI4Ljk1LDE2LjgzLTY3LjI4LDUwLjcxLTY3LjUxLDM5LjQ5LS4yNyw1NS41NSwzMC4xOSw2NS4xMyw1Ni40OWwuNzMsMi4wMSwxOS4yOC0zLjkyLS4zLTIuMDljLTEuNDItOS43Ni0yLjcyLTE4LjM1LTMuODktMjYuMS0yLjA3LTEzLjc0LTMuNzMtMjQuNzktNS0zNC45N2wtLjE5LTEuNTEtNC4xMi0xLjExYy0xMy4xNy0zLjU3LTM2LjQzLTEwLjItNjMuNzUtMTAuMi03MC4wNSwwLTExMS4yOSw1My4xMS0xMTEuMjksMTExLjMzLDAsNTQuNCw0NS41OSw4MS44MSw4NS44NywxMDUuNjUsNDIuNjQsMjUuMzgsNjQuMzcsNTcuOTksNjQuMzcsODkuMjQsMCwzMy42LTI0LjQ3LDYwLjc0LTU1Ljc0LDY0LjUzLTU2LjIsNi44MS03OC45OS01Ny45NC04MS40LTY1LjAxbC0uNzMtMi4xNS0xOC41NCw4LjEyLjI4LDEuOTFjMy4yNCwyMi4yLDguOTIsNTguOTksMTMuNjIsNjkuMzVsLjM3LjguOTMuMjljNi43NCwyLjEyLDE0LjI5LDUuMzUsMjYuMzcsNy40MywxNi4xOSwzLjM0LDMyLDUuMjEsNDkuNzIsMy4wNiw2OS4xMi01LjEsMTI0LjE1LTUxLjgzLDEyMi44Mi0xMTkuMDEtMS4xMi01Ni41Ni01MS44Ny04Mi41OS05MS41Mi0xMDguOXYuMDJaIi8+CiAgPC9nPgogIDxnIGlkPSJMSU5FX3ZlY3RvciI+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjY4OS45OCw1OTNjLTQxNC43My02My4wNy03NjUuNjYtMTAzLjY0LTEyNDYuNjYtMTAzLjY0cy04MzEuOTMsNDAuNTYtMTI0Ni42NiwxMDMuNjZjLS4zMi4wNy0uMjUuMzksMCwuMzUsNDE0LjczLTYzLjEsODAyLjEyLTg3LjM2LDEyNDYuNjctODcuMzUsNDQ0LjU1LDAsODMxLjk0LDI0LjI4LDEyNDYuNjcsODcuMzUuMjUuMDQuMjctLjMtLjAxLS4zOGgtLjAxWiIvPgogIDwvZz4KPC9zdmc+Cg==">
+  <h1>Promo Ops: Team Handbook</h1>
+  <p>Create an order, check it, and get it live. No installs needed.</p>
 </div></header>
 
 <main>
 
   <div class="callout ok">
-    <b>The one thing to remember:</b> the tool only ever creates a <b>NOT_BOOKED draft</b> — nothing serves
-    until a Campaign Manager <b>books</b> it in FreeWheel. Every command below is safe in that sense.
+    <b>The one thing to remember:</b> the tool only ever creates a <b>NOT_BOOKED draft</b>. Nothing serves
+    until a Campaign Manager <b>books</b> it in FreeWheel.
   </div>
 
   <div class="toc">
     <a href="#flow">The flow</a>
-    <a href="#setup">1 · Set up</a>
-    <a href="#push">2 · Build &amp; push</a>
-    <a href="#qa">3 · QA</a>
-    <a href="#ref">Command reference</a>
+    <a href="#create">1 · Create an order</a>
+    <a href="#messages">If you see a message</a>
+    <a href="#qa">2 · QA an order</a>
+    <a href="#terminal">For Ad Ops: Terminal</a>
   </div>
 
   <h2 id="flow">How it all fits together</h2>
   <div class="card">
     <div class="flow">
-      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form in the Promo Ops tool, presses Review &amp; create</span></div>
+      <div class="step"><b>1 · Campaign Mgr</b><span>Fills the form in the Promo Ops tool</span></div>
       <div class="arrow">→</div>
-      <div class="step"><b>2 · Promo Ops tool</b><span>Creates the NOT_BOOKED draft in FreeWheel</span></div>
+      <div class="step"><b>2 · Campaign Mgr</b><span>Reviews the plan, then creates the draft in FreeWheel</span></div>
       <div class="arrow">→</div>
-      <div class="step"><b>3 · Ad Ops</b><span>QA the new IO (the tool's QA page)</span></div>
+      <div class="step"><b>3 · Ad Ops</b><span>QA’s the new IO on the tool’s QA page</span></div>
       <div class="arrow">→</div>
       <div class="step"><b>4 · Campaign Mgr</b><span>Reviews &amp; books it (goes live)</span></div>
     </div>
+    <p class="mini">Everything happens in the browser at <b>promo-ops-tools.skydancepages.cloud</b>. VPN on. Bookmark the form: <b>promo-ops-tools.skydancepages.cloud/form</b>.</p>
   </div>
 
+  <h2 id="create"><span class="n">1</span> Create an order <span class="mini">(Campaign Managers)</span></h2>
+  <div class="card">
+    <ol>
+      <li><b>Open the form:</b> <a href="https://promo-ops-tools.skydancepages.cloud/form">promo-ops-tools.skydancepages.cloud/form</a>.
+          <span class="tip">If you see a yellow “This is an old copy of the form” bar, use the link in it.</span></li>
+      <li><b>Fill it out.</b>
+        <ul>
+          <li><b>Region</b>, then <b>Campaign</b>. That sets the brand, advertiser and default products.</li>
+          <li><b>Brand (IO-level):</b> pick one from the list, or type a new name and the tool creates it. The list only
+              shows the right kind for your campaign: <b>Kids brands for Kids campaigns, adult brands for adult ones</b>.</li>
+          <li><b>Promoted title, durations, flight dates and targeting</b> (showlist, genres, audience segments, Pluto
+              categories and channels). The <b>✨ Suggest targeting</b> button can propose targeting for a title.</li>
+          <li><b>Kids campaigns:</b> pick the <b>Kids audience</b> (Older, Younger or both). Without it, no lines are built.</li>
+          <li><b>Exclude videos:</b> use the video’s ID from FreeWheel (Videos, then the ID column). Check every digit.</li>
+          <li><b>Add to existing IO:</b> leave blank for a new order. Fill it in only to add lines to an IO that already exists.</li>
+        </ul></li>
+      <li><b>Press “Review &amp; create in tool.”</b> Nothing is created yet. You get a preview of the IO name, brand, dates,
+          number of placements and every tier’s targeting.
+          <span class="tip">Need to change something? <b>Back to the form to edit</b> brings your entries back.
+          <b>Download plan file</b> saves your answers as a file you can keep or load later with <b>Load a saved plan</b>.
+          You don’t need it to create an order.</span></li>
+      <li><b>Read the review.</b>
+        <ul>
+          <li><b>Yellow alerts</b> (Tier 1 audience): some shows have no segment for your region yet, so they won’t be targeted.
+              Press <b>Download request list</b> for a CSV of the segments to ask for.</li>
+          <li><b>Red “Blocked”:</b> none of your shows has a segment in this region, so it can’t be created yet. Send the
+              request list, and come back once at least one segment exists.</li>
+        </ul></li>
+      <li><b>Create it.</b> Type the IO name exactly as shown, then press <b>Create in FreeWheel</b>. It takes a minute or two.
+          Press it once and wait. When it finishes you get the new <b>IO id</b> and “X of Y placements.”</li>
+      <li><b>Hand off.</b> In the linked <b>Salesforce case</b>, mark the <b>Case Status as Ready for Automation</b>. Ad Ops then
+          QA’s the IO, and you review and book it in FreeWheel.</li>
+    </ol>
+    <p class="mini">Step by step with the same detail: <a href="https://promo-ad-operations-automation-qa-tools.skydancepages.cloud/create-an-order.html">How to create an order</a>.</p>
+  </div>
+
+  <h2 id="messages">If you see a message</h2>
+  <div class="card">
+  <table>
+    <tr><th>It says</th><th>What it means and what to do</th></tr>
+    <tr><td>Blocked: no audience segment for any show</td><td>Request a segment for at least one show (use the request list), then review again.</td></tr>
+    <tr><td>An IO with this name already exists</td><td>It was already created (maybe by you). Put that IO’s id in <b>Add to existing IO</b> to add lines to it.</td></tr>
+    <tr><td>These ‘Exclude videos’ ids don’t exist</td><td>A video ID has a typo. Nothing was created. Fix it and try again.</td></tr>
+    <tr><td>Brand changed to match the campaign</td><td>You picked a brand from the other advertiser, so the tool used the matching one.</td></tr>
+    <tr><td>Created with fewer placements than expected</td><td>The page lists which lines failed and why. <b>Don’t create again.</b> Fix the cause, then add the missing lines with <b>Add to existing IO</b>.</td></tr>
+    <tr><td>Another order is being created</td><td>Someone is mid-create. Wait a minute and try again.</td></tr>
+    <tr><td>Audience data is incomplete</td><td>Not about your plan. Tell Kate.</td></tr>
+  </table>
+  </div>
+
+  <h2 id="qa"><span class="n">2</span> QA an order before it goes live</h2>
+  <div class="card">
+    <p>Open <a href="https://promo-ops-tools.skydancepages.cloud/qa">QA an order</a>, paste the <b>IO id</b> (the number the create step gave you, or the one in the
+       FreeWheel URL: <code>…insertion_order_id=<b>80271357</b>…</code>), and run it. Up to 5 at a time. It only <b>reads</b>
+       FreeWheel; nothing is changed. <b>Copy report</b> gives you a shareable version for the case or Slack.</p>
+    <div class="tip">Tick <b>Include placements that already finished</b> only when you want old lines checked too.
+       Right after creation you’ll usually see “no active creatives” warnings. That’s normal until the creatives are attached.</div>
+    <h3>What it checks — every placement</h3>
+    <ul>
+      <li><b>Ad units</b> — correct group for the brand+format; pre-roll dropped at :30+; bumper units; never empty.</li>
+      <li><b>Creative duration</b> — the creative length matches the duration the line is named for.</li>
+      <li><b>Time zone</b> — the schedule is in the market’s time zone.</li>
+      <li><b>Targeting / relationships</b> — right main inventory; no Pluto in no-Pluto regions; Samsung excluded for
+          Pluto TV brands; Recommended Show only on P+/Pluto TV; AU Tier 4 UFC set present.</li>
+      <li><b>Frequency caps</b> — order-level (per region) + placement-level (per tier).</li>
+      <li><b>Priority / precedence</b>, <b>naming</b>, and <b>geo</b>.</li>
+    </ul>
+
+    <h3>How to read the report</h3>
+    <table class="lgnd">
+      <tr><th>Tag</th><th>Meaning</th></tr>
+      <tr><td><span class="sev">❌</span> error</td><td>Almost certainly wrong — fix before going live.</td></tr>
+      <tr><td><span class="sev">⚠️</span> warn</td><td>Likely wrong — check it.</td></tr>
+      <tr><td><span class="sev">ℹ️</span> info</td><td>Couldn’t read that field from FreeWheel — verify by hand.</td></tr>
+      <tr><td><span class="sev">✅</span> ok</td><td>Verified correct.</td></tr>
+    </table>
+    <p class="tip">The summary line gives the error/warning count. <b>0 errors</b> = the structure matches what the
+       tool would have built. Fix any ❌, then tell the CM the draft is ready to review and book.</p>
+  </div>
+
+  <details class="term" id="terminal">
+    <summary>For Ad Ops and admins: Terminal tools (backup path)</summary>
+    <p class="mini">Nobody needs this to create or QA orders anymore. It’s here for batches, for working outside the app, and as a fallback.
+       Runs in Terminal on your own computer, from inside the <code>Promo-Operations</code> folder.</p>
   <!-- ─────────────────────────────  1 · SETUP  ───────────────────────────── -->
   <h2 id="setup"><span class="n">1</span> Set up the tool on your computer</h2>
   <div class="callout info">
@@ -138,23 +229,6 @@ cd Promo-Operations</pre></li>
     </div>
   </div>
 
-  <!-- ─────────────────────────────  2 · PUSH  ───────────────────────────── -->
-  <h2 id="push"><span class="n">2</span> Build &amp; push an order</h2>
-  <p>Run everything from inside the <code>Promo-Operations</code> folder. Use
-     <span class="pill a">Path A</span> for one campaign, <span class="pill b">Path B</span> for a batch.
-     Full details: <code>docs/TEAM_WORKFLOW.md</code>.</p>
-
-  <h3><span class="pill a">Path A</span> &nbsp;One campaign (no Terminal)</h3>
-  <div class="card">
-    <p>Open <b>https://promo-ops-tools.skydancepages.cloud/form</b> (VPN on), fill the form, and press
-       <b>Review &amp; create in tool</b>. Read the review, type the IO name to confirm, and press
-       <b>Create in FreeWheel</b>. Then paste the new IO id into <b>QA an order</b> to check it.
-       Step by step: <a href="https://promo-ad-operations-automation-qa-tools.skydancepages.cloud/create-an-order.html">How to create an order</a>.</p>
-    <div class="tip">Nothing to install, no plan file to download or post to Slack. Every create is recorded with who made it.</div>
-    <p style="color:#5b6478;font-size:14px">Still want Terminal? <code>promo-ops preview</code> / <code>promo-ops push</code> still work for Ad Ops
-       (see the <a href="https://promo-ad-operations-automation-qa-tools.skydancepages.cloud/setup-guide.html">Terminal setup guide</a>), but the app is the normal way now.</p>
-  </div>
-
   <h3><span class="pill b">Path B</span> &nbsp;A batch (many at once)</h3>
   <div class="card">
     <p>Campaign Managers click <b>Copy row for Sheet</b> and paste into the shared Google Sheet. When it’s time:</p>
@@ -169,41 +243,15 @@ promo-ops batch ~/Downloads/promo-batch.csv --live --out results.csv  <span clas
     (existing drafts are reused, never duplicated) · if a command says “does not exist,” you’re not in the folder —
     run <code>cd ~/Desktop/Promo-Operations</code> first.
   </div>
-
-  <!-- ─────────────────────────────  3 · QA  ───────────────────────────── -->
-  <h2 id="qa"><span class="n">3</span> QA an order before it goes live</h2>
-  <div class="card">
-    <p>The push prints the new <b>IO id</b>. Run the pre-launch review on it to catch mistakes while it’s still a
-       draft. It only <b>reads</b> FreeWheel — nothing is changed. Full details: <code>docs/QA_GUIDE.md</code>.</p>
+    <h3>QA from Terminal</h3>
+    <div class="card">
 <pre>promo-ops qa 80271357                  <span class="c"># review one IO</span>
 promo-ops qa 80271357 96525273         <span class="c"># several at once</span>
 promo-ops qa 80271357 --out qa.md      <span class="c"># + a shareable report file (paste in Slack / the case)</span>
 promo-ops qa 80271357 --only "Tier 4"  <span class="c"># focus on certain placements</span></pre>
     <div class="tip">The <b>IO id</b> is the number in the FreeWheel URL: <code>…insertion_order_id=<b>80271357</b>…</code></div>
 
-    <h3>What it checks — every placement</h3>
-    <ul>
-      <li><b>Ad units</b> — correct group for the brand+format; pre-roll dropped at :30+; bumper units; never empty.</li>
-      <li><b>Creative duration</b> — the creative length matches the duration the line is named for.</li>
-      <li><b>Time zone</b> — the schedule is in the market’s time zone.</li>
-      <li><b>Targeting / relationships</b> — right main inventory; no Pluto in no-Pluto regions; Samsung excluded for
-          Pluto TV brands; Recommended Show only on P+/Pluto TV; AU Tier 4 UFC set present.</li>
-      <li><b>Frequency caps</b> — order-level (per region) + placement-level (per tier).</li>
-      <li><b>Priority / precedence</b>, <b>naming</b>, and <b>geo</b>.</li>
-    </ul>
-
-    <h3>How to read the report</h3>
-    <table class="lgnd">
-      <tr><th>Tag</th><th>Meaning</th></tr>
-      <tr><td><span class="sev">❌</span> error</td><td>Almost certainly wrong — fix before going live.</td></tr>
-      <tr><td><span class="sev">⚠️</span> warn</td><td>Likely wrong — check it.</td></tr>
-      <tr><td><span class="sev">ℹ️</span> info</td><td>Couldn’t read that field from FreeWheel — verify by hand.</td></tr>
-      <tr><td><span class="sev">✅</span> ok</td><td>Verified correct.</td></tr>
-    </table>
-    <p class="tip">The summary line gives the error/warning count. <b>0 errors</b> = the structure matches what the
-       tool would have built. Fix any ❌, then hand off to the CM to review and book.</p>
-  </div>
-
+    </div>
   <!-- ─────────────────────────────  REFERENCE  ───────────────────────────── -->
   <h2 id="ref">Command reference</h2>
   <div class="card">
@@ -224,6 +272,8 @@ promo-ops qa 80271357 --only "Tier 4"  <span class="c"># focus on certain placem
 
   <div class="foot">Promo Ops — internal team handbook. Everything the tool creates is a NOT_BOOKED draft; a Campaign
      Manager books the real go-live in FreeWheel.</div>
+
+  </details>
 
 </main>
 </body>
