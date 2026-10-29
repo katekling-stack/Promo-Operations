@@ -329,6 +329,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, QA_PAGE, "text/html; charset=utf-8", _CSP_QA)
         if path == "/review":
             return self._send(200, REVIEW_PAGE, "text/html; charset=utf-8", _CSP_QA)
+        if path == "/form/":
+            self.send_response(302)
+            self.send_header("Location", "../form")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         if path in ("/form", "/index.html"):
             from .suggest_server import FORM
             if not FORM.exists():

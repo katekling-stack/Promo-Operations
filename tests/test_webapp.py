@@ -455,3 +455,21 @@ def test_on_the_app_the_review_and_create_button_replaces_the_download_and_slack
     block = form[form.index('if(/\\/form$/.test(location.pathname))'):][:700]
     assert '$("#dlBtn").hidden=true' in block and '$("#slackBtn").hidden=true' in block
     assert 'id="dlBtn"' in form and 'id="slackBtn"' in form          # still there for the standalone copy
+
+
+def test_a_standalone_copy_of_the_form_tells_people_where_the_real_tool_is():
+    from promo_ops.config import REPO_ROOT
+    form = (REPO_ROOT / "templates" / "campaign-plan" / "campaign-plan-form.html").read_text(encoding="utf-8")
+    assert "https://promo-ops-tools.skydancepages.cloud/form" in form
+    i = form.index('if(/\\/form$/.test(location.pathname))')
+    assert "else{" in form[i:i + 1500] and "document.body.prepend" in form[i:i + 1500]
+    assert "innerHTML" not in form[i:i + 1500]
+
+
+def test_the_form_address_with_a_trailing_slash_goes_to_the_form(make):
+    import http.client
+    srv, _, _ = make()
+    conn = http.client.HTTPConnection("127.0.0.1", srv.server_address[1], timeout=10)
+    conn.request("GET", "/form/")
+    resp = conn.getresponse()
+    assert resp.status == 302 and resp.getheader("Location") == "../form" or resp.getheader("Location") == "/form"

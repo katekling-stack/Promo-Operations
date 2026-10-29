@@ -1161,6 +1161,13 @@ if(/\/form$/.test(location.pathname)){ $("#reviewBtn").hidden=false;
   $("#dlBtn").hidden=true; $("#slackBtn").hidden=true;
   $("#reviewBtn").addEventListener("click",()=>{ if(!validate())return;
     sessionStorage.setItem("promo_plan",JSON.stringify(buildPlan())); location.href="review"; }); }
+else{ // an old/standalone copy (bookmark, Drive, the old team-site page): point people at the real tool
+  const b=document.createElement("div");
+  b.style.cssText="background:#fff3d6;border-bottom:1px solid #e6c36b;padding:10px 16px;font-size:14px;text-align:center;color:#5b4300";
+  b.appendChild(document.createTextNode("This is an old copy of the form. To review and create orders, use the Promo Ops tool: "));
+  const a=document.createElement("a"); a.href="https://promo-ops-tools.skydancepages.cloud/form"; a.textContent="open the form there";
+  a.style.fontWeight="600"; b.appendChild(a); b.appendChild(document.createTextNode(" (VPN on)."));
+  document.body.prepend(b); }
 // Download the plan file, then open the submissions Slack channel so the CM can drag the
 // just-downloaded file into the message. URL is APP.slackSubmitUrl (set in build_plan_form.py).
 $("#slackBtn").addEventListener("click",()=>{
