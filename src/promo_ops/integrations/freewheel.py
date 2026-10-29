@@ -776,6 +776,19 @@ class FreeWheelClient:
                     + ", ".join(missing) + ". Check each id (FreeWheel > Videos > the video's ID column) "
                     "and fix it in the form, then push again.")
 
+        # A NEW IO must not duplicate one already in the campaign (a re-run, a double click, a plan pushed
+        # twice). A lookup that can't be made doesn't block: only a clear "this name exists" does.
+        if not dry_run and not append_io and order.placements:
+            try:
+                dup = self.find_insertion_order_by_name(campaign_id, order.name)
+            except Exception:  # noqa: BLE001
+                dup = None
+            if dup:
+                raise RuntimeError(
+                    f"Nothing was created. An IO named {order.name!r} already exists in this campaign "
+                    f"(IO {dup}). To add these lines to it, put {dup} in 'Add to existing IO' and push again; "
+                    "if you really need a second IO, change the order name first.")
+
         # The Brand on an IO must belong to the advertiser that owns the campaign (FreeWheel refuses it
         # otherwise): swap a wrong-advertiser Brand (e.g. the Adult one picked for a Kids campaign) for
         # the same title's Brand under the right advertiser, before anything is created.

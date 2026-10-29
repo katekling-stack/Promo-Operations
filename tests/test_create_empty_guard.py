@@ -62,4 +62,5 @@ def test_live_push_stops_when_freewheel_refuses_to_create_the_io():
     with pytest.raises(RuntimeError, match="couldn't create the Insertion Order") as exc:
         c.create_order(order, dry_run=False)
     assert "expected element type" in str(exc.value)
-    assert calls == ["sh_1_1_create-an-insertion-order"]       # no placement was attempted
+    assert [c for c in calls if c != "sh_1_1_list-insertion-orders-of-a-campaign"] == \
+        ["sh_1_1_create-an-insertion-order"]                    # no placement was attempted

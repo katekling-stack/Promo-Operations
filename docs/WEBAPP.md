@@ -84,6 +84,22 @@ Settings the job reads (all optional): `PAGES_API_BASE` (default `https://skydan
 Keep the Mac's 7am job as a backup for about a week. After that, remove step 4b (the app publish) from
 `scripts/refresh_data.sh` so two writers don't compete.
 
+
+## Creating orders from the site (off until you switch it on)
+
+On the **Review a plan** page, a plan that passes review shows a **Create in FreeWheel** box. To use it,
+type the IO name back exactly, then press the button: the app creates the IO and its placements in
+FreeWheel (as a draft) with the app's FreeWheel login and shows the new IO id.
+
+It is **off by default.** To turn it on: portal -> the app -> **Settings** -> add `PROMO_ALLOW_CREATE` with
+the value `1` (not a secret) -> save. To turn it off again, delete the setting.
+
+Safeguards (all enforced by the server, not the page): the plan is re-checked at create time and must
+match what was reviewed; the empty-Tier-1 block, brand, excluded-video and duplicate-IO checks all apply;
+one create runs at a time; the same plan can't be created twice; only signed-in users; every create is
+logged with who, the IO name, the IO id and counts (never the plan's contents). The Pages logs are not an
+audit store, so for a durable history add a Volume later.
+
 ## If something's off
 
 - **"The FreeWheel login isn't set up on this app yet"** -> step 6 secrets are missing.

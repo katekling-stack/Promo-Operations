@@ -57,6 +57,11 @@ def groups_from_env(raw: Optional[str]) -> Optional[list[str]]:
     return names or None
 
 
+def create_enabled_from_env(raw: Optional[str]) -> bool:
+    """PROMO_ALLOW_CREATE: only an explicit yes turns on creating orders from the site."""
+    return str(raw or "").strip().lower() in ("1", "true", "yes", "on")
+
+
 def parse_groups(header: Optional[str]) -> list[str]:
     """X-Pages-Groups is a comma-separated list where a name containing a comma is quoted."""
     if not header:
@@ -90,10 +95,11 @@ class JobStore:
         while len(self._jobs) > self.max_jobs:
             del self._jobs[min(self._jobs, key=lambda j: self._jobs[j]["created"])]
 
-    def create(self, ios: list[str], include_completed: bool, user: str) -> dict:
+    def create(self, ios: list[str], include_completed: bool, user: str, kind: str = "qa") -> dict:
         with self._lock:
             job = {"id": uuid.uuid4().hex, "status": "queued", "io": list(ios), "all": include_completed,
-                   "user": user, "created": self._now(), "reports": [], "error": None, "progress": 0}
+                   "user": user, "created": self._now(), "reports": [], "error": None, "progress": 0,
+                   "kind": kind, "result": None}
             self._jobs[job["id"]] = job
             self._expire()
             return job
@@ -109,7 +115,7 @@ class JobStore:
 
     def public(self, job: dict) -> dict:
         with self._lock:
-            return {k: job[k] for k in ("id", "status", "io", "progress", "reports", "error")}
+            return {k: job[k] for k in ("id", "status", "io", "progress", "reports", "error", "result")}
 
 
 def _plain(value: Any) -> Any:
@@ -128,6 +134,24 @@ def report_json(rep) -> dict:
             "markdown": rep.markdown()}
 
 
+def _xml_text(raw: Any) -> str:
+    """FreeWheel's XML error body -> its plain message."""
+    text = re.sub(r"<[^>]+>", " ", html.unescape(str(raw or "")))
+    return re.sub(r"\s+", " ", text).strip()[:300]
+
+
+def summarize_create(res: dict) -> dict:
+    """What a create_order() call did, in the few facts the page shows."""
+    io = (res or {}).get("insertion_order") or {}
+    io_id = (((io.get("data") or {}).get("insertion_order") or {}).get("id")) or io.get("append_to_existing_io")
+    placements = [p for p in ((res or {}).get("placements") or []) if isinstance(p, dict)]
+    bad = [p for p in placements if p.get("ok") is False or p.get("error")]
+    return {"io_id": str(io_id) if io_id else None, "appended": bool(io.get("append_to_existing_io")),
+            "placements_total": len(placements), "placements_created": len(placements) - len(bad),
+            "placement_errors": [{"status": p.get("status_code"), "message": _xml_text(p.get("error"))} for p in bad],
+            "brand": (res or {}).get("brand"), "brand_swapped": (res or {}).get("brand_swapped")}
+
+
 def _friendly(exc: BaseException) -> str:
     if "Missing required env var" in str(exc):
         return ("The FreeWheel login isn't set up on this app yet. Ask whoever runs the app to add the "
@@ -141,13 +165,20 @@ def _friendly(exc: BaseException) -> str:
 class _Server(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, addr, handler, auditor_factory, allowed_groups, log):
+    def __init__(self, addr, handler, auditor_factory, allowed_groups, log, allow_create=False,
+                 creator_factory=None):
         super().__init__(addr, handler)
         self.auditor_factory, self.allowed_groups, self.log = auditor_factory, allowed_groups, log
+        self.allow_create, self.creator_factory = allow_create, creator_factory
+        self._create_queue: "queue.Queue[str]" = queue.Queue()
+        self._create_lock = threading.Lock()
+        self._creating = False
+        self.created: dict[str, dict] = {}          # plan hash -> {io_id, user, ts}: no second create of the same plan
         self.jobs = JobStore()
         self._auditor = None
         self._queue: "queue.Queue[str]" = queue.Queue()
         threading.Thread(target=self._worker, daemon=True, name="qa-worker").start()
+        threading.Thread(target=self._create_worker, daemon=True, name="create-worker").start()
 
     # one worker -> one QA at a time
     def _auditor_or_make(self):
@@ -157,6 +188,38 @@ class _Server(ThreadingHTTPServer):
 
     def submit(self, job_id: str) -> None:
         self._queue.put(job_id)
+
+    def _create_worker(self) -> None:
+        from .order_builder import OrderBuilder
+        from .plan_loader import support_plan_from_dict
+        while True:
+            job = self.jobs.get(self._create_queue.get())
+            if job is None:
+                with self._create_lock:
+                    self._creating = False
+                continue
+            job["status"] = "running"
+            user = job["user"]
+            self.log({"event": "create_start", "user": user, "io_name": job["io"][0], "ts": time.time()})
+            try:
+                order = OrderBuilder().build(support_plan_from_dict(job["plan"]))
+                creator = (self.creator_factory or _default_creator)()
+                summary = summarize_create(creator.create_order(order, dry_run=False))
+                job["result"], job["status"] = summary, "done"
+                if summary["io_id"]:
+                    self.created[job["plan_hash"]] = {"io_id": summary["io_id"], "user": user, "ts": time.time()}
+                self.log({"event": "create_done", "user": user, "io_name": job["io"][0], "io_id": summary["io_id"],
+                          "placements": summary["placements_created"], "of": summary["placements_total"],
+                          "ts": time.time()})
+            except RuntimeError as exc:            # refusals the tool writes itself (checks, FreeWheel said no)
+                job["error"], job["status"] = _xml_text(exc) or "FreeWheel refused the order.", "error"
+                self.log({"event": "create_failed", "user": user, "io_name": job["io"][0], "why": "refused"})
+            except Exception as exc:  # noqa: BLE001 - never show internals
+                job["error"], job["status"] = "Something went wrong creating the order. Nothing more was done; check FreeWheel before trying again.", "error"
+                self.log({"event": "create_failed", "user": user, "io_name": job["io"][0], "why": type(exc).__name__})
+            finally:
+                with self._create_lock:
+                    self._creating = False
 
     def _worker(self) -> None:
         while True:
@@ -271,7 +334,7 @@ class Handler(BaseHTTPRequestHandler):
             if not FORM.exists():
                 return self._send(500, {"error": "The form hasn't been built yet."})
             return self._send(200, FORM.read_bytes(), "text/html; charset=utf-8", _CSP_FORM)
-        m = re.fullmatch(r"/api/qa/([0-9a-f]{32}|[\w-]{1,64})", path)
+        m = re.fullmatch(r"/api/(?:qa|create)/([0-9a-f]{32}|[\w-]{1,64})", path)
         if m:
             job = self.server.jobs.get(m.group(1))
             if job is None:
@@ -281,7 +344,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = self.path.split("?")[0].rstrip("/")
-        if path not in ("/api/qa", "/api/review", "/suggest"):
+        if path not in ("/api/qa", "/api/review", "/api/create", "/suggest"):
             return self._send(404, {"error": "not found"})
         if not self._allowed():
             return
@@ -289,7 +352,45 @@ class Handler(BaseHTTPRequestHandler):
             return self._post_qa()
         if path == "/api/review":
             return self._post_review()
+        if path == "/api/create":
+            return self._post_create()
         return self._post_suggest()
+
+    def _post_create(self) -> None:
+        srv = self.server
+        if not srv.allow_create:
+            return self._send(403, {"error": "Creating orders from the site is switched off right now."})
+        user = self._user()
+        if user == "anonymous":
+            return self._send(403, {"error": "You need to be signed in to create an order."})
+        body = self._read_json(MAX_REVIEW_BODY)
+        if body is None:
+            return
+        plan, plan_hash, confirm = body.get("plan"), body.get("plan_hash"), body.get("confirm")
+        if not isinstance(plan, dict) or not plan or not isinstance(plan_hash, str):
+            return self._send(400, {"error": "Send the plan, its review fingerprint and the typed confirmation."})
+        from .review import review_plan
+        result = review_plan(plan)
+        if not result["ok"]:
+            return self._send(409, {"error": "This plan can't be created yet: " + " ".join(result["problems"]),
+                                    "problems": result["problems"]})
+        if result["plan_hash"] != plan_hash:
+            return self._send(409, {"error": "The plan changed since you reviewed it. Review it again, then create."})
+        io_name = result["summary"]["io_name"]
+        if not isinstance(confirm, str) or confirm != io_name:
+            return self._send(400, {"error": f"Type the IO name exactly to confirm: {io_name}"})
+        with srv._create_lock:
+            prior = srv.created.get(plan_hash)
+            if prior:
+                return self._send(409, {"error": f"This plan already created IO {prior['io_id']} (by {prior['user']}). "
+                                                 "To add lines to it, use 'Add to existing IO' in the form."})
+            if srv._creating:
+                return self._send(429, {"error": "Another order is being created right now. Try again in a minute."})
+            srv._creating = True
+        job = srv.jobs.create([io_name], False, user, kind="create")
+        job["plan"], job["plan_hash"] = plan, plan_hash
+        srv._create_queue.put(job["id"])
+        self._send(200, {"job": job["id"]})
 
     def _post_review(self) -> None:
         body = self._read_json(MAX_REVIEW_BODY)
@@ -303,6 +404,7 @@ class Handler(BaseHTTPRequestHandler):
         self.server.log({"event": "review", "user": self._user(), "ok": bool(result["ok"]),
                          "placements": len(result["placements"]), "region": plan.get("region"),
                          "ts": time.time()})
+        result["create_enabled"] = bool(self.server.allow_create)
         self._send(200, result)
 
     def _post_qa(self) -> None:
@@ -352,14 +454,20 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, _combined_json(result, bool(os.environ.get("ANTHROPIC_API_KEY"))))
 
 
+def _default_creator():
+    from .integrations.freewheel import FreeWheelClient
+    return FreeWheelClient()
+
+
 def make_server(host: str, port: int, auditor_factory: Optional[Callable[[], Any]] = None,
                 allowed_groups: Optional[list[str]] = None,
-                log: Callable[[dict], None] = _stdout_log) -> _Server:
+                log: Callable[[dict], None] = _stdout_log, allow_create: bool = False,
+                creator_factory: Optional[Callable[[], Any]] = None) -> _Server:
     if auditor_factory is None:
         def auditor_factory():
             from .qa import QAAuditor
             return QAAuditor()
-    return _Server((host, port), Handler, auditor_factory, allowed_groups, log)
+    return _Server((host, port), Handler, auditor_factory, allowed_groups, log, allow_create, creator_factory)
 
 
 # --------------------------------------------------------------------------- #
@@ -518,6 +626,7 @@ function render(r){
     box.appendChild(dl);
   }
   out.appendChild(box);
+  if (r.ok && r.create_enabled) out.appendChild(createPanel(r));
   r.placements.forEach(p => {
     const d = el("details"); d.appendChild(el("summary", null, p.name));
     const meta = ["format: " + p.format, p.priority != null && ("priority: " + p.priority), p.frequency_cap && ("cap: " + JSON.stringify(p.frequency_cap)), p.guaranteed && "guaranteed", p.exclusions.length && ("excludes: " + p.exclusions.join(", "))].filter(Boolean).join(" \\u00b7 ");
@@ -533,6 +642,46 @@ function render(r){
     out.appendChild(d);
   });
 }
+function createPanel(r){
+  const box = el("div","io");
+  box.appendChild(el("h2", null, "Create in FreeWheel"));
+  box.appendChild(el("div","muted","This creates the IO and its " + r.summary.placements + " placement(s) in FreeWheel for real, as a draft. Check the review above first."));
+  const nm = el("div","f", r.summary.io_name); nm.style.fontWeight = "600"; nm.style.margin = "10px 0 6px";
+  box.appendChild(nm);
+  const inp = document.createElement("input"); inp.type = "text"; inp.placeholder = "Type the IO name exactly, to confirm";
+  box.appendChild(inp);
+  const row = el("div","row"); const btn = el("button", null, "Create in FreeWheel"); const st = el("span","muted","");
+  row.appendChild(btn); row.appendChild(st); box.appendChild(row);
+  const res = el("div"); box.appendChild(res);
+  btn.onclick = async () => {
+    res.textContent = "";
+    if (inp.value !== r.summary.io_name){ st.textContent = "Type the IO name exactly as shown above."; return; }
+    btn.disabled = true; st.textContent = "Creating\\u2026 this can take a minute.";
+    try {
+      const resp = await fetch("api/create", {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({plan: lastPlan, plan_hash: r.plan_hash, confirm: inp.value})});
+      const d = await resp.json();
+      if (!resp.ok){ st.textContent = ""; res.appendChild(el("div","banner", d.error || ("Error " + resp.status))); btn.disabled = false; return; }
+      for (;;){
+        await new Promise(x => setTimeout(x, 2000));
+        const pr = await fetch("api/create/" + d.job);
+        if (pr.status === 404){ st.textContent = ""; res.appendChild(el("div","banner","That run expired. Check FreeWheel before trying again.")); return; }
+        const j = await pr.json();
+        if (j.status === "done"){ st.textContent = ""; showCreated(res, j.result); return; }
+        if (j.status === "error"){ st.textContent = ""; res.appendChild(el("div","banner", j.error || "That didn't work.")); btn.disabled = false; return; }
+      }
+    } catch(e){ st.textContent = ""; res.appendChild(el("div","banner","Lost the connection. Check FreeWheel before trying again, so nothing is created twice.")); }
+  };
+  return box;
+}
+function showCreated(res, c){
+  const ok = c.placements_created === c.placements_total;
+  res.appendChild(el("div", "pill " + (ok ? "ok" : "warn"), (c.appended ? "Added to IO " : "Created IO ") + c.io_id + ": " + c.placements_created + " of " + c.placements_total + " placement(s)"));
+  (c.placement_errors || []).forEach(x => res.appendChild(el("div","f","\\u26a0 " + (x.status || "") + " " + x.message)));
+  if (c.brand && c.brand.created) res.appendChild(el("div","f","Brand created: " + c.brand.name + (c.brand.brand_id ? " (id " + c.brand.brand_id + ")" : "")));
+  if (c.brand_swapped) res.appendChild(el("div","f","Brand changed to match the campaign: " + c.brand_swapped.why));
+  res.appendChild(el("div","muted","Next: run QA on IO " + c.io_id + " (QA an order, from the home page)."));
+}
 function csvCell(v){
   let t = String(v == null ? "" : v);
   if (/^[=+\\-@\\t\\r]/.test(t)) t = "'" + t;          // a show name can't run as a spreadsheet formula
@@ -545,7 +694,9 @@ function downloadRequests(rows){
   a.href = URL.createObjectURL(new Blob([lines.join("\\r\\n") + "\\r\\n"], {type: "text/csv"}));
   a.download = "segments-to-request.csv"; a.click();
 }
+let lastPlan = null;
 async function review(plan){
+  lastPlan = plan;
   $("out").textContent = ""; setStatus("Checking\\u2026"); $("go").disabled = true;
   try {
     const res = await fetch("api/review", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({plan})});
@@ -570,9 +721,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     host = os.environ.get("PROMO_WEBAPP_HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", "8080"))
     groups = groups_from_env(os.environ.get("PROMO_ALLOWED_GROUPS"))
-    srv = make_server(host, port, allowed_groups=groups)
-    print(f"promo-ops web app on http://{host}:{port}/  (groups: {', '.join(groups) if groups else 'any signed-in user'})",
-          flush=True)
+    allow = create_enabled_from_env(os.environ.get("PROMO_ALLOW_CREATE"))
+    srv = make_server(host, port, allowed_groups=groups, allow_create=allow)
+    print(f"promo-ops web app on http://{host}:{port}/  (groups: {', '.join(groups) if groups else 'any signed-in user'}; "
+          f"creating orders from the site: {'ON' if allow else 'off'})", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
