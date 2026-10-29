@@ -100,6 +100,21 @@ one create runs at a time; the same plan can't be created twice; only signed-in 
 logged with who, the IO name, the IO id and counts (never the plan's contents). The Pages logs are not an
 audit store, so for a durable history add a Volume later.
 
+
+## The permanent record (a shared Volume)
+
+The app's own disk is scratch: it is wiped on every restart, and the Pages logs are not an audit store. So
+every create is also appended, one JSON line each, to a file on a **shared Volume**:
+`<volume>/audit-YYYY-MM.jsonl`, with who, the IO name, the IO id, how many placements and when (never the plan).
+
+One-time setup (portal, Advanced view on):
+1. **Add-ons -> Shared volume tab -> Create.** Name `promo-audit`, size cap `1` GiB. Daily backups are on by default.
+2. **Apps -> `promo-ops-tools` -> Add-ons tab.** Pick `promo-audit`, keep the default mount path
+   (`/data/promo-audit`) and the default variable (`PROMO_AUDIT_PATH`), press **Attach**. The app restarts.
+3. To read the record: **Add-ons -> the volume -> Browsing -> Open the files**, then open the newest `audit-*.jsonl`.
+
+Without the volume the app works exactly as before (events still go to the normal log).
+
 ## If something's off
 
 - **"The FreeWheel login isn't set up on this app yet"** -> step 6 secrets are missing.

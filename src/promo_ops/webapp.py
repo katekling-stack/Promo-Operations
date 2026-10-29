@@ -77,6 +77,38 @@ def _stdout_log(event: dict) -> None:
     print(json.dumps(event, default=str), flush=True)
 
 
+AUDIT_EVENTS = ("create_start", "create_done", "create_failed")
+
+
+def audit_dir_from_env(raw: Optional[str]):
+    """PROMO_AUDIT_PATH: where the shared Volume is mounted (None = no permanent record)."""
+    from pathlib import Path
+    raw = (raw or "").strip()
+    return Path(raw) if raw else None
+
+
+def tee_audit(log: Callable[[dict], None], directory) -> Callable[[dict], None]:
+    """A log function that also appends create events to <directory>/audit-YYYY-MM.jsonl. The record is a
+    nicety: any problem writing it is swallowed so the app and the normal log carry on."""
+    if directory is None:
+        return log
+    from pathlib import Path
+    directory = Path(directory)
+
+    def write(event: dict) -> None:
+        log(event)
+        if event.get("event") not in AUDIT_EVENTS:
+            return
+        try:
+            now = time.time()
+            row = {**event, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}
+            with (directory / f"audit-{time.strftime('%Y-%m', time.gmtime(now))}.jsonl").open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(row, default=str) + "\n")
+        except OSError:
+            pass
+    return write
+
+
 # --------------------------------------------------------------------------- #
 #  jobs
 # --------------------------------------------------------------------------- #
@@ -733,9 +765,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     port = int(os.environ.get("PORT", "8080"))
     groups = groups_from_env(os.environ.get("PROMO_ALLOWED_GROUPS"))
     allow = create_enabled_from_env(os.environ.get("PROMO_ALLOW_CREATE"))
-    srv = make_server(host, port, allowed_groups=groups, allow_create=allow)
+    audit = audit_dir_from_env(os.environ.get("PROMO_AUDIT_PATH"))
+    srv = make_server(host, port, allowed_groups=groups, allow_create=allow, log=tee_audit(_stdout_log, audit))
     print(f"promo-ops web app on http://{host}:{port}/  (groups: {', '.join(groups) if groups else 'any signed-in user'}; "
-          f"creating orders from the site: {'ON' if allow else 'off'})", flush=True)
+          f"creating orders from the site: {'ON' if allow else 'off'}; permanent record: {audit or 'none'})", flush=True)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
